@@ -1,6 +1,5 @@
 "use client"
 
-import { useParams } from 'next/navigation';
 import {useAnimeDetail} from '@/lib/queries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -9,12 +8,13 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
-import {useRouter} from "next/router";
 
-export default function AnimeDetailPage() {
-  const router = useRouter();
-  const { id } = router.query;
-  const { data: anime, isLoading } = useAnimeDetail(id as string);
+export default function AnimeDetails ({
+  params
+} : {
+  params: { id: string };
+}) {
+  const { data: anime, isLoading } = useAnimeDetail(params.id as string);
 
   if (isLoading) {
     return (
@@ -60,7 +60,7 @@ export default function AnimeDetailPage() {
                 <Star className="w-5 h-5 text-yellow-500" />
                 <span className="text-lg font-bold">{anime.score}</span>
                 <span className="text-sm text-muted-foreground">
-                  ({anime.scored_by.toLocaleString()} users)
+                  ({anime.scored_by != null ? anime.scored_by.toLocaleString() : "N/A"} users)
                 </span>
               </div>
             </div>
@@ -140,7 +140,7 @@ export default function AnimeDetailPage() {
                   <dl className="space-y-2 text-sm">
                     <div className="flex">
                       <dt className="w-24 text-muted-foreground">Score</dt>
-                      <dd>{anime.score} ({anime.scored_by.toLocaleString()} users)</dd>
+                      <dd>{anime.score} ({anime.scored_by != null ? anime.scored_by.toLocaleString() : "N/A"} users)</dd>
                     </div>
                     <div className="flex">
                       <dt className="w-24 text-muted-foreground">Ranked</dt>

@@ -1,4 +1,3 @@
-import FeaturedAnime from '@/components/featured-anime';
 import { Suspense } from 'react';
 import { TopAnimeSection } from '@/components/top-anime-section';
 
