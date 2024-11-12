@@ -1,4 +1,5 @@
-"use client"
+"use client";
+import { use } from "react";
 
 import {useAnimeDetail} from '@/lib/queries';
 import { Badge } from '@/components/ui/badge';
@@ -10,12 +11,11 @@ import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default function AnimeDetails ({
-  params
-} : Props) {
+export default function AnimeDetails(props: Props) {
+  const params = use(props.params);
   const { data: anime, isLoading } = useAnimeDetail(params.id as string);
 
   if (isLoading) {
