@@ -1,7 +1,7 @@
 "use client"
 
 import { useParams } from 'next/navigation';
-import {API_BASE_URL, useAnimeDetail} from '@/lib/queries';
+import {useAnimeDetail} from '@/lib/queries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,10 +9,12 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
+import {useRouter} from "next/router";
 
 export default function AnimeDetailPage() {
-  const params = useParams();
-  const { data: anime, isLoading } = useAnimeDetail(params.id as string);
+  const router = useRouter();
+  const { id } = router.query;
+  const { data: anime, isLoading } = useAnimeDetail(id as string);
 
   if (isLoading) {
     return (
