@@ -1,6 +1,7 @@
 "use client"
 import { useQuery } from '@tanstack/react-query';
 import {useAnimeStore} from "@/lib/store";
+import {AnimeData, AnimeSearchResults} from "@/types/anime";
 
 export const API_BASE_URL = 'https://api.jikan.moe/v4';
 
@@ -25,7 +26,7 @@ export function useAnimeSearch() {
       if (!searchQuery) return [];
       const response = await fetch(`${API_BASE_URL}/anime?q=${searchQuery}`);
       if (!response.ok) throw new Error('Failed to fetch search results');
-      const data = await response.json();
+      const data : AnimeSearchResults = await response.json();
       return data.data;
     },
     enabled: !!searchQuery,
@@ -38,7 +39,7 @@ export function useAnimeDetail(id: string) {
     queryFn: async () => {
       const response = await fetch(`${API_BASE_URL}/anime/${id}`);
       if (!response.ok) throw new Error('Failed to fetch anime details');
-      const data = await response.json();
+      const data: AnimeData = await response.json();
       return data.data;
     },
   });

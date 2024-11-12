@@ -121,7 +121,7 @@ export default function AnimeDetailPage() {
                     </div>
                     <div className="flex">
                       <dt className="w-24 text-muted-foreground">Aired</dt>
-                      <dd>{anime.aired.string}</dd>
+                      <dd>{anime.aired.from}</dd>
                     </div>
                     <div className="flex">
                       <dt className="w-24 text-muted-foreground">Season</dt>
