@@ -9,11 +9,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
 
+interface Props {
+  params: { id: string };
+}
+
 export default function AnimeDetails ({
   params
-} : {
-  params: { id: string };
-}) {
+} : Props) {
   const { data: anime, isLoading } = useAnimeDetail(params.id as string);
 
   if (isLoading) {
