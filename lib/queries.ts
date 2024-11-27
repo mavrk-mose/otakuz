@@ -1,14 +1,14 @@
 "use client"
 import { useQuery } from '@tanstack/react-query';
 import {useAnimeStore} from "@/lib/store";
-import {AnimeData, AnimeSearchResults} from "@/types/anime";
+import {AnimeData, AnimeSearchResults, TopAnime} from "@/types/anime";
 
 export const API_BASE_URL = 'https://api.jikan.moe/v4';
 
 export function useTopAnime() {
   return useQuery({
     queryKey: ['topAnime'],
-    queryFn: async () => {
+    queryFn: async () : Promise<TopAnime[]>  => {
       const response = await fetch(`${API_BASE_URL}/top/anime`);
       if (!response.ok) throw new Error('Failed to fetch top anime');
       const data = await response.json();

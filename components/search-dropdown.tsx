@@ -7,15 +7,19 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import Link from 'next/link';
 
-export function SearchDropdown() {
+interface SearchDropdownProps {
+  onSelect?: () => void;
+}
+
+export function SearchDropdown({ onSelect }: SearchDropdownProps) {
   const { data: searchResults, isLoading } = useAnimeSearch();
   const searchQuery = useAnimeStore((state) => state.searchQuery);
 
   if (!searchQuery) return null;
 
   return (
-    <Card className="absolute top-full mt-2 w-[300px] z-50">
-      <ScrollArea className="h-[400px] w-full">
+    <Card className="absolute top-full mt-2 w-full z-50 shadow-lg">
+      <ScrollArea className="h-[400px]">
         {isLoading ? (
           <div className="p-4 text-center">Loading...</div>
         ) : searchResults?.length ? (
@@ -25,6 +29,7 @@ export function SearchDropdown() {
                 href={`/anime/${anime.mal_id}`}
                 key={anime.mal_id}
                 className="flex items-start gap-3 p-2 hover:bg-accent rounded-lg"
+                onClick={onSelect}
               >
                 <Image
                   src={anime.images.jpg.small_image_url}

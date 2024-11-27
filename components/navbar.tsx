@@ -1,12 +1,15 @@
 "use client"
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Menu, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useAnimeStore } from '@/lib/store';
 import { SearchDropdown } from './search-dropdown';
+import { MobileNav } from './mobile-nav';
+import { MobileSearch } from './mobile-search';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,18 +20,25 @@ import {
 export default function Navbar() {
   const { setTheme } = useTheme();
   const { setSearchQuery, searchQuery } = useAnimeStore();
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   return (
-    <header className="border-b">
+    <header className="border-b sticky top-0 z-50 bg-background">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-6">
-          <Button variant="ghost" size="icon" className="md:hidden">
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="md:hidden"
+            onClick={() => setShowMobileMenu(true)}
+          >
             <Menu className="h-6 w-6" />
           </Button>
           <Link href="/" className="text-2xl font-bold">
             Otakuz
           </Link>
-          <div className="hidden md:flex items-center gap-6">
+          <div className="hidden md:flex items-center gap-6 ml-6">
             <Link href="/news" className="text-muted-foreground hover:text-foreground">
               News
             </Link>
@@ -40,6 +50,9 @@ export default function Navbar() {
             </Link>
             <Link href="/calendar" className="text-muted-foreground hover:text-foreground">
               Calendar
+            </Link>
+            <Link href="/gallery" className="text-muted-foreground hover:text-foreground">
+              Gallery
             </Link>
           </div>
         </div>
@@ -56,6 +69,16 @@ export default function Navbar() {
             />
             <SearchDropdown />
           </div>
+          
+          <Button 
+            variant="ghost" 
+            size="icon"
+            className="md:hidden"
+            onClick={() => setShowMobileSearch(true)}
+          >
+            <Search className="h-5 w-5" />
+          </Button>
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
@@ -76,9 +99,22 @@ export default function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button>Sign In</Button>
+          
+          <Button asChild>
+            <Link href="/auth">Sign In</Link>
+          </Button>
         </div>
       </nav>
+
+      <MobileNav 
+        isOpen={showMobileMenu} 
+        onClose={() => setShowMobileMenu(false)} 
+      />
+      
+      <MobileSearch 
+        isOpen={showMobileSearch} 
+        onClose={() => setShowMobileSearch(false)} 
+      />
     </header>
   );
 }
