@@ -13,6 +13,7 @@ import {
     Timestamp,
 } from 'firebase/firestore';
 import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
+import {GalleryImage} from "@/types/gallery";
 
 const PEXELS_API_KEY = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
 const BASE_URL = 'https://api.jikan.moe/v4';
@@ -113,6 +114,15 @@ export async function updateEventAttendee(
         await updateDoc(eventRef, {attendees});
     } catch (error) {
         console.error('Error updating event attendee:', error);
+        throw error;
+    }
+}
+
+ export async function getGalleryImages(query: string): Promise<GalleryImage []> {
+    try {
+        return [];
+    } catch (error) {
+        console.error('Error fetching gallery images:', error);
         throw error;
     }
 }
