@@ -36,7 +36,7 @@ export function GenreStories() {
         return (
             <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex space-x-4 p-4">
-                    {[...Array(10)].map((_, i) => (
+                    {[...Array(20)].map((_, i) => (
                         <div key={i} className="animate-pulse">
                             <div className="w-16 h-16 rounded-full bg-muted" />
                             <div className="w-16 h-4 mt-2 rounded bg-muted" />
