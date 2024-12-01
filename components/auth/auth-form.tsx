@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { motion } from 'framer-motion';
-import { auth } from '@/lib/firebase';
+import {auth, storage} from '@/lib/firebase';
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -24,6 +24,10 @@ export function AuthForm() {
   const signInWithGoogle = async () => {
     setIsLoading(true);
     try {
+      if (!auth) {
+        throw new Error('Firestore instance is not initialized.');
+      }
+
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (error) {
@@ -36,6 +40,10 @@ export function AuthForm() {
   const signInWithFacebook = async () => {
     setIsLoading(true);
     try {
+      if (!auth) {
+        throw new Error('Firestore instance is not initialized.');
+      }
+
       const provider = new FacebookAuthProvider();
       await signInWithPopup(auth, provider);
     } catch (error) {
@@ -47,6 +55,10 @@ export function AuthForm() {
 
   const setupRecaptcha = () => {
     if (!(window as any).recaptchaVerifier) {
+      if (!auth) {
+        throw new Error('Firestore instance is not initialized.');
+      }
+
       (window as any).recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
         size: 'invisible'
       });
@@ -56,7 +68,13 @@ export function AuthForm() {
   const sendVerificationCode = async () => {
     setIsLoading(true);
     try {
+
+
       setupRecaptcha();
+
+      if (!auth) {
+        throw new Error('Firestore instance is not initialized.');
+      }
       const provider = new PhoneAuthProvider(auth);
       const verificationId = await provider.verifyPhoneNumber(
         phoneNumber,
