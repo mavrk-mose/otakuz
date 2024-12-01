@@ -1,5 +1,6 @@
 "use client"
 
+import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import {useQuery} from '@tanstack/react-query';
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
@@ -7,9 +8,15 @@ import {Badge} from '@/components/ui/badge';
 import {Star, BookOpen, Users} from 'lucide-react';
 import Image from 'next/image';
 import {motion} from 'framer-motion';
-import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
+import {use} from "react";
 
-export default function MangaDetailPage({params}: { params: { id: string } }) {
+interface Props {
+    params: Promise<{ id: string }>;
+}
+
+export default function MangaDetailPage(props: Props) {
+    const params = use(props.params);
+
     const {data: manga, isLoading} = useQuery({
         queryKey: ['manga', params.id],
         queryFn: async () => {
