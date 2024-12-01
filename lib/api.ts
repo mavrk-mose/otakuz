@@ -139,6 +139,27 @@ export async function createEvent(eventData: Omit<Event, 'id'>, thumbnailFile: F
     }
 }
 
+
+export async function getEvents(): Promise<Event[]> {
+    try {
+        if (!db) {
+            throw new Error('Firestore instance is not initialized.');
+        }
+
+        const eventsRef = collection(db, 'events');
+        const q = query(eventsRef, orderBy('date', 'asc'));
+        const snapshot = await getDocs(q);
+
+        return snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        })) as Event[];
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        throw error;
+    }
+}
+
 export async function getEvent(id: string): Promise<Event | null> {
     try {
         if (!db) {
