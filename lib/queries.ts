@@ -2,35 +2,16 @@
 
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import {useAnimeStore} from './store';
-import {AnimeData, AnimeSearchResults, MangaResponse} from "@/types/anime";
+import {AnimeData, AnimeResponse, AnimeSearchResults, MangaResponse} from "@/types/anime";
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 
 export function useTopAnime() {
   return useInfiniteQuery<AnimeSearchResults>({
-    queryKey: ['topAnime'],
+    queryKey: ['animeList'],
     queryFn: async ({ pageParam = 1 }) => {
       const response = await fetch(`${API_BASE_URL}/top/anime?page=${pageParam}`);
       if (!response.ok) throw new Error('Failed to fetch top anime');
-      const data = await response.json();
-      return data;
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.pagination.has_next_page) {
-        return lastPage.pagination.last_visible_page + 1;
-      }
-      return undefined;
-    },
-    initialPageParam: 1,
-  });
-}
-
-export function useTopManga() {
-  return useInfiniteQuery<MangaResponse>({
-    queryKey: ['topManga'],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await fetch(`${API_BASE_URL}/top/manga?page=${pageParam}`);
-      if (!response.ok) throw new Error('Failed to fetch top manga');
       return await response.json();
     },
     getNextPageParam: (lastPage) => {
@@ -43,11 +24,29 @@ export function useTopManga() {
   });
 }
 
+export function useTopManga() {
+  return useInfiniteQuery({
+    queryKey: ['mangaList'],
+    queryFn: async ({ pageParam = 1 }) => {
+      const response = await fetch(`${API_BASE_URL}/top/manga?page=${pageParam}`);
+      if (!response.ok) throw new Error('Failed to fetch top manga');
+      return await response.json();
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.has_next_page) {
+        return lastPage.pagination.current_page + 1;
+      }
+      return undefined;
+    },
+    initialPageParam: 1,
+  });
+}
+
 export function useAnimeNews() {
   return useQuery({
     queryKey: ['animeNews'],
     queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/anime/1/news`);
+      const response = await fetch(`${API_BASE_URL}/anime/2/news`);
       if (!response.ok) throw new Error('Failed to fetch anime news');
       const data = await response.json();
       return data.data;

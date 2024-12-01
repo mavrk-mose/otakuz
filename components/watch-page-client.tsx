@@ -19,25 +19,35 @@ export default function WatchPageClient({ id }: { id: string }) {
     if (isLoading || !anime) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="text-center">Loading...</div>
+                <div className="grid lg:grid-cols-[1fr_300px] gap-8">
+                    {/* Video Player Skeleton */}
+                    <div className="space-y-4">
+                        <div className="aspect-video bg-muted rounded-md animate-pulse"/>
+                        <div className="h-6 bg-muted rounded-md w-3/4 animate-pulse"/>
+                        <div className="h-4 bg-muted rounded-md w-full animate-pulse"/>
+                    </div>
+
+                    {/* Sidebar Skeleton */}
+                    <div className="h-[calc(100vh-2rem)] bg-muted rounded-md animate-pulse"/>
+                </div>
             </div>
         );
     }
 
     return (
         <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{opacity: 0}}
+            animate={{opacity: 1}}
+            exit={{opacity: 0}}
             className="container mx-auto px-4 py-8"
         >
             <div className="grid lg:grid-cols-[1fr_300px] gap-8">
                 <motion.div
-                    initial={{ y: 20 }}
-                    animate={{ y: 0 }}
+                    initial={{y: 20}}
+                    animate={{y: 0}}
                     className="space-y-4"
                 >
-                    <VideoPlayer videoUrl={anime.trailer.embed_url} />
+                    <VideoPlayer videoUrl={anime.trailer.embed_url}/>
                     <div className="flex items-center justify-between">
                         <h1 className="text-2xl font-bold">{anime.title}</h1>
                         <Button variant="outline" size="icon">

@@ -9,16 +9,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import {TopAnime} from "@/types/anime";
+import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
 
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-center">Loading...</div>
-            </div>
+            <DetailsSkeleton />
         );
     }
 

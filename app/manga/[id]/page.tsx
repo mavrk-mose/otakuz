@@ -7,6 +7,7 @@ import {Badge} from '@/components/ui/badge';
 import {Star, BookOpen, Users} from 'lucide-react';
 import Image from 'next/image';
 import {motion} from 'framer-motion';
+import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 
 export default function MangaDetailPage({params}: { params: { id: string } }) {
     const {data: manga, isLoading} = useQuery({
@@ -21,9 +22,7 @@ export default function MangaDetailPage({params}: { params: { id: string } }) {
 
     if (isLoading) {
         return (
-            <div className="container mx-auto px-4 py-8">
-                <div className="text-center">Loading...</div>
-            </div>
+            <DetailsSkeleton/>
         );
     }
 

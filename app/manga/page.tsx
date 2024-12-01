@@ -14,7 +14,7 @@ import {useTopManga} from "@/lib/queries";
 export default function MangaListPage() {
     const {ref, inView} = useInView();
 
-    const {data, isLoading, fetchNextPage, hasNextPage} = useTopManga();
+    const {data, fetchNextPage, hasNextPage} = useTopManga();
 
     useEffect(() => {
         if (inView && hasNextPage) {
@@ -95,13 +95,19 @@ export default function MangaListPage() {
                         </motion.div>
                     ))
                 )}
-            </motion.div>
 
-            <div ref={ref} className="flex justify-center mt-8">
                 {hasNextPage && (
-                    <div className="w-8 h-8 animate-spin rounded-full border-4 border-primary border-t-transparent"/>
+                    Array(25).fill(null).map((_, index) => (
+                        <Card key={index} className="animate-pulse">
+                            <div className="aspect-[2/3] bg-muted" />
+                            <div className="p-4 space-y-2">
+                                <div className="h-4 bg-muted rounded w-3/4" />
+                                <div className="h-4 bg-muted rounded w-1/2" />
+                            </div>
+                        </Card>
+                    ))
                 )}
-            </div>
+            </motion.div>
         </div>
     );
 }

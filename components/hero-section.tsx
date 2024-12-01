@@ -1,16 +1,14 @@
 "use client"
 
 import { useEffect, useState } from 'react';
-import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Info } from 'lucide-react';
-import { TopAnime } from '@/types/anime';
 import { useAnimeDetail } from '@/lib/queries';
 import Link from 'next/link';
 
 export function HeroSection() {
-  const { data: anime } = useAnimeDetail('1'); // Default to a popular anime
+  const { data: anime } = useAnimeDetail('57334'); // Default to a popular anime
   const [background, setBackground] = useState('');
 
   useEffect(() => {

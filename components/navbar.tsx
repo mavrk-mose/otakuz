@@ -51,6 +51,9 @@ export default function Navbar() {
             <Link href="/calendar" className="text-muted-foreground hover:text-foreground">
               Calendar
             </Link>
+            <Link href="/shop" className="text-muted-foreground hover:text-foreground">
+              Shop
+            </Link>
             <Link href="/gallery" className="text-muted-foreground hover:text-foreground">
               Gallery
             </Link>

@@ -37,7 +37,7 @@ export function AnimeSection() {
                     <p className="text-muted-foreground">Top-rated anime series</p>
                 </div>
                 <Button variant="ghost" asChild>
-                    <Link href="/anime/list" className="gap-2">
+                    <Link href="/anime" className="gap-2">
                         View All <ArrowRight className="w-4 h-4" />
                     </Link>
                 </Button>
