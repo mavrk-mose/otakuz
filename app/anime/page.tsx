@@ -1,65 +1,23 @@
-"use client"
+import { Suspense } from 'react';
+import AnimeDetailClient from '@/components/anime-detail-client';
 
-import { useTopAnime } from '@/lib/queries';
-import FeaturedAnime from '@/components/featured-anime';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+export async function generateStaticParams() {
+  const response = await fetch('https://api.jikan.moe/v4/top/anime?limit=20');
+  const data = await response.json();
 
-export default function AnimePage() {
-  const { data: animeList, isLoading } = useTopAnime();
+  return data.data.map((anime: any) => ({
+    id: anime.mal_id.toString(),
+  }));
+}
 
+export default function AnimeDetailPage({ params }: { params: { id: string } }) {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-        <div>
-          <h1 className="text-4xl font-bold mb-2">Anime Collection</h1>
-          <p className="text-muted-foreground">
-            Discover and explore your next favorite anime series
-          </p>
+      <Suspense fallback={
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">Loading...</div>
         </div>
-        <div className="flex gap-4">
-          <Select defaultValue="popularity">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="popularity">Popularity</SelectItem>
-              <SelectItem value="rating">Rating</SelectItem>
-              <SelectItem value="newest">Newest</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select defaultValue="all">
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Genre" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Genres</SelectItem>
-              <SelectItem value="action">Action</SelectItem>
-              <SelectItem value="comedy">Comedy</SelectItem>
-              <SelectItem value="drama">Drama</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="text-center py-10">Loading...</div>
-      ) : (
-        <>
-          <FeaturedAnime animeList={animeList || []} />
-          <div className="flex justify-center mt-8">
-            <Button variant="outline" size="lg">
-              Load More
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+      }>
+        <AnimeDetailClient id={params.id} />
+      </Suspense>
   );
 }

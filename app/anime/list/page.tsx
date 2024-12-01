@@ -1,20 +1,26 @@
 "use client"
 
-import { useQuery } from '@tanstack/react-query';
-import { getTopAnime } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Play, ArrowRight } from 'lucide-react';
+import { Star, Play } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { useEffect } from 'react';
+import {useTopAnime} from "@/lib/queries";
 
-export function AnimeSection() {
-    const { data: animeList, isLoading } = useQuery({
-        queryKey: ['topAnime'],
-        queryFn: () => getTopAnime()
-    });
+export default function AnimeListPage() {
+    const { ref, inView } = useInView();
+
+    const { data, isLoading, fetchNextPage, hasNextPage } = useTopAnime();
+
+    useEffect(() => {
+        if (inView && hasNextPage) {
+            fetchNextPage();
+        }
+    }, [inView, hasNextPage, fetchNextPage]);
 
     const container = {
         hidden: { opacity: 0 },
@@ -30,37 +36,22 @@ export function AnimeSection() {
     };
 
     return (
-        <section className="space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-3xl font-bold mb-2">Popular Anime</h2>
-                    <p className="text-muted-foreground">Top-rated anime series</p>
-                </div>
-                <Button variant="ghost" asChild>
-                    <Link href="/anime/list" className="gap-2">
-                        View All <ArrowRight className="w-4 h-4" />
-                    </Link>
-                </Button>
+        <div className="container mx-auto px-4 py-8">
+            <div className="mb-8">
+                <h1 className="text-4xl font-bold mb-2">Anime Collection</h1>
+                <p className="text-muted-foreground">
+                    Discover and explore your next favorite anime series
+                </p>
             </div>
 
             <motion.div
                 variants={container}
                 initial="hidden"
                 animate="show"
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+                className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             >
-                {isLoading ? (
-                    Array(8).fill(null).map((_, index) => (
-                        <Card key={index} className="animate-pulse">
-                            <div className="aspect-[2/3] bg-muted" />
-                            <div className="p-4 space-y-2">
-                                <div className="h-4 bg-muted rounded w-3/4" />
-                                <div className="h-4 bg-muted rounded w-1/2" />
-                            </div>
-                        </Card>
-                    ))
-                ) : (
-                    animeList?.slice(0, 8).map((anime: any) => (
+                {data?.pages.map((page) =>
+                    page.data.map((anime: any) => (
                         <motion.div key={anime.mal_id} variants={item}>
                             <Card className="overflow-hidden group">
                                 <div className="relative aspect-[2/3]">
@@ -104,6 +95,12 @@ export function AnimeSection() {
                     ))
                 )}
             </motion.div>
-        </section>
+
+            <div ref={ref} className="flex justify-center mt-8">
+                {hasNextPage && (
+                    <div className="w-8 h-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                )}
+            </div>
+        </div>
     );
 }

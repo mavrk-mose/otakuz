@@ -1,12 +1,37 @@
 import { Suspense } from 'react';
-import { TopAnimeSection } from '@/components/top-anime-section';
+import { HeroSection } from '@/components/hero-section';
+import { AnimeSection } from '@/components/anime-section';
+import { MangaSection } from '@/components/manga-section';
+import { NewsSection } from '@/components/news-section';
+import { EventsSection } from '@/components/events-section';
+import { GenreStories } from '@/components/genre-stories';
 
 export default function Home() {
-  return (
-    <div className="container mx-auto px-4">
-      <Suspense fallback={<div>Loading...</div>}>
-        <TopAnimeSection />
-      </Suspense>
-    </div>
-  );
+    return (
+        <main>
+            <HeroSection />
+
+            <div className="container mx-auto px-4 py-8 space-y-16">
+                <div className="mb-8">
+                    <GenreStories />
+                </div>
+
+                <Suspense fallback={<div>Loading...</div>}>
+                    <AnimeSection />
+                </Suspense>
+
+                <Suspense fallback={<div>Loading...</div>}>
+                    <MangaSection />
+                </Suspense>
+
+                <Suspense fallback={<div>Loading...</div>}>
+                    <NewsSection />
+                </Suspense>
+
+                <Suspense fallback={<div>Loading...</div>}>
+                    <EventsSection />
+                </Suspense>
+            </div>
+        </main>
+    );
 }

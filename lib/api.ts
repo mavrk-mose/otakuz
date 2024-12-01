@@ -1,4 +1,4 @@
-import {AnimeResponse, TopAnime, MovieResponse, Movie} from '@/types/anime';
+import { AnimeResponse, TopAnime, MangaResponse, NewsResponse } from '@/types/anime';
 import {Event} from '@/types/events';
 import {db, storage} from '@/lib/firebase';
 import {
@@ -16,15 +16,35 @@ import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
 import {GalleryImage} from "@/types/gallery";
 
 const PEXELS_API_KEY = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
-const BASE_URL = 'https://api.jikan.moe/v4';
+const ANIME_BASE_URL = 'https://api.jikan.moe/v4';
 
-export async function getTopAnime(): Promise<TopAnime[]> {
+// Add rate limiting helper
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export async function getAnimeGenres() {
     try {
-        const response = await fetch(`${BASE_URL}/top/anime?limit=10`);
+        await delay(1000); // Add delay to respect API rate limits
+        const response = await fetch(`${ANIME_BASE_URL}/genres/anime`);
+        if (!response.ok) throw new Error('Failed to fetch anime genres');
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching anime genres:', error);
+        return [];
+    }
+}
+
+export async function getTopAnime(genre?: string) {
+    try {
+        await delay(1000);
+        const url = new URL(`${ANIME_BASE_URL}/top/anime`);
+        if (genre && genre !== 'all') {
+            url.searchParams.append('genre', genre);
         }
+
+        const response = await fetch(url.toString());
+        if (!response.ok) throw new Error('Failed to fetch top anime');
 
         const data: AnimeResponse = await response.json();
         return data.data;
@@ -34,15 +54,78 @@ export async function getTopAnime(): Promise<TopAnime[]> {
     }
 }
 
+export async function getAnimeByGenre(genreId: string) {
+    try {
+        await delay(1000);
+        const response = await fetch(`${ANIME_BASE_URL}/anime?genres=${genreId}`);
+        if (!response.ok) throw new Error('Failed to fetch anime by genre');
+
+        const data: AnimeResponse = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching anime by genre:', error);
+        return [];
+    }
+}
+
+export async function getTopManga() {
+    try {
+        await delay(1000);
+        const response = await fetch(`${ANIME_BASE_URL}/top/manga`);
+        if (!response.ok) throw new Error('Failed to fetch top manga');
+
+        const data: MangaResponse = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching top manga:', error);
+        return [];
+    }
+}
+
+export async function getAnimeNews() {
+    try {
+        await delay(1000);
+        const response = await fetch(`${ANIME_BASE_URL}/anime/1/news`);
+        if (!response.ok) throw new Error('Failed to fetch anime news');
+
+        const data: NewsResponse = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching anime news:', error);
+        return [];
+    }
+}
+
+export async function getAnimeSchedule() {
+    try {
+        await delay(1000);
+        const response = await fetch(`${ANIME_BASE_URL}/schedules`);
+        if (!response.ok) throw new Error('Failed to fetch anime schedule');
+
+        const data = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching anime schedule:', error);
+        return [];
+    }
+}
+
 // Events API functions
 export async function createEvent(eventData: Omit<Event, 'id'>, thumbnailFile: File): Promise<string> {
     try {
+        if (!storage) {
+            throw new Error('Firestore instance is not initialized.');
+        }
+
         // Upload thumbnail
         const storageRef = ref(storage, `event-thumbnails/${Date.now()}-${thumbnailFile.name}`);
         await uploadBytes(storageRef, thumbnailFile);
         const thumbnailUrl = await getDownloadURL(storageRef);
 
         // Create event document
+        if (!db) {
+            throw new Error('Firestore instance is not initialized.');
+        }
         const eventRef = await addDoc(collection(db, 'events'), {
             ...eventData,
             thumbnailUrl,
@@ -56,24 +139,12 @@ export async function createEvent(eventData: Omit<Event, 'id'>, thumbnailFile: F
     }
 }
 
-export async function getEvents(): Promise<Event[]> {
-    try {
-        const eventsRef = collection(db, 'events');
-        const q = query(eventsRef, orderBy('date', 'asc'));
-        const snapshot = await getDocs(q);
-
-        return snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        })) as Event[];
-    } catch (error) {
-        console.error('Error fetching events:', error);
-        throw error;
-    }
-}
-
 export async function getEvent(id: string): Promise<Event | null> {
     try {
+        if (!db) {
+            throw new Error('Firestore instance is not initialized.');
+        }
+
         const eventRef = doc(db, 'events', id);
         const eventDoc = await getDoc(eventRef);
 
@@ -96,6 +167,10 @@ export async function updateEventAttendee(
     status: 'going' | 'maybe' | 'not_going'
 ): Promise<void> {
     try {
+        if (!db) {
+            throw new Error('Firestore instance is not initialized.');
+        }
+
         const eventRef = doc(db, 'events', eventId);
         const eventDoc = await getDoc(eventRef);
 

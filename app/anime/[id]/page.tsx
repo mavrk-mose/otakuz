@@ -1,6 +1,6 @@
 "use client";
-import { use } from "react";
 
+import { use } from "react";
 import {useAnimeDetail} from '@/lib/queries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
