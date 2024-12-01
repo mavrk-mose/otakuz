@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import Link from 'next/link';
+import {AnimeSearchResults, TopAnime} from "@/types/anime";
 
 interface SearchDropdownProps {
   onSelect?: () => void;
@@ -24,7 +25,7 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
           <div className="p-4 text-center">Loading...</div>
         ) : searchResults?.length ? (
           <div className="p-2">
-            {searchResults.map((anime) => (
+            {searchResults.map((anime: TopAnime) => (
               <Link
                 href={`/anime/${anime.mal_id}`}
                 key={anime.mal_id}

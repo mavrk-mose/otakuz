@@ -12,7 +12,7 @@ export function HeroSection() {
   const [background, setBackground] = useState('');
 
   useEffect(() => {
-    if (anime?.images?.jpg?.large_image_url) {
+    if (anime?.images?.webp?.image_url) {
       setBackground(anime.images.jpg.large_image_url);
     }
   }, [anime]);

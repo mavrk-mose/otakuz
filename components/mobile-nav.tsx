@@ -1,10 +1,8 @@
 "use client"
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 
@@ -20,6 +18,9 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     { href: '/news', label: 'News' },
     { href: '/anime', label: 'Anime' },
     { href: '/manga', label: 'Manga' },
+    { href: '/shop', label: 'Shop' },
+    { href: '/events', label: 'Events' },
+    { href: '/watch', label: 'Watch'},
     { href: '/calendar', label: 'Calendar' },
     { href: '/gallery', label: 'Gallery' },
   ];
