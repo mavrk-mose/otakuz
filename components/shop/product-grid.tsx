@@ -47,6 +47,26 @@ export function ProductGrid({ category, sortBy }: ProductGridProps) {
           rating: 5,
           stock: 15
         },
+        {
+          id: '3',
+          name: 'Japan Souvenir',
+          description: 'Shrine',
+          price: 59.99,
+          image: 'https://images.unsplash.com/photo-1625189659340-887baac3ea32?q=80&w=3473&auto=format&fit=crop',
+          category: 'collectibles',
+          rating: 5,
+          stock: 15
+        },
+        {
+          id: '4',
+          name: 'One Piece Figure',
+          description: 'Shrine',
+          price: 59.99,
+          image: 'https://images.unsplash.com/photo-1708034677699-6f39d9c59f6e?q=80&w=3387&auto=format&fit=crop',
+          category: 'figures',
+          rating: 5,
+          stock: 15
+        }
       ];
       return { data: mockProducts, nextPage: pageParam + 1, hasMore: false };
     },

@@ -30,7 +30,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     ).join('\n')}\n\nTotal: $${total.toFixed(2)}\n\nCustomer Details:\nName: ${customerInfo.name}\nPhone: ${customerInfo.phone}\nEmail: ${customerInfo.email}\nAddress: ${customerInfo.address}`;
 
     //TODO get the number from environment variables
-    const whatsappUrl = `https://wa.me/254768159239?text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/255768159239?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     onClose();
   };

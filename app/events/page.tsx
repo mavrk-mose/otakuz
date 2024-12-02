@@ -40,17 +40,17 @@ export default function EventsPage() {
             name: 'Flames',
             coordinates: { lat: 35.6762, lng: 135.6503 }
           },
-          thumbnailUrl: 'https://images.unsplash.com/photo-1625189659340-887baac3ea32?q=80&w=3473&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+          thumbnailUrl: 'https://images.unsplash.com/photo-1625189659340-887baac3ea32?q=80&w=3473&auto=format&fit=crop',
           attendees: [],
           photos: [
             {
               id: '1',
-              url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=3474&auto=format&fit=crop',
               caption: 'Main stage'
             },
             {
               id: '2',
-              url: 'https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?q=80&w=3386&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              url: 'https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?q=80&w=3386&auto=format&fit=crop',
               caption: 'Ghibli Food stand'
             }
           ]
