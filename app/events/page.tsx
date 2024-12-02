@@ -1,21 +1,68 @@
 "use client"
 
 import { useQuery } from '@tanstack/react-query';
-import { getEvents } from '@/lib/api';
+import { Timeline } from '@/components/events/timeline';
 import { Button } from '@/components/ui/button';
-import { Plus, Calendar, MapPin, Users } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { format } from 'date-fns';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
 
 export default function EventsPage() {
   const { data: events, isLoading } = useQuery({
     queryKey: ['events'],
-    queryFn: getEvents
+    queryFn: async () => {
+      // TODO: This would be replaced with your actual API call
+      return [
+        {
+          id: '1',
+          title: 'Anime Convention 2024',
+          date: '2024-04-15',
+          time: '10:00 AM',
+          location: {
+            name: 'Piccola Cafe',
+            coordinates: { lat: 35.6762, lng: 139.6503 }
+          },
+          thumbnailUrl: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2070&auto=format&fit=crop',
+          attendees: [],
+          photos: [
+            {
+              id: '1',
+              url: 'https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2070&auto=format&fit=crop',
+              caption: 'Main stage'
+            }
+          ]
+        },
+        {
+          id: '2',
+          title: 'Anime Convention 2024',
+          date: '2024-10-11',
+          time: '09:00 PM',
+          location: {
+            name: 'Flames',
+            coordinates: { lat: 35.6762, lng: 135.6503 }
+          },
+          thumbnailUrl: 'https://images.unsplash.com/photo-1625189659340-887baac3ea32?q=80&w=3473&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+          attendees: [],
+          photos: [
+            {
+              id: '1',
+              url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=3474&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              caption: 'Main stage'
+            },
+            {
+              id: '2',
+              url: 'https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?q=80&w=3386&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+              caption: 'Ghibli Food stand'
+            }
+          ]
+        },
+        // Add more mock events...
+      ];
+    }
   });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -34,54 +81,7 @@ export default function EventsPage() {
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="text-center py-10">Loading...</div>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {events?.map((event) => (
-            <motion.div
-              key={event.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              whileHover={{ y: -5 }}
-              transition={{ duration: 0.2 }}
-            >
-              <Link href={`/events/${event.id}`}>
-                <Card className="overflow-hidden h-full">
-                  <div className="relative h-48">
-                    <Image
-                      src={event.thumbnailUrl}
-                      alt={event.title}
-                      fill
-                      className="object-cover"
-                    />
-                    <div className="absolute top-2 right-2">
-                      <Badge>{event.category}</Badge>
-                    </div>
-                  </div>
-                  <div className="p-4">
-                    <h2 className="text-xl font-semibold mb-2">{event.title}</h2>
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        {format(new Date(event.date), 'PPP')} at {event.time}
-                      </div>
-                      <div className="flex items-center">
-                        <MapPin className="h-4 w-4 mr-2" />
-                        {event.location.name}
-                      </div>
-                      <div className="flex items-center">
-                        <Users className="h-4 w-4 mr-2" />
-                        {event.attendees.filter(a => a.status === 'going').length} attending
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
-      )}
+      <Timeline events={events || []} />
     </div>
   );
 }

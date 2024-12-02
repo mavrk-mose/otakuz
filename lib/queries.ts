@@ -57,7 +57,7 @@ export function useAnimeNews() {
 export function useAnimeSearch() {
   const searchQuery = useAnimeStore((state) => state.searchQuery);
 
-  return useQuery<AnimeSearchResults>({
+  return useQuery({
     queryKey: ['animeSearch', searchQuery],
     queryFn: async () => {
       if (!searchQuery) return [];

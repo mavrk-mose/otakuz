@@ -9,12 +9,26 @@ import Image from 'next/image';
 import {motion} from 'framer-motion';
 import {useInView} from 'react-intersection-observer';
 import {useEffect} from 'react';
-import {useTopAnime} from "@/lib/queries";
+import { useInfiniteQuery } from '@tanstack/react-query';
 
 export default function AnimeListPage() {
     const {ref, inView} = useInView();
 
-    const {data, isLoading, fetchNextPage, hasNextPage} = useTopAnime();
+    const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
+        queryKey: ['animeList'],
+        queryFn: async ({ pageParam = 1 }) => {
+          const response = await fetch(`https://api.jikan.moe/v4/top/anime?page=${pageParam}`);
+          if (!response.ok) throw new Error('Failed to fetch anime');
+          return response.json();
+        },
+        getNextPageParam: (lastPage) => {
+          if (lastPage.pagination.has_next_page) {
+            return lastPage.pagination.current_page + 1;
+          }
+          return undefined;
+        },
+        initialPageParam: 1
+      });
 
     useEffect(() => {
         if (inView && hasNextPage) {
@@ -62,11 +76,10 @@ export default function AnimeListPage() {
                     ))
                 )}
                 {data?.pages.map((page) =>
-                    page.data.map((anime, index) => (
+                    page.data.map((anime: any) => (
                         <motion.div
                             key={anime.mal_id}
                             variants={item}
-                            ref={ref}
                         >
                             <Card className="overflow-hidden group">
                                 <div className="relative aspect-[2/3]">
@@ -112,15 +125,19 @@ export default function AnimeListPage() {
                 )}
 
                 {hasNextPage && (
-                    Array(25).fill(null).map((_, index) => (
-                        <Card key={index} className="animate-pulse">
-                            <div className="aspect-[2/3] bg-muted"/>
-                            <div className="p-4 space-y-2">
-                                <div className="h-4 bg-muted rounded w-3/4"/>
-                                <div className="h-4 bg-muted rounded w-1/2"/>
-                            </div>
-                        </Card>
-                    ))
+                    <div ref={ref}>
+                        {Array(25)
+                            .fill(null)
+                            .map((_, index) => (
+                                <Card key={index} className="animate-pulse">
+                                    <div className="aspect-[2/3] bg-muted" />
+                                    <div className="p-4 space-y-2">
+                                        <div className="h-4 bg-muted rounded w-3/4" />
+                                        <div className="h-4 bg-muted rounded w-1/2" />
+                                    </div>
+                                </Card>
+                            ))}
+                    </div>
                 )}
             </motion.div>
         </div>

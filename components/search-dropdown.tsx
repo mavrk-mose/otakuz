@@ -4,9 +4,10 @@ import { useAnimeStore } from '@/lib/store';
 import { useAnimeSearch } from '@/lib/queries';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useClickOutside } from '@/hooks/use-click-outside';
 import Image from 'next/image';
 import Link from 'next/link';
-import {AnimeSearchResults, TopAnime} from "@/types/anime";
+import { useRef } from 'react';
 
 interface SearchDropdownProps {
   onSelect?: () => void;
@@ -15,17 +16,23 @@ interface SearchDropdownProps {
 export function SearchDropdown({ onSelect }: SearchDropdownProps) {
   const { data: searchResults, isLoading } = useAnimeSearch();
   const searchQuery = useAnimeStore((state) => state.searchQuery);
+  const setSearchQuery = useAnimeStore((state) => state.setSearchQuery);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useClickOutside(dropdownRef, () => {
+    setSearchQuery('');
+  });
 
   if (!searchQuery) return null;
 
   return (
-    <Card className="absolute top-full mt-2 w-full z-50 shadow-lg">
+    <Card ref={dropdownRef} className="absolute top-full mt-2 w-full z-50 shadow-lg">
       <ScrollArea className="h-[400px]">
         {isLoading ? (
           <div className="p-4 text-center">Loading...</div>
         ) : searchResults?.length ? (
           <div className="p-2">
-            {searchResults.map((anime: TopAnime) => (
+            {searchResults.map((anime: any) => (
               <Link
                 href={`/anime/${anime.mal_id}`}
                 key={anime.mal_id}
