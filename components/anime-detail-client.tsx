@@ -10,6 +10,7 @@ import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
+import { AnimeRecommendations } from './recommendations';
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
@@ -58,8 +59,8 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                 <Star className="w-5 h-5 text-yellow-500" />
                                 <span className="text-lg font-bold">{anime.score}</span>
                                 <span className="text-sm text-muted-foreground">
-                  ({anime.scored_by.toLocaleString()} users)
-                </span>
+                                    ({anime.scored_by.toLocaleString()} users)
+                                </span>
                             </div>
                         </div>
                         <Progress value={anime.score * 10} className="h-2" />
@@ -84,7 +85,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     </Card>
                 </div>
 
-                <div className="space-y-6">
+                <div className="container space-y-6">
                     <div>
                         <h1 className="text-4xl font-bold mb-2">{anime.title}</h1>
                         <h2 className="text-xl text-muted-foreground mb-4">{anime.title_japanese}</h2>
@@ -171,6 +172,9 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                     </Tabs>
+                    <div className="mt-8 overflow-x-auto">
+                        <AnimeRecommendations animeId={id} />
+                    </div>
                 </div>
             </div>
         </div>
