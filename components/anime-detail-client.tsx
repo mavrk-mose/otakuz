@@ -122,7 +122,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                         </div>
                                         <div className="flex">
                                             <dt className="w-24 text-muted-foreground">Aired</dt>
-                                            <dd>{anime.aired.string}</dd>
+                                            <dd>{anime.aired.from}</dd>
                                         </div>
                                         <div className="flex">
                                             <dt className="w-24 text-muted-foreground">Season</dt>
@@ -172,8 +172,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                     </Tabs>
-
-                    <div className="mt-8">
+                    <div className="mt-8 overflow-x-auto">
                         <AnimeRecommendations animeId={id} />
                     </div>
                 </div>
