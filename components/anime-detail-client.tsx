@@ -85,7 +85,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     </Card>
                 </div>
 
-                <div className="space-y-6">
+                <div className="container space-y-6">
                     <div>
                         <h1 className="text-4xl font-bold mb-2">{anime.title}</h1>
                         <h2 className="text-xl text-muted-foreground mb-4">{anime.title_japanese}</h2>
@@ -122,7 +122,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                         </div>
                                         <div className="flex">
                                             <dt className="w-24 text-muted-foreground">Aired</dt>
-                                            <dd>{anime.aired.from}</dd>
+                                            <dd>{anime.aired.string}</dd>
                                         </div>
                                         <div className="flex">
                                             <dt className="w-24 text-muted-foreground">Season</dt>
@@ -172,7 +172,8 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                     </Tabs>
-                    <div className="mt-8 max-w-full">
+
+                    <div className="mt-8">
                         <AnimeRecommendations animeId={id} />
                     </div>
                 </div>
