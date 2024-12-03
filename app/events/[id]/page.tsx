@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { client } from '@/lib/sanity';
 import { Card } from '@/components/ui/card';
@@ -49,7 +49,13 @@ const mockEvent = {
   ],
 };
 
-export default function EventDetailPage({ params }: { params: { id: string } }) {
+interface Props {
+    params: Promise<{ id: string }>;
+}
+
+export default function EventDetailPage(props: Props) {
+  const params = use(props.params);
+  
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const container = {
