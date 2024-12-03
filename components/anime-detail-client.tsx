@@ -172,7 +172,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                     </Tabs>
-                    <div className="mt-8">
+                    <div className="mt-8 max-w-full">
                         <AnimeRecommendations animeId={id} />
                     </div>
                 </div>
