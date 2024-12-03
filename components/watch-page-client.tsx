@@ -76,9 +76,9 @@ export default function WatchPageClient({ id }: { id: string }) {
                         <TabsContent value="comments" className="p-4">
                             <CommentSection animeId={id} />
                         </TabsContent>
-                        <TabsContent value="chat" className="p-4">
+                        {/* <TabsContent value="chat" className="p-4">
                             <ChatRoom animeId={id} />
-                        </TabsContent>
+                        </TabsContent> */}
                         <TabsContent value="party" className="p-4">
                             <WatchPartySection animeId={id} anime={anime} />
                         </TabsContent>
