@@ -112,21 +112,19 @@ export default function MangaListPage() {
                     ))
                 )}
 
-                {hasNextPage && (
-                    <div ref={ref}>
-                        {Array(25)
-                            .fill(null)
-                            .map((_, index) => (
-                                <Card key={index} className="animate-pulse">
-                                    <div className="aspect-[2/3] bg-muted" />
-                                    <div className="p-4 space-y-2">
-                                        <div className="h-4 bg-muted rounded w-3/4" />
-                                        <div className="h-4 bg-muted rounded w-1/2" />
-                                    </div>
-                                </Card>
-                            ))}
-                    </div>
-                )}
+                <div ref={ref} />
+                {hasNextPage &&
+                    Array(25)
+                        .fill(null)
+                        .map((_, index) => (
+                            <Card key={`next-page-loading-${index}`} className="animate-pulse">
+                                <div className="aspect-[2/3] bg-muted" />
+                                <div className="p-4 space-y-2">
+                                    <div className="h-4 bg-muted rounded w-3/4" />
+                                    <div className="h-4 bg-muted rounded w-1/2" />
+                                </div>
+                            </Card>
+                        ))}
             </motion.div>
         </div>
     );

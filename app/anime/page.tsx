@@ -125,22 +125,19 @@ export default function AnimeListPage() {
                         </motion.div>
                     ))
                 )}
-
-                {hasNextPage && (
-                    <div ref={ref} className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {Array(25)
-                            .fill(null)
-                            .map((_, index) => (
-                                <Card key={index} className="animate-pulse">
-                                    <div className="aspect-[2/3] bg-muted" />
-                                    <div className="p-4 space-y-2">
-                                        <div className="h-4 bg-muted rounded w-3/4" />
-                                        <div className="h-4 bg-muted rounded w-1/2" />
-                                    </div>
-                                </Card>
-                            ))}
-                    </div>
-                )}
+                
+                {hasNextPage &&
+                    Array(25)
+                        .fill(null)
+                        .map((_, index) => (
+                            <Card key={`next-page-loading-${index}`} className="animate-pulse">
+                                <div className="aspect-[2/3] bg-muted" />
+                                <div className="p-4 space-y-2">
+                                    <div className="h-4 bg-muted rounded w-3/4" />
+                                    <div className="h-4 bg-muted rounded w-1/2" />
+                                </div>
+                            </Card>
+                        ))}
             </motion.div>
         </div>
     );

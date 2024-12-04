@@ -31,7 +31,7 @@ export function ProductCard({ product }: ProductCardProps) {
               fill
               className="object-cover transition-transform group-hover:scale-105"
             />
-            {product.stock < 20 && (
+            {product.stock < 5 && (
               <Badge className="absolute top-2 right-2" variant="destructive">
                 Low Stock
               </Badge>

@@ -42,7 +42,7 @@ export async function getProducts() {
       name,
       description,
       price,
-      "image": image.asset->url,
+      "image": image[].asset->url,
       category,
       rating,
       stock,

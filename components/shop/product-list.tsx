@@ -80,6 +80,14 @@ export function ProductList({ category, priceRange, sortBy }: ProductListProps) 
     );
   }
 
+  if (!data || !data.pages.some((page) => page.items.length > 0)) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center">No products found</div>
+      </div>
+    );
+  }
+  
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
