@@ -28,7 +28,7 @@ export default {
             type: 'string',
             options: {
                 list: [
-                    { title: 'Admin', value: 'admin' },
+                    { title: 'Overlord', value: 'admin' },
                     { title: 'Editor', value: 'editor' },
                     { title: 'Writer', value: 'writer' },
                 ],
