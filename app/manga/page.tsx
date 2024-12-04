@@ -69,7 +69,7 @@ export default function MangaListPage() {
                         <motion.div key={manga.mal_id} variants={item}>
                             <Card className="overflow-hidden group">
                                 <div className="relative aspect-[2/3]">
-                                    <Link href={`/anime/${anime.mal_id}`}>
+                                    <Link  href={`/manga/${manga.mal_id}`}>
                                         <Image
                                             src={manga.images.jpg.large_image_url}
                                             alt={manga.title}
