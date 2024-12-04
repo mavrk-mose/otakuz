@@ -10,8 +10,15 @@ import { useCart } from '@/hooks/use-cart';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { client } from '@/lib/sanity';
+import { use } from 'react';
 
-export default function ProductPage({ params }: { params: { id: string } }) {
+interface Props {
+  params: Promise<{ id: string }>;
+}
+
+export default function ProductPage(props: Props) {
+  const params = use(props.params);
+  
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', params.id],
     queryFn: async () => {
