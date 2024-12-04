@@ -1,13 +1,13 @@
 "use client"
 
 import { useState } from 'react';
-import { ProductGrid } from '@/components/shop/product-grid';
 import { CategoryFilter } from '@/components/shop/category-filter';
 import { SortFilter } from '@/components/shop/sort-filter';
 import { CartDrawer } from '@/components/shop/cart-drawer';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
+import { ProductList } from '@/components/shop/product-list';
 
 export default function ShopPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -43,7 +43,7 @@ export default function ShopPage() {
         </aside>
 
         <main className="flex-1">
-          <ProductGrid
+          <ProductList
             category={selectedCategory}
             sortBy={sortBy}
           />
