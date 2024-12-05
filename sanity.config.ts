@@ -6,7 +6,7 @@ import { visionTool } from '@sanity/vision';
 export default defineConfig({
   name: 'otakuz',
   title: 'Otakuz CMS',
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   plugins: [structureTool(), visionTool()],
   schema: {
