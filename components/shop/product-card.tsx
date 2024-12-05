@@ -56,7 +56,7 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.description}
           </p>
           <div className="flex items-center justify-between">
-            <span className="text-lg font-bold">${product.price}</span>
+            <span className="text-lg font-bold">Tshs.{product.price}</span>
             <Button size="sm" onClick={() => addToCart(product)}>
               <ShoppingCart className="h-4 w-4 mr-2" />
               Add to Cart

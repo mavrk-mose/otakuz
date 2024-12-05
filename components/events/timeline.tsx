@@ -5,11 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import {Event} from "@/types/events";
 import Link from 'next/link';
 import { format, isFuture, isPast, isToday } from 'date-fns';
+import {urlFor} from "@/lib/sanity";
 
 interface TimelineProps {
-  events: any[];
+  events: Event[];
 }
 
 export function Timeline({ events }: TimelineProps) {
@@ -35,7 +37,7 @@ export function Timeline({ events }: TimelineProps) {
 
         return (
           <motion.div
-            key={event.id}
+            key={event._id}
             initial={{ opacity: 0, x: isLeft ? -50 : 50 }}
             animate={{ opacity: 1, x: 0 }}
             className={`relative grid grid-cols-[1fr_auto_1fr] gap-4 mb-8 ${
@@ -44,10 +46,10 @@ export function Timeline({ events }: TimelineProps) {
           >
             <div className={isLeft ? 'pr-4' : 'col-start-3 pl-4'}>
               <Card className="overflow-hidden">
-                <Link href={`/events/${event.id}`}>
+                <Link href={`/events/${event._id}`}>
                   <div className="relative h-48">
                     <Image
-                      src={event.thumbnailUrl}
+                      src={urlFor(event.thumbnailUrl.asset._ref).url()}
                       alt={event.title}
                       fill
                       className="object-cover"

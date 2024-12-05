@@ -68,8 +68,6 @@ export function ProductList({ category, priceRange, sortBy }: ProductListProps) 
     );
   }
 
-  console.log("data from sanity: ", data)
-
   if (!data || !data.some((product) => data.length > 0)) {
     return (
       <div className="container mx-auto px-4 py-8">
