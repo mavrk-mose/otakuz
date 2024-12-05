@@ -1,15 +1,12 @@
-import { AnimeResponse, TopAnime, MangaResponse, NewsResponse } from '@/types/anime';
+import { AnimeResponse, MangaResponse, NewsResponse } from '@/types/anime';
 import {Event} from '@/types/events';
 import {db, storage} from '@/lib/firebase';
 import {
     collection,
     addDoc,
-    getDocs,
     getDoc,
     doc,
     updateDoc,
-    query,
-    orderBy,
     Timestamp,
 } from 'firebase/firestore';
 import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
@@ -135,48 +132,6 @@ export async function createEvent(eventData: Omit<Event, 'id'>, thumbnailFile: F
         return eventRef.id;
     } catch (error) {
         console.error('Error creating event:', error);
-        throw error;
-    }
-}
-
-
-export async function getEvents(): Promise<Event[]> {
-    try {
-        if (!db) {
-            throw new Error('Firestore instance is not initialized.');
-        }
-
-        const eventsRef = collection(db, 'events');
-        const q = query(eventsRef, orderBy('date', 'asc'));
-        const snapshot = await getDocs(q);
-
-        return snapshot.docs.map(doc => ({
-            id: doc.id,
-            ...doc.data()
-        })) as Event[];
-    } catch (error) {
-        console.error('Error fetching events:', error);
-        throw error;
-    }
-}
-
-export async function getEvent(id: string): Promise<Event | null> {
-    try {
-        if (!db) {
-            throw new Error('Firestore instance is not initialized.');
-        }
-
-        const eventRef = doc(db, 'events', id);
-        const eventDoc = await getDoc(eventRef);
-
-        if (!eventDoc.exists()) return null;
-
-        return {
-            id: eventDoc.id,
-            ...eventDoc.data()
-        } as Event;
-    } catch (error) {
-        console.error('Error fetching event:', error);
         throw error;
     }
 }

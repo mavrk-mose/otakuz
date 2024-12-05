@@ -96,7 +96,7 @@ export default function ProductPage(props: Props) {
           </div>
 
           <div className="space-y-4">
-            <p className="text-2xl font-bold">${product.price}</p>
+            <p className="text-2xl font-bold">Tshs.{product.price}</p>
             <p className="text-muted-foreground">{product.description}</p>
           </div>
 

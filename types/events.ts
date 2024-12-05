@@ -1,28 +1,34 @@
-export interface Event {
-  id?: string;
-  title: string;
+export type Event = {
+  _id: string;
   description: string;
-  date: string;
-  time: string;
+  date: string; // ISO 8601 date format
   location: {
-    name: string;
     address: string;
-    coordinates?: {
+    coordinates: {
+      _type: "geopoint";
       lat: number;
-      lng: number;
+    };
+    name: string;
+  };
+  category: string;
+  tags: string[];
+  attendees: {
+    name: string;
+    _key: string;
+    userId: string;
+    status: "going" | "maybe" | "not going"; // Limited status values
+  }[];
+  title: string;
+  createdBy: {
+    _id: string;
+    name: string;
+  };
+  time: string; // e.g., "04:00 PM"
+  thumbnailUrl: {
+    _type: "image";
+    asset: {
+      _ref: string;
+      _type: "reference";
     };
   };
-  thumbnailUrl: string;
-  createdBy: {
-    id: string;
-    name: string;
-  };
-  attendees: {
-    id: string;
-    name: string;
-    status: 'going' | 'maybe' | 'not_going';
-  }[];
-  maxAttendees?: number;
-  tags: string[];
-  category: 'meetup' | 'convention' | 'screening' | 'cosplay' | 'other';
-}
+};
