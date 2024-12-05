@@ -11,6 +11,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { client } from '@/lib/sanity';
 import { use } from 'react';
+import {Product} from "@/types/shop";
 
 interface Props {
   params: Promise<{ id: string }>;
@@ -22,13 +23,13 @@ export default function ProductPage(props: Props) {
   const { data: product, isLoading } = useQuery({
     queryKey: ['product', params.id],
     queryFn: async () => {
-      const product = await client.fetch(`
+      const product: Product = await client.fetch(`
         *[_type == "product" && _id == $id][0] {
           _id,
           name,
           description,
           price,
-          "image": image.asset->url,
+          "image": image[].asset->url,
           category,
           rating,
           stock,
@@ -69,7 +70,7 @@ export default function ProductPage(props: Props) {
           <Card className="overflow-hidden">
             <div className="relative aspect-square">
               <Image
-                src={product.image}
+                src={product?.image[0] || ""}
                 alt={product.name}
                 fill
                 className="object-cover"

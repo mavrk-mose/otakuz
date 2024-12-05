@@ -1,10 +1,9 @@
 "use client"
 
-import { useInfiniteQuery } from '@tanstack/react-query';
+import {useQuery} from '@tanstack/react-query';
 import { ProductCard } from './product-card';
-import { useInView } from 'react-intersection-observer';
-import { useEffect } from 'react';
 import { getProducts } from '@/lib/sanity';
+import {Product} from "@/types/shop";
 
 interface ProductListProps {
   category?: string;
@@ -13,58 +12,47 @@ interface ProductListProps {
 }
 
 export function ProductList({ category, priceRange, sortBy }: ProductListProps) {
-  const { ref, inView } = useInView();
+    const { data, isLoading } = useQuery({
+        queryKey: ['products', category, priceRange, sortBy],
+        queryFn: async () => {
+            // Fetch all products
+            let filteredProducts: Product[] = await getProducts();
 
-  const { data, fetchNextPage, hasNextPage, isLoading } = useInfiniteQuery({
-    queryKey: ['products', category, priceRange, sortBy],
-    queryFn: async ({ pageParam = 0 }) => {
-      const products = await getProducts();
-      // Filter and sort products based on criteria
-      let filteredProducts = products;
-      
-      if (category && category !== 'all') {
-        filteredProducts = filteredProducts.filter((p: { category: string; }) => p.category === category);
-      }
-      
-      if (priceRange) {
-        filteredProducts = filteredProducts.filter(
-          (          p: { price: number; }) => p.price >= priceRange[0] && p.price <= priceRange[1]
-        );
-      }
-      
-      if (sortBy) {
-        filteredProducts.sort((a: { price: number; rating: number; }, b: { price: number; rating: number; }) => {
-          switch (sortBy) {
-            case 'price-low':
-              return a.price - b.price;
-            case 'price-high':
-              return b.price - a.price;
-            case 'rating':
-              return b.rating - a.rating;
-            default:
-              return 0;
-          }
-        });
-      }
-      
-      const start = pageParam * 12;
-      const end = start + 12;
-      return {
-        items: filteredProducts.slice(start, end),
-        nextPage: end < filteredProducts.length ? pageParam + 1 : undefined,
-      };
-    },
-    getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 0
-  });
+            // Filter products based on category
+            if (category && category !== 'all') {
+                filteredProducts = filteredProducts.filter((p) => p.category === category);
+            }
 
-  useEffect(() => {
-    if (inView && hasNextPage) {
-      fetchNextPage();
-    }
-  }, [inView, hasNextPage, fetchNextPage]);
+            // Filter products based on price range
+            if (priceRange) {
+                filteredProducts = filteredProducts.filter(
+                    (p: { price: number }) => p.price >= priceRange[0] && p.price <= priceRange[1]
+                );
+            }
 
-  if (isLoading) {
+            // Sort products based on criteria
+            if (sortBy) {
+                filteredProducts.sort((a, b) => {
+                    switch (sortBy) {
+                        case 'price-low':
+                            return a.price - b.price;
+                        case 'price-high':
+                            return b.price - a.price;
+                        case 'rating':
+                            return (b.rating ?? 0) - (a.rating ?? 0);
+                        default:
+                            return 0;
+                    }
+                });
+            }
+
+            // Return all filtered and sorted products
+            return filteredProducts;
+        },
+        staleTime: 60000, // Cache data for 60 seconds
+    });
+
+    if (isLoading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
@@ -80,29 +68,22 @@ export function ProductList({ category, priceRange, sortBy }: ProductListProps) 
     );
   }
 
-  console.log("data dfsdf: ", data)
+  console.log("data from sanity: ", data)
 
-  if (!data || !data.pages.some((page) => page.items.length > 0)) {
+  if (!data || !data.some((product) => data.length > 0)) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">No products found</div>
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-8">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.pages.map((page) =>
-          page.items.map((product: any) => (
-            <ProductCard key={product.id} product={product} />
-          ))
-        )}
-      </div>
-
-      <div ref={ref} className="flex justify-center">
-        {hasNextPage && (
-          <div className="w-8 h-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+        {data?.map((product) =>(
+            <ProductCard key={product._id} product={product} />
+          )
         )}
       </div>
     </div>

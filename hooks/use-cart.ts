@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from '@/types/shop';
+import {Product} from "@/types/shop";
 
 interface CartStore {
   items: Product[];
@@ -20,7 +20,7 @@ export const useCart = create<CartStore>()(
       totalItems: 0,
       addToCart: (product) =>
         set((state) => {
-          const existingItem = state.items.find((item) => item.id === product.id);
+          const existingItem = state.items.find((item) => item._id === product._id);
           if (existingItem) {
             return state;
           }
@@ -31,13 +31,13 @@ export const useCart = create<CartStore>()(
         }),
       removeFromCart: (productId) =>
         set((state) => ({
-          items: state.items.filter((item) => item.id !== productId),
+          items: state.items.filter((item) => item._id !== productId),
           totalItems: state.totalItems - 1,
         })),
       updateQuantity: (productId, quantity) =>
         set((state) => ({
           items: state.items.map((item) =>
-            item.id === productId ? { ...item, quantity } : item
+            item._id === productId ? { ...item, quantity } : item
           ),
         })),
       clearCart: () => set({ items: [], totalItems: 0 }),

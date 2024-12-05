@@ -22,11 +22,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     address: ''
   });
 
-  const total = items.reduce((sum, item) => sum + (item.price * (item.quantity || 1)), 0);
+  const total = items.reduce((sum, item) => sum + (item.price * (item.stock || 1)), 0);
 
   const handleCheckout = async () => {
     const message = `New Order:\n\n${items.map(item => 
-      `${item.name} x${item.quantity || 1} - $${(item.price * (item.quantity || 1)).toFixed(2)}`
+      `${item.name} x${item.stock || 1} - $${(item.price * (item.stock || 1)).toFixed(2)}`
     ).join('\n')}\n\nTotal: $${total.toFixed(2)}\n\nCustomer Details:\nName: ${customerInfo.name}\nPhone: ${customerInfo.phone}\nEmail: ${customerInfo.email}\nAddress: ${customerInfo.address}`;
 
     //TODO get the number from environment variables
@@ -51,10 +51,10 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             ) : (
               <div className="space-y-4 py-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex gap-4">
+                  <div key={item._id} className="flex gap-4">
                     <div className="relative w-20 h-20">
                       <Image
-                        src={item.image}
+                        src={item?.image[0] || ""}
                         alt={item.name}
                         fill
                         className="object-cover rounded"
@@ -69,16 +69,16 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => updateQuantity(item.id, (item.quantity || 1) - 1)}
-                          disabled={(item.quantity || 1) <= 1}
+                          onClick={() => updateQuantity(item._id, (item.stock || 1) - 1)}
+                          disabled={(item.stock || 1) <= 1}
                         >
                           <Minus className="h-4 w-4" />
                         </Button>
-                        <span>{item.quantity || 1}</span>
+                        <span>{item.stock || 1}</span>
                         <Button
                           variant="outline"
                           size="icon"
-                          onClick={() => updateQuantity(item.id, (item.quantity || 1) + 1)}
+                          onClick={() => updateQuantity(item._id, (item.stock || 1) + 1)}
                         >
                           <Plus className="h-4 w-4" />
                         </Button>
@@ -86,7 +86,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           variant="ghost"
                           size="icon"
                           className="ml-auto text-destructive"
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => removeFromCart(item._id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

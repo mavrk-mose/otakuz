@@ -67,10 +67,10 @@ export default function AnimeListPage() {
                 {isLoading && (
                     Array(25).fill(null).map((_, index) => (
                         <Card key={index} className="animate-pulse">
-                            <div className="aspect-[2/3] bg-muted" />
+                            <div className="aspect-[2/3] bg-muted"/>
                             <div className="p-4 space-y-2">
-                                <div className="h-4 bg-muted rounded w-3/4" />
-                                <div className="h-4 bg-muted rounded w-1/2" />
+                                <div className="h-4 bg-muted rounded w-3/4"/>
+                                <div className="h-4 bg-muted rounded w-1/2"/>
                             </div>
                         </Card>
                     ))
@@ -96,7 +96,7 @@ export default function AnimeListPage() {
                                         <div className="absolute bottom-4 left-4 right-4">
                                             <Button className="w-full gap-2" asChild>
                                                 <Link href={`/watch/${anime.mal_id}`}>
-                                                    <Play className="h-4 w-4" />
+                                                    <Play className="h-4 w-4"/>
                                                     Watch Now
                                                 </Link>
                                             </Button>
@@ -105,7 +105,7 @@ export default function AnimeListPage() {
                                 </div>
                                 <div className="p-4">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                        <Star className="h-4 w-4 text-yellow-400 fill-current"/>
                                         <span className="text-sm font-medium">{anime.score}</span>
                                         <Badge variant="secondary" className="ml-auto">
                                             {anime.episodes} EP
@@ -125,16 +125,16 @@ export default function AnimeListPage() {
                         </motion.div>
                     ))
                 )}
-                
+                <div ref={ref}/>
                 {hasNextPage &&
                     Array(25)
                         .fill(null)
                         .map((_, index) => (
                             <Card key={`next-page-loading-${index}`} className="animate-pulse">
-                                <div className="aspect-[2/3] bg-muted" />
+                                <div className="aspect-[2/3] bg-muted"/>
                                 <div className="p-4 space-y-2">
-                                    <div className="h-4 bg-muted rounded w-3/4" />
-                                    <div className="h-4 bg-muted rounded w-1/2" />
+                                    <div className="h-4 bg-muted rounded w-3/4"/>
+                                    <div className="h-4 bg-muted rounded w-1/2"/>
                                 </div>
                             </Card>
                         ))}

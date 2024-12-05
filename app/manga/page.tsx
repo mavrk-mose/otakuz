@@ -111,7 +111,6 @@ export default function MangaListPage() {
                         </motion.div>
                     ))
                 )}
-
                 <div ref={ref} />
                 {hasNextPage &&
                     Array(25)
