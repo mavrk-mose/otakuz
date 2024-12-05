@@ -39,7 +39,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             alt={anime.title}
                             width={300}
                             height={450}
-                            className="w-full h-auto object-cover"
+                            className="w-full object-cover"
                         />
                     </Card>
                     <div className="grid grid-cols-2 gap-2">
@@ -85,7 +85,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     </Card>
                 </div>
 
-                <div className="space-y-6 px-4 md:px-8 mx-auto max-w-5xl">
+                <div className="grid grid-cols-1 space-y-6">
                     <div>
                         <h1 className="text-4xl font-bold mb-2">{anime.title}</h1>
                         <h2 className="text-xl text-muted-foreground mb-4">{anime.title_japanese}</h2>
