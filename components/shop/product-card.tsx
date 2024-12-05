@@ -1,6 +1,5 @@
 "use client"
 
-import { Product } from '@/types/shop';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,6 +8,7 @@ import { useCart } from '@/hooks/use-cart';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
+import {Product} from "@/types/shop";
 
 interface ProductCardProps {
   product: Product;
@@ -23,10 +23,10 @@ export function ProductCard({ product }: ProductCardProps) {
       transition={{ duration: 0.2 }}
     >
       <Card className="overflow-hidden">
-        <Link href={`/shop/products/${product.id}`}>
+        <Link href={`/shop/products/${product._id}`}>
           <div className="relative aspect-square">
             <Image
-              src={product.image}
+              src={product?.image[0] || ""}
               alt={product.name}
               fill
               className="object-cover transition-transform group-hover:scale-105"
@@ -47,7 +47,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Badge>
           </div>
           <Link
-            href={`/shop/products/${product.id}`}
+            href={`/shop/products/${product._id}`}
             className="font-semibold hover:text-primary transition-colors line-clamp-1"
           >
             {product.name}
