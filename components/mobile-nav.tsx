@@ -21,8 +21,7 @@ export function MobileNav({ isOpen, onClose }: MobileNavProps) {
     { href: '/shop', label: 'Shop' },
     { href: '/events', label: 'Events' },
     { href: '/watch', label: 'Watch'},
-    { href: '/calendar', label: 'Calendar' },
-    { href: '/events', label: 'Events' },
+    { href: '/calendar', label: 'Calendar' }
   ];
 
   return (

@@ -31,7 +31,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <div className="grid md:grid-cols-[300px_1fr] gap-8">
+            <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
                 <div className="space-y-4">
                     <Card className="overflow-hidden">
                         <Image
@@ -85,7 +85,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     </Card>
                 </div>
 
-                <div className="container space-y-6">
+                <div className="grid grid-cols-1 space-y-6">
                     <div>
                         <h1 className="text-4xl font-bold mb-2">{anime.title}</h1>
                         <h2 className="text-xl text-muted-foreground mb-4">{anime.title_japanese}</h2>
@@ -104,7 +104,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             <TabsTrigger value="characters">Characters</TabsTrigger>
                             <TabsTrigger value="episodes">Episodes</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="overview" className="space-y-4">
+                        <TabsContent value="overview" className="space-y-4 transition-opacity duration-300">
                             <Card className="p-6">
                                 <p className="leading-relaxed">{anime.synopsis}</p>
                             </Card>
@@ -172,7 +172,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                     </Tabs>
-                    <div className="mt-8 overflow-x-auto">
+                    <div className="mt-8 overflow-x-auto px-4">
                         <AnimeRecommendations animeId={id} />
                     </div>
                 </div>
