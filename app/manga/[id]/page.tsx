@@ -9,6 +9,7 @@ import {Star, BookOpen, Users} from 'lucide-react';
 import Image from 'next/image';
 import {motion} from 'framer-motion';
 import {use} from "react";
+import { MangaRecommendations } from "@/components/manga-recommendations";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -39,7 +40,7 @@ export default function MangaDetailPage(props: Props) {
             animate={{opacity: 1}}
             className="container mx-auto px-4 py-8"
         >
-            <div className="grid md:grid-cols-[300px_1fr] gap-8">
+            <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
                 <div className="space-y-4">
                     <Card className="overflow-hidden">
                         <Image
@@ -90,7 +91,7 @@ export default function MangaDetailPage(props: Props) {
                     </Card>
                 </div>
 
-                <div className="space-y-6">
+                <div className="grid grid-col-1 space-y-6">
                     <div>
                         <h1 className="text-4xl font-bold mb-2">{manga.title}</h1>
                         <h2 className="text-xl text-muted-foreground mb-4">
@@ -134,6 +135,10 @@ export default function MangaDetailPage(props: Props) {
                             </div>
                         </div>
                     </Card>
+
+                    <div className="mt-8 overflow-x-auto px-4">
+                        <MangaRecommendations mangaId={params.id} />
+                    </div>
                 </div>
             </div>
         </motion.div>

@@ -10,7 +10,7 @@ import { Heart, PlayCircle, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
-import { AnimeRecommendations } from './recommendations';
+import { AnimeRecommendations } from './anime-recommendations';
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
