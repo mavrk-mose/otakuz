@@ -1,11 +1,12 @@
-import { createClient } from 'next-sanity';
+import { createClient, defineQuery } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
-  apiVersion: '2024-03-19',
-  useCdn: true,
+  apiVersion: '2024-12-05',
+  useCdn: true, // set to `false` to bypass the edge cache
+  // token: process.env.SANITY_SECRET_TOKEN // Needed for certain operations like updating content or accessing previewDrafts perspective
 });
 
 const builder = imageUrlBuilder(client);
@@ -15,7 +16,7 @@ export function urlFor(source: any) {
 }
 
 export async function getEvents() {
-  return client.fetch(`
+  return client.fetch(defineQuery(`
     *[_type == "event"] | order(date desc) {
       _id,
       title,
@@ -32,11 +33,11 @@ export async function getEvents() {
       },
       attendees[]
     }
-  `);
+  `));
 }
 
 export async function getProducts() {
-  return client.fetch(`
+  return client.fetch(defineQuery(`
     *[_type == "product"] | order(_createdAt desc) {
       _id,
       name,
@@ -48,11 +49,11 @@ export async function getProducts() {
       stock,
       variants[]
     }
-  `);
+  `));
 }
 
 export async function getArticles() {
-  return client.fetch(`
+  return client.fetch(defineQuery(`
     *[_type == "article"] | order(_createdAt desc) {
       _id,
       title,
@@ -74,5 +75,5 @@ export async function getArticles() {
         }
       }
     }
-  `);
+  `));
 }

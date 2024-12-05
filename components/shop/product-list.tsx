@@ -55,7 +55,7 @@ export function ProductList({ category, priceRange, sortBy }: ProductListProps) 
       };
     },
     getNextPageParam: (lastPage) => lastPage.nextPage,
-    initialPageParam: 1
+    initialPageParam: 0
   });
 
   useEffect(() => {
@@ -79,6 +79,8 @@ export function ProductList({ category, priceRange, sortBy }: ProductListProps) 
       </div>
     );
   }
+
+  console.log("data dfsdf: ", data)
 
   if (!data || !data.pages.some((page) => page.items.length > 0)) {
     return (
