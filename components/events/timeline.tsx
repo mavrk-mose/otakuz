@@ -54,7 +54,7 @@ export function Timeline({ events }: TimelineProps) {
                     />
                     <Badge 
                       className={`absolute top-2 right-2 ${
-                        status === 'past' ? 'bg-muted' :
+                        status === 'past' ? 'bg-primary' :
                         status === 'today' ? 'bg-green-500' :
                         'bg-primary'
                       }`}

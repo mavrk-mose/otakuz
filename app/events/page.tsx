@@ -55,6 +55,30 @@ export default function EventsPage() {
             }
           ]
         },
+        {
+          id: '3',
+          title: 'Anime Cosplay Event',
+          date: '2024-11-02',
+          time: '04:00 PM',
+          location: {
+            name: 'Jumpsuit Cafe',
+            coordinates: { lat: 35.6762, lng: 135.6503 }
+          },
+          thumbnailUrl: 'https://images.pexels.com/photos/1308648/pexels-photo-1308648.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
+          attendees: [],
+          photos: [
+            {
+              id: '1',
+              url: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=3474&auto=format&fit=crop',
+              caption: 'Main stage'
+            },
+            {
+              id: '2',
+              url: 'https://images.unsplash.com/photo-1611457194403-d3aca4cf9d11?q=80&w=3386&auto=format&fit=crop',
+              caption: 'Ghibli Food stand'
+            }
+          ]
+        },
         // Add more mock events...
       ];
     }
