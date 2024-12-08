@@ -3,9 +3,9 @@ import Todays from "@/components/news/Todays";
 
 const TheVergeLayout = () => {
   return (
-      <div className="text-white min-h-screen p-6">
+      <div className="text-white max-w-full min-h-screen p-6">
         {/* Main Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {/* Left Section */}
           <div className="space-y-6">
             {/* Featured Section */}
@@ -95,7 +95,7 @@ const TheVergeLayout = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 pt-10">
           {/* Left Section */}
           <div className="space-y-6">
             {/* Featured Section */}
@@ -185,7 +185,7 @@ const TheVergeLayout = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 pt-10">
           {/* Left Section */}
           <div className="space-y-6">
             {/* Featured Section */}
@@ -275,7 +275,7 @@ const TheVergeLayout = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 pt-10">
           {/* Left Section */}
           <div className="space-y-6">
             {/* Featured Section */}
