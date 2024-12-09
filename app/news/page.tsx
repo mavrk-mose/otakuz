@@ -26,7 +26,7 @@ const TheVergeLayout = () => {
             </div>
 
             {/* Today's Storystream */}
-            <Todays/>
+            <Todays />
 
             {/* Additional Story */}
             <div>
@@ -48,7 +48,7 @@ const TheVergeLayout = () => {
 
           {/* Right Section */}
           <div>
-            <div className="bg-indigo-700 p-6 rounded-lg shadow-md sticky top-6">
+            <div className="bg-indigo-700 p-6 rounded-lg shadow-md sticky top-20">
               <h2 className="text-2xl font-bold mb-4">Anime</h2>
               <ul className="space-y-4">
                 {[
@@ -116,7 +116,7 @@ const TheVergeLayout = () => {
             </div>
 
             {/* Today's Storystream */}
-            <Todays/>
+            <Todays />
 
             {/* Additional Story */}
             <div>
@@ -138,7 +138,7 @@ const TheVergeLayout = () => {
 
           {/* Right Section */}
           <div>
-            <div className="bg-red-600 p-6 rounded-lg shadow-md sticky top-6">
+            <div className="bg-red-600 p-6 rounded-lg shadow-md sticky top-20">
               <h2 className="text-2xl text-black font-bold mb-4">Manga</h2>
               <ul className="space-y-4">
                 {[
@@ -206,7 +206,7 @@ const TheVergeLayout = () => {
             </div>
 
             {/* Today's Storystream */}
-            <Todays/>
+            <Todays />
 
             {/* Additional Story */}
             <div>
@@ -228,7 +228,7 @@ const TheVergeLayout = () => {
 
           {/* Right Section */}
           <div>
-            <div className="bg-[#c3dd1e] p-6 rounded-lg shadow-md sticky top-6">
+            <div className="bg-[#c3dd1e] p-6 rounded-lg shadow-md sticky top-20">
               <h2 className="text-2xl text-black font-bold mb-4">Movies & TV Shows</h2>
               <ul className="space-y-4">
                 {[
@@ -296,7 +296,7 @@ const TheVergeLayout = () => {
             </div>
 
             {/* Today's Storystream */}
-            <Todays/>
+            <Todays />
 
             {/* Additional Story */}
             <div>
@@ -318,7 +318,7 @@ const TheVergeLayout = () => {
 
           {/* Right Section */}
           <div>
-            <div className="bg-purple-800 p-6 rounded-lg shadow-md sticky top-6">
+            <div className="bg-purple-800 p-6 rounded-lg shadow-md sticky top-20">
               <h2 className="text-2xl font-bold mb-4">Games</h2>
               <ul className="space-y-4">
                 {[
