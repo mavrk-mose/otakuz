@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Icons } from '@/components/icons';
 import { motion } from 'framer-motion';
-import {auth, storage} from '@/lib/firebase';
+import {auth} from '@/lib/firebase';
 import {
   signInWithPopup,
   GoogleAuthProvider,
@@ -95,7 +95,7 @@ export function AuthForm() {
       className="space-y-6"
     >
       <div className="space-y-2 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Sign In</h1>
+        <h1 className="text-2xl text-black font-semibold tracking-tight">Sign In</h1>
         <p className="text-sm text-muted-foreground">
           Choose your preferred sign in method
         </p>
@@ -130,33 +130,33 @@ export function AuthForm() {
           Sign in with Facebook
         </Button>
 
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-background px-2 text-muted-foreground">
-              Or continue with phone
-            </span>
-          </div>
-        </div>
+        {/*<div className="relative">*/}
+        {/*  <div className="absolute inset-0 flex items-center">*/}
+        {/*    <span className="w-full border-t" />*/}
+        {/*  </div>*/}
+        {/*  <div className="relative flex justify-center text-xs uppercase">*/}
+        {/*    <span className="bg-background px-2 text-muted-foreground">*/}
+        {/*      Or continue with phone*/}
+        {/*    </span>*/}
+        {/*  </div>*/}
+        {/*</div>*/}
 
-        <div className="space-y-2">
-          <Label htmlFor="phone">Phone Number</Label>
-          <Input
-            id="phone"
-            placeholder="+1234567890"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-          />
-          <Button
-            className="w-full"
-            onClick={sendVerificationCode}
-            disabled={isLoading || !phoneNumber}
-          >
-            Send Code
-          </Button>
-        </div>
+        {/*<div className="space-y-2">*/}
+        {/*  <Label htmlFor="phone">Phone Number</Label>*/}
+        {/*  <Input*/}
+        {/*    id="phone"*/}
+        {/*    placeholder="+1234567890"*/}
+        {/*    value={phoneNumber}*/}
+        {/*    onChange={(e) => setPhoneNumber(e.target.value)}*/}
+        {/*  />*/}
+        {/*  <Button*/}
+        {/*    className="w-full"*/}
+        {/*    onClick={sendVerificationCode}*/}
+        {/*    disabled={isLoading || !phoneNumber}*/}
+        {/*  >*/}
+        {/*    Send Code*/}
+        {/*  </Button>*/}
+        {/*</div>*/}
 
         {verificationId && (
           <div className="space-y-2">
