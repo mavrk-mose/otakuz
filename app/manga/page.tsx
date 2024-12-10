@@ -49,6 +49,20 @@ export default function MangaListPage() {
         show: { opacity: 1, y: 0 }
     };
 
+    if (isLoading) {
+        Array(25)
+            .fill(null)
+            .map((_, index) => (
+                <Card key={`next-page-loading-${index}`} className="animate-pulse">
+                    <div className="aspect-[2/3] bg-muted" />
+                    <div className="p-4 space-y-2">
+                        <div className="h-4 bg-muted rounded w-3/4" />
+                        <div className="h-4 bg-muted rounded w-1/2" />
+                    </div>
+                </Card>
+            ))
+    }
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-8">
@@ -69,7 +83,7 @@ export default function MangaListPage() {
                         <motion.div key={manga.mal_id} variants={item}>
                             <Card className="overflow-hidden group">
                                 <div className="relative aspect-[2/3]">
-                                    <Link  href={`/manga/${manga.mal_id}`}>
+                                    <Link href={`/manga/${manga.mal_id}`}>
                                         <Image
                                             src={manga.images.jpg.large_image_url}
                                             alt={manga.title}
