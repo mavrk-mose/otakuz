@@ -12,11 +12,7 @@ export const metadata: Metadata = {
   description: 'Discover, track, and watch your favorite anime series',
 };
 
-export default function RootLayout({
-                                     children,
-                                   }: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children,}: { children: React.ReactNode;}) {  
   return (
       <html lang="en" suppressHydrationWarning>
       <body className={inter.className} suppressHydrationWarning>
