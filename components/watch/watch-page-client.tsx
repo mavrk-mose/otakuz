@@ -7,9 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageCircle, Users, Heart } from 'lucide-react';
 import { useState } from 'react';
 import { VideoPlayer } from '@/components/video-player';
-import { ChatRoom } from '@/components/chat-room';
 import { CommentSection } from '@/components/comment-section';
-import { WatchPartySection } from '@/components/watch-party-section';
+import { WatchPartySection } from '@/components/watch/watch-party-section';
 import { motion } from 'framer-motion';
 
 export default function WatchPageClient({ id }: { id: string }) {

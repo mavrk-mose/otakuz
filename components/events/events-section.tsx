@@ -8,29 +8,20 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { format } from 'date-fns';
+import {useQuery} from "@tanstack/react-query";
+import {Event} from "@/types/events";
+import {getEvents, urlFor} from "@/lib/sanity";
 
 export function EventsSection() {
-    // Mock events data - in production, this would come from your API
-    const events = [
-        {
-            id: 1,
-            title: "Anime Convention 2024",
-            date: new Date(2024, 3, 15),
-            location: "Century Cinemax",
-            attendees: 1200,
-            image: "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2070&auto=format&fit=crop",
-            category: "convention"
+    const {data: events, isLoading} = useQuery({
+        queryKey: ['events'],
+        queryFn: async () => {
+            const events: Event[] = await getEvents();
+            //add filters if applicable sort the events, filter by category etc
+            return events;
         },
-        {
-            id: 2,
-            title: "Cosplay Meetup",
-            date: new Date(2024, 3, 20),
-            location: "Piccola Cafe",
-            attendees: 500,
-            image: "https://images.unsplash.com/photo-1613376023733-0a73315d9b06?q=80&w=2070&auto=format&fit=crop",
-            category: "meetup"
-        }
-    ];
+        staleTime: 60000 //Cache data for 60 seconds
+    });
 
     const container = {
         hidden: { opacity: 0 },
@@ -65,13 +56,13 @@ export function EventsSection() {
                 animate="show"
                 className="grid md:grid-cols-2 gap-6"
             >
-                {events.map((event) => (
-                    <motion.div key={event.id} variants={item}>
+                {events?.map((event) => (
+                    <motion.div key={event._id} variants={item}>
                         <Card className="overflow-hidden group">
-                            <Link href={`/events/${event.id}`}>
+                            <Link href={`/events/${event._id}`}>
                                 <div className="relative h-48">
                                     <Image
-                                        src={event.image}
+                                        src={urlFor(event.thumbnailUrl.asset._ref).url()}
                                         alt={event.title}
                                         fill
                                         className="object-cover"
@@ -89,11 +80,11 @@ export function EventsSection() {
                                         </div>
                                         <div className="flex items-center">
                                             <MapPin className="h-4 w-4 mr-2" />
-                                            {event.location}
+                                            {event.location.name}
                                         </div>
                                         <div className="flex items-center">
                                             <Users className="h-4 w-4 mr-2" />
-                                            {event.attendees} attending
+                                            {event.attendees.length} attending
                                         </div>
                                     </div>
                                 </div>

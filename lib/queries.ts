@@ -2,7 +2,7 @@
 
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import {useAnimeStore} from './store';
-import {AnimeData, AnimeResponse, AnimeSearchResults, MangaResponse} from "@/types/anime";
+import {AnimeData, AnimeResponse, AnimeSearchResults, Manga, MangaResponse} from "@/types/anime";
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 
@@ -87,6 +87,18 @@ export function useAnimePictures(id: string) {
     queryKey: ['animePictures', id],
     queryFn: async () => {
       const response = await fetch(`${API_BASE_URL}/anime/${id}/pictures`);
+      if (!response.ok) throw new Error('Failed to fetch anime details');
+      const data = await response.json();
+      return data.data;
+    },
+  });
+}
+
+export function useMangaPictures(id: string) {
+  return useQuery<Manga["images"][]>({
+    queryKey: ['mangaPictures', id],
+    queryFn: async () => {
+      const response = await fetch(`${API_BASE_URL}/manga/${id}/pictures`);
       if (!response.ok) throw new Error('Failed to fetch anime details');
       const data = await response.json();
       return data.data;

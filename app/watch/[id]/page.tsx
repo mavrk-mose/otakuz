@@ -1,5 +1,5 @@
 import {Suspense, use} from 'react';
-import WatchPageClient from '@/components/watch-page-client';
+import WatchPageClient from '@/components/watch/watch-page-client';
 
 interface Props {
     params: Promise<{ id: string }>;

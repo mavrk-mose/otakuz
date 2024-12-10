@@ -98,5 +98,41 @@ export default {
           },
         ],
       },
+      {
+        name: 'tournaments',
+        title: 'Tournaments',
+        type: 'array',
+        of: [
+          {
+            type: 'object',
+            fields: [
+              { name: 'title', type: 'string' },
+              { name: 'prize',  type: 'string' },
+              { name: 'participants', type: 'string' },
+              { name: 'time', type: 'date' },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'activities',
+        title: 'Activities',
+        type: 'array',
+        of: [
+          {
+            type: 'object',
+            fields: [
+              { name: 'title', type: 'string' },
+              { name: 'description', type: 'string' },
+              { name: 'time', type: 'string', validation: (Rule: any) => Rule.required() },
+            ]
+          }
+        ]
+      },
+      {
+        name: 'ticket',
+        title: 'Ticket',
+        type: 'string',
+      }
     ],
   };

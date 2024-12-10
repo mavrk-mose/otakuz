@@ -32,7 +32,7 @@ interface Message {
   username?: string;
 }
 
-export function ChatRoom({ roomId, title }: ChatRoomProps) {
+export default function ChatRoom({ roomId, title }: ChatRoomProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const { user } = useAuth();
@@ -40,6 +40,10 @@ export function ChatRoom({ roomId, title }: ChatRoomProps) {
 
   useEffect(() => {
     if (!roomId) return;
+
+    if (!db) {
+      throw new Error('Firestore instance is not initialized.');
+    }
 
     const q = query(
       collection(db, 'chatrooms', roomId, 'messages'),
@@ -70,6 +74,10 @@ export function ChatRoom({ roomId, title }: ChatRoomProps) {
 
   const sendMessage = async () => {
     if (!user || !newMessage.trim()) return;
+
+    if (!db) {
+      throw new Error('Firestore instance is not initialized.');
+    }
 
     try {
       await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {

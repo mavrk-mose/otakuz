@@ -11,7 +11,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import { AnimeRecommendations } from './anime-recommendations';
-import { MasonryLayout } from './ui/masonry-layout';
+import { AnimeGallery } from './anime-gallery';
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
@@ -175,7 +175,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         </TabsContent>
                         <TabsContent value="gallery">
                             <Card className="p-6">
-                                <MasonryLayout {...{id}} />
+                                <AnimeGallery {...{id}} />
                             </Card>
                         </TabsContent>
                     </Tabs>
