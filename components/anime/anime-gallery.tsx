@@ -2,9 +2,9 @@
 
 import { useAnimePictures } from "@/lib/queries";
 import Image from "next/image";
-import { Card } from "./card";
+import { Card } from "@/components/ui/card";
 
-export function MasonryLayout({ id }: {id: string}) {
+export function AnimeGallery({ id }: {id: string}) {
     const { data: pictures, isLoading } = useAnimePictures(id);
 
     if(isLoading) {
@@ -25,7 +25,7 @@ export function MasonryLayout({ id }: {id: string}) {
     return (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {pictures?.map((picture, idx) => (
-                <div className="grid gap-4" >
+                <div key={idx} className="grid gap-4" >
                         <div key={idx}>
                             <Image
                                 className="h-auto max-w-full rounded-lg"

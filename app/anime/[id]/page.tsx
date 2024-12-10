@@ -1,5 +1,5 @@
 import {Suspense} from 'react';
-import AnimeDetailClient from '@/components/anime-detail-client';
+import AnimeDetailClient from '@/components/anime/anime-detail-client';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import {use} from "react";
 

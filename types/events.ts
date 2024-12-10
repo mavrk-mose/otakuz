@@ -31,4 +31,17 @@ export type Event = {
       _type: "reference";
     };
   };
+  tournaments: {
+    _key: string;
+    title: string;
+    prize: string;
+    participants: string;
+    time: string;
+  }[];
+  activities: {
+    title: string;
+    description: string;
+    time: string;
+  }[];
+  ticket: string;
 };

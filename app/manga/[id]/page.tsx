@@ -6,10 +6,12 @@ import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {Star, BookOpen, Users} from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Image from 'next/image';
 import {motion} from 'framer-motion';
 import {use} from "react";
-import { MangaRecommendations } from "@/components/manga-recommendations";
+import { MangaRecommendations } from "@/components/manga/manga-recommendations";
+import {MangaGallery} from "@/components/manga/manga-gallery";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -106,35 +108,48 @@ export default function MangaDetailPage(props: Props) {
                         </div>
                     </div>
 
-                    <Card className="p-6">
-                        <h3 className="text-lg font-semibold mb-4">Synopsis</h3>
-                        <p className="leading-relaxed">{manga.synopsis}</p>
-                    </Card>
+                    <Tabs defaultValue="overview">
+                        <TabsList>
+                            <TabsTrigger value="overview">Overview</TabsTrigger>
+                            <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                        </TabsList>
+                        <TabsContent value="overview">
+                            <Card className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">Synopsis</h3>
+                                <p className="leading-relaxed">{manga.synopsis}</p>
+                            </Card>
 
-                    <Card className="p-6">
-                        <h3 className="text-lg font-semibold mb-4">Information</h3>
-                        <div className="grid md:grid-cols-2 gap-4">
-                            <div>
-                                <h4 className="font-medium mb-2">Authors</h4>
-                                <div className="space-y-1">
-                                    {manga.authors.map((author: any) => (
-                                        <p key={author.mal_id} className="text-sm text-muted-foreground">
-                                            {author.name}
-                                        </p>
-                                    ))}
+                            <Card className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">Information</h3>
+                                <div className="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <h4 className="font-medium mb-2">Authors</h4>
+                                        <div className="space-y-1">
+                                            {manga.authors.map((author: any) => (
+                                                <p key={author.mal_id} className="text-sm text-muted-foreground">
+                                                    {author.name}
+                                                </p>
+                                            ))}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 className="font-medium mb-2">Statistics</h4>
+                                        <div className="space-y-1 text-sm text-muted-foreground">
+                                            <p>Rank: #{manga.rank}</p>
+                                            <p>Popularity: #{manga.popularity}</p>
+                                            <p>Members: {manga.members.toLocaleString()}</p>
+                                            <p>Favorites: {manga.favorites.toLocaleString()}</p>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div>
-                                <h4 className="font-medium mb-2">Statistics</h4>
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                    <p>Rank: #{manga.rank}</p>
-                                    <p>Popularity: #{manga.popularity}</p>
-                                    <p>Members: {manga.members.toLocaleString()}</p>
-                                    <p>Favorites: {manga.favorites.toLocaleString()}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
+                            </Card>
+                        </TabsContent>
+                        <TabsContent value="gallery">
+                            <MangaGallery id={params.id} />
+                        </TabsContent>
+                    </Tabs>
+
+
 
                     <div className="mt-8 overflow-x-auto px-4">
                         <MangaRecommendations mangaId={params.id} />
