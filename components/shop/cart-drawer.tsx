@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { useCart } from '@/hooks/use-cart';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
+import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 
 interface CartDrawerProps {
@@ -22,6 +23,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     address: ''
   });
 
+  const posthog = usePostHog();
+
   const total = items.reduce((sum, item) => sum + (item.price * (item.stock || 1)), 0);
 
   const handleCheckout = async () => {
@@ -33,6 +36,8 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     const whatsappUrl = `https://wa.me/255768159239?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, '_blank');
     onClose();
+
+    posthog.capture('checkout clicked')
   };
 
   return (
