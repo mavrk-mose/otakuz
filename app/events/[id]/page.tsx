@@ -204,14 +204,14 @@ export default function EventDetailPage(props: Props) {
                         <h3 className="font-semibold mb-4">Event Schedule</h3>
                         <ScrollArea className="h-[300px] pr-4">
                             <div className="space-y-4">
-                                {event?.activities?.map((_, index) => (
+                                {event?.activities?.map((activity, index) => (
                                     <div key={index} className="flex gap-4">
                                         <div className="w-20 text-sm text-muted-foreground">
-                                            {format(new Date(event?.date), 'h:mm a')}
+                                            {format(new Date(activity?.time), 'h:mm a')}
                                         </div>
                                         <div>
                                             <p className="font-medium">Activity {index + 1}</p>
-                                            <p className="text-sm text-muted-foreground">Description of the activity</p>
+                                            <p className="text-sm text-muted-foreground">{activity?.description}</p>
                                         </div>
                                     </div>
                                 ))}

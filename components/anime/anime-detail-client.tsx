@@ -12,6 +12,7 @@ import Link from 'next/link';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import { AnimeRecommendations } from './anime-recommendations';
 import { AnimeGallery } from './anime-gallery';
+import AnimeEpisodes from "@/components/anime/anime-episodes";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
@@ -170,11 +171,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         </TabsContent>
                         <TabsContent value="episodes">
                             <Card className="p-6">
-                                <ScrollArea className="pr-4">
-                                    <div className="space-y-4">
-                                        
-                                    </div>
-                                </ScrollArea>
+                                <AnimeEpisodes id={id}/>
                             </Card>
                         </TabsContent>
                         <TabsContent value="gallery">

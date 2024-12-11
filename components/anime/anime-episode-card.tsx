@@ -1,7 +1,10 @@
 "use client";
 
 import React from 'react';
-import { AnimeEpisode } from './types'; // Assuming you have this type defined elsewhere
+import {AnimeEpisode} from "@/types/anime";
+import Image from "next/image";
+import {Card} from "@/components/ui/card";
+import {format} from "date-fns";
 
 interface AnimeEpisodeCardProps {
   episode: AnimeEpisode;
@@ -9,18 +12,11 @@ interface AnimeEpisodeCardProps {
 
 const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
   return (
-    <div className="grid border border-gray-300 rounded-lg p-4 w-full max-w-sm">
-      {/* Left side: Image (Optional, add if you want an image thumbnail for the episode) */}
-      <div className="flex-shrink-0">
-        {/* Optional image, replace with actual image URL if available */}
-        <img src="https://via.placeholder.com/100" alt={episode.title} className="rounded-md" />
-      </div>
-
-      {/* Right side: Episode Info */}
+    <Card className="overflow-hidden">
       <div className="ml-4 flex-1">
         <h3 className="text-lg font-semibold text-gray-900">{episode.title}</h3>
         <p className="text-sm text-gray-600">{episode.title_romanji}</p>
-        <p className="text-xs text-gray-400">{episode.aired}</p>
+        <p className="text-xs text-gray-400">{format(episode.aired, 'MMMM d, yyyy')}</p>
         <div className="mt-2">
           <p className="text-sm">
             <strong>Score:</strong> {episode.score ?? 'N/A'}
@@ -43,7 +39,7 @@ const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
           </a>
         </div>
       </div>
-    </div>
+    </Card>
   );
 };
 

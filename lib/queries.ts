@@ -2,7 +2,7 @@
 
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
 import {useAnimeStore} from './store';
-import {AnimeData, AnimeResponse, AnimeSearchResults, Manga, MangaResponse} from "@/types/anime";
+import {AnimeData, AnimeEpisodeResponse, AnimeResponse, AnimeSearchResults, Manga, MangaResponse} from "@/types/anime";
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 
@@ -130,7 +130,7 @@ export function useAnimeEpisodes(id: string) {
   const {data, isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
     queryKey: ['animeEpisodes'],
     queryFn: async ({ pageParam = 1 }) => {
-        const response = await fetch(`${API_BASE_URL}/anime/{id}/episodes`);
+        const response = await fetch(`${API_BASE_URL}/anime/${id}/episodes`);
         if (!response.ok) throw new Error('Failed to fetch anime');
         return response.json();
     },

@@ -15,7 +15,6 @@ interface RecommendationsProps {
 }
 
 export function AnimeRecommendations({ animeId }: RecommendationsProps) {
-  //TODO: this should lazily loaded with useInfiniteQuery
   const { data: recommendations, isLoading } = useQuery({
     queryKey: ['animeRecommendations', animeId],
     queryFn: async () => {
