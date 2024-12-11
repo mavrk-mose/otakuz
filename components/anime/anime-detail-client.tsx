@@ -170,7 +170,11 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         </TabsContent>
                         <TabsContent value="episodes">
                             <Card className="p-6">
-                                <p className="text-muted-foreground">Episode list coming soon...</p>
+                                <ScrollArea className="pr-4">
+                                    <div className="space-y-4">
+                                        
+                                    </div>
+                                </ScrollArea>
                             </Card>
                         </TabsContent>
                         <TabsContent value="gallery">
