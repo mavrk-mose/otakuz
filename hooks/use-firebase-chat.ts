@@ -1,18 +1,11 @@
-import { useEffect, useCallback } from 'react'
-import { db } from '@/lib/firebase'
-import {
-    collection,
-    query,
-    orderBy,
-    limit,
-    onSnapshot,
-    addDoc,
-    serverTimestamp,
-} from 'firebase/firestore'
-import {Message, useMessagesStore} from "@/store/use-messages-store";
+import { useCallback, useEffect } from 'react'
+import { db, storage } from '@/lib/firebase'
+import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
+import { useMessagesStore } from "@/store/use-messages-store"
 
 export function useFirebaseChat(roomId: string) {
-    const { messages, addMessage, setMessages } = useMessagesStore()
+    const { messages, addMessage, setMessages, updateMessage, removeMessage } = useMessagesStore();
 
     useEffect(() => {
         if (!roomId || !db) return
@@ -30,8 +23,7 @@ export function useFirebaseChat(roomId: string) {
                     ...doc.data(),
                     timestamp: doc.data().timestamp?.toMillis() || Date.now(),
                 }))
-                .reverse() as Message[]
-
+                .reverse()
             setMessages(roomId, newMessages)
         })
 
@@ -41,21 +33,21 @@ export function useFirebaseChat(roomId: string) {
     const sendMessage = useCallback(
         async (message: string, userId: string, username: string) => {
             if (!roomId || !db) return
-
             try {
                 const docRef = await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
                     userId,
                     username,
                     message,
                     timestamp: serverTimestamp(),
+                    type: 'text'
                 })
-
                 addMessage(roomId, {
                     id: docRef.id,
                     userId,
                     username,
                     message,
                     timestamp: Date.now(),
+                    type: 'text'
                 })
             } catch (error) {
                 console.error('Error sending message:', error)
@@ -64,9 +56,76 @@ export function useFirebaseChat(roomId: string) {
         [roomId, addMessage]
     )
 
+    const sendFile = useCallback(
+        async (file: File, userId: string, username: string) => {
+            if (!roomId || !db || !storage) return
+            try {
+                const fileRef = ref(storage, `chatrooms/${roomId}/${Date.now()}_${file.name}`)
+                await uploadBytes(fileRef, file)
+                const downloadURL = await getDownloadURL(fileRef)
+
+                const fileType = file.type.startsWith('image/') ? 'image' :
+                    file.type.startsWith('video/') ? 'video' :
+                        file.type.startsWith('audio/') ? 'audio' : 'file'
+
+                const docRef = await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
+                    userId,
+                    username,
+                    message: file.name,
+                    timestamp: serverTimestamp(),
+                    type: fileType,
+                    fileUrl: downloadURL
+                })
+                addMessage(roomId, {
+                    id: docRef.id,
+                    userId,
+                    username,
+                    message: file.name,
+                    timestamp: Date.now(),
+                    type: fileType,
+                    fileUrl: downloadURL
+                })
+            } catch (error) {
+                console.error('Error sending file:', error)
+            }
+        },
+        [roomId, addMessage]
+    )
+
+    const editMessage = useCallback(
+        async (messageId: string, newContent: string) => {
+            if (!roomId || !db) return
+            try {
+                await updateDoc(doc(db, 'chatrooms', roomId, 'messages', messageId), {
+                    message: newContent
+                })
+                updateMessage(roomId, messageId, { message: newContent })
+            } catch (error) {
+                console.error('Error editing message:', error)
+            }
+        },
+        [roomId, updateMessage]
+    )
+
+    const deleteMessage = useCallback(
+        async (messageId: string) => {
+            if (!roomId || !db) return
+            try {
+                await deleteDoc(doc(db, 'chatrooms', roomId, 'messages', messageId))
+                removeMessage(roomId, messageId)
+            } catch (error) {
+                console.error('Error deleting message:', error)
+            }
+        },
+        [roomId, removeMessage]
+    )
+
     return {
         messages: messages[roomId] || [],
         sendMessage,
+        sendFile,
+        editMessage,
+        deleteMessage,
     }
 }
 
