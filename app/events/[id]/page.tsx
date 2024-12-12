@@ -74,7 +74,8 @@ export default function EventDetailPage(props: Props) {
               tags,
               activities[],
               tournaments[],
-              attendees[]
+              attendees[],
+              ticket
             }
           `, {id: params.id});
               return event;

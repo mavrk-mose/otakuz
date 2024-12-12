@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {NotificationBell} from "@/components/notification-bell";
 
 export default function Navbar() {
   const { setTheme } = useTheme();
@@ -59,6 +60,9 @@ export default function Navbar() {
             </Link>
             <Link href="/calendar" className="text-muted-foreground hover:text-foreground">
               Calendar
+            </Link>
+            <Link href="/chat" className="text-muted-foreground hover:text-foreground">
+              Chat
             </Link>
           </div>
         </div>
@@ -105,6 +109,8 @@ export default function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+
+          <NotificationBell/>
           
           <Button asChild>
             <Link href="/auth">Sign In</Link>

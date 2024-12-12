@@ -15,7 +15,6 @@ interface RecommendationsProps {
 }
 
 export function MangaRecommendations({ mangaId }: RecommendationsProps) {
-    //TODO: this should lazily loaded with useInfiniteQuery
     const { data: recommendations, isLoading } = useQuery({
         queryKey: ['mangaRecommendations', mangaId],
         queryFn: async () => {
@@ -25,8 +24,6 @@ export function MangaRecommendations({ mangaId }: RecommendationsProps) {
             return data.data;
         },
     });
-
-    console.log("manga data:", recommendations)
 
     if (isLoading) {
         return (
