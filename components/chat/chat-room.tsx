@@ -1,12 +1,12 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Send, Mic, ImageIcon, Video } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { useFirebaseChat } from "@/hooks/use-firebase-chat"
 import { MessageComponent } from './message-component'
 
@@ -18,16 +18,38 @@ interface ChatRoomProps {
 export default function ChatRoom({ roomId, title }: ChatRoomProps) {
   const [newMessage, setNewMessage] = useState('')
   const [isRecording, setIsRecording] = useState(false)
+  const [typingUsers, setTypingUsers] = useState<string[]>([])
   const { user } = useAuth()
   const scrollRef = useRef<HTMLDivElement>(null)
-  const { messages, sendMessage, sendFile } = useFirebaseChat(roomId)
+  const { messages, sendMessage, sendFile, setTyping } = useFirebaseChat(roomId)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight
     }
   }, [messages])
+
+  useEffect(() => {
+    const handleTyping = () => {
+      if (user) {
+        setTyping(user.uid, true)
+        if (typingTimeoutRef.current) {
+          clearTimeout(typingTimeoutRef.current)
+        }
+        typingTimeoutRef.current = setTimeout(() => {
+          setTyping(user.uid, false)
+        }, 3000)
+      }
+    }
+
+    return () => {
+      if (typingTimeoutRef.current) {
+        clearTimeout(typingTimeoutRef.current)
+      }
+    }
+  }, [user, setTyping])
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,64 +72,74 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
 
   return (
       <div className="flex flex-col h-full">
-        <h2>{title}</h2>
-        <ScrollArea ref={scrollRef} className="flex-1 p-4">
+        <ScrollArea ref={scrollRef} className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
           <AnimatePresence initial={false}>
             {messages.map((message) => (
                 <MessageComponent
                     key={message.id}
                     message={message}
-                    roomId={roomId}
                     currentUserId={user?.uid}
+                    roomId={roomId}
                 />
             ))}
           </AnimatePresence>
         </ScrollArea>
+        {typingUsers.length > 0 && (
+            <div className="px-4 py-2 text-sm text-muted-foreground">
+              {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
+            </div>
+        )}
         <div className="border-t p-4">
-          <form onSubmit={handleSendMessage} className="flex gap-2">
+          <form onSubmit={handleSendMessage} className="flex flex-wrap gap-2 items-center">
             <Input
                 value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
+                onChange={(e) => {
+                  setNewMessage(e.target.value)
+                  if (user) {
+                    setTyping(user.uid, true)
+                  }
+                }}
                 placeholder="Type a message..."
                 className="flex-1"
             />
-            <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                accept="image/*,video/*"
-                className="hidden"
-            />
-            <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-            >
-              <ImageIcon className="h-4 w-4" />
-            </Button>
-            <Button
-                type="button"
-                size="icon"
-                variant="outline"
-                onClick={() => fileInputRef.current?.click()}
-            >
-              <Video className="h-4 w-4" />
-            </Button>
-            <Button
-                type="button"
-                size="icon"
-                variant={isRecording ? "destructive" : "outline"}
-                onClick={handleRecordAudio}
-            >
-              <Mic className="h-4 w-4" />
-            </Button>
-            <Button type="submit" size="icon">
-              <Send className="h-4 w-4" />
-            </Button>
+            <div className="flex gap-2">
+              <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileUpload}
+                  accept="image/*,video/*"
+                  className="hidden"
+              />
+              <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+              >
+                <ImageIcon className="h-4 w-4" />
+              </Button>
+              <Button
+                  type="button"
+                  size="icon"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+              >
+                <Video className="h-4 w-4" />
+              </Button>
+              <Button
+                  type="button"
+                  size="icon"
+                  variant={isRecording ? "destructive" : "outline"}
+                  onClick={handleRecordAudio}
+              >
+                <Mic className="h-4 w-4" />
+              </Button>
+              <Button type="submit" size="icon">
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </form>
         </div>
       </div>
   )
 }
-

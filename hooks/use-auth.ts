@@ -1,8 +1,17 @@
 "use client"
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Updated import for app router
-import { Auth, User } from 'firebase/auth';
+import { useRouter } from 'next/navigation';
+import {
+  User,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  PhoneAuthProvider,
+  signInWithPopup,
+  signInWithPhoneNumber,
+  signOut as firebaseSignOut,
+  RecaptchaVerifier
+} from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import useAuthStore from "@/store/use-auth-store";
 
@@ -11,20 +20,16 @@ export function useAuth() {
   const router = useRouter();
 
   useEffect(() => {
-    // Correctly type the unsubscribe function
     const unsubscribe = auth.onAuthStateChanged(
         async (currentUser: User | null) => {
           try {
             if (!currentUser) {
-              // Redirect to login and reset auth state
               setUser(null);
               setToken(null);
               setLoading(false);
-              router.push('/login');
               return;
             }
 
-            // Set user and token when authenticated
             setUser(currentUser);
             const token = await currentUser.getIdToken();
             setToken(token);
@@ -32,20 +37,68 @@ export function useAuth() {
           } catch (error) {
             console.error('Authentication error:', error);
             setLoading(false);
-            router.push('/login');
           }
         },
-        // Optional error handler
         (error) => {
           console.error('Auth state change error:', error);
           setLoading(false);
-          router.push('/login');
         }
     );
 
-    // Cleanup subscription on unmount
     return () => unsubscribe();
   }, [setUser, setToken, setLoading]);
 
-  return { user, loading };
+  const signIn = async (provider: string, credentials?: any): Promise<User> => {
+    setLoading(true);
+    try {
+      let result;
+      switch (provider) {
+        case 'google':
+          result = await signInWithPopup(auth, new GoogleAuthProvider());
+          break;
+        case 'facebook':
+          result = await signInWithPopup(auth, new FacebookAuthProvider());
+          break;
+        case 'phone':
+          if (!credentials || !credentials.phoneNumber || !credentials.appVerifier) {
+            throw new Error('Phone sign-in requires phoneNumber and appVerifier');
+          }
+          result = await signInWithPhoneNumber(auth, credentials.phoneNumber, credentials.appVerifier);
+          break;
+        default:
+          throw new Error(`Unsupported provider: ${provider}`);
+      }
+
+      if ('user' in result) {
+        setUser(result.user);
+        const token = await result.user.getIdToken();
+        setToken(token);
+        return result.user;
+      } else {
+        throw new Error('Sign-in failed');
+      }
+    } catch (error) {
+      console.error('Sign-in error:', error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async (): Promise<void> => {
+    try {
+      await firebaseSignOut(auth);
+      setUser(null);
+      setToken(null);
+      router.push('/login');
+    } catch (error) {
+      console.error('Sign-out error:', error);
+      throw error;
+    }
+  };
+
+  useAuthStore.setState({ signIn, signOut });
+
+  return { user, loading, signIn, signOut };
 }
+

@@ -1,22 +1,24 @@
 import { useCallback, useEffect } from 'react'
 import { db, storage } from '@/lib/firebase'
-import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, deleteDoc, doc } from 'firebase/firestore'
+import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useMessagesStore } from "@/store/use-messages-store"
 
 export function useFirebaseChat(roomId: string) {
-    const { messages, addMessage, setMessages, updateMessage, removeMessage } = useMessagesStore();
+    const { messages, addMessage, setMessages, updateMessage, removeMessage } = useMessagesStore()
 
     useEffect(() => {
         if (!roomId || !db) return
 
-        const q = query(
+        const messagesQuery = query(
             collection(db, 'chatrooms', roomId, 'messages'),
             orderBy('timestamp', 'desc'),
             limit(50)
         )
 
-        const unsubscribe = onSnapshot(q, (snapshot) => {
+        const typingQuery = query(collection(db, 'chatrooms', roomId, 'typing'))
+
+        const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
             const newMessages = snapshot.docs
                 .map((doc) => ({
                     id: doc.id,
@@ -27,7 +29,17 @@ export function useFirebaseChat(roomId: string) {
             setMessages(roomId, newMessages)
         })
 
-        return () => unsubscribe()
+        const unsubscribeTyping = onSnapshot(typingQuery, (snapshot) => {
+            const typingUsers = snapshot.docs
+                .filter((doc) => doc.data().isTyping)
+                .map((doc) => doc.data().username)
+            // Update UI with typing users
+        })
+
+        return () => {
+            unsubscribeMessages()
+            unsubscribeTyping()
+        }
     }, [roomId, setMessages])
 
     const sendMessage = useCallback(
@@ -120,12 +132,28 @@ export function useFirebaseChat(roomId: string) {
         [roomId, removeMessage]
     )
 
+    const setTyping = useCallback(
+        async (userId: string, isTyping: boolean) => {
+            if (!roomId || !db) return
+            try {
+                await setDoc(doc(db, 'chatrooms', roomId, 'typing', userId), {
+                    isTyping,
+                    timestamp: serverTimestamp()
+                }, { merge: true })
+            } catch (error) {
+                console.error('Error updating typing status:', error)
+            }
+        },
+        [roomId]
+    )
+
     return {
         messages: messages[roomId] || [],
         sendMessage,
         sendFile,
         editMessage,
         deleteMessage,
+        setTyping
     }
 }
 

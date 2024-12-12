@@ -63,14 +63,15 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="flex h-screen">
+        <div className="flex flex-col md:flex-row h-screen">
             <RoomSidebar
                 rooms={mockRooms}
                 selectedRoom={selectedRoom}
                 onSelectRoom={setSelectedRoom}
                 onCreateRoom={handleCreateRoom}
+                className="w-full md:w-64 md:h-screen overflow-y-auto"
             />
-            <div className="flex-1 flex flex-col">
+            <div className="flex-1 flex flex-col h-full md:h-screen">
                 <div className="flex justify-between items-center p-4 border-b">
                     <h1 className="text-2xl font-bold">
                         {selectedRoom ? mockRooms.find(room => room.id === selectedRoom)?.title : 'Select a room'}
@@ -80,7 +81,7 @@ export default function ChatPage() {
                             <DialogTrigger asChild>
                                 <Button variant="outline">Invite User</Button>
                             </DialogTrigger>
-                            <DialogContent>
+                            <DialogContent className="sm:max-w-[425px]">
                                 <DialogHeader>
                                     <DialogTitle>Invite User to Room</DialogTitle>
                                 </DialogHeader>
@@ -107,4 +108,3 @@ export default function ChatPage() {
         </div>
     )
 }
-

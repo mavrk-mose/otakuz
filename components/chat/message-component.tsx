@@ -2,9 +2,14 @@ import { useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Pencil, Trash2, Reply } from 'lucide-react'
+import { Pencil, Trash2, Reply, MoreVertical } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useFirebaseChat } from "@/hooks/use-firebase-chat"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 
 interface MessageProps {
     message: {
@@ -59,7 +64,7 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className={`flex items-start gap-3 mb-4 ${
+            className={`flex items-start gap-3 mb-4 group ${
                 message.userId === currentUserId ? 'flex-row-reverse' : ''
             }`}
         >
@@ -89,19 +94,30 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
                         renderContent()
                     )}
                 </div>
-                {message.userId === currentUserId && (
-                    <div className="flex gap-2 mt-1">
-                        <Button size="sm" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
-                            <Pencil className="h-4 w-4" />
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                            <MoreVertical className="h-4 w-4" />
                         </Button>
-                        <Button size="sm" variant="ghost" onClick={handleDelete}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </div>
-                )}
-                <Button size="sm" variant="ghost" onClick={handleReply}>
-                    <Reply className="h-4 w-4" />
-                </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-40">
+                        <div className="flex flex-col space-y-1">
+                            {message.userId === currentUserId && (
+                                <>
+                                    <Button size="sm" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
+                                        <Pencil className="h-4 w-4 mr-2" /> Edit
+                                    </Button>
+                                    <Button size="sm" variant="ghost" onClick={handleDelete}>
+                                        <Trash2 className="h-4 w-4 mr-2" /> Delete
+                                    </Button>
+                                </>
+                            )}
+                            <Button size="sm" variant="ghost" onClick={handleReply}>
+                                <Reply className="h-4 w-4 mr-2" /> Reply
+                            </Button>
+                        </div>
+                    </PopoverContent>
+                </Popover>
             </div>
         </motion.div>
     )
