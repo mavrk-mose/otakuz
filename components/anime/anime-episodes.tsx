@@ -37,7 +37,7 @@ export default function AnimeEpisodes({id}: {id: string}) {
         <ScrollArea 
             ref={scrollAreaRef} 
             onScroll={handleScroll} 
-            className="w-full overflow-x-auto">
+            className="w-full whitespace-nowrap">
             <div className="flex gap-4 p-4">
                 {data?.pages.map((page) =>
                     page?.data.map((episode: AnimeEpisode) => (

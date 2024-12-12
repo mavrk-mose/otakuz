@@ -210,7 +210,7 @@ export default function EventDetailPage(props: Props) {
                                             {activity?.time}
                                         </div>
                                         <div>
-                                            <p className="font-medium">Activity {index + 1}</p>
+                                            <p className="font-medium">{activity?.title}</p>
                                             <p className="text-sm text-muted-foreground">{activity?.description}</p>
                                         </div>
                                     </div>
