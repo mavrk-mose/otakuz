@@ -207,7 +207,7 @@ export default function EventDetailPage(props: Props) {
                                 {event?.activities?.map((activity, index) => (
                                     <div key={index} className="flex gap-4">
                                         <div className="w-20 text-sm text-muted-foreground">
-                                            {format(new Date(activity?.time), 'h:mm a')}
+                                            {activity?.time}
                                         </div>
                                         <div>
                                             <p className="font-medium">Activity {index + 1}</p>

@@ -47,7 +47,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     <div className="grid grid-cols-2 gap-2">
                         <Button className="w-full gap-2" asChild>
                             <Link href={`/watch/${anime.mal_id}`}>
-                                <PlayCircle className="w-4 h-4" /> Watch Now
+                                <PlayCircle className="w-4 h-4" /> Watch Trailer
                             </Link>
                         </Button>
                         <Button variant="outline" className="w-full gap-2">
@@ -170,12 +170,12 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                         <TabsContent value="episodes">
-                            <Card className="p-6">
+                            <Card className="mt-8 overflow-x-auto px-4">
                                 <AnimeEpisodes id={id}/>
                             </Card>
                         </TabsContent>
                         <TabsContent value="gallery">
-                            <Card className="p-6">
+                            <Card className="mt-8 overflow-x-auto px-4">
                                 <AnimeGallery {...{id}} />
                             </Card>
                         </TabsContent>
