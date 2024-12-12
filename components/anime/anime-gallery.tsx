@@ -3,6 +3,7 @@
 import { useAnimePictures } from "@/lib/queries";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
+import { ScrollArea } from "../ui/scroll-area";
 
 export function AnimeGallery({ id }: {id: string}) {
     const { data: pictures, isLoading } = useAnimePictures(id);
@@ -23,7 +24,8 @@ export function AnimeGallery({ id }: {id: string}) {
         )
     }
     return (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <ScrollArea>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {pictures?.map((picture, idx) => (
                 <div key={idx} className="grid gap-4" >
                         <div key={idx}>
@@ -38,6 +40,6 @@ export function AnimeGallery({ id }: {id: string}) {
                 </div>
             ))}
         </div>
-
+        </ScrollArea>
     )
 }

@@ -15,7 +15,6 @@ interface RecommendationsProps {
 }
 
 export function AnimeRecommendations({ animeId }: RecommendationsProps) {
-  //TODO: this should lazily loaded with useInfiniteQuery
   const { data: recommendations, isLoading } = useQuery({
     queryKey: ['animeRecommendations', animeId],
     queryFn: async () => {
@@ -71,16 +70,6 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
                     fill
                     className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute bottom-4 left-4 right-4">
-                      <Button className="w-full gap-2" asChild>
-                        <Link href={`/watch/${rec.entry.mal_id}`}>
-                          <Play className="h-4 w-4" />
-                          Watch Now
-                        </Link>
-                      </Button>
-                    </div>
-                  </div>
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-2 mb-2">

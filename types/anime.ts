@@ -275,24 +275,7 @@ export type AnimeSearchResults = {
     };
 };
 
-export interface MovieResponse {
-    results: Movie[];
-    page: number;
-    total_pages: number;
-    total_results: number;
 
-}
-
-export interface Movie {
-    id: number;
-    title: string;
-    overview: string;
-    poster_path: string;
-    backdrop_path: string;
-    release_date: string;
-    vote_average: number;
-    vote_count: number;
-}
 
 export interface Comment {
     id: string;
@@ -389,4 +372,25 @@ export interface AnimeNews {
     };
     comments: number;
     excerpt: string;
+}
+
+export type AnimeEpisode = {
+    mal_id: number;
+    url: string;
+    title: string;
+    title_japanese: string;
+    title_romanji: string;
+    aired: string;
+    score: number | null;
+    filler: boolean;
+    recap: boolean;
+    forum_url: string;
+};
+
+export type AnimeEpisodeResponse = {
+    data: AnimeEpisode[];
+    pagination: {
+        last_visible_page: number;
+        has_next_page: boolean;
+    };
 }
