@@ -6,11 +6,11 @@ import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {Star, BookOpen, Users} from 'lucide-react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import Image from 'next/image';
 import {motion} from 'framer-motion';
 import {use} from "react";
-import { MangaRecommendations } from "@/components/manga/manga-recommendations";
+import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
 
 interface Props {
@@ -68,8 +68,8 @@ export default function MangaDetailPage(props: Props) {
                                 <Star className="w-5 h-5 text-yellow-500"/>
                                 <span className="text-lg font-bold">{manga.score}</span>
                                 <span className="text-sm text-muted-foreground">
-                  ({manga.scored_by.toLocaleString()} users)
-                </span>
+                                  ({manga.scored_by.toLocaleString()} users)
+                                </span>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-sm">
@@ -113,7 +113,7 @@ export default function MangaDetailPage(props: Props) {
                             <TabsTrigger value="overview">Overview</TabsTrigger>
                             <TabsTrigger value="gallery">Gallery</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="overview">
+                        <TabsContent value="overview" className="space-y-4 transition-opacity duration-300">
                             <Card className="p-6">
                                 <h3 className="text-lg font-semibold mb-4">Synopsis</h3>
                                 <p className="leading-relaxed">{manga.synopsis}</p>
@@ -145,14 +145,13 @@ export default function MangaDetailPage(props: Props) {
                             </Card>
                         </TabsContent>
                         <TabsContent value="gallery">
-                            <MangaGallery id={params.id} />
+                            <Card className="mt-8 overflow-x-auto px-4">
+                                <MangaGallery id={params.id}/>
+                            </Card>
                         </TabsContent>
                     </Tabs>
-
-
-
                     <div className="mt-8 overflow-x-auto px-4">
-                        <MangaRecommendations mangaId={params.id} />
+                        <MangaRecommendations mangaId={params.id}/>
                     </div>
                 </div>
             </div>

@@ -21,17 +21,10 @@ export async function getEvents() {
     *[_type == "event"] | order(date desc) {
       _id,
       title,
-      description,
       date,
       time,
       location,
       thumbnailUrl,
-      category,
-      tags,
-      "createdBy": author->{
-        _id,
-        name
-      },
       attendees[]
     }
   `));

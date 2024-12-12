@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
+import {GenreStories} from "@/components/genre-stories";
 
 export default function AnimeListPage() {
     const { ref, inView } = useInView();
@@ -52,6 +53,10 @@ export default function AnimeListPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-8">
+                <GenreStories/>
+            </div>
+
+            <div className="mb-8">
                 <h1 className="text-4xl font-bold mb-2">Anime Collection</h1>
                 <p className="text-muted-foreground">
                     Discover and explore your next favorite anime series
@@ -65,7 +70,7 @@ export default function AnimeListPage() {
                 className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             >
                 {isLoading && (
-                    Array(25).fill(null).map((_, index) => (
+                    Array(4).fill(null).map((_, index) => (
                         <Card key={index} className="animate-pulse">
                             <div className="aspect-[2/3] bg-muted"/>
                             <div className="p-4 space-y-2">
@@ -127,7 +132,7 @@ export default function AnimeListPage() {
                 )}
                 <div ref={ref}/>
                 {hasNextPage &&
-                    Array(25)
+                    Array(8)
                         .fill(null)
                         .map((_, index) => (
                             <Card key={`next-page-loading-${index}`} className="animate-pulse">

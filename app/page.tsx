@@ -4,7 +4,6 @@ import { AnimeSection } from '@/components/anime/anime-section';
 import { MangaSection } from '@/components/manga/manga-section';
 import { NewsSection } from '@/components/news/news-section';
 import { EventsSection } from '@/components/events/events-section';
-import { GenreStories } from '@/components/genre-stories';
 
 export default function Home() {
     return (
@@ -12,10 +11,6 @@ export default function Home() {
             <HeroSection />
 
             <div className="container mx-auto px-4 py-8 space-y-16">
-                <div className="mb-8">
-                    <GenreStories />
-                </div>
-
                 <Suspense fallback={<div>Loading...</div>}>
                     <AnimeSection />
                 </Suspense>

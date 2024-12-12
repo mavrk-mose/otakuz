@@ -1,45 +1,65 @@
-'use client';
+'use client'
 
-import { useAnimePictures } from "@/lib/queries";
-import Image from "next/image";
-import { Card } from "@/components/ui/card";
-import { ScrollArea } from "../ui/scroll-area";
+import { useAnimePictures } from "@/lib/queries"
+import Image from "next/image"
+import { Card } from "@/components/ui/card"
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+import { motion } from "framer-motion"
 
-export function AnimeGallery({ id }: {id: string}) {
-    const { data: pictures, isLoading } = useAnimePictures(id);
+export function AnimeGallery({ id }: { id: string }) {
+    const { data: pictures, isLoading } = useAnimePictures(id)
 
     if(isLoading) {
         return (
-            Array(4)
-            .fill(null)
-            .map((_, index) => (
-                <Card key={`next-page-loading-${index}`} className="animate-pulse">
-                    <div className="aspect-[2/3] bg-muted" />
-                    <div className="p-4 space-y-2">
-                        <div className="h-4 bg-muted rounded w-3/4" />
-                        <div className="h-4 bg-muted rounded w-1/2" />
+            <div className="space-y-4">
+                <ScrollArea className="w-full whitespace-nowrap">
+                    <div className="flex space-x-4 p-4">
+                        {Array(4).fill(null).map((_, index) => (
+                            <Card
+                                key={`loading-${index}`}
+                                className="w-[300px] shrink-0 animate-pulse"
+                            >
+                                <div className="aspect-[2/3] bg-muted rounded-t-lg" />
+                            </Card>
+                        ))}
                     </div>
-                </Card>
-            ))
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+            </div>
         )
     }
+
+    if (!pictures?.length) {
+        return null
+    }
+
     return (
-        <ScrollArea>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {pictures?.map((picture, idx) => (
-                <div key={idx} className="grid gap-4" >
-                        <div key={idx}>
-                            <Image
-                                className="h-auto max-w-full rounded-lg"
-                                width={300}
-                                height={450}
-                                src={picture.jpg.large_image_url}
-                                alt=""
-                            />
-                        </div>
-                </div>
-            ))}
-        </div>
+        <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex space-x-4 p-4">
+                {pictures.map((picture, idx) => (
+                    <motion.div
+                        key={idx}
+                        className="w-[300px] shrink-0"
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        <Card className="overflow-hidden">
+                            <div className="relative aspect-[2/3]">
+                                <Image
+                                    src={picture.jpg.large_image_url}
+                                    alt=""
+                                    fill
+                                    className="object-cover transition-transform hover:scale-105"
+                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                    priority={idx < 4}
+                                />
+                            </div>
+                        </Card>
+                    </motion.div>
+                ))}
+            </div>
+            <ScrollBar orientation="horizontal" />
         </ScrollArea>
     )
 }
+
