@@ -133,6 +133,15 @@ export default {
         name: 'ticket',
         title: 'Ticket',
         type: 'string',
-      }
+      },
+      {
+        name: 'gallery',
+        title: 'Gallery',
+        type: 'array',
+        of: [{ type: 'image' }],
+        options: {
+          hotspot: true,
+        },
+      },
     ],
   };
