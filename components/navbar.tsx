@@ -123,7 +123,7 @@ export default function Navbar() {
 
             <NotificationBell/>
 
-            {user ? (
+            {/* {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -151,7 +151,7 @@ export default function Navbar() {
                 <Button asChild>
                   <Link href="/auth">Sign In</Link>
                 </Button>
-            )}
+            )} */}
           </div>
         </nav>
 

@@ -69,40 +69,38 @@ export function useFirebaseChat(roomId: string) {
     )
 
     const sendFile = useCallback(
-        async (file: File, userId: string, username: string) => {
-            if (!roomId || !db || !storage) return
-            try {
-                const fileRef = ref(storage, `chatrooms/${roomId}/${Date.now()}_${file.name}`)
-                await uploadBytes(fileRef, file)
-                const downloadURL = await getDownloadURL(fileRef)
-
-                const fileType = file.type.startsWith('image/') ? 'image' :
-                    file.type.startsWith('video/') ? 'video' :
-                        file.type.startsWith('audio/') ? 'audio' : 'file'
-
-                const docRef = await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
-                    userId,
-                    username,
-                    message: file.name,
-                    timestamp: serverTimestamp(),
-                    type: fileType,
-                    fileUrl: downloadURL
-                })
-                addMessage(roomId, {
-                    id: docRef.id,
-                    userId,
-                    username,
-                    message: file.name,
-                    timestamp: Date.now(),
-                    type: fileType,
-                    fileUrl: downloadURL
-                })
-            } catch (error) {
-                console.error('Error sending file:', error)
-            }
+        async (file: File | Blob, userId: string, username: string, fileType?: string) => {
+          if (!roomId || !db || !storage) return
+    
+          try {
+            const isAudio = fileType?.startsWith('audio/') || file.type.startsWith('audio/')
+            const fileName = isAudio ? `audio_${Date.now()}.webm` : `${Date.now()}_${file.name || 'file'}`
+            const storageRef = ref(storage, `chatrooms/${roomId}/${fileName}`)
+            await uploadBytes(storageRef, file)
+            const downloadURL = await getDownloadURL(storageRef)
+    
+            const docRef = await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
+              userId,
+              username,
+              fileUrl: downloadURL,
+              fileType: fileType || file.type,
+              timestamp: serverTimestamp(),
+            })
+    
+            addMessage(roomId, {
+              id: docRef.id,
+              userId,
+              username,
+              fileUrl: downloadURL,
+              fileType: fileType || file.type,
+              timestamp: Date.now(),
+            })
+          } catch (error) {
+            console.error('Error sending file:', error)
+          }
         },
         [roomId, addMessage]
-    )
+      )
 
     const editMessage = useCallback(
         async (messageId: string, newContent: string) => {

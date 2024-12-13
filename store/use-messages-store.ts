@@ -1,4 +1,4 @@
-import create from 'zustand'
+import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 export interface Message {
@@ -7,7 +7,7 @@ export interface Message {
     username: string
     message: string
     timestamp: number
-    type?: 'text' | 'image' | 'video' | 'audio' | 'file'
+    type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'anime_share' 
     fileUrl?: string
 }
 

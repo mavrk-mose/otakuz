@@ -6,16 +6,18 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, PlayCircle, Star } from 'lucide-react';
+import { Heart, PlayCircle, Share2, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import { AnimeRecommendations } from './anime-recommendations';
 import { AnimeGallery } from './anime-gallery';
 import AnimeEpisodes from "@/components/anime/anime-episodes";
+import { useState } from 'react';
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     if (isLoading) {
         return (
@@ -54,6 +56,13 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             <Heart className="w-4 h-4" /> Add to List
                         </Button>
                     </div>
+                    <Button 
+                        variant="secondary" 
+                        className="w-full gap-2"
+                        onClick={() => setIsShareModalOpen(true)}
+                    >
+                        <Share2 className="w-4 h-4" /> Share to Chat
+                    </Button>
                     <Card className="p-4 space-y-4">
                         <div>
                             <p className="text-sm text-muted-foreground">Score</p>

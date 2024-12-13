@@ -34,8 +34,25 @@ export function useFirebaseChatActions() {
         []
     )
 
+    const shareAnimeToChat = useCallback(
+        async (roomId: string, animeData: { title: string; image: string; id: number }) => {
+            if (!db) return
+            try {
+                await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
+                    type: 'anime_share',
+                    animeData,
+                    timestamp: serverTimestamp()
+                })
+            } catch (error) {
+                console.error('Error sharing anime to chat:', error)
+            }
+        },
+        []
+    )
+
     return {
         createRoom,
-        inviteUser
+        inviteUser,
+        shareAnimeToChat
     }
 }
