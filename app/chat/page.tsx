@@ -6,18 +6,13 @@ import ChatRoom from '@/components/chat/chat-room'
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useFirebaseChatActions } from "@/hooks/use-firebase-chat-actions"
-
-// Mock data for rooms
-const mockRooms = [
-    { id: '1', title: 'General' },
-    { id: '2', title: 'Random' },
-    { id: '3', title: 'Tech Talk' },
-    { id: '4', title: 'Music' },
-    { id: '5', title: 'Gaming' },
-]
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import Lottie from "lottie-react";
+import WavingGirl from "@/public/lottie/Animation - 1734031068177.json";
+import useFilteredRooms from "@/hooks/use-filtered-rooms";
 
 export default function ChatPage() {
     const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
@@ -25,7 +20,8 @@ export default function ChatPage() {
     const [inviteEmail, setInviteEmail] = useState('')
     const { user, loading } = useAuth()
     const router = useRouter()
-    const { createRoom, inviteUser } = useFirebaseChatActions()
+    const { createRoom, inviteUser, getRooms } = useFirebaseChatActions()
+    const {rooms, setRooms, refetch} = useFilteredRooms(selectedRoom);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -33,12 +29,21 @@ export default function ChatPage() {
         }
     }, [user, loading, router])
 
+    useEffect(() => {
+        const fetchRooms = async () => {
+            const fetchedRooms = await getRooms()
+            setRooms(fetchedRooms)
+        }
+        fetchRooms()
+    }, [getRooms])
+
     const handleCreateRoom = async () => {
         if (newRoomTitle.trim()) {
             const roomId = await createRoom(newRoomTitle)
             setNewRoomTitle('')
             if (roomId) {
                 setSelectedRoom(roomId)
+                setRooms([...rooms, { id: roomId, title: newRoomTitle }])
             }
         }
     }
@@ -64,17 +69,29 @@ export default function ChatPage() {
 
     return (
         <div className="flex flex-col md:flex-row h-screen">
+            <div className="md:hidden p-4 bg-background border-b">
+                <Select onValueChange={(value) => setSelectedRoom(value)}>
+                    <SelectTrigger className="w-full" onClick={refetch}>
+                        <SelectValue placeholder="Select a room" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {rooms.map((room) => (
+                            <SelectItem key={room.id} value={room.id}>
+                                {room.title}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            </div>
             <RoomSidebar
-                rooms={mockRooms}
                 selectedRoom={selectedRoom}
                 onSelectRoom={setSelectedRoom}
-                onCreateRoom={handleCreateRoom}
-                className="w-full md:w-64 md:h-screen overflow-y-auto"
+                className="hidden md:flex w-64 md:h-screen overflow-y-auto"
             />
             <div className="flex-1 flex flex-col h-full md:h-screen">
                 <div className="flex justify-between items-center p-4 border-b">
                     <h1 className="text-2xl font-bold">
-                        {selectedRoom ? mockRooms.find(room => room.id === selectedRoom)?.title : 'Select a room'}
+                        {selectedRoom ? rooms.find(room => room.id === selectedRoom)?.title : 'Select a room'}
                     </h1>
                     {selectedRoom && (
                         <Dialog>
@@ -98,13 +115,15 @@ export default function ChatPage() {
                     )}
                 </div>
                 {selectedRoom ? (
-                    <ChatRoom roomId={selectedRoom} title={mockRooms.find(room => room.id === selectedRoom)?.title || ''} />
+                    <ChatRoom roomId={selectedRoom} title={rooms.find(room => room.id === selectedRoom)?.title || ''} />
                 ) : (
                     <div className="flex items-center justify-center flex-1 text-muted-foreground">
                         Select a room to start chatting
+                        <Lottie animationData={WavingGirl}/>
                     </div>
                 )}
             </div>
         </div>
     )
 }
+

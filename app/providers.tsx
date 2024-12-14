@@ -10,7 +10,6 @@ import { useEffect } from 'react';
 
 const queryClient = new QueryClient();
 
-
 export function Providers({ children, ...props }: ThemeProviderProps) {
   useEffect(() => {
     posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY || '', {

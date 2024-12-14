@@ -1,37 +1,38 @@
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Hash, Plus, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-
-interface Room {
-    id: string
-    title: string
-}
+import useFilteredRooms from '@/hooks/use-filtered-rooms'
+import { useFirebaseChatActions } from "@/hooks/use-firebase-chat-actions"
 
 interface RoomSidebarProps {
-    rooms: Room[]
     selectedRoom: string | null
     onSelectRoom: (roomId: string) => void
-    onCreateRoom: (title: string) => void
     className?: string
 }
 
-export function RoomSidebar({ rooms, selectedRoom, onSelectRoom, onCreateRoom, className }: RoomSidebarProps) {
+export function RoomSidebar({ selectedRoom, onSelectRoom, className }: RoomSidebarProps) {
     const [searchQuery, setSearchQuery] = useState('')
     const [newRoomTitle, setNewRoomTitle] = useState('')
     const [isCreatingRoom, setIsCreatingRoom] = useState(false)
+    const { rooms, loading, error, refetch } = useFilteredRooms(searchQuery)
+    const { createRoom } = useFirebaseChatActions()
 
-    const filteredRooms = rooms.filter(room =>
-        room.title.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    useEffect(() => {
+        refetch()
+    }, []);
 
-    const handleCreateRoom = () => {
+    const handleCreateRoom = async () => {
         if (newRoomTitle.trim()) {
-            onCreateRoom(newRoomTitle)
+            const roomId = await createRoom(newRoomTitle)
             setNewRoomTitle('')
             setIsCreatingRoom(false)
+            if (roomId) {
+                onSelectRoom(roomId)
+                refetch() // Refetch rooms after creating a new one
+            }
         }
     }
 
@@ -77,20 +78,25 @@ export function RoomSidebar({ rooms, selectedRoom, onSelectRoom, onCreateRoom, c
                 )}
             </div>
             <ScrollArea className="flex-1">
-                <div className="p-2">
-                    {filteredRooms.map((room) => (
-                        <Button
-                            key={room.id}
-                            variant={selectedRoom === room.id ? "secondary" : "ghost"}
-                            className="w-full justify-start mb-1"
-                            onClick={() => onSelectRoom(room.id)}
-                        >
-                            <Hash className="mr-2 h-4 w-4" />
-                            {room.title}
-                        </Button>
-                    ))}
-                </div>
+                {loading && <div className="p-4">Loading rooms...</div>}
+                {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
+                {!loading && !error && (
+                    <div className="p-2">
+                        {rooms.map((room) => (
+                            <Button
+                                key={room.id}
+                                variant={selectedRoom === room.id ? "secondary" : "ghost"}
+                                className="w-full justify-start mb-1"
+                                onClick={() => onSelectRoom(room.id)}
+                            >
+                                <Hash className="mr-2 h-4 w-4" />
+                                {room.title}
+                            </Button>
+                        ))}
+                    </div>
+                )}
             </ScrollArea>
         </div>
     )
 }
+

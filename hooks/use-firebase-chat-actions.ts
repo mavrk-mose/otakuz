@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { db } from '@/lib/firebase'
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'
+import { collection, addDoc, serverTimestamp, getDocs } from 'firebase/firestore'
 
 export function useFirebaseChatActions() {
     const createRoom = useCallback(
@@ -35,12 +35,13 @@ export function useFirebaseChatActions() {
     )
 
     const shareAnimeToChat = useCallback(
-        async (roomId: string, animeData: { title: string; image: string; id: number }) => {
+        async (roomId: string, animeData: { title: string; image: string; id: number }, userId: string) => {
             if (!db) return
             try {
                 await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
                     type: 'anime_share',
                     animeData,
+                    userId,
                     timestamp: serverTimestamp()
                 })
             } catch (error) {
@@ -50,9 +51,28 @@ export function useFirebaseChatActions() {
         []
     )
 
+    const getRooms = useCallback(
+        async () => {
+            if (!db) return []
+            try {
+                const querySnapshot = await getDocs(collection(db, 'chatrooms'))
+                return querySnapshot.docs.map(doc => ({
+                    id: doc.id,
+                    title: doc.data().title
+                }))
+            } catch (error) {
+                console.error('Error getting rooms:', error)
+                return []
+            }
+        },
+        []
+    )
+
     return {
         createRoom,
         inviteUser,
-        shareAnimeToChat
+        shareAnimeToChat,
+        getRooms
     }
 }
+

@@ -12,25 +12,7 @@ import {
 } from "@/components/ui/popover"
 import Image from 'next/image'
 import Link from 'next/link'
-
-interface MessageProps {
-  message: {
-    id: string
-    userId: string
-    username: string
-    message: string
-    timestamp: number
-    type?: 'text' | 'image' | 'video' | 'audio' | 'anime_share'| 'file' 
-    fileUrl?: string
-    animeData?: {
-      title: string
-      image: string
-      id: string
-    }
-  }
-  currentUserId: string | undefined
-  roomId: string
-}
+import {MessageProps} from "@/types/message";
 
 export function MessageComponent({ message, currentUserId, roomId }: MessageProps) {
   const [isEditing, setIsEditing] = useState(false)
@@ -63,87 +45,100 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
         return <audio src={message.fileUrl} controls className="max-w-xs" />
       case 'anime_share':
         return (
-          <div className="flex items-center space-x-4 bg-muted p-4 rounded-lg">
-            <Image
-              src={message.animeData?.image || ''}
-              alt={message.animeData?.title || ''}
-              width={100}
-              height={150}
-              className="rounded-md"
-            />
-            <div>
-              <h3 className="font-semibold">{message.animeData?.title}</h3>
-              <Link href={`/anime/${message.animeData?.id}`} className="text-sm text-blue-500 hover:underline">
-                View Details
-              </Link>
+            <div className="w-full max-w-[250px] overflow-hidden rounded-lg bg-background shadow">
+              <div className="relative aspect-[2/3]">
+                <Image
+                    src={message.animeData?.image || '/placeholder.svg'}
+                    alt={message.animeData?.title || 'Anime cover'}
+                    fill
+                    className="object-cover"
+                />
+              </div>
+              <div className="p-2">
+                <h3 className={`font-semibold text-yellow-400 text-sm line-clamp-2 mb-1 ${
+                    isCurrentUser ? 'text-primary-foreground' : 'text-foreground'
+                }`}>
+                  {message.animeData?.title}
+                </h3>
+                <Button variant="link" asChild className="p-0 h-auto text-xs">
+                  <Link href={`/anime/${message.animeData?.id}`}>
+                    View Details
+                  </Link>
+                </Button>
+              </div>
             </div>
-          </div>
-        )
+        );
       default:
         return <p className="text-sm">{message.message}</p>
     }
   }
 
+  const isCurrentUser = message.userId === currentUserId
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className={`flex items-start gap-3 mb-4 group ${
-        message.userId === currentUserId ? 'flex-row-reverse' : ''
-      }`}
-    >
-      <Avatar>
-        <AvatarFallback>{message.username[0] || 'A'}</AvatarFallback>
-      </Avatar>
-      <div className={`flex flex-col ${
-        message.userId === currentUserId ? 'items-end' : 'items-start'
-      }`}>
-        <div className="flex items-baseline gap-2">
-          <span className="text-sm font-medium">{message.username}</span>
-          <span className="text-xs text-muted-foreground">
+      <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          className={`flex items-start gap-3 mb-4 group ${
+              isCurrentUser ? 'flex-row-reverse' : ''
+          }`}
+      >
+        <Avatar>
+          <AvatarFallback>{message.username[0] || 'A'}</AvatarFallback>
+        </Avatar>
+        <div className={`flex flex-col ${
+            isCurrentUser ? 'items-end' : 'items-start'
+        }`}>
+          <div className="flex items-baseline gap-2 mb-1">
+            <span className="text-sm font-medium">{message.username}</span>
+            <span className="text-xs text-muted-foreground">
             {new Date(message.timestamp).toLocaleTimeString()}
           </span>
-        </div>
-        <div className={`mt-1 px-4 py-2 rounded-lg ${
-          message.userId === currentUserId ? 'bg-primary text-primary-foreground' : 'bg-muted'
-        }`}>
-          {isEditing ? (
-            <Input
-              value={editedMessage}
-              onChange={(e) => setEditedMessage(e.target.value)}
-              onBlur={handleEdit}
-              autoFocus
-            />
-          ) : (
-            renderContent()
-          )}
-        </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
-              <MoreVertical className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-40">
-            <div className="flex flex-col space-y-1">
-              {message.userId === currentUserId && (
-                <>
-                  <Button size="sm" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
-                    <Pencil className="h-4 w-4 mr-2" /> Edit
-                  </Button>
-                  <Button size="sm" variant="ghost" onClick={handleDelete}>
-                    <Trash2 className="h-4 w-4 mr-2" /> Delete
-                  </Button>
-                </>
-              )}
-              <Button size="sm" variant="ghost" onClick={handleReply}>
-                <Reply className="h-4 w-4 mr-2" /> Reply
+          </div>
+          <div
+              className={`rounded-lg ${
+                  isCurrentUser ? 'bg-primary text-primary-foreground' : 'bg-muted'
+              } ${message.type !== 'anime_share' ? 'mt-1 px-4 py-2' : ''}`}
+          >
+            {isEditing ? (
+                <Input
+                    value={editedMessage}
+                    onChange={(e) => setEditedMessage(e.target.value)}
+                    onBlur={handleEdit}
+                    autoFocus
+                    className="min-w-[200px]"
+                />
+            ) : (
+                renderContent()
+            )}
+          </div>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
+                <MoreVertical className="h-4 w-4" />
               </Button>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
-    </motion.div>
+            </PopoverTrigger>
+            <PopoverContent className="w-40">
+              <div className="flex flex-col space-y-1">
+                {isCurrentUser && (
+                    <>
+                      <Button size="sm" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
+                        <Pencil className="h-4 w-4 mr-2" /> Edit
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={handleDelete}>
+                        <Trash2 className="h-4 w-4 mr-2" /> Delete
+                      </Button>
+                    </>
+                )}
+                <Button size="sm" variant="ghost" onClick={handleReply}>
+                  <Reply className="h-4 w-4 mr-2" /> Reply
+                </Button>
+              </div>
+            </PopoverContent>
+          </Popover>
+        </div>
+      </motion.div>
   )
 }
+

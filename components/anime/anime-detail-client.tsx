@@ -13,7 +13,8 @@ import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import { AnimeRecommendations } from './anime-recommendations';
 import { AnimeGallery } from './anime-gallery';
 import AnimeEpisodes from "@/components/anime/anime-episodes";
-import { useState } from 'react';
+import React, { useState } from 'react';
+import ShareAnimeModal from "@/components/anime/share-anime-modal";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetail(id);
@@ -56,8 +57,8 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             <Heart className="w-4 h-4" /> Add to List
                         </Button>
                     </div>
-                    <Button 
-                        variant="secondary" 
+                    <Button
+                        variant="secondary"
                         className="w-full gap-2"
                         onClick={() => setIsShareModalOpen(true)}
                     >
@@ -194,6 +195,11 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     </div>
                 </div>
             </div>
+            <ShareAnimeModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                anime={anime}
+            />
         </div>
     );
 }

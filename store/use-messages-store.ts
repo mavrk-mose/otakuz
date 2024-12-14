@@ -1,15 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-
-export interface Message {
-    id: string
-    userId: string
-    username: string
-    message: string
-    timestamp: number
-    type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'anime_share' 
-    fileUrl?: string
-}
+import {Message} from "@/types/message";
 
 interface MessagesState {
     messages: { [roomId: string]: Message[] }
@@ -41,6 +32,7 @@ export const useMessagesStore = create<MessagesState>()(
                             message: msg.message || '',
                             type: msg.type || 'text',
                             fileUrl: msg.fileUrl || undefined,
+                            fileType: msg.fileType || undefined,
                         })),
                     },
                 })),

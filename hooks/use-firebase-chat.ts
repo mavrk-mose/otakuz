@@ -88,12 +88,13 @@ export function useFirebaseChat(roomId: string) {
             })
     
             addMessage(roomId, {
-              id: docRef.id,
+                message: "",
+                id: docRef.id,
               userId,
               username,
               fileUrl: downloadURL,
               fileType: fileType || file.type,
-              timestamp: Date.now(),
+              timestamp: Date.now()
             })
           } catch (error) {
             console.error('Error sending file:', error)

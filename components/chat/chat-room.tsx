@@ -112,6 +112,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
 
   return (
     <div className="flex flex-col h-full">
+      <h2>{title}</h2>
       <ScrollArea ref={scrollRef} className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
         <AnimatePresence initial={false}>
           {messages.map((message) => (
