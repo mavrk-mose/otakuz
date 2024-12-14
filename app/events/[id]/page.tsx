@@ -58,6 +58,8 @@ interface Props {
 export default function EventDetailPage(props: Props) {
     const params = use(props.params);
 
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
     const {data: event, isLoading} = useQuery({
         queryKey: ['event', params.id],
         queryFn: async () => {
@@ -72,6 +74,7 @@ export default function EventDetailPage(props: Props) {
               thumbnailUrl,
               category,
               tags,
+              gallery[],
               activities[],
               tournaments[],
               attendees[],
@@ -81,8 +84,6 @@ export default function EventDetailPage(props: Props) {
               return event;
         }
     });
-
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
     const container = {
         hidden: {opacity: 0},

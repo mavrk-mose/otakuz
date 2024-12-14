@@ -43,5 +43,6 @@ export type Event = {
     description: string;
     time: string;
   }[];
+  gallery: Array<string | null>;
   ticket: string;
 };
