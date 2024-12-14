@@ -1,10 +1,9 @@
 "use client"
 
-import { useState } from 'react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
-import { useAnimeStore } from '@/lib/store';
 import { SearchDropdown } from './search-dropdown';
+import {useAnimeStore} from "@/store/use-anime-store";
 
 interface MobileSearchProps {
   isOpen: boolean;

@@ -1,8 +1,8 @@
 "use client"
 
 import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
-import {useAnimeStore} from './store';
-import {AnimeData, AnimeEpisodeResponse, AnimeResponse, AnimeSearchResults, Manga, MangaResponse} from "@/types/anime";
+import {AnimeData, AnimeSearchResults, Manga} from "@/types/anime";
+import {useAnimeStore} from "@/store/use-anime-store";
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 

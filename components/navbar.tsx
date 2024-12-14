@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Search, Menu, Moon, Sun } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useAnimeStore } from '@/lib/store';
 import { SearchDropdown } from './search-dropdown';
 import { MobileNav } from './mobile-nav';
 import { MobileSearch } from './mobile-search';
@@ -19,6 +18,7 @@ import {
 import { NotificationBell } from "@/components/notification-bell";
 import { useAuth } from '@/hooks/use-auth';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {useAnimeStore} from "@/store/use-anime-store";
 
 export default function Navbar() {
   const { setTheme } = useTheme();

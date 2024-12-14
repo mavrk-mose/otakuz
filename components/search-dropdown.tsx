@@ -1,6 +1,5 @@
 "use client"
 
-import { useAnimeStore } from '@/lib/store';
 import { useAnimeSearch } from '@/lib/queries';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -8,6 +7,9 @@ import { useClickOutside } from '@/hooks/use-click-outside';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
+import {useAnimeStore} from "@/store/use-anime-store";
+import Lottie from "lottie-react";
+import Pochita from "@/public/lottie/Animation - 1734030996440.json"
 
 interface SearchDropdownProps {
   onSelect?: () => void;
@@ -29,7 +31,9 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
     <Card ref={dropdownRef} className="absolute top-full mt-2 w-full z-50 shadow-lg">
       <ScrollArea className="h-[400px]">
         {isLoading ? (
-          <div className="p-4 text-center">Loading...</div>
+          <div className="p-4 text-center">
+            <Lottie animationData={Pochita}/>
+          </div>
         ) : searchResults?.length ? (
           <div className="p-2">
             {searchResults.map((anime: any) => (
