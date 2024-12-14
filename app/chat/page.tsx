@@ -117,8 +117,8 @@ export default function ChatPage() {
                 {selectedRoom ? (
                     <ChatRoom roomId={selectedRoom} title={rooms.find(room => room.id === selectedRoom)?.title || ''} />
                 ) : (
-                    <div className="flex items-center justify-center flex-1 text-muted-foreground">
-                        Select a room to start chatting
+                    <div className="flex flex-col items-center justify-center flex-1 text-muted-foreground">
+                        <p>Select a room to start chatting</p>
                         <Lottie animationData={WavingGirl}/>
                     </div>
                 )}
