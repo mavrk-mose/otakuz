@@ -1,36 +1,33 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useFirebaseChatActions } from '@/hooks/use-firebase-chat-actions';
 import { Room } from '@/types/room';
 
 const useFilteredRooms = (searchQuery: string | null) => {
-    const [rooms, setRooms] = useState<Room[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<Error | null>(null);
     const { getRooms } = useFirebaseChatActions();
 
-    const fetchRooms = useCallback(async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const fetchedRooms = await getRooms();
-            setRooms(fetchedRooms);
-        } catch (err) {
-            setError(err instanceof Error ? err : new Error('Failed to fetch rooms'));
-        } finally {
-            setLoading(false);
-        }
-    }, [getRooms]);
+    const {
+        data: rooms = [],
+        error,
+        isLoading,
+        refetch,
+    } = useQuery<Room[]>({
+        queryKey: ['rooms'],
+        queryFn: getRooms,
+        staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+    });
 
-    useEffect(() => {
-        fetchRooms();
-    }, []);
+    const filteredRooms = searchQuery
+        ? rooms.filter(room =>
+            room.title.toLowerCase().includes(searchQuery.toLowerCase())
+        )
+        : rooms;
 
-    const filteredRooms = rooms.filter(room =>
-        room.title.toLowerCase().includes(searchQuery? searchQuery.toLowerCase() : '')
-    );
-
-    return { rooms: filteredRooms,setRooms, loading, error, refetch: fetchRooms };
+    return {
+        rooms: filteredRooms,
+        loading: isLoading,
+        error,
+        refetch
+    };
 };
 
 export default useFilteredRooms;
-

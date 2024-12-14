@@ -1,27 +1,27 @@
 "use client"
 
-import { useEffect, useState } from 'react'
-import { RoomSidebar } from '@/components/chat/room-sidebar'
-import ChatRoom from '@/components/chat/chat-room'
+import React, { useEffect, useState } from 'react'
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { useFirebaseChatActions } from "@/hooks/use-firebase-chat-actions"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Plus, Globe, MessageCircle, Phone, Settings } from 'lucide-react'
+import useFilteredRooms from "@/hooks/use-filtered-rooms"
+import Link from "next/link"
+import { RoomSidebar } from '@/components/chat/room-sidebar'
+import ChatRoom from '@/components/chat/chat-room'
 import Lottie from "lottie-react";
-import WavingGirl from "@/public/lottie/Animation - 1734031068177.json";
-import useFilteredRooms from "@/hooks/use-filtered-rooms";
+import WavingGirl from "@/public/lottie/Animation - 1734031068177.json"
+import RoomHeader from "@/components/chat/room-header";
+import useRoomDetails from "@/hooks/use-room-details";
 
 export default function ChatPage() {
-    const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
-    const [newRoomTitle, setNewRoomTitle] = useState('')
-    const [inviteEmail, setInviteEmail] = useState('')
     const { user, loading } = useAuth()
     const router = useRouter()
-    const { createRoom, inviteUser, getRooms } = useFirebaseChatActions()
-    const {rooms, setRooms, refetch} = useFilteredRooms(selectedRoom);
+    const [searchQuery, setSearchQuery] = useState('')
+    const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
+    const { rooms } = useFilteredRooms(searchQuery)
+    const { roomDetails } = useRoomDetails(selectedRoom);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -29,36 +29,10 @@ export default function ChatPage() {
         }
     }, [user, loading, router])
 
-    useEffect(() => {
-        const fetchRooms = async () => {
-            const fetchedRooms = await getRooms()
-            setRooms(fetchedRooms)
-        }
-        fetchRooms()
-    }, [getRooms])
-
-    const handleCreateRoom = async () => {
-        if (newRoomTitle.trim()) {
-            const roomId = await createRoom(newRoomTitle)
-            setNewRoomTitle('')
-            if (roomId) {
-                setSelectedRoom(roomId)
-                setRooms([...rooms, { id: roomId, title: newRoomTitle }])
-            }
-        }
-    }
-
-    const handleInviteUser = async () => {
-        if (inviteEmail.trim() && selectedRoom) {
-            await inviteUser(selectedRoom, inviteEmail)
-            setInviteEmail('')
-        }
-    }
-
-    if (loading) {
+    if (loading || !rooms) {
         return (
             <div className="flex items-center justify-center h-screen">
-                Loading...
+                <Lottie animationData={WavingGirl}/>
             </div>
         )
     }
@@ -68,60 +42,75 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="flex flex-col md:flex-row h-screen">
-            <div className="md:hidden p-4 bg-background border-b">
-                <Select onValueChange={(value) => setSelectedRoom(value)}>
-                    <SelectTrigger className="w-full" onClick={refetch}>
-                        <SelectValue placeholder="Select a room" />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {rooms.map((room) => (
-                            <SelectItem key={room.id} value={room.id}>
-                                {room.title}
-                            </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
+        <div className="flex h-screen bg-background">
+            {/* Sidebar for larger screens */}
+            <div className="hidden md:block w-64 border-r">
+                <RoomSidebar
+                    rooms={rooms}
+                    selectedRoom={selectedRoom}
+                    onSelectRoom={setSelectedRoom}
+                    className="h-screen"
+                />
             </div>
-            <RoomSidebar
-                selectedRoom={selectedRoom}
-                onSelectRoom={setSelectedRoom}
-                className="hidden md:flex w-64 md:h-screen overflow-y-auto"
-            />
-            <div className="flex-1 flex flex-col h-full md:h-screen">
-                <div className="flex justify-between items-center p-4 border-b">
-                    <h1 className="text-2xl font-bold">
-                        {selectedRoom ? rooms.find(room => room.id === selectedRoom)?.title : 'Select a room'}
-                    </h1>
-                    {selectedRoom && (
-                        <Dialog>
-                            <DialogTrigger asChild>
-                                <Button variant="outline">Invite User</Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-[425px]">
-                                <DialogHeader>
-                                    <DialogTitle>Invite User to Room</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex gap-2">
-                                    <Input
-                                        value={inviteEmail}
-                                        onChange={(e) => setInviteEmail(e.target.value)}
-                                        placeholder="User's email"
-                                    />
-                                    <Button onClick={handleInviteUser}>Invite</Button>
+
+            {/* Main content area */}
+            <div className="flex-1 flex flex-col">
+                {/* Chat Rooms List (visible on mobile) or Selected Room (visible on desktop) */}
+                <div className="flex-1 overflow-auto">
+                    {selectedRoom && window.innerWidth >= 768 ? (
+                            <>
+                                <RoomHeader roomId={selectedRoom} roomDetails={roomDetails}/>
+                                <ChatRoom roomId={selectedRoom} title={rooms.find(r => r.id === selectedRoom)?.title || ''} />
+                            </>
+                    ) : (
+                        rooms.map((room) => (
+                            <Link
+                                key={room.id}
+                                href={`/chat/${room.id}`}
+                                className="flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors md:hidden"
+                            >
+                                <Avatar className="h-12 w-12">
+                                    <AvatarImage src={`https://avatar.vercel.sh/${room.id}`} />
+                                    <AvatarFallback>{room.title[0]}</AvatarFallback>
+                                </Avatar>
+                                <div className="flex-1 min-w-0">
+                                    <div className="flex justify-between items-baseline">
+                                        <h3 className="font-semibold truncate">{room.title}</h3>
+                                    </div>
+                                    <p className="text-sm text-muted-foreground truncate">
+                                        Click to join the conversation
+                                    </p>
                                 </div>
-                            </DialogContent>
-                        </Dialog>
+                            </Link>
+                        ))
                     )}
                 </div>
-                {selectedRoom ? (
-                    <ChatRoom roomId={selectedRoom} title={rooms.find(room => room.id === selectedRoom)?.title || ''} />
-                ) : (
-                    <div className="flex flex-col items-center justify-center flex-1 text-muted-foreground">
-                        <p>Select a room to start chatting</p>
-                        <Lottie animationData={WavingGirl}/>
+
+                {/* Bottom Navigation (visible on mobile) */}
+                <div className="border-t bg-background md:hidden">
+                    <div className="flex justify-around items-center p-4">
+                        <Button variant="ghost" size="icon">
+                            <Globe className="h-6 w-6" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                            <MessageCircle className="h-6 w-6" />
+                        </Button>
+                        <div className="relative -top-6">
+                            <Button
+                                size="icon"
+                                className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90"
+                            >
+                                <Plus className="h-6 w-6" />
+                            </Button>
+                        </div>
+                        <Button variant="ghost" size="icon">
+                            <Phone className="h-6 w-6" />
+                        </Button>
+                        <Button variant="ghost" size="icon">
+                            <Settings className="h-6 w-6" />
+                        </Button>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     )
