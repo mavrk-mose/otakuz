@@ -6,8 +6,10 @@ import { Search, Hash, Plus, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import useFilteredRooms from '@/hooks/use-filtered-rooms'
 import { useFirebaseChatActions } from "@/hooks/use-firebase-chat-actions"
+import {Room} from "@/types/room";
 
 interface RoomSidebarProps {
+    rooms: Room[]
     selectedRoom: string | null
     onSelectRoom: (roomId: string) => void
     className?: string

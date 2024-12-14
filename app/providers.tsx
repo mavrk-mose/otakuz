@@ -7,6 +7,7 @@ import { PostHogProvider } from 'posthog-js/react';
 import { usePostHogPageTracking } from '@/hooks/use-post-hog-tracking';
 import posthog from 'posthog-js'
 import { useEffect } from 'react';
+import {ToastProvider} from "@/components/ui/toast";
 
 const queryClient = new QueryClient();
 
@@ -21,11 +22,15 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
 
   usePostHogPageTracking();
 
+  // I should create an authentication provider that will check for auth state
+
   return (
     <QueryClientProvider client={queryClient}>
       <PostHogProvider client={posthog}>
         <NextThemesProvider {...props}>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </NextThemesProvider>
       </PostHogProvider>
     </QueryClientProvider>
