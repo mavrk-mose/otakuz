@@ -1,29 +1,20 @@
 "use client"
 
-import { useQuery } from '@tanstack/react-query';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Play } from 'lucide-react';
+import { Star } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import useAnimeRecommendations from "@/hooks/anime/use-anime-recommendations";
 
 interface RecommendationsProps {
   animeId: string;
 }
 
 export function AnimeRecommendations({ animeId }: RecommendationsProps) {
-  const { data: recommendations, isLoading } = useQuery({
-    queryKey: ['animeRecommendations', animeId],
-    queryFn: async () => {
-      const response = await fetch(`https://api.jikan.moe/v4/anime/${animeId}/recommendations`);
-      if (!response.ok) throw new Error('Failed to fetch recommendations');
-      const data = await response.json();
-      return data.data;
-    },
-  });
+  const { recommendations, isLoading } = useAnimeRecommendations(animeId);
 
   if (isLoading) {
     return (

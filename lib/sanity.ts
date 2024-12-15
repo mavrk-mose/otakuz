@@ -1,6 +1,5 @@
 import { createClient, defineQuery } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
-import groq from "groq";
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
@@ -25,7 +24,12 @@ export async function getEvents() {
       time,
       location,
       thumbnailUrl,
-      attendees[]
+      attendees[],
+      organizers[]->{
+        _id,
+        name,
+        avatar
+      }
     }
   `));
 }

@@ -54,8 +54,7 @@ export const useMessagesStore = create<MessagesState>()(
                 })),
         }),
         {
-            name: 'messages-storage',
-            getStorage: () => localStorage,
+            name: 'messages-storage'
         }
     )
 )

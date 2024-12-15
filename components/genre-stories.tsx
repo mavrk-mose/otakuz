@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from '@tanstack/react-query';
-import { getAnimeGenres, getAnimeByGenre } from '@/lib/api';
+import { getAnimeByGenre } from '@/lib/api';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { motion } from 'framer-motion';
@@ -11,6 +11,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import Link from 'next/link';
+import useAnimeGenres from "@/hooks/anime/use-anime-genres";
 
 interface Genre {
     mal_id: number;
@@ -20,11 +21,7 @@ interface Genre {
 export function GenreStories() {
     const [selectedGenre, setSelectedGenre] = useState<Genre | null>(null);
 
-    const { data: genres, isLoading: isLoadingGenres } = useQuery({
-        queryKey: ['animeGenres'],
-        queryFn: getAnimeGenres,
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-    });
+    const { genres, isLoadingGenres } = useAnimeGenres();
 
     const { data: animeList, isLoading: isLoadingAnime } = useQuery({
         queryKey: ['animeByGenre', selectedGenre?.mal_id],

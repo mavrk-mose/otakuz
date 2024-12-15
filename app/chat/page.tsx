@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Plus, Globe, MessageCircle, Phone, Settings } from 'lucide-react'
-import useFilteredRooms from "@/hooks/use-filtered-rooms"
+import useFilteredRooms from "@/hooks/chat/use-filtered-rooms"
 import Link from "next/link"
 import { RoomSidebar } from '@/components/chat/room-sidebar'
 import ChatRoom from '@/components/chat/chat-room'
 import Lottie from "lottie-react";
 import WavingGirl from "@/public/lottie/Animation - 1734031068177.json"
 import RoomHeader from "@/components/chat/room-header";
-import useRoomDetails from "@/hooks/use-room-details";
+import useRoomDetails from "@/hooks/chat/use-room-details";
 
 export default function ChatPage() {
     const { user, loading } = useAuth()
@@ -87,7 +87,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Bottom Navigation (visible on mobile) */}
-                <div className="border-t bg-background md:hidden">
+                <div className="border-t bg-background md:hidden sticky bottom-0 z-50">
                     <div className="flex justify-around items-center p-4">
                         <Button variant="ghost" size="icon">
                             <Globe className="h-6 w-6" />

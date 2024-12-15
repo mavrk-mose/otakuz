@@ -1,10 +1,10 @@
 'use client'
 
-import {useMangaPictures} from "@/lib/queries"
 import Image from "next/image"
 import {Card} from "@/components/ui/card"
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area"
 import {motion} from "framer-motion"
+import { useMangaPictures } from "@/hooks/manga/use-manga-pictures"
 
 export function MangaGallery({id}: { id: string }) {
     const {data: pictures, isLoading} = useMangaPictures(id)
@@ -12,7 +12,7 @@ export function MangaGallery({id}: { id: string }) {
     if (isLoading) {
         return (
             <div className="space-y-4">
-                <ScrollArea className="w-full max-w-full overflow-x-auto">
+                <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex space-x-4">
                         {Array(4).fill(null).map((_, index) => (
                             <Card
@@ -35,7 +35,7 @@ export function MangaGallery({id}: { id: string }) {
 
     return (
         <div className="space-y-4">
-            <ScrollArea className="w-full max-w-full overflow-x-auto">
+            <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex space-x-4 p-4">
                     {pictures.map((picture, idx) => (
                         <motion.div

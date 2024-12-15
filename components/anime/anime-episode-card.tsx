@@ -32,13 +32,13 @@ const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
                     <div className="flex items-center gap-1">
                         <Star className="w-4 h-4 text-yellow-500 flex-shrink-0" />
                         <span className="font-semibold">
-              {episode.score ?? 'N/A'}
-            </span>
+                          {episode.score ?? 'N/A'}
+                        </span>
                     </div>
                     <div className="text-right">
-            <span className="text-muted-foreground">
-              {format(new Date(episode.aired), 'MMM d, yyyy')}
-            </span>
+                        <span className="text-muted-foreground">
+                          {format(new Date(episode.aired), 'MMM d, yyyy')}
+                        </span>
                     </div>
                     <div className="col-span-2 flex justify-between text-muted-foreground">
                         <span>Filler: <span className="font-medium">{episode.filler ? 'Yes' : 'No'}</span></span>

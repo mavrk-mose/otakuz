@@ -1,22 +1,22 @@
 "use client"
 
-import { useAnimeSearch } from '@/lib/queries';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useClickOutside } from '@/hooks/use-click-outside';
+import { useClickOutside } from '@/hooks/search/use-click-outside';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRef } from 'react';
 import {useAnimeStore} from "@/store/use-anime-store";
 import Lottie from "lottie-react";
 import Pochita from "@/public/lottie/Animation - 1734030996440.json"
+import useSearch from "@/hooks/search/use-search";
 
 interface SearchDropdownProps {
   onSelect?: () => void;
 }
 
 export function SearchDropdown({ onSelect }: SearchDropdownProps) {
-  const { data: searchResults, isLoading } = useAnimeSearch();
+  const { data: searchResults, isLoading } = useSearch();
   const searchQuery = useAnimeStore((state) => state.searchQuery);
   const setSearchQuery = useAnimeStore((state) => state.setSearchQuery);
   const dropdownRef = useRef<HTMLDivElement>(null);
