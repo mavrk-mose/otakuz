@@ -10,12 +10,30 @@ export type Event = {
     };
     name: string;
   };
+  organizers: {
+    _id: string;
+    name: string;
+    avatar:  {
+      _type: "image";
+      asset: {
+        _ref: string;
+        _type: "reference";
+      };
+    };
+  }[];
   category: string;
   tags: string[];
   attendees: {
     name: string;
     _key: string;
     userId: string;
+    avatar: {
+      _type: "image";
+      asset: {
+        _ref: string;
+        _type: "reference";
+      };
+    };
     status: "going" | "maybe" | "not going"; // Limited status values
   }[];
   title: string;
@@ -43,6 +61,13 @@ export type Event = {
     description: string;
     time: string;
   }[];
-  gallery: Array<string | null>;
+  gallery: {
+    _type: "image";
+    _key: string;
+    asset: {
+      _ref: string;
+      _type: "reference";
+    };
+  }[];
   ticket: string;
 };

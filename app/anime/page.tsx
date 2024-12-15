@@ -9,27 +9,13 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
-import { useInfiniteQuery } from '@tanstack/react-query';
 import {GenreStories} from "@/components/genre-stories";
+import useFetchAnime from "@/hooks/anime/use-fetch-anime";
 
 export default function AnimeListPage() {
     const { ref, inView } = useInView();
 
-    const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteQuery({
-        queryKey: ['animeList'],
-        queryFn: async ({ pageParam = 1 }) => {
-            const response = await fetch(`https://api.jikan.moe/v4/top/anime?page=${pageParam}`);
-            if (!response.ok) throw new Error('Failed to fetch anime');
-            return response.json();
-        },
-        getNextPageParam: (lastPage) => {
-            if (lastPage.pagination.has_next_page) {
-                return lastPage.pagination.current_page + 1;
-            }
-            return undefined;
-        },
-        initialPageParam: 1
-    });
+    const { data, isLoading, fetchNextPage, hasNextPage } = useFetchAnime();
 
     useEffect(() => {
         if (inView && hasNextPage) {

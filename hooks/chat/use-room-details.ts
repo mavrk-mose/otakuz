@@ -1,4 +1,4 @@
-import { useFirebaseChatActions } from "@/hooks/use-firebase-chat-actions";
+import { useFirebaseChatActions } from "@/hooks/chat/use-firebase-chat-actions";
 import {useQuery} from "@tanstack/react-query";
 import {RoomDetails} from "@/types/room";
 

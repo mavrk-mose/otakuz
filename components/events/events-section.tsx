@@ -56,7 +56,7 @@ export function EventsSection() {
                 animate="show"
                 className="grid md:grid-cols-2 gap-6"
             >
-                {events?.map((event) => (
+                {events?.slice(0, 4).map((event) => (
                     <motion.div key={event._id} variants={item}>
                         <Card className="overflow-hidden group">
                             <Link href={`/events/${event._id}`}>

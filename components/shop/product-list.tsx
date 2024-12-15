@@ -1,89 +1,60 @@
 "use client"
 
-import {useQuery} from '@tanstack/react-query';
-import { ProductCard } from './product-card';
-import { getProducts } from '@/lib/sanity';
-import {Product} from "@/types/shop";
+import {ProductCard} from './product-card';
+import useFetchProducts from "@/hooks/shop/use-fetch-products";
+import Lottie from "lottie-react";
+import Pochita from "@/public/lottie/pochita.json"
 
 interface ProductListProps {
-  category?: string;
-  priceRange?: [number, number];
-  sortBy?: string;
+    category?: string;
+    priceRange?: [number, number];
+    sortBy?: string;
 }
 
-export function ProductList({ category, priceRange, sortBy }: ProductListProps) {
-    const { data, isLoading } = useQuery({
-        queryKey: ['products', category, priceRange, sortBy],
-        queryFn: async () => {
-            // Fetch all products
-            let filteredProducts: Product[] = await getProducts();
-
-            // Filter products based on category
-            if (category && category !== 'all') {
-                filteredProducts = filteredProducts.filter((p) => p.category === category);
-            }
-
-            // Filter products based on price range
-            if (priceRange) {
-                filteredProducts = filteredProducts.filter(
-                    (p: { price: number }) => p.price >= priceRange[0] && p.price <= priceRange[1]
-                );
-            }
-
-            // Sort products based on criteria
-            if (sortBy) {
-                filteredProducts.sort((a, b) => {
-                    switch (sortBy) {
-                        case 'price-low':
-                            return a.price - b.price;
-                        case 'price-high':
-                            return b.price - a.price;
-                        case 'rating':
-                            return (b.rating ?? 0) - (a.rating ?? 0);
-                        default:
-                            return 0;
-                    }
-                });
-            }
-
-            // Return all filtered and sorted products
-            return filteredProducts;
-        },
-        staleTime: 60000, // Cache data for 60 seconds
-    });
+export function ProductList(props: ProductListProps) {
+    const {products, isLoading} = useFetchProducts(props);
 
     if (isLoading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="animate-pulse">
-            <div className="aspect-square bg-muted rounded-lg" />
-            <div className="mt-4 space-y-2">
-              <div className="h-4 bg-muted rounded w-3/4" />
-              <div className="h-4 bg-muted rounded w-1/2" />
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(6)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                        <div className="aspect-square bg-muted rounded-lg"/>
+                        <div className="mt-4 space-y-2">
+                            <div className="h-4 bg-muted rounded w-3/4"/>
+                            <div className="h-4 bg-muted rounded w-1/2"/>
+                        </div>
+                    </div>
+                ))}
             </div>
-          </div>
-        ))}
-      </div>
-    );
-  }
+        );
+    }
 
-  if (!data || !data.some((product) => data.length > 0)) {
+    if (!products || !products.some(() => products.length > 0)) {
+        return (
+            <div className="flex items-center justify-center">
+                <div className="text-center">
+                    <div className="text-lg font-semibold mb-4">No products found</div>
+                    <div className="mx-auto w-100 h-150">
+                        <Lottie
+                            animationData={Pochita}
+                            loop={true}
+                            style={{width: '100%', height: '100%'}}
+                        />
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">No products found</div>
-      </div>
+        <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products?.map((product) => (
+                        <ProductCard key={product._id} product={product}/>
+                    )
+                )}
+            </div>
+        </div>
     );
-  }
-
-  return (
-    <div className="space-y-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.map((product) =>(
-            <ProductCard key={product._id} product={product} />
-          )
-        )}
-      </div>
-    </div>
-  );
 }

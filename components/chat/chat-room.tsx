@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Send, Mic, ImageIcon, Video } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
-import { useFirebaseChat } from "@/hooks/use-firebase-chat"
+import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {MessageComponent} from "@/components/chat/message-component";
-import useAudioRecorder from "@/hooks/use-audio-recorder";
+import useAudioRecorder from "@/hooks/chat/use-audio-recorder";
 
 interface ChatRoomProps {
     roomId: string
@@ -32,27 +32,12 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         resetRecording,
     } = useAudioRecorder();
 
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTop = scrollRef.current.scrollHeight
-        }
-    }, [messages])
-
-    // Scroll to the bottom when messages update
-    useEffect(() => {
-        if (scrollRef.current) {
-            scrollRef.current.scrollTo({
-                top: scrollRef.current.scrollHeight,
-                behavior: "smooth",
-            });
-        }
-    }, [messages]);
-
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!user || !newMessage.trim()) return
         await sendMessage(newMessage, user.uid, user.displayName || 'Anonymous')
         setNewMessage('')
+        scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
     }
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,13 +47,9 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         }
     }
 
-    const handleSendAudio = () => {
-        sendAudioMessage(sendFile, user);
-    };
-
     return (
         <div className="flex flex-col h-full">
-            <ScrollArea ref={scrollRef} className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
+            <ScrollArea className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
                 <AnimatePresence initial={false}>
                     {messages.map((message) => (
                         <MessageComponent
@@ -78,6 +59,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                             roomId={roomId}
                         />
                     ))}
+                    <div ref={scrollRef}></div>
                 </AnimatePresence>
             </ScrollArea>
             {typingUsers.length > 0 && (
@@ -85,7 +67,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                     {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
                 </div>
             )}
-            <div className="border-t p-4">
+            <div className="border-t p-4 sticky bottom-0 z-50">
                 <form onSubmit={handleSendMessage} className="flex flex-wrap gap-2 items-center">
                     <Input
                         value={newMessage}
@@ -132,7 +114,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                         {audioPreview && (
                             <>
                                 <audio src={audioPreview} controls className="max-w-[150px]" />
-                                <Button type="button" onClick={handleSendAudio}>
+                                <Button type="button" onClick={() => sendAudioMessage(sendFile, user)}>
                                     Send Audio
                                 </Button>
                             </>

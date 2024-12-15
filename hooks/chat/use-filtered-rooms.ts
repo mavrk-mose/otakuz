@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { useFirebaseChatActions } from '@/hooks/use-firebase-chat-actions';
+import { useFirebaseChatActions } from '@/hooks/chat/use-firebase-chat-actions';
 import { Room } from '@/types/room';
 
 const useFilteredRooms = (searchQuery: string | null) => {
@@ -13,7 +13,7 @@ const useFilteredRooms = (searchQuery: string | null) => {
     } = useQuery<Room[]>({
         queryKey: ['rooms'],
         queryFn: getRooms,
-        staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+        staleTime: Infinity
     });
 
     const filteredRooms = searchQuery

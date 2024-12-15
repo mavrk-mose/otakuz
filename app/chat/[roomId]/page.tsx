@@ -2,12 +2,12 @@
 
 import React, { useState, use } from 'react'
 import { Button } from '@/components/ui/button'
-import {useFirebaseChatActions} from "@/hooks/use-firebase-chat-actions";
+import {useFirebaseChatActions} from "@/hooks/chat/use-firebase-chat-actions";
 import {Avatar, AvatarImage} from "@/components/ui/avatar";
 import {AvatarFallback} from "@radix-ui/react-avatar";
 import ChatRoom from "@/components/chat/chat-room";
 import {useAuth} from "@/hooks/use-auth";
-import useRoomDetails from "@/hooks/use-room-details";
+import useRoomDetails from "@/hooks/chat/use-room-details";
 import Lottie from "lottie-react";
 import WavingGirl from "@/public/lottie/Animation - 1734031068177.json";
 import RoomHeader from "@/components/chat/room-header";
@@ -21,11 +21,12 @@ export default function Room(props: Props) {
     const { user } = useAuth()
     const { joinRoom } = useFirebaseChatActions()
 
-    const { roomDetails, loading } = useRoomDetails(params.roomId);
+    const { roomDetails, loading, refetch } = useRoomDetails(params.roomId);
 
     const handleJoinRoom = async () => {
         if (user) {
-            await joinRoom(params.roomId, user.uid)
+            await joinRoom(params.roomId, user.uid);
+            await refetch();
         }
     }
 
