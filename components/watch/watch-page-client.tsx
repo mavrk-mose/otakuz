@@ -1,6 +1,5 @@
 "use client"
 
-import { useAnimeDetail } from '@/lib/queries';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -10,9 +9,10 @@ import { VideoPlayer } from '@/components/video-player';
 import { CommentSection } from '@/components/comment-section';
 import { WatchPartySection } from '@/components/watch/watch-party-section';
 import { motion } from 'framer-motion';
+import useAnimeDetails from "@/hooks/use-anime-details";
 
 export default function WatchPageClient({ id }: { id: string }) {
-    const { data: anime, isLoading } = useAnimeDetail(id);
+    const { data: anime, isLoading } = useAnimeDetails(id);
     const [activeTab, setActiveTab] = useState('comments');
 
     if (isLoading || !anime) {

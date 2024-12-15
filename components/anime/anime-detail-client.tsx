@@ -1,6 +1,5 @@
 "use client"
 
-import { useAnimeDetail } from '@/lib/queries';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -15,10 +14,11 @@ import { AnimeGallery } from './anime-gallery';
 import AnimeEpisodes from "@/components/anime/anime-episodes";
 import React, { useState } from 'react';
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
+import useAnimeDetails from "@/hooks/use-anime-details";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
-    const { data: anime, isLoading } = useAnimeDetail(id);
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const { data: anime, isLoading } = useAnimeDetails(id);
 
     if (isLoading) {
         return (

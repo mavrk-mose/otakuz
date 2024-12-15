@@ -121,10 +121,10 @@ export default function Navbar() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <NotificationBell/>
-
             {user ? (
-                <DropdownMenu>
+                <>
+                  <NotificationBell/>
+                  <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
@@ -147,6 +147,8 @@ export default function Navbar() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
+                </>
+
             ) : (
                 <Button asChild>
                   <Link href="/auth">Sign In</Link>

@@ -4,11 +4,11 @@ import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Info } from 'lucide-react';
-import { useAnimeDetail } from '@/lib/queries';
 import Link from 'next/link';
+import useAnimeDetails from "@/hooks/use-anime-details";
 
 export function HeroSection() {
-  const { data: anime } = useAnimeDetail('57334'); // Default to a popular anime
+  const { data: anime } = useAnimeDetails('57334'); // Default to a popular anime
   const [background, setBackground] = useState('');
 
   useEffect(() => {

@@ -6,42 +6,6 @@ import {useAnimeStore} from "@/store/use-anime-store";
 
 const API_BASE_URL = 'https://api.jikan.moe/v4';
 
-export function useTopAnime() {
-  return useInfiniteQuery<AnimeSearchResults>({
-    queryKey: ['animeList'],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await fetch(`${API_BASE_URL}/top/anime?page=${pageParam}`);
-      if (!response.ok) throw new Error('Failed to fetch top anime');
-      return await response.json();
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.pagination.has_next_page) {
-        return lastPage.pagination.last_visible_page + 1;
-      }
-      return undefined;
-    },
-    initialPageParam: 1,
-  });
-}
-
-export function useTopManga() {
-  return useInfiniteQuery({
-    queryKey: ['mangaList'],
-    queryFn: async ({ pageParam = 1 }) => {
-      const response = await fetch(`${API_BASE_URL}/top/manga?page=${pageParam}`);
-      if (!response.ok) throw new Error('Failed to fetch top manga');
-      return await response.json();
-    },
-    getNextPageParam: (lastPage) => {
-      if (lastPage.pagination.has_next_page) {
-        return lastPage.pagination.current_page + 1;
-      }
-      return undefined;
-    },
-    initialPageParam: 1,
-  });
-}
-
 export function useAnimeNews() {
   return useQuery({
     queryKey: ['animeNews'],
@@ -67,18 +31,6 @@ export function useAnimeSearch() {
       return data.data;
     },
     enabled: !!searchQuery,
-  });
-}
-
-export function useAnimeDetail(id: string) {
-  return useQuery<AnimeData>({
-    queryKey: ['animeDetail', id],
-    queryFn: async () => {
-      const response = await fetch(`${API_BASE_URL}/anime/${id}`);
-      if (!response.ok) throw new Error('Failed to fetch anime details');
-      const data = await response.json();
-      return data.data;
-    },
   });
 }
 

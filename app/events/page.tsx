@@ -1,21 +1,11 @@
 "use client"
 
-import {useQuery} from '@tanstack/react-query';
 import {Timeline} from '@/components/events/timeline';
 import {TimelineSkeleton} from "@/components/skeletons/TimelineSkeleton";
-import {getEvents} from "@/lib/sanity";
-import {Event} from "@/types/events";
+import useFetchEvents from "@/hooks/use-fetch-events";
 
 export default function EventsPage() {
-    const {data: events, isLoading} = useQuery({
-        queryKey: ['events'],
-        queryFn: async () => {
-            const events: Event[] = await getEvents();
-            //add filters if applicable sort the events, filter by category etc
-            return events;
-        },
-        staleTime: 60000 //Cache data for 60 seconds
-    });
+    const { events, isLoading } = useFetchEvents();
 
     if (isLoading) {
         return <TimelineSkeleton/>;

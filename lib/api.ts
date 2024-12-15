@@ -1,19 +1,6 @@
 import { AnimeResponse, MangaResponse, NewsResponse } from '@/types/anime';
-import {Event} from '@/types/events';
-import {db, storage} from '@/lib/firebase';
-import {
-    collection,
-    addDoc,
-    getDoc,
-    doc,
-    updateDoc,
-    Timestamp,
-} from 'firebase/firestore';
-import {ref, uploadBytes, getDownloadURL} from 'firebase/storage';
-import {GalleryImage} from "@/types/gallery";
 
-const PEXELS_API_KEY = process.env.NEXT_PUBLIC_PEXELS_API_KEY;
-const ANIME_BASE_URL = 'https://api.jikan.moe/v4';
+export const ANIME_BASE_URL = 'https://api.jikan.moe/v4';
 
 // Add rate limiting helper
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -104,76 +91,5 @@ export async function getAnimeSchedule() {
     } catch (error) {
         console.error('Error fetching anime schedule:', error);
         return [];
-    }
-}
-
-// Events API functions
-export async function createEvent(eventData: Omit<Event, 'id'>, thumbnailFile: File): Promise<string> {
-    try {
-        if (!storage) {
-            throw new Error('Firestore instance is not initialized.');
-        }
-
-        // Upload thumbnail
-        const storageRef = ref(storage, `event-thumbnails/${Date.now()}-${thumbnailFile.name}`);
-        await uploadBytes(storageRef, thumbnailFile);
-        const thumbnailUrl = await getDownloadURL(storageRef);
-
-        // Create event document
-        if (!db) {
-            throw new Error('Firestore instance is not initialized.');
-        }
-        const eventRef = await addDoc(collection(db, 'events'), {
-            ...eventData,
-            thumbnailUrl,
-            createdAt: Timestamp.now(),
-        });
-
-        return eventRef.id;
-    } catch (error) {
-        console.error('Error creating event:', error);
-        throw error;
-    }
-}
-
-export async function updateEventAttendee(
-    eventId: string,
-    userId: string,
-    userName: string,
-    status: 'going' | 'maybe' | 'not_going'
-): Promise<void> {
-    try {
-        if (!db) {
-            throw new Error('Firestore instance is not initialized.');
-        }
-
-        const eventRef = doc(db, 'events', eventId);
-        const eventDoc = await getDoc(eventRef);
-
-        if (!eventDoc.exists()) throw new Error('Event not found');
-
-        const event = eventDoc.data();
-        const attendees = event.attendees || [];
-        const existingAttendeeIndex = attendees.findIndex((a: any) => a.id === userId);
-
-        if (existingAttendeeIndex >= 0) {
-            attendees[existingAttendeeIndex].status = status;
-        } else {
-            attendees.push({id: userId, name: userName, status});
-        }
-
-        await updateDoc(eventRef, {attendees});
-    } catch (error) {
-        console.error('Error updating event attendee:', error);
-        throw error;
-    }
-}
-
- export async function getGalleryImages(query: string): Promise<GalleryImage []> {
-    try {
-        return [];
-    } catch (error) {
-        console.error('Error fetching gallery images:', error);
-        throw error;
     }
 }

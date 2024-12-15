@@ -1,7 +1,6 @@
 "use client"
 
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
-import {useQuery} from '@tanstack/react-query';
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
@@ -12,6 +11,7 @@ import {motion} from 'framer-motion';
 import {use} from "react";
 import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
+import useMangaDetails from "@/hooks/use-manga-details";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -20,15 +20,7 @@ interface Props {
 export default function MangaDetailPage(props: Props) {
     const params = use(props.params);
 
-    const {data: manga, isLoading} = useQuery({
-        queryKey: ['manga', params.id],
-        queryFn: async () => {
-            const response = await fetch(`https://api.jikan.moe/v4/manga/${params.id}`);
-            if (!response.ok) throw new Error('Failed to fetch manga details');
-            const data = await response.json();
-            return data.data;
-        },
-    });
+    const {manga, isLoading} = useMangaDetails(params.id);
 
     if (isLoading) {
         return (

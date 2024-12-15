@@ -1,8 +1,6 @@
 "use client"
 
 import {use, useState} from 'react';
-import {useQuery} from '@tanstack/react-query';
-import {client} from '@/lib/sanity';
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
@@ -11,8 +9,8 @@ import {ScrollArea} from '@/components/ui/scroll-area';
 import {motion} from 'framer-motion';
 import Image from 'next/image';
 import {format} from 'date-fns';
-import {Event} from "@/types/events";
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
+import useEventDetails from '@/hooks/use-event-details';
 
 const mockEvent = {
     id: '1',
@@ -60,30 +58,7 @@ export default function EventDetailPage(props: Props) {
 
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
-    const {data: event, isLoading} = useQuery({
-        queryKey: ['event', params.id],
-        queryFn: async () => {
-          const event: Event = await client.fetch(`
-            *[_type == "event" && _id == $id][0] {
-              _id,
-              title,
-              description,
-              date,
-              time,
-              location,
-              thumbnailUrl,
-              category,
-              tags,
-              gallery[],
-              activities[],
-              tournaments[],
-              attendees[],
-              ticket
-            }
-          `, {id: params.id});
-              return event;
-        }
-    });
+    const { event, isLoading } = useEventDetails(params.id);
 
     const container = {
         hidden: {opacity: 0},

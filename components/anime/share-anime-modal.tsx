@@ -1,16 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import {Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter} from '@/components/ui/dialog';
-import {Button} from '@/components/ui/button';
+import {Dialog, DialogContent} from '@/components/ui/dialog';
 import {Label} from '@/components/ui/label';
 import {useFirebaseChatActions} from '@/hooks/use-firebase-chat-actions';
 import {useToast} from '@/hooks/use-toast';
 import {AnimeData} from '@/types/anime';
 import {useAuth} from '@/hooks/use-auth';
 import {useRouter} from 'next/navigation';
-import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select"
 import useFilteredRooms from "@/hooks/use-filtered-rooms";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import { Toast } from '../ui/toast';
 
 interface ShareAnimeModalProps {
     isOpen: boolean;
@@ -81,6 +80,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
+            <Toast/>
             <DialogContent>
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-1 items-center gap-4">
