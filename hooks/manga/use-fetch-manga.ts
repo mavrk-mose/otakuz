@@ -20,7 +20,8 @@ const useFetchManga = () => {
             }
             return undefined;
         },
-        initialPageParam: 1
+        initialPageParam: 1,
+        staleTime: Infinity
     });
 
     // filter and sort

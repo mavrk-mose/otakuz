@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MessageCircle, Users, Heart } from 'lucide-react';
 import { useState } from 'react';
-import { VideoPlayer } from '@/components/video-player';
+import { VideoPlayer } from '@/components/watch/video-player';
 import { CommentSection } from '@/components/comment-section';
 import { WatchPartySection } from '@/components/watch/watch-party-section';
 import { motion } from 'framer-motion';

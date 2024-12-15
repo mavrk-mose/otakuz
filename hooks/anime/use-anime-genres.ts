@@ -8,7 +8,7 @@ const useAnimeGenres =  () => {
     } = useQuery({
         queryKey: ['animeGenres'],
         queryFn: getAnimeGenres,
-        staleTime: 1000 * 60 * 5, // Cache for 5 minutes
+        staleTime: Infinity
     });
 
     return {

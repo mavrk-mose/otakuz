@@ -47,8 +47,7 @@ const TheVergeLayout = () => {
           </div>
 
           {/* Right Section */}
-          <div>
-            <div className="bg-indigo-700 p-6 rounded-lg shadow-md sticky top-20">
+          <div className="bg-indigo-700 p-6 rounded-lg shadow-md sticky top-20">
               <h2 className="text-2xl font-bold mb-4">Anime</h2>
               <ul className="space-y-4">
                 {[
@@ -92,7 +91,6 @@ const TheVergeLayout = () => {
                 ))}
               </ul>
             </div>
-          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 pt-10">

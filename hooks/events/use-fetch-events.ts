@@ -9,7 +9,7 @@ const useFetchEvents = () => {
     } = useQuery<Event[]>({
         queryKey: ['events'],
         queryFn: getEvents,
-        staleTime: 60000 //Cache data for 60 seconds
+        staleTime: Infinity
     });
 
     //add filters if applicable sort the events, filter by category etc

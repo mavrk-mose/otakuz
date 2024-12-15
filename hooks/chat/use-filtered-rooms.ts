@@ -13,7 +13,7 @@ const useFilteredRooms = (searchQuery: string | null) => {
     } = useQuery<Room[]>({
         queryKey: ['rooms'],
         queryFn: getRooms,
-        staleTime: 5 * 60 * 1000, // Cache data for 5 minutes
+        staleTime: Infinity
     });
 
     const filteredRooms = searchQuery

@@ -11,6 +11,7 @@ const useAnimeDetails = (animeId: string) => {
             const data = await response.json();
             return data.data;
         },
+        staleTime: Infinity
     });
 }
 

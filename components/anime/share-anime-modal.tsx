@@ -10,6 +10,8 @@ import useFilteredRooms from "@/hooks/chat/use-filtered-rooms";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import { Toast } from '../ui/toast';
+import Link from "next/link";
+import {Button} from "@/components/ui/button";
 
 interface ShareAnimeModalProps {
     isOpen: boolean;
@@ -108,7 +110,11 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
                                 ))}
                                 <ScrollBar orientation="vertical"/>
                             </ScrollArea>
-                        ) : 'Sign In to Share'}
+                        ) : (
+                            <Button asChild>
+                                <Link href="/auth">Sign In</Link>
+                            </Button>
+                        )}
                     </div>
                 </div>
             </DialogContent>

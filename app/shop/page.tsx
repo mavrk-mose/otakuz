@@ -7,7 +7,6 @@ import { CartDrawer } from '@/components/shop/cart-drawer';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '@/hooks/use-cart';
-import { usePostHog } from 'posthog-js/react';
 import { ProductList } from '@/components/shop/product-list';
 
 export default function ShopPage() {
@@ -15,7 +14,6 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState<string>('popular');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { totalItems } = useCart();
-  const posthog = usePostHog();
 
   return (
     <div className="container mx-auto px-4 py-8">

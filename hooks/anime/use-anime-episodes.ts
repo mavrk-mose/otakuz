@@ -20,7 +20,8 @@ export function useAnimeEpisodes(id: string) {
             }
             return undefined;
         },
-        initialPageParam: 1
+        initialPageParam: 1,
+        staleTime: Infinity
     })
 
     return {

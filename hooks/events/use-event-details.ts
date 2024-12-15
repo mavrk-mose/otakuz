@@ -16,6 +16,7 @@ const useEventDetails = (eventId: string) => {
               description,
               date,
               time,
+              ticket,
               location,
               thumbnailUrl,
               category,
@@ -24,11 +25,16 @@ const useEventDetails = (eventId: string) => {
               activities[],
               tournaments[],
               attendees[],
-              ticket
+              organizers[]->{
+                _id,
+                name,
+                avatar
+              }
             }
           `, {id: eventId});
             return event;
-        }
+        },
+        staleTime: Infinity
     });
 
     return {

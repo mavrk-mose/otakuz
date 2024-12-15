@@ -87,7 +87,7 @@ export default function ChatPage() {
                 </div>
 
                 {/* Bottom Navigation (visible on mobile) */}
-                <div className="border-t bg-background md:hidden">
+                <div className="border-t bg-background md:hidden sticky bottom-0 z-50">
                     <div className="flex justify-around items-center p-4">
                         <Button variant="ghost" size="icon">
                             <Globe className="h-6 w-6" />

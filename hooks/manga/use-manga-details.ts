@@ -13,6 +13,7 @@ const useMangaDetails = (mangaId: string) => {
             const data = await response.json();
             return data.data;
         },
+        staleTime: Infinity
     });
 
     return {
