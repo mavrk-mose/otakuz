@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Pencil, Trash2, Reply, MoreVertical } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useFirebaseChat } from "@/hooks/use-firebase-chat"
+import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {
   Popover,
   PopoverContent,

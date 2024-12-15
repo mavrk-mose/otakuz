@@ -2,7 +2,7 @@
 
 import {Timeline} from '@/components/events/timeline';
 import {TimelineSkeleton} from "@/components/skeletons/TimelineSkeleton";
-import useFetchEvents from "@/hooks/use-fetch-events";
+import useFetchEvents from "@/hooks/events/use-fetch-events";
 
 export default function EventsPage() {
     const { events, isLoading } = useFetchEvents();

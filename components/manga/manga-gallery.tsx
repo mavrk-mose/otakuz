@@ -1,10 +1,10 @@
 'use client'
 
-import {useMangaPictures} from "@/lib/queries"
 import Image from "next/image"
 import {Card} from "@/components/ui/card"
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area"
 import {motion} from "framer-motion"
+import { useMangaPictures } from "@/hooks/manga/use-manga-pictures"
 
 export function MangaGallery({id}: { id: string }) {
     const {data: pictures, isLoading} = useMangaPictures(id)

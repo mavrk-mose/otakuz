@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Hash, Plus, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import useFilteredRooms from '@/hooks/use-filtered-rooms'
-import { useFirebaseChatActions } from "@/hooks/use-firebase-chat-actions"
+import useFilteredRooms from '@/hooks/chat/use-filtered-rooms'
+import { useFirebaseChatActions } from "@/hooks/chat/use-firebase-chat-actions"
 import {Room} from "@/types/room";
 
 interface RoomSidebarProps {

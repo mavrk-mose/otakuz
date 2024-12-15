@@ -5,6 +5,7 @@ import {ANIME_BASE_URL} from "@/lib/api";
 const useSearch = () => {
     const searchQuery = useAnimeStore((state) => state.searchQuery);
 
+    // TODO: combine search for manga, movies, tv shows as well then flatten the results
     return useQuery({
         queryKey: ['animeSearch', searchQuery],
         queryFn: async () => {

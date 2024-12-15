@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Play, Info } from 'lucide-react';
 import Link from 'next/link';
-import useAnimeDetails from "@/hooks/use-anime-details";
+import useAnimeDetails from "@/hooks/anime/use-anime-details";
 
 export function HeroSection() {
   const { data: anime } = useAnimeDetails('57334'); // Default to a popular anime

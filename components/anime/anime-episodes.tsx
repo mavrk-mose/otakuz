@@ -1,6 +1,5 @@
 "use client"
 
-import { useAnimeEpisodes } from '@/lib/queries'
 import { AnimeEpisode } from "@/types/anime"
 import { useInView } from 'react-intersection-observer'
 import React, { useEffect, useState } from "react"
@@ -9,6 +8,7 @@ import { Loader } from 'lucide-react'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { motion } from "framer-motion"
 import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
+import {useAnimeEpisodes} from "@/hooks/anime/use-anime-episodes";
 
 export default function AnimeEpisodes({ id }: { id: string }) {
     const { data, isLoading, fetchNextPage, hasNextPage } = useAnimeEpisodes(id)

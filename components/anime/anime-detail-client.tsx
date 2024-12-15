@@ -14,7 +14,7 @@ import { AnimeGallery } from './anime-gallery';
 import AnimeEpisodes from "@/components/anime/anime-episodes";
 import React, { useState } from 'react';
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
-import useAnimeDetails from "@/hooks/use-anime-details";
+import useAnimeDetails from "@/hooks/anime/use-anime-details";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);

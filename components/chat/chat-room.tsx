@@ -7,9 +7,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Send, Mic, ImageIcon, Video } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
-import { useFirebaseChat } from "@/hooks/use-firebase-chat"
+import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {MessageComponent} from "@/components/chat/message-component";
-import useAudioRecorder from "@/hooks/use-audio-recorder";
+import useAudioRecorder from "@/hooks/chat/use-audio-recorder";
 
 interface ChatRoomProps {
     roomId: string

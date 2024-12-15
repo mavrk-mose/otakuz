@@ -10,7 +10,7 @@ import {motion} from 'framer-motion';
 import Image from 'next/image';
 import {format} from 'date-fns';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
-import useEventDetails from '@/hooks/use-event-details';
+import useEventDetails from '@/hooks/events/use-event-details';
 
 const mockEvent = {
     id: '1',

@@ -11,7 +11,7 @@ import {motion} from 'framer-motion';
 import {use} from "react";
 import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
-import useMangaDetails from "@/hooks/use-manga-details";
+import useMangaDetails from "@/hooks/manga/use-manga-details";
 
 interface Props {
     params: Promise<{ id: string }>;

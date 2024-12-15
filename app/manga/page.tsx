@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
-import useFetchManga from "@/hooks/use-fetch-manga";
+import useFetchManga from "@/hooks/manga/use-fetch-manga";
 
 export default function MangaListPage() {
     const { ref, inView } = useInView();

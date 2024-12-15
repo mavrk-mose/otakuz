@@ -1,10 +1,10 @@
 'use client'
 
-import { useAnimePictures } from "@/lib/queries"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { motion } from "framer-motion"
+import {useAnimePictures} from "@/hooks/anime/use-anime-pictures";
 
 export function AnimeGallery({ id }: { id: string }) {
     const { data: pictures, isLoading } = useAnimePictures(id)

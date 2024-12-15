@@ -1,12 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import {Dialog, DialogContent} from '@/components/ui/dialog';
 import {Label} from '@/components/ui/label';
-import {useFirebaseChatActions} from '@/hooks/use-firebase-chat-actions';
+import {useFirebaseChatActions} from '@/hooks/chat/use-firebase-chat-actions';
 import {useToast} from '@/hooks/use-toast';
 import {AnimeData} from '@/types/anime';
 import {useAuth} from '@/hooks/use-auth';
 import {useRouter} from 'next/navigation';
-import useFilteredRooms from "@/hooks/use-filtered-rooms";
+import useFilteredRooms from "@/hooks/chat/use-filtered-rooms";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import { Toast } from '../ui/toast';

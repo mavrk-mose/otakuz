@@ -9,7 +9,7 @@ import { VideoPlayer } from '@/components/video-player';
 import { CommentSection } from '@/components/comment-section';
 import { WatchPartySection } from '@/components/watch/watch-party-section';
 import { motion } from 'framer-motion';
-import useAnimeDetails from "@/hooks/use-anime-details";
+import useAnimeDetails from "@/hooks/anime/use-anime-details";
 
 export default function WatchPageClient({ id }: { id: string }) {
     const { data: anime, isLoading } = useAnimeDetails(id);
