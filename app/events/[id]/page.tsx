@@ -11,6 +11,7 @@ import Image from 'next/image';
 import {format} from 'date-fns';
 import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
 import useEventDetails from '@/hooks/events/use-event-details';
+import {urlFor} from "@/lib/sanity";
 
 const mockEvent = {
     id: '1',
@@ -106,16 +107,15 @@ export default function EventDetailPage(props: Props) {
                             animate="show"
                             className="grid grid-cols-2 md:grid-cols-3 gap-4"
                         >
-                            {mockEvent.gallery.map((image, index) => (
+                            {event?.gallery.map((image, index) => (
                                 <motion.div
                                     key={index}
                                     variants={item}
                                     whileHover={{scale: 1.05}}
                                     className="relative aspect-square cursor-pointer"
-                                    onClick={() => setSelectedImage(image)}
                                 >
                                     <Image
-                                        src={image}
+                                        src={urlFor(image.asset._ref).url()}
                                         alt={`Event photo ${index + 1}`}
                                         fill
                                         className="object-cover rounded-lg"

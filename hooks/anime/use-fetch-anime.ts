@@ -1,5 +1,5 @@
 import {useInfiniteQuery} from "@tanstack/react-query";
-import {ANIME_BASE_URL} from "@/lib/api";
+import {API_BASE_URL} from "@/lib/api";
 
 const useFetchAnime = () => {
     const {
@@ -10,7 +10,7 @@ const useFetchAnime = () => {
     } = useInfiniteQuery({
         queryKey: ['animeList'],
         queryFn: async ({ pageParam = 1 }) => {
-            const response = await fetch(`${ANIME_BASE_URL}/top/anime?page=${pageParam}`);
+            const response = await fetch(`${API_BASE_URL}/top/anime?page=${pageParam}`);
             if (!response.ok) throw new Error('Failed to fetch anime');
             return response.json();
         },

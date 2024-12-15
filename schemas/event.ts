@@ -74,6 +74,17 @@ export default {
         to: [{ type: 'author' }],
       },
       {
+        name: 'organizers',
+        title: 'Organizers',
+        type: 'array',
+        of: [
+          {
+            type: 'reference',
+            to: [{ type: 'organizer' }]
+          }
+        ]
+      },
+      {
         name: 'attendees',
         title: 'Attendees',
         type: 'array',
@@ -83,6 +94,7 @@ export default {
             fields: [
               { name: 'userId', type: 'string' },
               { name: 'name', type: 'string' },
+              { name: 'avatar', type: 'image'},
               {
                 name: 'status',
                 type: 'string',

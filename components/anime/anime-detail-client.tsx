@@ -71,7 +71,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                 <Star className="w-5 h-5 text-yellow-500" />
                                 <span className="text-lg font-bold">{anime.score}</span>
                                 <span className="text-sm text-muted-foreground">
-                                    ({anime.scored_by.toLocaleString()} users)
+                                    ({anime?.scored_by?.toLocaleString()} users)
                                 </span>
                             </div>
                         </div>
@@ -152,7 +152,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                     <dl className="space-y-2 text-sm">
                                         <div className="flex">
                                             <dt className="w-24 text-muted-foreground">Score</dt>
-                                            <dd>{anime.score} ({anime.scored_by.toLocaleString()} users)</dd>
+                                            <dd>{anime?.score} ({anime?.scored_by?.toLocaleString()} users)</dd>
                                         </div>
                                         <div className="flex">
                                             <dt className="w-24 text-muted-foreground">Ranked</dt>

@@ -21,11 +21,12 @@ export default function Room(props: Props) {
     const { user } = useAuth()
     const { joinRoom } = useFirebaseChatActions()
 
-    const { roomDetails, loading } = useRoomDetails(params.roomId);
+    const { roomDetails, loading, refetch } = useRoomDetails(params.roomId);
 
     const handleJoinRoom = async () => {
         if (user) {
-            await joinRoom(params.roomId, user.uid)
+            await joinRoom(params.roomId, user.uid);
+            await refetch();
         }
     }
 

@@ -1,8 +1,7 @@
 "use client"
 
-import {useInfiniteQuery, useQuery} from '@tanstack/react-query';
-
-const API_BASE_URL = 'https://api.jikan.moe/v4';
+import {useInfiniteQuery} from '@tanstack/react-query';
+import {API_BASE_URL} from "@/lib/api";
 
 export function useAnimeRecommendations() {
   const {data, isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
