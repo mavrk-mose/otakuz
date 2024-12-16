@@ -20,7 +20,7 @@ interface TimelineProps {
 export function Timeline({ events }: TimelineProps) {
     const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
     const sortedEvents = [...events].sort((a, b) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime()
+        new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
     return (

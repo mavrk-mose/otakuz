@@ -1,12 +1,16 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { db, storage } from '@/lib/firebase'
 import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore'
+import { ref as dbRef, push, set, onChildAdded, onChildChanged, onChildRemoved } from 'firebase/database'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useMessagesStore } from "@/store/use-messages-store"
+import { useList } from 'react-firebase-hooks/database'
 
 export function useFirebaseChat(roomId: string) {
-    const { messages, addMessage, setMessages, updateMessage, removeMessage } = useMessagesStore()
-
+    const { messages, addMessage, setMessages, updateMessage, removeMessage } = useMessagesStore();
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<Error | null>(null)
+    
     useEffect(() => {
         if (!roomId || !db) return
 
@@ -15,8 +19,6 @@ export function useFirebaseChat(roomId: string) {
             orderBy('timestamp', 'desc'),
             limit(50)
         )
-
-        const typingQuery = query(collection(db, 'chatrooms', roomId, 'typing'))
 
         const unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
             const newMessages = snapshot.docs
@@ -29,43 +31,29 @@ export function useFirebaseChat(roomId: string) {
             setMessages(roomId, newMessages)
         })
 
-        const unsubscribeTyping = onSnapshot(typingQuery, (snapshot) => {
-            const typingUsers = snapshot.docs
-                .filter((doc) => doc.data().isTyping)
-                .map((doc) => doc.data().username)
-            // Update UI with typing users
-        })
-
-        return () => {
-            unsubscribeMessages()
-            unsubscribeTyping()
-        }
+        return () => unsubscribeMessages()
+        
     }, [roomId, setMessages])
 
     const sendMessage = useCallback(
         async (message: string, userId: string, username: string) => {
-            if (!roomId || !db) return
+            if (!roomId) return
+
             try {
-                const docRef = await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
+                const messagesRef = collection(db, `chatrooms/${roomId}/messages`)
+                await addDoc(messagesRef, {
                     userId,
                     username,
                     message,
                     timestamp: serverTimestamp(),
                     type: 'text'
                 })
-                addMessage(roomId, {
-                    id: docRef.id,
-                    userId,
-                    username,
-                    message,
-                    timestamp: Date.now(),
-                    type: 'text'
-                })
             } catch (error) {
                 console.error('Error sending message:', error)
+                setError(error as Error)
             }
         },
-        [roomId, addMessage]
+        [roomId]
     )
 
     const sendFile = useCallback(
