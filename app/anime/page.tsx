@@ -9,7 +9,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
-import {GenreStories} from "@/components/genre-stories";
+import {GenreStories} from "@/components/anime/genre-stories";
 import useFetchAnime from "@/hooks/anime/use-fetch-anime";
 
 export default function AnimeListPage() {
