@@ -11,13 +11,13 @@ export function MangaGallery({id}: { id: string }) {
 
     if (isLoading) {
         return (
-            <div className="space-y-4">
+            <div className="w-full overflow-hidden">
                 <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex space-x-4">
+                    <div className="flex gap-4 pb-4">
                         {Array(4).fill(null).map((_, index) => (
                             <Card
                                 key={`loading-${index}`}
-                                className="w-[250px] sm:w-[300px] shrink-0 animate-pulse"
+                                className="w-[150px] sm:w-[180px] md:w-[200px] shrink-0 animate-pulse"
                             >
                                 <div className="aspect-[2/3] bg-muted rounded-t-lg"/>
                             </Card>
@@ -34,15 +34,15 @@ export function MangaGallery({id}: { id: string }) {
     }
 
     return (
-        <div className="space-y-4">
+        <div className="w-full overflow-hidden">
             <ScrollArea className="w-full whitespace-nowrap">
-                <div className="flex space-x-4 p-4">
+                <div className="flex gap-4 pb-4">
                     {pictures.map((picture, idx) => (
                         <motion.div
                             key={idx}
-                            className="w-[300px] shrink-0"
-                            whileHover={{scale: 1.02}}
-                            transition={{duration: 0.2}}
+                            className="w-[150px] sm:w-[180px] md:w-[200px] shrink-0"
+                            whileHover={{ scale: 1.02 }}
+                            transition={{ duration: 0.2 }}
                         >
                             <Card className="overflow-hidden">
                                 <div className="relative aspect-[2/3]">
@@ -51,7 +51,7 @@ export function MangaGallery({id}: { id: string }) {
                                         alt=""
                                         fill
                                         className="object-cover transition-transform hover:scale-105"
-                                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                        sizes="(max-width: 640px) 150px, (max-width: 768px) 180px, 200px"
                                         priority={idx < 4}
                                     />
                                 </div>
