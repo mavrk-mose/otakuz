@@ -57,7 +57,7 @@ export function Timeline({ events }: TimelineProps) {
                             {/* Date */}
                             <div
                                 ref={(el) => (dateRefs.current[dateId] = el)}
-                                className={`text-sm sticky top-0}`}
+                                className="text-sm sticky top-0 pt-2"
                             >
                                 <div className="font-bold">{format(date, 'MMM dd')}</div>
                                 <div className="text-muted-foreground">{format(date, 'EEEE')}</div>

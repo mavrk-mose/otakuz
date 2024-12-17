@@ -76,6 +76,17 @@ export async function getArticles() {
   `));
 }
 
+export async function registerForEvent(eventId: string, userId: string, userName: string, userPhotoUrl: string) {
+  return client.patch(eventId)
+    .setIfMissing({ attendees: [] })
+    .append('attendees', [{ 
+      userId, 
+      name: userName, 
+      photoUrl: userPhotoUrl 
+    }])
+    .inc({ attendeeCount: 1 })
+    .commit();
+}
 
 
 // TODO: paginating through the data with groq when documents reach > 10k
