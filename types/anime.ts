@@ -151,6 +151,8 @@ export type AnimeData = {
     }[];
 };
 
+export type Re
+
 export type AnimeSearchResults = {
     data: {
         mal_id: number;
