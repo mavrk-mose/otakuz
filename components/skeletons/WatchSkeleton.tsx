@@ -24,10 +24,14 @@ export default function WatchSkeleton() {
       </aside>
 
       {/* Main Content Skeleton */}
-      <main className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full">
-          {/* Anime Player Skeleton */}
-          <Skeleton className="w-full aspect-video" />
+      <main className="flex-1 flex flex-col overflow-hidden">
+       
+        {/* Scrollable Content Skeleton */}
+        <ScrollArea className="flex-grow">
+           {/* Sticky Anime Player Skeleton */}
+          <div className="sticky top-0 z-10 w-full bg-black">
+            <Skeleton className="w-full aspect-video" />
+          </div>
 
           {/* Anime Info Skeleton */}
           <div className="p-4 bg-[#18181B]">
@@ -39,6 +43,70 @@ export default function WatchSkeleton() {
                 <Skeleton className="h-3 w-24" />
               </div>
             </div>
+          </div>
+
+          {/* Video Sections Skeleton */}
+          <div className="p-4 space-y-6">
+            {/* Promo Videos Skeleton */}
+            <section>
+              <Skeleton className="h-6 w-40 mb-2" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {Array(4).fill(0).map((_, i) => (
+                  <Card key={i} className="bg-[#26262C] overflow-hidden">
+                    <Skeleton className="w-full aspect-video" />
+                    <div className="p-2">
+                      <Skeleton className="h-4 w-full mb-1" />
+                      <Skeleton className="h-3 w-3/4" />
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            {/* Episodes Skeleton */}
+            <section>
+              <Skeleton className="h-6 w-40 mb-2" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {Array(8).fill(0).map((_, i) => (
+                  <Card key={i} className="bg-[#26262C] overflow-hidden">
+                    <Skeleton className="w-full aspect-video" />
+                    <div className="p-2">
+                      <Skeleton className="h-4 w-full mb-1" />
+                      <Skeleton className="h-3 w-3/4" />
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
+
+            {/* Music Videos Skeleton */}
+            <section>
+              <Skeleton className="h-6 w-40 mb-2" />
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {Array(4).fill(0).map((_, i) => (
+                  <Card key={i} className="bg-[#26262C] overflow-hidden">
+                    <Skeleton className="w-full aspect-video" />
+                    <div className="p-2">
+                      <Skeleton className="h-4 w-full mb-1" />
+                      <Skeleton className="h-3 w-3/4" />
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </section>
+          </div>
+
+          {/* Recommended Anime List Skeleton */}
+          <div className="grid grid-cols-3 gap-4 p-4">
+            {Array(12).fill(0).map((_, i) => (
+              <Card key={i} className="bg-[#26262C] overflow-hidden">
+                <Skeleton className="w-full aspect-video" />
+                <div className="p-2">
+                  <Skeleton className="h-4 w-full mb-1" />
+                  <Skeleton className="h-3 w-3/4" />
+                </div>
+              </Card>
+            ))}
           </div>
 
           {/* Recommended Anime List Skeleton */}
