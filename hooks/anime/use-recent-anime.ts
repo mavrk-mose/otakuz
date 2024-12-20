@@ -2,8 +2,9 @@
 
 import {useInfiniteQuery} from '@tanstack/react-query';
 import {API_BASE_URL} from "@/lib/api";
+import AnimeDetailClient from '@/components/anime/anime-detail-client';
 
-export function useAnimeRecommendations() {
+export function useRecentAnime() {
   const {data, isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
     queryKey: ['animeRecommendations'],
     queryFn: async ({ pageParam = 1 }) => {
@@ -20,5 +21,10 @@ export function useAnimeRecommendations() {
     initialPageParam: 1
   })
 
-  return {data, isLoading, fetchNextPage, hasNextPage};
+  return {
+    data, 
+    isLoading, 
+    fetchNextPage, 
+    hasNextPage
+  };
 }

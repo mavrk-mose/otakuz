@@ -151,6 +151,40 @@ export type AnimeData = {
     }[];
 };
 
+export interface AnimeEntry {
+    mal_id: number;
+    url: string;
+    images: {
+      jpg: {
+        image_url: string;
+        small_image_url: string;
+        large_image_url: string;
+      };
+      webp: {
+        image_url: string;
+        small_image_url: string;
+        large_image_url: string;
+      };
+    };
+    title: string;
+  }
+
+export type RecentAnime = {
+    data: {
+        mal_id: string;
+        entry: AnimeEntry[];
+        content: string;
+        user: {
+            url: string;
+            username: string;
+        };
+    }[];
+    pagination: {
+        last_visible_page: number;
+        has_next_page: boolean;
+    };
+}
+
 export type AnimeSearchResults = {
     data: {
         mal_id: number;
@@ -274,6 +308,57 @@ export type AnimeSearchResults = {
         };
     };
 };
+
+export type AnimeVideos = {
+    data: {
+      promo: {
+        title: string;
+        trailer: {
+          youtube_id: string;
+          url: string;
+          embed_url: string;
+          images: {
+            image_url: string;
+            small_image_url: string;
+            medium_image_url: string;
+            large_image_url: string;
+            maximum_image_url: string;
+          };
+        };
+      }[];
+      episodes: {
+        mal_id: number;
+        url: string;
+        title: string;
+        episode: string;
+        images: {
+          jpg: {
+            image_url: string;
+          };
+        };
+      }[];
+      music_videos: {
+        title: string;
+        video: {
+          youtube_id: string;
+          url: string;
+          embed_url: string;
+          images: {
+            image_url: string;
+            small_image_url: string;
+            medium_image_url: string;
+            large_image_url: string;
+            maximum_image_url: string;
+          };
+        };
+        meta: {
+          title: string;
+          author: string;
+        };
+      }[];
+    };
+  };
+  
 
 
 

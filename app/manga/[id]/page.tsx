@@ -7,7 +7,6 @@ import {Badge} from '@/components/ui/badge';
 import {Star, BookOpen, Users} from 'lucide-react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import Image from 'next/image';
-import {motion} from 'framer-motion';
 import {use} from "react";
 import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
@@ -29,11 +28,7 @@ export default function MangaDetailPage(props: Props) {
     }
 
     return (
-        <motion.div
-            initial={{opacity: 0}}
-            animate={{opacity: 1}}
-            className="container mx-auto px-4 py-8"
-        >
+        <div className="container mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
                 <div className="space-y-4">
                     <Card className="overflow-hidden">
@@ -110,7 +105,6 @@ export default function MangaDetailPage(props: Props) {
                                 <h3 className="text-lg font-semibold mb-4">Synopsis</h3>
                                 <p className="leading-relaxed">{manga.synopsis}</p>
                             </Card>
-
                             <Card className="p-6">
                                 <h3 className="text-lg font-semibold mb-4">Information</h3>
                                 <div className="grid md:grid-cols-2 gap-4">
@@ -147,6 +141,6 @@ export default function MangaDetailPage(props: Props) {
                     </div>
                 </div>
             </div>
-        </motion.div>
+        </div>
     );
 }

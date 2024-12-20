@@ -1,6 +1,6 @@
 "use client"
 
-import { use } from 'react';
+import { use, useState } from 'react';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import EventDetailsSkeleton from '@/components/skeletons/EventDetailsSkeleton';
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -23,6 +24,8 @@ interface Props {
 export default function EventDetailPage(props: Props) {
     const params = use(props.params);
     const { event, isLoading } = useEventDetails(params.id);
+    const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const item = {
         hidden: { opacity: 0, scale: 0.8 },
@@ -96,17 +99,20 @@ export default function EventDetailPage(props: Props) {
                         {/* Event Gallery */}
                         <div className="space-y-4 w-full">
                             <h2 className="text-xl md:text-2xl font-bold">Event Gallery</h2>
-                            <div className="relative w-full">
-                                <ScrollArea className="w-full whitespace-nowrap mx-auto">
-                                    <div className="flex gap-4 pb-4 px-4 md:px-0">
+                            <Card className="p-4">
+                                <ScrollArea className="w-full whitespace-nowrap">
+                                    <div className="flex gap-4 pb-4">
                                         {event?.gallery.map((image, index) => (
                                             <motion.div
                                                 key={index}
-                                                variants={item}
-                                                whileHover={{scale: 1.05}}
-                                                className="w-[180px] md:w-[200px] shrink-0"
+                                                className="w-[150px] sm:w-[200px] shrink-0"
+                                                whileHover={{ scale: 1.05 }}
+                                                onClick={() => {
+                                                    setCurrentImageIndex(index);
+                                                    setIsGalleryOpen(true);
+                                                }}
                                             >
-                                                <Card className="overflow-hidden">
+                                                <Card className="overflow-hidden cursor-pointer">
                                                     <div className="relative aspect-[3/4]">
                                                         <Image
                                                             src={urlFor(image.asset._ref).url()}
@@ -119,10 +125,34 @@ export default function EventDetailPage(props: Props) {
                                             </motion.div>
                                         ))}
                                     </div>
-                                    <ScrollBar orientation="horizontal"/>
+                                    <ScrollBar orientation="horizontal" />
                                 </ScrollArea>
-                            </div>
+                            </Card>
                         </div>
+
+                        {/* Gallery Pop-up */}
+                        <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
+                            <DialogContent className="max-w-3xl w-full p-0">
+                                <Carousel className="w-full">
+                                    <CarouselContent>
+                                        {event?.gallery.map((image, index) => (
+                                            <CarouselItem key={index}>
+                                                <div className="relative aspect-[3/4] w-full">
+                                                    <Image
+                                                        src={urlFor(image.asset._ref).url()}
+                                                        alt={`Event photo ${index + 1}`}
+                                                        fill
+                                                        className="object-contain"
+                                                    />
+                                                </div>
+                                            </CarouselItem>
+                                        ))}
+                                    </CarouselContent>
+                                    <CarouselPrevious />
+                                    <CarouselNext />
+                                </Carousel>
+                            </DialogContent>
+                        </Dialog>
 
                         {/* Gaming Tournaments */}
                         <div className="space-y-4">
