@@ -119,6 +119,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         </TabsList>
                         <TabsContent value="overview" className="space-y-4 transition-opacity duration-300">
                             <Card className="p-6">
+                                <h3 className="text-lg font-semibold mb-4">Synopsis</h3>
                                 <p className="leading-relaxed">{anime.synopsis}</p>
                             </Card>
                             <div className="grid md:grid-cols-2 gap-4">
@@ -186,7 +187,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         </TabsContent>
                         <TabsContent value="gallery">
                             <Card className="mt-8 overflow-x-auto px-4">
-                                <AnimeGallery {...{id}} />
+                                <AnimeGallery id={id} />
                             </Card>
                         </TabsContent>
                     </Tabs>
