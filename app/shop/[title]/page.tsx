@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from 'react'
-import { useParams } from 'next/navigation'
+import {use, useState} from 'react'
 import { ChevronDown } from 'lucide-react'
 import {
     Select,
@@ -21,14 +20,18 @@ import { Button } from '@/components/ui/button'
 import { ProductGrid } from '@/components/shop/product-grid'
 import { FilterSection } from '@/components/shop/filter-section'
 
-export default function ShowPage() {
-    const params = useParams()
+interface Props {
+    params: Promise<{ title: string }>
+}
+
+export default function ShowPage(props: Props) {
+    const params = use(props.params)
     const [filters, setFilters] = useState({
         category: [],
         price: [],
     })
     const [sort, setSort] = useState('featured')
-    const showTitle = params?.show?.toString().split('-').map(word =>
+    const showTitle = params?.title?.toString().split('-').map(word =>
         word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ')
 
@@ -101,7 +104,7 @@ export default function ShowPage() {
                                 </SelectContent>
                             </Select>
                         </div>
-                        <ProductGrid show={params.show as string} filters={filters} sort={sort} />
+                        <ProductGrid show={params.title as string} filters={filters} sort={sort} />
                     </div>
                 </div>
             </div>
