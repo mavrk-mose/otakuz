@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card"
 export default function EventDetailsSkeleton() {
     return (
         <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-6 max-w-[100vw] overflow-x-hidden">
+            <div className="container mx-auto px-4 py-6">
                 <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                     {/* Main content */}
                     <div className="lg:col-span-2 space-y-6">
