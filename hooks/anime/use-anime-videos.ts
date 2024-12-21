@@ -11,6 +11,7 @@ export function useAnimeVideos(id: string) {
             const data = await response.json();
             return data.data;
         },
+        enabled: !!id,
         staleTime: Infinity
     });
 }

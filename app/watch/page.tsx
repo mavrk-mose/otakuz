@@ -19,6 +19,7 @@ export default function WatchPage() {
   const { ref, inView } = useInView();
   const { data, isLoading, fetchNextPage, hasNextPage } = useRecentAnime();
   const { data: animeVideos, isLoading: isLoadingVideos } = useAnimeVideos(selectedAnime?.mal_id.toString() ?? '');
+  console.log("sdfsdfsdf: ", animeVideos);
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -76,7 +77,7 @@ export default function WatchPage() {
             <div className="w-full bg-black">
               <div className="aspect-video">
                 {selectedAnime && animeVideos ? (
-                    <VideoPlayer videoUrl={animeVideos?.data?.promo[0]?.trailer.embed_url || ''} />
+                    <VideoPlayer videoUrl={animeVideos?.promo[0]?.trailer.embed_url || ''} />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center">
                       <p>No video selected</p>
@@ -113,7 +114,7 @@ export default function WatchPage() {
                   <section>
                     <h2 className="text-lg font-semibold mb-2">Promo Videos</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {animeVideos?.data?.promo.map((promo, index) => (
+                      {animeVideos?.promo.map((promo, index) => (
                           <Card key={`promo-${index}-${promo.title}`} className="bg-[#26262C] overflow-hidden cursor-pointer">
                             <div className="relative aspect-video">
                               <Image
@@ -136,7 +137,7 @@ export default function WatchPage() {
                   <section>
                     <h2 className="text-lg font-semibold mb-2">Episodes</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {animeVideos?.data?.episodes.map((episode) => (
+                      {animeVideos?.episodes.map((episode) => (
                           <Card key={episode.mal_id} className="bg-[#26262C] overflow-hidden cursor-pointer">
                             <div className="relative aspect-video">
                               <Image
@@ -161,7 +162,7 @@ export default function WatchPage() {
                   <section>
                     <h2 className="text-lg font-semibold mb-2">Music Videos</h2>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                      {animeVideos?.data?.music_videos.map((mv, index) => (
+                      {animeVideos?.music_videos.map((mv, index) => (
                           <Card key={`music-${index}-${mv.title}`}
                                 className="bg-[#26262C] overflow-hidden cursor-pointer">
                             <div className="relative aspect-video">
