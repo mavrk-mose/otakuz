@@ -155,19 +155,19 @@ export interface AnimeEntry {
     mal_id: number;
     url: string;
     images: {
-      jpg: {
-        image_url: string;
-        small_image_url: string;
-        large_image_url: string;
-      };
-      webp: {
-        image_url: string;
-        small_image_url: string;
-        large_image_url: string;
-      };
+        jpg: {
+            image_url: string;
+            small_image_url: string;
+            large_image_url: string;
+        };
+        webp: {
+            image_url: string;
+            small_image_url: string;
+            large_image_url: string;
+        };
     };
     title: string;
-  }
+}
 
 export type RecentAnime = {
     data: {
@@ -310,56 +310,52 @@ export type AnimeSearchResults = {
 };
 
 export type AnimeVideos = {
-    data: {
-      promo: {
+    promo: {
         title: string;
         trailer: {
-          youtube_id: string;
-          url: string;
-          embed_url: string;
-          images: {
-            image_url: string;
-            small_image_url: string;
-            medium_image_url: string;
-            large_image_url: string;
-            maximum_image_url: string;
-          };
+            youtube_id: string;
+            url: string;
+            embed_url: string;
+            images: {
+                image_url: string;
+                small_image_url: string;
+                medium_image_url: string;
+                large_image_url: string;
+                maximum_image_url: string;
+            };
         };
-      }[];
-      episodes: {
+    }[];
+    episodes: {
         mal_id: number;
         url: string;
         title: string;
         episode: string;
         images: {
-          jpg: {
-            image_url: string;
-          };
+            jpg: {
+                image_url: string;
+            };
         };
-      }[];
-      music_videos: {
+    }[];
+    music_videos: {
         title: string;
         video: {
-          youtube_id: string;
-          url: string;
-          embed_url: string;
-          images: {
-            image_url: string;
-            small_image_url: string;
-            medium_image_url: string;
-            large_image_url: string;
-            maximum_image_url: string;
-          };
+            youtube_id: string;
+            url: string;
+            embed_url: string;
+            images: {
+                image_url: string;
+                small_image_url: string;
+                medium_image_url: string;
+                large_image_url: string;
+                maximum_image_url: string;
+            };
         };
         meta: {
-          title: string;
-          author: string;
+            title: string;
+            author: string;
         };
-      }[];
-    };
-  };
-  
-
+    }[];
+};
 
 
 export interface Comment {

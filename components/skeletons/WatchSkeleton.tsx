@@ -6,7 +6,7 @@ export default function WatchSkeleton() {
   return (
     <div className="flex h-screen bg-[#0E0E10] text-white overflow-hidden">
       {/* Left Sidebar Skeleton */}
-      <aside className="w-64 flex-shrink-0 bg-[#1F1F23] overflow-hidden flex flex-col">
+      <aside className="w-64 flex-shrink-0 bg-[#1F1F23] overflow-hidden flex-col hidden md:flex">
         <Skeleton className="h-5 w-40 m-4" />
         <ScrollArea className="flex-grow">
           <div className="space-y-2 p-4">

@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import {Product} from "@/types/shop";
+import {urlFor} from "@/lib/sanity";
 
 interface ProductCardProps {
   product: Product;
@@ -23,10 +24,10 @@ export function ProductCard({ product }: ProductCardProps) {
       transition={{ duration: 0.2 }}
     >
       <Card className="overflow-hidden">
-        <Link href={`/shop/products/${product._id}`}>
+        <Link href={`/shop/${product._id}`}>
           <div className="relative aspect-square">
             <Image
-              src={product?.image[0] || ""}
+              src={urlFor(product?.image[0].asset._ref).url()}
               alt={product.name}
               fill
               className="object-cover transition-transform group-hover:scale-105"
@@ -47,7 +48,7 @@ export function ProductCard({ product }: ProductCardProps) {
             </Badge>
           </div>
           <Link
-            href={`/shop/products/${product._id}`}
+            href={`/shop/${product._id}`}
             className="font-semibold hover:text-primary transition-colors line-clamp-1"
           >
             {product.name}

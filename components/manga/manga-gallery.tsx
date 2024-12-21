@@ -17,7 +17,7 @@ export function MangaGallery({id}: { id: string }) {
 
     if (isLoading) {
         return (
-            <div className="w-full overflow-hidden">
+            <>
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex gap-4 pb-4">
                         {Array(4).fill(null).map((_, index) => (
@@ -31,7 +31,7 @@ export function MangaGallery({id}: { id: string }) {
                     </div>
                     <ScrollBar orientation="horizontal"/>
                 </ScrollArea>
-            </div>
+            </>
         )
     }
 
