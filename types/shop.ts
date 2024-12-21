@@ -2,7 +2,13 @@ export type Product = {
     _id: string;
     name: string;
     price: number;
-    image: Array<string | null>;
+    image: {
+        _type: "image";
+        asset: {
+            _ref: string;
+            _type: "reference";
+        };
+    }[];
     rating: number;
     description: string;
     category: string;

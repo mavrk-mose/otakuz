@@ -8,6 +8,7 @@ import { Minus, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
+import {urlFor} from "@/lib/sanity";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -59,7 +60,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <div key={item._id} className="flex gap-4">
                     <div className="relative w-20 h-20">
                       <Image
-                        src={item?.image[0] || ""}
+                        src={urlFor(item?.image[0].asset._ref).url()}
                         alt={item.name}
                         fill
                         className="object-cover rounded"
@@ -68,7 +69,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     <div className="flex-1">
                       <h3 className="font-medium">{item.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        ${item.price.toFixed(2)}
+                        Tshs. {item.price.toFixed(2)}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
                         <Button
