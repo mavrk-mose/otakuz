@@ -24,8 +24,6 @@ export default function ProductPage(props: Props) {
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
 
-  console.log("product:  ", product)
-
   const sizes = ["SM", "M", "L", "XL", "2XL", "3XL"]
 
   if (isLoading) {
