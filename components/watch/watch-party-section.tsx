@@ -9,8 +9,8 @@ import { Users, Play, Pause } from 'lucide-react';
 import { io } from 'socket.io-client';
 
 interface WatchPartySectionProps {
-  animeId: string;
-  anime: TopAnime;
+  animeId?: string;
+  anime?: TopAnime;
 }
 
 export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
@@ -43,7 +43,7 @@ export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
       id: Date.now().toString(),
       hostId: 'user-1', // Replace with actual user ID
       animeId,
-      title: anime.title,
+      title: anime?.title,
       currentTime: 0,
       isPlaying: false,
       participants: ['user-1'] // Replace with actual user ID

@@ -378,8 +378,8 @@ export interface ChatMessage {
 export interface WatchParty {
     id: string;
     hostId: string;
-    animeId: string;
-    title: string;
+    animeId?: string;
+    title?: string;
     currentTime: number;
     isPlaying: boolean;
     participants: string[];

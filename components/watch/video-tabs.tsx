@@ -2,20 +2,28 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { Play } from 'lucide-react'
+import {MessageCircle, Play, Users} from 'lucide-react'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import {AnimeVideos} from "@/types/anime";
+import { AnimeVideos } from "@/types/anime"
+import {CommentSection} from "@/components/comment-section";
+import {WatchPartySection} from "@/components/watch/watch-party-section";
 
 interface Props {
     animeVideos: AnimeVideos | undefined
+    onVideoSelect: (url: string) => void
 }
-export default function VideoTabs({animeVideos}: Props) {
+
+export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
     const [activeTab, setActiveTab] = useState("promo")
 
     if (!animeVideos) {
         return <div>No videos available</div>
+    }
+
+    const handleVideoClick = (url: string) => {
+        onVideoSelect(url)
     }
 
     return (
@@ -25,13 +33,25 @@ export default function VideoTabs({animeVideos}: Props) {
                     <TabsTrigger value="promo">Promo Videos</TabsTrigger>
                     <TabsTrigger value="episodes">Episodes</TabsTrigger>
                     <TabsTrigger value="music">Music Videos</TabsTrigger>
+                    <TabsTrigger value="comments" className="flex-1">
+                        <MessageCircle className="w-4 h-4 mr-2" />
+                        Comments
+                    </TabsTrigger>
+                    <TabsTrigger value="party" className="flex-1">
+                        <Users className="w-4 h-4 mr-2" />
+                        Party
+                    </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="promo">
                     <ScrollArea className="w-full whitespace-nowrap">
                         <div className="flex space-x-4">
                             {animeVideos?.promo.map((promo, index) => (
-                                <Card key={`promo-${index}-${promo.title}`} className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0">
+                                <Card
+                                    key={`promo-${index}-${promo.title}`}
+                                    className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0"
+                                    onClick={() => handleVideoClick(promo.trailer.embed_url)}
+                                >
                                     <div className="relative aspect-video">
                                         <Image
                                             src={promo.trailer.images.maximum_image_url}
@@ -55,7 +75,11 @@ export default function VideoTabs({animeVideos}: Props) {
                     <ScrollArea className="w-full whitespace-nowrap">
                         <div className="flex space-x-4">
                             {animeVideos?.episodes.map((episode) => (
-                                <Card key={episode.mal_id} className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0">
+                                <Card
+                                    key={episode.mal_id}
+                                    className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0"
+                                    onClick={() => handleVideoClick(episode.url)}
+                                >
                                     <div className="relative aspect-video">
                                         <Image
                                             src={episode.images.jpg.image_url}
@@ -80,7 +104,11 @@ export default function VideoTabs({animeVideos}: Props) {
                     <ScrollArea className="w-full whitespace-nowrap">
                         <div className="flex space-x-4">
                             {animeVideos?.music_videos.map((mv, index) => (
-                                <Card key={`music-${index}-${mv.title}`} className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0">
+                                <Card
+                                    key={`music-${index}-${mv.title}`}
+                                    className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0"
+                                    onClick={() => handleVideoClick(mv.video.embed_url)}
+                                >
                                     <div className="relative aspect-video">
                                         <Image
                                             src={mv.video.images.maximum_image_url}
@@ -99,6 +127,15 @@ export default function VideoTabs({animeVideos}: Props) {
                         </div>
                         <ScrollBar orientation="horizontal" />
                     </ScrollArea>
+                </TabsContent>
+                <TabsContent value="comments" className="p-4">
+                    <CommentSection />
+                </TabsContent>
+                {/* <TabsContent value="chat" className="p-4">
+                            <ChatRoom animeId={id} />
+                        </TabsContent> */}
+                <TabsContent value="party" className="p-4">
+                    <WatchPartySection />
                 </TabsContent>
             </Tabs>
         </div>

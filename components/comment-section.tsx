@@ -9,10 +9,10 @@ import { Heart } from 'lucide-react';
 import { Comment } from '@/types/anime';
 
 interface CommentSectionProps {
-  animeId: string;
+  animeId?: string;
 }
 
-export function CommentSection({ animeId }: CommentSectionProps) {
+export function CommentSection() {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
 
