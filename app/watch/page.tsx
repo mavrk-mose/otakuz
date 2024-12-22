@@ -14,6 +14,7 @@ import { AnimeEntry } from '@/types/anime'
 import {VideoPlayer} from "@/components/watch/video-player";
 import VideoTabs from "@/components/watch/video-tabs";
 import {Loader2} from "lucide-react";
+import Link from "next/link";
 
 export default function WatchPage() {
   const [selectedAnime, setSelectedAnime] = useState<AnimeEntry | null>(null)
@@ -98,9 +99,9 @@ export default function WatchPage() {
                     <div>
                       <p className="font-medium">{selectedAnime.title}</p>
                       <p className="text-sm text-[#ADADB8]">
-                        <a href={selectedAnime.url} target="_blank" rel="noopener noreferrer" className="hover:underline">
-                          View on MyAnimeList
-                        </a>
+                        <Link href={`/anime/${selectedAnime.mal_id}`} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                          View details
+                        </Link>
                       </p>
                     </div>
                   </div>
@@ -113,7 +114,7 @@ export default function WatchPage() {
             {/* Recommended Anime List */}
             <div>
               <h2 className="text-xl font-bold mb-2 ml-4">More like this </h2>
-              <div className="grid grid-cols-3 gap-4 p-4">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
                 {data?.pages.flatMap(page =>
                     page.data.flatMap((animeData: any) =>
                         animeData.entry.map((anime: AnimeEntry) => (

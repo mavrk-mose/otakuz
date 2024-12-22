@@ -67,7 +67,7 @@ export default function VideoTabs({animeVideos}: Props) {
                                     </div>
                                     <div className="p-2">
                                         <h3 className="font-medium text-sm line-clamp-2">{episode.title}</h3>
-                                        <p className="text-xs text-[#ADADB8]">Episode {episode.episode}</p>
+                                        <p className="text-xs text-[#ADADB8]">{episode.episode}</p>
                                     </div>
                                 </Card>
                             ))}
