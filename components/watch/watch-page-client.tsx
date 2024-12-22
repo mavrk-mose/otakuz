@@ -73,7 +73,7 @@ export default function WatchPageClient({ id }: { id: string }) {
                             </TabsTrigger>
                         </TabsList>
                         <TabsContent value="comments" className="p-4">
-                            <CommentSection animeId={id} />
+                            <CommentSection />
                         </TabsContent>
                         {/* <TabsContent value="chat" className="p-4">
                             <ChatRoom animeId={id} />
