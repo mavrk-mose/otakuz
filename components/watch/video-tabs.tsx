@@ -29,19 +29,22 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
     return (
         <div className="p-4">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="mb-4">
-                    <TabsTrigger value="promo">Promo Videos</TabsTrigger>
-                    <TabsTrigger value="episodes">Episodes</TabsTrigger>
-                    <TabsTrigger value="music">Music Videos</TabsTrigger>
-                    <TabsTrigger value="comments" className="flex-1">
-                        <MessageCircle className="w-4 h-4 mr-2" />
-                        Comments
-                    </TabsTrigger>
-                    <TabsTrigger value="party" className="flex-1">
-                        <Users className="w-4 h-4 mr-2" />
-                        Party
-                    </TabsTrigger>
-                </TabsList>
+                <ScrollArea className="w-full">
+                    <TabsList className="mb-4 inline-flex w-max">
+                        <TabsTrigger value="promo">Promo Videos</TabsTrigger>
+                        <TabsTrigger value="episodes">Episodes</TabsTrigger>
+                        <TabsTrigger value="music">Music Videos</TabsTrigger>
+                        <TabsTrigger value="comments" className="flex-1">
+                            <MessageCircle className="w-4 h-4 mr-2" />
+                            Comments
+                        </TabsTrigger>
+                        <TabsTrigger value="party" className="flex-1">
+                            <Users className="w-4 h-4 mr-2" />
+                            Party
+                        </TabsTrigger>
+                    </TabsList>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
 
                 <TabsContent value="promo">
                     <ScrollArea className="w-full whitespace-nowrap">
