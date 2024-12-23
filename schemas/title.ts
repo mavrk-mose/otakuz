@@ -1,18 +1,13 @@
 export default {
-    name: 'category',
-    title: 'Categories',
+    name: 'title',
+    title: 'Title',
     type: 'document',
     fields: [
         {
-            name: 'title',
-            title: 'Title',
+            name: 'name',
+            title: 'Name',
             type: 'string',
             validation: (Rule: any) => Rule.required(),
-        },
-        {
-            name: 'description',
-            title: 'Description',
-            type: 'text',
         },
         {
             name: 'image',
@@ -21,6 +16,6 @@ export default {
             options: {
                 hotspot: true,
             },
-        },
+        }
     ],
 };

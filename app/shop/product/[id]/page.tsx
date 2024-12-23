@@ -96,9 +96,6 @@ export default function ProductPage(props: Props) {
                             />
                         ))}
                       </div>
-                    {/*  <span className="text-sm text-neutral-400">*/}
-                    {/*  ({product.reviews?.length || 1})*/}
-                    {/*</span>*/}
                     </div>
                     <div className="flex items-center gap-3">
                     <span className="text-2xl font-bold text-red-600">
@@ -106,7 +103,7 @@ export default function ProductPage(props: Props) {
                     </span>
                       {product.price && (
                           <span className="text-lg text-neutral-400 line-through">
-                        ${product.price.toFixed(2)}
+                        Tshs. {product.price.toFixed(2)}
                       </span>
                       )}
                     </div>

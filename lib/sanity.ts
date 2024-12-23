@@ -45,7 +45,12 @@ export async function getProducts() {
       category,
       rating,
       stock,
-      variants[]
+      variants[],
+      "title": title -> {
+        _id,
+        name,
+        image,
+      }
     }
   `));
 }

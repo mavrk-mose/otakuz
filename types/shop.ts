@@ -14,6 +14,29 @@ export type Product = {
     category: string;
     stock: number;
     variants: null | Array<Variant>; // You can define Variant if applicable
+    title: {
+        _id: string;
+        name: string;
+        image:  {
+            _type: "image";
+            asset: {
+                _ref: string;
+                _type: "reference";
+            };
+        };
+    };
+};
+
+export type Title = {
+    _id: string;
+    name: string;
+    image: {
+        _type: "image";
+        asset: {
+            _ref: string;
+            _type: "reference";
+        };
+    };
 };
 
 // Example of a Variant type if needed

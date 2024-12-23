@@ -4,18 +4,21 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import useFetchProducts from "@/hooks/shop/use-fetch-products";
 import {urlFor} from "@/lib/sanity";
+import Lottie from "lottie-react";
+import Pochita from "@/public/lottie/pochita.json";
+import {ProductCard} from "@/components/shop/product-card";
 
 interface ProductGridProps {
-    show?: string
+    title?: string
     filters?: {
         category: string[]
         price: string[]
     }
-    sort: string
+    sort?: string
 }
 
-export function ProductGrid({ show, filters, sort }: ProductGridProps) {
-    const { products, isLoading } = useFetchProducts({ category: "all"});
+export function ProductGrid({ title, filters, sort }: ProductGridProps) {
+    const { products, isLoading } = useFetchProducts({ category: "all", title});
 
     const filteredProducts = products?.filter(product => {
         if (filters?.category.length && !filters.category.includes(product.category)) {
@@ -32,6 +35,7 @@ export function ProductGrid({ show, filters, sort }: ProductGridProps) {
             })
             if (!matchesPrice) return false
         }
+
         return true
     }) || [];
 
@@ -41,30 +45,42 @@ export function ProductGrid({ show, filters, sort }: ProductGridProps) {
         return 0
     })
 
+    if (isLoading) {
+        return (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {[...Array(4)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                        <div className="aspect-[3/4] bg-neutral-800 rounded-lg mb-4"/>
+                        <div className="space-y-2">
+                            <div className="h-4 bg-neutral-800 rounded w-3/4"/>
+                            <div className="h-4 bg-neutral-800 rounded w-1/2"/>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )
+    }
+
+    if (!products || products.length === 0) {
+        return (
+            <div className="flex items-center justify-center py-12">
+                <div className="text-center">
+                    <div className="text-lg font-semibold mb-4 text-neutral-300">No products found</div>
+                    <div className="mx-auto w-48 h-48">
+                        <Lottie
+                            animationData={Pochita}
+                            loop={true}
+                        />
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
     return (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {sortedProducts.map((product) => (
-                <motion.div
-                    key={product._id}
-                    layout
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="group cursor-pointer"
-                >
-                    <div className="aspect-square relative overflow-hidden rounded-lg mb-4">
-                        <Image
-                            src={urlFor(product?.image[0].asset._ref).url()}
-                            alt={product.name}
-                            fill
-                            className="object-cover transition-transform duration-300 group-hover:scale-105"
-                        />
-                    </div>
-                    <h3 className="font-medium text-gray-200 group-hover:text-white transition-colors">
-                        {product.name}
-                    </h3>
-                    <p className="text-gray-400">${product.price.toFixed(2)}</p>
-                </motion.div>
+                <ProductCard product={product} key={product._id}/>
             ))}
         </div>
     )
