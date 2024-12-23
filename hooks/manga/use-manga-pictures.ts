@@ -1,6 +1,6 @@
 import {useQuery} from "@tanstack/react-query";
-import {Manga} from "@/types/anime";
 import {API_BASE_URL} from "@/lib/api";
+import { Manga } from "@/types/manga";
 
 export function useMangaPictures(id: string) {
     return useQuery<Manga["images"][]>({
