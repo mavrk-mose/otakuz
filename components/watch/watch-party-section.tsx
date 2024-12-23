@@ -4,13 +4,13 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { TopAnime, WatchParty } from '@/types/anime';
+import { BaseAnime, WatchParty } from '@/types/anime';
 import { Users, Play, Pause } from 'lucide-react';
 import { io } from 'socket.io-client';
 
 interface WatchPartySectionProps {
   animeId?: string;
-  anime?: TopAnime;
+  anime?: BaseAnime;
 }
 
 export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {

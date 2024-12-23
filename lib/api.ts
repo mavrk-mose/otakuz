@@ -1,4 +1,5 @@
-import { AnimeResponse, MangaResponse, NewsResponse } from '@/types/anime';
+import { AnimeResponse, NewsResponse } from '@/types/anime';
+import { MangaResponse } from '@/types/manga';
 
 export const API_BASE_URL = 'https://api.jikan.moe/v4';
 

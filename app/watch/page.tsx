@@ -55,7 +55,7 @@ export default function WatchPage() {
     }
 
     return (
-        <div className="flex h-screen bg-[#0E0E10] text-white overflow-hidden">
+        <div className="flex h-screen overflow-hidden">
             {/* Left Sidebar */}
             <aside className="w-64 flex-shrink-0 bg-[#1F1F23] overflow-hidden flex-col hidden md:flex">
                 <h2 className="text-sm font-semibold p-4 text-[#EFEFF1]">RECENT ANIME</h2>

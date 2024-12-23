@@ -1,9 +1,9 @@
 import {useQuery} from "@tanstack/react-query";
-import {AnimeData} from "@/types/anime";
+import {AnimeDetails} from "@/types/anime";
 import {API_BASE_URL} from "@/lib/api";
 
 const useAnimeDetails = (animeId: string) => {
-    return useQuery<AnimeData>({
+    return useQuery<AnimeDetails>({
         queryKey: ['animeDetail', animeId],
         queryFn: async () => {
             const response = await fetch(`${API_BASE_URL}/anime/${animeId}`);

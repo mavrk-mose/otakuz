@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Dialog, DialogContent} from '@/components/ui/dialog';
 import {Label} from '@/components/ui/label';
 import {useFirebaseChatActions} from '@/hooks/chat/use-firebase-chat-actions';
-import {AnimeData} from '@/types/anime';
+import {AnimeDetails} from '@/types/anime';
 import {useAuth} from '@/hooks/use-auth';
 import {useRouter} from 'next/navigation';
 import useFilteredRooms from "@/hooks/chat/use-filtered-rooms";
@@ -15,7 +15,7 @@ import { toast } from 'sonner';
 interface ShareAnimeModalProps {
     isOpen: boolean;
     onClose: () => void;
-    anime: AnimeData;
+    anime: AnimeDetails;
 }
 
 export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModalProps) {

@@ -16,7 +16,7 @@ import React, { useState } from 'react';
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
 import useAnimeDetails from "@/hooks/anime/use-anime-details";
 import {useWatchStore} from "@/store/use-watch-store";
-import {AnimeData, AnimeEntry} from "@/types/anime";
+import {AnimeDetails, AnimeEntry} from "@/types/anime";
 import {handleWatchClick} from "@/lib/utils";
 
 export default function AnimeDetailClient({ id }: { id: string }) {

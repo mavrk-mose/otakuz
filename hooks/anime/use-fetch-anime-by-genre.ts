@@ -1,17 +1,19 @@
+"use client"
+
 import {useInfiniteQuery} from "@tanstack/react-query";
 import {API_BASE_URL} from "@/lib/api";
-import {AnimeResponse} from "@/types/anime";
 
-const useFetchAnime = () => {
+const useFetchAnimeByGenre = (selectedGenre?: string) => {
+
     const {
-        data,
-        isLoading,
+        data: anime,
+        isLoading: isLoadingAnime,
         fetchNextPage,
         hasNextPage
-    } = useInfiniteQuery<AnimeResponse>({
-        queryKey: ['animeList'],
+    } = useInfiniteQuery({
+        queryKey: ['animeByGenre', selectedGenre],
         queryFn: async ({ pageParam = 1 }) => {
-            const response = await fetch(`${API_BASE_URL}/top/anime?page=${pageParam}`);
+            const response = await fetch(`${API_BASE_URL}/anime?genres=${selectedGenre}&page=${pageParam}`);
             if (!response.ok) throw new Error('Failed to fetch anime');
             return response.json();
         },
@@ -22,18 +24,16 @@ const useFetchAnime = () => {
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: Infinity
+        staleTime: Infinity,
+        enabled: !!selectedGenre,
     });
 
-    //filter with genre & sort
-
-
     return {
-        data,
-        isLoading,
+        anime,
+        isLoadingAnime,
         fetchNextPage,
         hasNextPage
-    }
+    };
 }
 
-export default useFetchAnime;
+export default useFetchAnimeByGenre;

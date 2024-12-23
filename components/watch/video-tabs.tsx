@@ -34,10 +34,6 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
                         <TabsTrigger value="promo">Promo Videos</TabsTrigger>
                         <TabsTrigger value="episodes">Episodes</TabsTrigger>
                         <TabsTrigger value="music">Music Videos</TabsTrigger>
-                        <TabsTrigger value="comments" className="flex-1">
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Comments
-                        </TabsTrigger>
                         <TabsTrigger value="party" className="flex-1">
                             <Users className="w-4 h-4 mr-2" />
                             Party
@@ -130,9 +126,6 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
                         </div>
                         <ScrollBar orientation="horizontal" />
                     </ScrollArea>
-                </TabsContent>
-                <TabsContent value="comments" className="p-4">
-                    <CommentSection />
                 </TabsContent>
                 {/* <TabsContent value="chat" className="p-4">
                             <ChatRoom animeId={id} />

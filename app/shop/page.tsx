@@ -1,16 +1,12 @@
 "use client"
 
 import {ScrollArea, ScrollBar} from '@/components/ui/scroll-area'
-import Image from "next/image"
 import Link from "next/link"
-import {motion} from 'framer-motion'
 import {ProductList} from "@/components/shop/product-list"
 import {CategoryList} from "@/components/shop/category-list"
 import {ShowBanner} from "@/components/shop/show-banner"
 import {ArrowRight} from "lucide-react";
 import {Button} from "@/components/ui/button";
-import useFetchTitles from "@/hooks/shop/use-fetch-titles";
-import {urlFor} from "@/lib/sanity";
 import TitleBanner from "@/components/shop/title-banner";
 
 //TODO: fetch from sanity
@@ -31,7 +27,7 @@ const featuredBanners = [
 
 export default function ShopPage() {
     return (
-        <div className="min-h-screen bg-black text-white pb-4">
+        <div className="min-h-screen pb-4">
             {/* Featured Products */}
             <section className="py-4">
                 <div className="container mx-auto px-4 max-w-7xl">
