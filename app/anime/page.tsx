@@ -11,10 +11,12 @@ import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import {GenreStories} from "@/components/anime/genre-stories";
 import useFetchAnime from "@/hooks/anime/use-fetch-anime";
+import {handleWatchClick} from "@/lib/utils";
+import {useWatchStore} from "@/store/use-watch-store";
 
 export default function AnimeListPage() {
     const { ref, inView } = useInView();
-
+    const { setSelectedAnime } = useWatchStore();
     const { data, isLoading, fetchNextPage, hasNextPage } = useFetchAnime();
 
     useEffect(() => {
@@ -85,8 +87,12 @@ export default function AnimeListPage() {
                                     <div
                                         className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <div className="absolute bottom-4 left-4 right-4">
-                                            <Button className="w-full gap-2" asChild>
-                                                <Link href={`/watch/${anime.mal_id}`}>
+                                            <Button
+                                                className="w-full gap-2"
+                                                asChild
+                                                onClick={() => handleWatchClick(anime, setSelectedAnime)}
+                                            >
+                                                <Link href="/watch">
                                                     <Play className="h-4 w-4"/>
                                                     Watch Now
                                                 </Link>

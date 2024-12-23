@@ -30,7 +30,7 @@ export default function MangaDetailPage(props: Props) {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
-                <div className="space-y-4">
+                <div className="space-y-4 lg:sticky lg:top-4 self-start">
                     <Card className="overflow-hidden">
                         <Image
                             src={manga.images.jpg.large_image_url}

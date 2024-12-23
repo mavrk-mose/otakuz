@@ -15,9 +15,13 @@ import AnimeEpisodes from "@/components/anime/anime-episodes";
 import React, { useState } from 'react';
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
 import useAnimeDetails from "@/hooks/anime/use-anime-details";
+import {useWatchStore} from "@/store/use-watch-store";
+import {AnimeData, AnimeEntry} from "@/types/anime";
+import {handleWatchClick} from "@/lib/utils";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const { setSelectedAnime } = useWatchStore();
     const { data: anime, isLoading } = useAnimeDetails(id);
 
     if (isLoading) {
@@ -37,7 +41,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
-                <div className="space-y-4">
+                <div className="space-y-4 lg:sticky lg:top-4 self-start">
                     <Card className="overflow-hidden">
                         <Image
                             src={anime.images.jpg.large_image_url}
@@ -48,8 +52,12 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         />
                     </Card>
                     <div className="grid grid-cols-2 gap-2">
-                        <Button className="w-full gap-2" asChild>
-                            <Link href={`/watch/${anime.mal_id}`}>
+                        <Button
+                            className="w-full gap-2"
+                            asChild
+                            onClick={() => handleWatchClick(anime, setSelectedAnime)}
+                        >
+                            <Link href="/watch">
                                 <PlayCircle className="w-4 h-4" /> Watch Trailer
                             </Link>
                         </Button>

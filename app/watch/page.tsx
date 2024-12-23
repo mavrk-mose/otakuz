@@ -31,16 +31,20 @@ export default function WatchPage() {
     }, [inView, hasNextPage, fetchNextPage])
 
     useEffect(() => {
-        if (data?.pages[0]?.data[0]?.entry[0]) {
-            setSelectedAnime(data.pages[0].data[0].entry[0])
+        // Set default selected anime if none exists
+        if (!selectedAnime && data?.pages[0]?.data[0]?.entry[0]) {
+            setSelectedAnime(data.pages[0].data[0].entry[0]);
         }
-    }, [data, setSelectedAnime])
+    }, [data, selectedAnime, setSelectedAnime]);
 
     useEffect(() => {
         if (animeVideos?.promo[0]?.trailer.embed_url) {
-            setSelectedVideoUrl(animeVideos.promo[0].trailer.embed_url)
+            setSelectedVideoUrl(animeVideos.promo[0].trailer.embed_url);
+        } else if (!selectedVideoUrl && data?.pages[0]?.data[0]?.entry[0]?.url) {
+            // Set default video URL if no trailer is available
+            setSelectedVideoUrl(data.pages[0].data[0].entry[0].url);
         }
-    }, [animeVideos])
+    }, [animeVideos, data, selectedVideoUrl]);
 
     if (isLoading) {
         return <WatchSkeleton/>
