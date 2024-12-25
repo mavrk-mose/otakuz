@@ -2,20 +2,21 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import {MessageCircle, Play, Users} from 'lucide-react'
+import { MessageCircle, Play, Users } from 'lucide-react'
 import { Card } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { AnimeVideos } from "@/types/anime"
-import {CommentSection} from "@/components/comment-section";
-import {WatchPartySection} from "@/components/watch/watch-party-section";
+import { CommentSection } from "@/components/comment-section"
+import { WatchPartySection } from "@/components/watch/watch-party-section"
 
 interface Props {
     animeVideos: AnimeVideos | undefined
     onVideoSelect: (url: string) => void
+    selectedVideoUrl: string
 }
 
-export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
+export default function VideoTabs({ animeVideos, onVideoSelect, selectedVideoUrl }: Props) {
     const [activeTab, setActiveTab] = useState("promo")
 
     if (!animeVideos) {
@@ -48,7 +49,7 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
                             {animeVideos?.promo.map((promo, index) => (
                                 <Card
                                     key={`promo-${index}-${promo.title}`}
-                                    className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0"
+                                    className={`w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0 ${selectedVideoUrl === promo.trailer.embed_url ? 'ring-2 ring-primary' : ''}`}
                                     onClick={() => handleVideoClick(promo.trailer.embed_url)}
                                 >
                                     <div className="relative aspect-video">
@@ -76,7 +77,7 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
                             {animeVideos?.episodes.map((episode) => (
                                 <Card
                                     key={episode.mal_id}
-                                    className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0"
+                                    className={`w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0 ${selectedVideoUrl === episode.url ? 'ring-2 ring-primary' : ''}`}
                                     onClick={() => handleVideoClick(episode.url)}
                                 >
                                     <div className="relative aspect-video">
@@ -105,7 +106,7 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
                             {animeVideos?.music_videos.map((mv, index) => (
                                 <Card
                                     key={`music-${index}-${mv.title}`}
-                                    className="w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0"
+                                    className={`w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0 ${selectedVideoUrl === mv.video.embed_url ? 'ring-2 ring-primary' : ''}`}
                                     onClick={() => handleVideoClick(mv.video.embed_url)}
                                 >
                                     <div className="relative aspect-video">
@@ -127,9 +128,6 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
                         <ScrollBar orientation="horizontal" />
                     </ScrollArea>
                 </TabsContent>
-                {/* <TabsContent value="chat" className="p-4">
-                            <ChatRoom animeId={id} />
-                        </TabsContent> */}
                 <TabsContent value="party" className="p-4">
                     <WatchPartySection />
                 </TabsContent>
@@ -137,4 +135,3 @@ export default function VideoTabs({ animeVideos, onVideoSelect }: Props) {
         </div>
     )
 }
-

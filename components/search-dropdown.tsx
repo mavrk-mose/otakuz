@@ -22,7 +22,9 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(dropdownRef, () => {
-    setSearchQuery('');
+    if (typeof window !== 'undefined' && window.innerWidth > 768) {
+      setSearchQuery('');
+    }
   });
 
   if (!searchQuery) return null;
