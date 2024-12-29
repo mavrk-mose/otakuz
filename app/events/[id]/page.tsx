@@ -14,7 +14,7 @@ import { urlFor } from "@/lib/sanity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import EventDetailsSkeleton from '@/components/skeletons/EventDetailsSkeleton';
+import EventDetailsSkeleton from '@/components/skeletons/event-details-skeleton';
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface Props {

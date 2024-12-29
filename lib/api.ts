@@ -80,17 +80,3 @@ export async function getAnimeNews() {
         return [];
     }
 }
-
-export async function getAnimeSchedule() {
-    try {
-        await delay(1000);
-        const response = await fetch(`${API_BASE_URL}/schedules`);
-        if (!response.ok) throw new Error('Failed to fetch anime schedule');
-
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error('Error fetching anime schedule:', error);
-        return [];
-    }
-}

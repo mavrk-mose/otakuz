@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, PlayCircle, Share2, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
+import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import { AnimeRecommendations } from './anime-recommendations';
 import { AnimeGallery } from './anime-gallery';
 import AnimeEpisodes from "@/components/anime/anime-episodes";

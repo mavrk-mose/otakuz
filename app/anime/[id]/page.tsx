@@ -1,6 +1,6 @@
 import {Suspense} from 'react';
 import AnimeDetailClient from '@/components/anime/anime-detail-client';
-import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
+import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import {use} from "react";
 
 interface Props {

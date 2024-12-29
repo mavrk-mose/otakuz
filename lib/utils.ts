@@ -8,6 +8,6 @@ export function cn(...inputs: ClassValue[]) {
 
 export function handleWatchClick(anime: AnimeDetails, setSelectedAnime: (animeEntry: AnimeEntry) => void) {
   const { mal_id, url, images, title } = anime;
-  const selectedAnime: AnimeEntry={ mal_id, url, images, title };
+  const selectedAnime: AnimeEntry = { mal_id, url, images, title };
   setSelectedAnime(selectedAnime);
 }

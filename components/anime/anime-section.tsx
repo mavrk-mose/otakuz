@@ -5,16 +5,21 @@ import { getTopAnime } from '@/lib/api';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, Play, ArrowRight } from 'lucide-react';
+import {Star, ArrowRight, PlayCircle} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import {handleWatchClick} from "@/lib/utils";
+import React from "react";
+import {useWatchStore} from "@/store/use-watch-store";
 
 export function AnimeSection() {
     const { data: animeList, isLoading } = useQuery({
         queryKey: ['topAnime'],
         queryFn: () => getTopAnime()
     });
+
+    const { setSelectedAnime } = useWatchStore();
 
     const container = {
         hidden: { opacity: 0 },
@@ -72,10 +77,13 @@ export function AnimeSection() {
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <div className="absolute bottom-4 left-4 right-4">
-                                            <Button className="w-full gap-2" asChild>
-                                                <Link href={`/watch/${anime.mal_id}`}>
-                                                    <Play className="h-4 w-4" />
-                                                    Watch Now
+                                            <Button
+                                                className="w-full gap-2"
+                                                asChild
+                                                onClick={() => handleWatchClick(anime, setSelectedAnime)}
+                                            >
+                                                <Link href="/watch">
+                                                    <PlayCircle className="w-4 h-4" /> Watch Trailer
                                                 </Link>
                                             </Button>
                                         </div>

@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { useInView } from 'react-intersection-observer'
 import { useRecentAnime } from '@/hooks/anime/use-recent-anime'
 import { useAnimeVideos } from '@/hooks/anime/use-anime-videos'
-import WatchSkeleton from '@/components/skeletons/WatchSkeleton'
+import WatchSkeleton from '@/components/skeletons/watch-skeleton'
 import Image from 'next/image'
 import RecentAnime from '@/components/anime/recent-anime'
 import { AnimeEntry } from '@/types/anime'
@@ -71,7 +71,7 @@ export default function WatchPage() {
             <main className="flex-1 overflow-hidden">
                 <ScrollArea className="h-full">
                     {/* Anime Player */}
-                    <div className="sticky top-0 z-10 w-full bg-black">
+                    <div className="sm:sticky sm:top-0 sm:z-10 md:sticky md:top-0 md:z-10 lg:static w-full bg-black">
                         <div className="container mx-auto">
                             <div className="aspect-video">
                                 {selectedVideoUrl ? (
@@ -92,59 +92,59 @@ export default function WatchPage() {
                             <div className="flex items-center space-x-2">
                                 <Avatar className="w-10 h-10">
                                     <AvatarImage src={selectedAnime.images.jpg.small_image_url}/>
-                                        <AvatarFallback>{selectedAnime.title[0]}</AvatarFallback>
-                                    </Avatar>
-                                    <div>
-                                        <p className="font-medium">{selectedAnime.title}</p>
-                                        <p className="text-sm text-[#ADADB8]">
-                                            <Link href={`/anime/${selectedAnime.mal_id}`} rel="noopener noreferrer"
-                                                  className="hover:underline">
-                                                View details
-                                            </Link>
-                                        </p>
-                                    </div>
+                                    <AvatarFallback>{selectedAnime.title[0]}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                    <p className="font-medium">{selectedAnime.title}</p>
+                                    <p className="text-sm text-[#ADADB8]">
+                                        <Link href={`/anime/${selectedAnime.mal_id}`} rel="noopener noreferrer"
+                                              className="hover:underline">
+                                            View details
+                                        </Link>
+                                    </p>
                                 </div>
                             </div>
-                        )}
-
-                        {/* Video Sections */}
-                        <VideoTabs
-                            animeVideos={animeVideos}
-                            onVideoSelect={handleVideoSelect}
-                            selectedVideoUrl={selectedVideoUrl}
-                        />
-
-                        {/* Recommended Anime List */}
-                        <div>
-                            <h2 className="text-xl font-bold mb-2 ml-4">Explore more </h2>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-                                {data?.pages.flatMap(page =>
-                                    page.data.flatMap((animeData: any) =>
-                                        animeData.entry.map((anime: AnimeEntry) => (
-                                            <Card
-                                                key={`${animeData.content}-${anime.mal_id}`}
-                                                className="bg-[#26262C] overflow-hidden cursor-pointer"
-                                                onClick={() => handleAnimeSelect(anime)}
-                                            >
-                                                <div className="relative aspect-video">
-                                                    <Image
-                                                        src={anime.images.jpg.large_image_url}
-                                                        alt={anime.title}
-                                                        layout="fill"
-                                                        objectFit="cover"
-                                                    />
-                                                </div>
-                                                <div className="p-2">
-                                                    <h3 className="font-medium text-sm line-clamp-2">{anime.title}</h3>
-                                                    <p className="text-xs text-[#ADADB8]">MyAnimeList
-                                                        ID: {anime.mal_id}</p>
-                                                </div>
-                                            </Card>
-                                        ))
-                                    )
-                                )}
-                            </div>
                         </div>
+                    )}
+
+                    {/* Video Sections */}
+                    <VideoTabs
+                        animeVideos={animeVideos}
+                        onVideoSelect={handleVideoSelect}
+                        selectedVideoUrl={selectedVideoUrl}
+                    />
+
+                    {/* Recommended Anime List */}
+                    <div>
+                        <h2 className="text-xl font-bold mb-2 ml-4">Explore more </h2>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
+                            {data?.pages.flatMap(page =>
+                                page.data.flatMap((animeData: any) =>
+                                    animeData.entry.map((anime: AnimeEntry) => (
+                                        <Card
+                                            key={`${animeData.content}-${anime.mal_id}`}
+                                            className="bg-[#26262C] overflow-hidden cursor-pointer"
+                                            onClick={() => handleAnimeSelect(anime)}
+                                        >
+                                            <div className="relative aspect-video">
+                                                <Image
+                                                    src={anime.images.jpg.large_image_url}
+                                                    alt={anime.title}
+                                                    layout="fill"
+                                                    objectFit="cover"
+                                                />
+                                            </div>
+                                            <div className="p-2">
+                                                <h3 className="font-medium text-sm line-clamp-2">{anime.title}</h3>
+                                                <p className="text-xs text-[#ADADB8]">MyAnimeList
+                                                    ID: {anime.mal_id}</p>
+                                            </div>
+                                        </Card>
+                                    ))
+                                )
+                            )}
+                        </div>
+                    </div>
                 </ScrollArea>
             </main>
         </div>

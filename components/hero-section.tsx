@@ -1,15 +1,18 @@
 "use client"
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Play, Info } from 'lucide-react';
+import { Info, PlayCircle} from 'lucide-react';
 import Link from 'next/link';
-import useAnimeDetails from "@/hooks/anime/use-anime-details";
+import useRandomAnime from "@/hooks/anime/use-random-anime";
+import {handleWatchClick} from "@/lib/utils";
+import {useWatchStore} from "@/store/use-watch-store";
 
 export function HeroSection() {
-  const { data: anime } = useAnimeDetails('57334'); // Default to a popular anime
+  const { data: anime } = useRandomAnime(); // Default to a popular anime
   const [background, setBackground] = useState('');
+  const { setSelectedAnime } = useWatchStore();
 
   useEffect(() => {
     if (anime?.images?.webp?.image_url) {
@@ -52,10 +55,13 @@ export function HeroSection() {
           </p>
 
           <div className="flex gap-4">
-            <Button size="lg" asChild>
-              <Link href={`/watch/${anime.mal_id}`}>
-                <Play className="mr-2 h-5 w-5" />
-                Watch Now
+            <Button
+                className="w-full gap-2"
+                asChild
+                onClick={() => handleWatchClick(anime, setSelectedAnime)}
+            >
+              <Link href="/watch">
+                <PlayCircle className="w-4 h-4" /> Watch Trailer
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>

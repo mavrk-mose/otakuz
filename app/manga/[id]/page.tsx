@@ -1,6 +1,6 @@
 "use client"
 
-import DetailsSkeleton from "@/components/skeletons/DetailsSkeleton";
+import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
