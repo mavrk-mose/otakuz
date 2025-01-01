@@ -10,6 +10,8 @@ import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
 import useFetchManga from "@/hooks/manga/use-fetch-manga";
+import {GenreStories} from "@/components/anime/genre-stories";
+import {MangaGenres} from "@/components/manga/manga-genres";
 
 export default function MangaListPage() {
     const { ref, inView } = useInView();
@@ -36,6 +38,9 @@ export default function MangaListPage() {
     };
     return (
         <div className="container mx-auto px-4 py-8">
+            <div className="mb-8">
+                <MangaGenres />
+            </div>
             <div className="mb-8">
                 <h1 className="text-4xl font-bold mb-2">Manga Collection</h1>
                 <p className="text-muted-foreground">
@@ -78,7 +83,7 @@ export default function MangaListPage() {
                                         <div className="absolute bottom-4 left-4 right-4">
                                             <Button className="w-full gap-2" asChild>
                                                 <Link href={`/manga/${manga.mal_id}`}>
-                                                    <BookOpen className="h-4 w-4" />
+                                                    <BookOpen className="h-4 w-4"/>
                                                     Read Now
                                                 </Link>
                                             </Button>
@@ -87,7 +92,7 @@ export default function MangaListPage() {
                                 </div>
                                 <div className="p-4">
                                     <div className="flex items-center gap-2 mb-2">
-                                        <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                                        <Star className="h-4 w-4 text-yellow-400 fill-current"/>
                                         <span className="text-sm font-medium">{manga.score}</span>
                                         <Badge variant="secondary" className="ml-auto">
                                             {manga.chapters || 'Ongoing'} CH
@@ -107,16 +112,16 @@ export default function MangaListPage() {
                         </motion.div>
                     ))
                 )}
-                <div ref={ref} />
+                <div ref={ref}/>
                 {hasNextPage &&
                     Array(8)
                         .fill(null)
                         .map((_, index) => (
                             <Card key={`next-page-loading-${index}`} className="animate-pulse">
-                                <div className="aspect-[2/3] bg-muted" />
+                                <div className="aspect-[2/3] bg-muted"/>
                                 <div className="p-4 space-y-2">
-                                    <div className="h-4 bg-muted rounded w-3/4" />
-                                    <div className="h-4 bg-muted rounded w-1/2" />
+                                    <div className="h-4 bg-muted rounded w-3/4"/>
+                                    <div className="h-4 bg-muted rounded w-1/2"/>
                                 </div>
                             </Card>
                         ))}

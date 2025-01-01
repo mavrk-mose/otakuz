@@ -53,6 +53,20 @@ export async function getAnimeByGenre(genreId: string) {
     }
 }
 
+export async function getMangaGenres() {
+    try {
+        await delay(1000); // Add delay to respect API rate limits
+        const response = await fetch(`${API_BASE_URL}/genres/manga`);
+        if (!response.ok) throw new Error('Failed to fetch anime genres');
+
+        const data = await response.json();
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching anime genres:', error);
+        return [];
+    }
+}
+
 export async function getTopManga() {
     try {
         await delay(1000);
