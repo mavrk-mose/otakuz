@@ -1,13 +1,13 @@
 "use client"
 
-import {AnimatePresence, motion } from 'framer-motion';
-import { useState } from 'react';
+import {AnimatePresence, motion } from 'framer-motion';import { useState } from 'react';
 import { GenreStories } from "@/components/anime/genre-stories";
 import AnimeCollection from "@/components/anime/anime-collection";
 import FilteredAnime from "@/components/anime/filtered-anime";
+import {useGenreStore} from "@/store/use-genre-store";
 
 export default function AnimeListPage() {
-    const [selectedGenre, setSelectedGenre] = useState<string | undefined>(undefined);
+    const {animeGenre} = useGenreStore();
 
     const container = {
         hidden: { opacity: 0 },
@@ -20,7 +20,7 @@ export default function AnimeListPage() {
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="mb-8">
-                <GenreStories onGenreSelect={setSelectedGenre} />
+                <GenreStories/>
             </div>
 
             <div className="mb-8">
@@ -37,8 +37,7 @@ export default function AnimeListPage() {
                 className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
             >
                 <AnimatePresence initial={false}>
-                    {selectedGenre ?
-                        (<FilteredAnime selectedGenre={selectedGenre}/>) : (<AnimeCollection/>)}
+                    {animeGenre ? <FilteredAnime/> : <AnimeCollection/>}
                 </AnimatePresence>
             </motion.div>
         </div>

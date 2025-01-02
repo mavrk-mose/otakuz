@@ -5,18 +5,14 @@ import {Avatar, AvatarFallback} from '@/components/ui/avatar';
 import {motion} from 'framer-motion';
 import {Genre} from "@/types/anime";
 import useMangaGenres from "@/hooks/manga/use-manga-genres";
+import {useGenreStore} from "@/store/use-genre-store";
 
-interface GenreStoriesProps {
-    onGenreSelect?: (genreId: string) => void;
-}
-
-export function MangaGenres({onGenreSelect}: GenreStoriesProps) {
+export function MangaGenres() {
     const {genres, isLoadingGenres} = useMangaGenres();
+    const {mangaGenre, setMangaGenre} = useGenreStore();
 
     const handleGenreClick = (genre: Genre) => {
-        if (onGenreSelect) {
-            onGenreSelect(genre.mal_id.toString());
-        }
+        setMangaGenre(genre.mal_id.toString());
     };
 
     if (isLoadingGenres) {
@@ -47,8 +43,8 @@ export function MangaGenres({onGenreSelect}: GenreStoriesProps) {
                             whileTap={{scale: 0.95}}
                             onClick={() => handleGenreClick(genre)}
                         >
-                            <Avatar className="w-16 h-16 border-2 border-primary">
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs">
+                            <Avatar className={`w-16 h-16 border-2 ${mangaGenre ? 'border-primary' : 'border-transparent'} transition-colors duration-200`}>
+                                <AvatarFallback className={`${mangaGenre ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'} text-xs transition-colors duration-200`}>
                                     {genre.name.split(' ').map((word: string) => word[0]).join('')}
                                 </AvatarFallback>
                             </Avatar>
