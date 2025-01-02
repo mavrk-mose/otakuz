@@ -6,6 +6,7 @@ import { motion } from 'framer-motion';
 import useAnimeGenres from "@/hooks/anime/use-anime-genres";
 import {Genre} from "@/types/anime";
 import {useGenreStore} from "@/store/use-genre-store";
+import {isEqual} from "@/lib/utils";
 
 export function GenreStories() {
     const { genres, isLoadingGenres } = useAnimeGenres();
@@ -44,8 +45,8 @@ export function GenreStories() {
                             whileTap={{ scale: 0.95 }}
                             onClick={() => handleGenreClick(genre)}
                         >
-                            <Avatar className={`w-16 h-16 border-2 ${animeGenre ? 'border-primary' : 'border-red'} transition-colors duration-200`}>
-                                <AvatarFallback className={`${animeGenre ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'} text-xs transition-colors duration-200`}>
+                            <Avatar className={`w-16 h-16 border-2 ${isEqual(genre.mal_id.toString(), animeGenre) ? 'border-primary' : 'border-red'} transition-colors duration-200`}>
+                                <AvatarFallback className={`${isEqual(genre.mal_id.toString(), animeGenre) ? 'bg-primary text-primary-foreground' : 'bg-primary/10 text-primary'} text-xs transition-colors duration-200`}>
                                     {genre.name.split(' ').map((word: string) => word[0]).join('')}
                                 </AvatarFallback>
                             </Avatar>

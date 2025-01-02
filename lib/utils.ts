@@ -11,3 +11,7 @@ export function handleWatchClick(anime: AnimeDetails, setSelectedAnime: (animeEn
   const selectedAnime: AnimeEntry = { mal_id, url, images, title };
   setSelectedAnime(selectedAnime);
 }
+
+export function isEqual(string1: string, string2: string | undefined): boolean {
+  return string1 === string2;
+}
