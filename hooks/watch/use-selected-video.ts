@@ -29,6 +29,15 @@ export function useSelectedVideo(animeVideos: AnimeVideos | undefined, initialAn
         setSelectedVideoUrl('')
     }
 
+    useEffect(() => {
+        if (selectedAnime && animeVideos) {
+            const promoVideoUrl = animeVideos.promo[0]?.trailer.embed_url
+            if (promoVideoUrl) {
+                setSelectedVideoUrl(promoVideoUrl)
+            }
+        }
+    }, [selectedAnime, animeVideos])
+
     return {
         selectedAnime,
         selectedVideoUrl,
