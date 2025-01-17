@@ -5,12 +5,12 @@ import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ChevronDown, ChevronUp, Star } from 'lucide-react'
-import { useCart } from '@/hooks/use-cart'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { use } from 'react'
 import useFetchProduct from "@/hooks/shop/use-fetch-product"
 import {urlFor} from "@/lib/sanity";
+import { useCart } from '@/store/use-cart'
 
 interface Props {
   params: Promise<{ id: string }>

@@ -4,12 +4,12 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Star, ShoppingCart } from 'lucide-react';
-import { useCart } from '@/hooks/use-cart';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from "@/types/shop";
 import { urlFor } from "@/lib/sanity";
+import { useCart } from '@/store/use-cart';
 
 interface ProductCardProps {
   product: Product;

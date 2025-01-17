@@ -3,12 +3,12 @@
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { useCart } from '@/hooks/use-cart';
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import {urlFor} from "@/lib/sanity";
+import { useCart } from '@/store/use-cart';
 
 interface CartDrawerProps {
   isOpen: boolean;
