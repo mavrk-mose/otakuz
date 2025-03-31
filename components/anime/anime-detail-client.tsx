@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Heart, PlayCircle, Share2, Star } from 'lucide-react';
+import { BookmarkButton } from '../bookmark-button';
 import Image from 'next/image';
 import Link from 'next/link';
 import DetailsSkeleton from "@/components/skeletons/details-skeleton";
@@ -61,9 +62,13 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                 <PlayCircle className="w-4 h-4" /> Watch Trailer
                             </Link>
                         </Button>
-                        <Button variant="outline" className="w-full gap-2">
-                            <Heart className="w-4 h-4" /> Add to List
-                        </Button>
+                        <BookmarkButton
+                            itemId={anime.id}
+                            type="anime"
+                            title={anime.title}
+                            image={anime.images.jpg.large_image_url}
+                        />
+
                     </div>
                     <Button
                         variant="secondary"

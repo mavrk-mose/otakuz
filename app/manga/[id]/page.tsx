@@ -6,6 +6,7 @@ import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
 import {Star, BookOpen, Users} from 'lucide-react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
+import {BookmarkButton} from "@/components/bookmark-button";
 import Image from 'next/image';
 import {use} from "react";
 import {MangaRecommendations} from "@/components/manga/manga-recommendations";
@@ -47,6 +48,12 @@ export default function MangaDetailPage(props: Props) {
                         <Button variant="outline" className="w-full gap-2">
                             <Users className="w-4 h-4"/> {manga.members.toLocaleString()}
                         </Button>
+                        <BookmarkButton
+                            itemId={manga.id}
+                            type="manga"
+                            title={manga.title}
+                            image={manga.images.jpg.large_image_url}
+                        />
                     </div>
                     <Card className="p-4 space-y-4">
                         <div>
