@@ -49,7 +49,7 @@ export default function MangaDetailPage(props: Props) {
                             <Users className="w-4 h-4"/> {manga.members.toLocaleString()}
                         </Button>
                         <BookmarkButton
-                            itemId={manga.id}
+                            itemId={manga.mal_id.toString()}
                             type="manga"
                             title={manga.title}
                             image={manga.images.jpg.large_image_url}

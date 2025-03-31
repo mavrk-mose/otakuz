@@ -63,7 +63,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Link>
                         </Button>
                         <BookmarkButton
-                            itemId={anime.id}
+                            itemId={anime.mal_id.toString()}
                             type="anime"
                             title={anime.title}
                             image={anime.images.jpg.large_image_url}
