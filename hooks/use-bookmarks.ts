@@ -50,13 +50,19 @@ export function useBookmarks() {
     const fetchLists = async () => {
       try {
         const q = query(
-          collection(db, 'users', user.uid, 'lists')
+          collection(db, 'users', user.uid, 'lists'),
+          orderBu
         );
         const snapshot = await getDocs(q);
         const fetchedLists = snapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         })) as BookmarkList[];
+
+        const sortedLists = fetchedLists.sort(
+          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+
         setLists(fetchedLists);
       } catch (error) {
         console.error('Error fetching lists:', error);

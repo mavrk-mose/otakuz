@@ -37,12 +37,23 @@ export function BookmarkButton({
   image,
 }: BookmarkButtonProps) {
   const { user } = useAuth();
-  const { lists, addToList, removeFromList, createList, isBookmarked } =
-    useBookmarks();
+  const { 
+    lists, 
+    addToList, 
+    removeFromList, 
+    createList, 
+    isBookmarked 
+  } = useBookmarks();
+
   const [showNewListDialog, setShowNewListDialog] = useState(false);
   const [newListName, setNewListName] = useState("");
+
   const bookmarkLoading = useAnimeStore(
     (state) => state.bookmarkLoading[itemId]
+  );
+
+  const sortedLists = [...lists].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
   );
 
   const handleAddToList = async (listId: string) => {
@@ -55,12 +66,17 @@ export function BookmarkButton({
 
   const handleCreateList = async () => {
     if (!newListName.trim()) return;
-    const newList = await createList(newListName);
-    if (newList) {
-      await addToList(newList.id, { id: itemId, type, title, image });
+    try {
+      const newList = await createList(newListName);
+      if (newList?.id) {
+        await addToList(newList.id, { id: itemId, type, title, image });
+      }
+    } catch (error) {
+      console.error("Error creating list or adding item:", error);
+    } finally {
+      setNewListName("");
+      setShowNewListDialog(false);
     }
-    setNewListName("");
-    setShowNewListDialog(false);
   };
 
   if (!user) {
@@ -107,7 +123,7 @@ export function BookmarkButton({
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            {lists.map((list) => (
+            {sortedLists.map((list) => (
               <DropdownMenuItem
                 key={list.id}
                 onClick={() =>
