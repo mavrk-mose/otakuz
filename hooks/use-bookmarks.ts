@@ -1,9 +1,8 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { db } from '@/lib/firebase';
 import { useAuth } from './use-auth';
-import { useAnimeStore } from '@/store/use-anime-store';
 import {
   collection,
   doc,
@@ -12,7 +11,11 @@ import {
   query,
   where,
   getDocs,
+  orderBy,
+  limit,
+  startAfter,
   serverTimestamp,
+  DocumentSnapshot,
 } from 'firebase/firestore';
 
 export type ListType = 'favorites' | 'watched' | 'planning' | 'custom';
@@ -34,114 +37,119 @@ export interface BookmarkedItem {
   addedAt: Date;
 }
 
+const ITEMS_PER_PAGE = 12;
+
 export function useBookmarks() {
   const { user } = useAuth();
-  const [lists, setLists] = useState<BookmarkList[]>([]);
-  const [loading, setLoading] = useState(true);
-  const setBookmarkLoading = useAnimeStore((state) => state.setBookmarkLoading);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    if (!user) {
-      setLists([]);
-      setLoading(false);
-      return;
-    }
+  const { data: lists = [], isLoading: listsLoading } = useQuery({
+    queryKey: ['lists', user?.uid],
+    queryFn: async () => {
+      if (!user) return [];
+      
+      const q = query(
+        collection(db, 'users', user.uid, 'lists'),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      return snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })) as BookmarkList[];
+    },
+    enabled: !!user
+  });
 
-    const fetchLists = async () => {
-      try {
+  const useListItems = (listId: string) => {
+    return useInfiniteQuery({
+      queryKey: ['listItems', listId],
+      queryFn: async ({ pageParam }: { pageParam?: DocumentSnapshot | null }) => {
+        if (!user) return { items: [], lastDoc: null };
+  
         const q = query(
-          collection(db, 'users', user.uid, 'lists'),
-          orderBu
+          collection(db, 'users', user.uid, 'lists', listId, 'items'),
+          orderBy('addedAt', 'desc'),
+          limit(ITEMS_PER_PAGE),
+          ...(pageParam ? [startAfter(pageParam)] : [])
         );
+  
         const snapshot = await getDocs(q);
-        const fetchedLists = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        })) as BookmarkList[];
+        const lastDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+  
+        return {
+          items: snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          })) as BookmarkedItem[],
+          lastDoc
+        };
+      },
+      getNextPageParam: (lastPage) => lastPage.lastDoc,
+      initialPageParam: null, // Define the initial page parameter
+      enabled: !!user && !!listId,
+    });
+  };
 
-        const sortedLists = fetchedLists.sort(
-          (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-        );
+  const addToList = useMutation({
+    mutationFn: async ({
+      listId,
+      item
+    }: {
+      listId: string;
+      item: Omit<BookmarkedItem, 'addedAt'>;
+    }) => {
+      if (!user) throw new Error('User not authenticated');
 
-        setLists(fetchedLists);
-      } catch (error) {
-        console.error('Error fetching lists:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchLists();
-  }, [user]);
-
-  const addToList = async (
-    listId: string,
-    item: Omit<BookmarkedItem, 'addedAt'>
-  ) => {
-    if (!user) return;
-
-    setBookmarkLoading(item.id, true);
-    try {
-      const listRef = doc(db, 'users', user.uid, 'lists', listId);
-      const bookmarkRef = doc(listRef, 'items', item.id);
+      const bookmarkRef = doc(
+        db,
+        'users',
+        user.uid,
+        'lists',
+        listId,
+        'items',
+        item.id
+      );
 
       await setDoc(bookmarkRef, {
         ...item,
         addedAt: serverTimestamp(),
       });
 
-      setLists(prev => prev.map(list => {
-        if (list.id === listId) {
-          return {
-            ...list,
-            items: [...list.items, { ...item, addedAt: new Date() }]
-          };
-        }
-        return list;
-      }));
-    } catch (error) {
-      console.error('Error adding to list:', error);
-    } finally {
-      setBookmarkLoading(item.id, false);
-    }
-  };
+      return { listId, item };
+    },
+    onSuccess: ({ listId }) => {
+      queryClient.invalidateQueries({ queryKey: ['listItems', listId] });
+    },
+  });
 
-  const removeFromList = async (listId: string, itemId: string) => {
-    if (!user) return;
+  const removeFromList = useMutation({
+    mutationFn: async ({ listId, itemId }: { listId: string; itemId: string }) => {
+      if (!user) throw new Error('User not authenticated');
 
-    setBookmarkLoading(itemId, true);
-    try {
       const bookmarkRef = doc(
-        db, 
-        'users', 
-        user.uid, 
-        'lists', 
-        listId, 
-        'items', 
+        db,
+        'users',
+        user.uid,
+        'lists',
+        listId,
+        'items',
         itemId
       );
+
       await deleteDoc(bookmarkRef);
+      return { listId, itemId };
+    },
+    onSuccess: ({ listId }) => {
+      queryClient.invalidateQueries({ queryKey: ['listItems', listId] });
+    },
+  });
 
-      setLists(prev => prev.map(list => {
-        if (list.id === listId) {
-          return {
-            ...list,
-            items: list.items.filter(item => item.id !== itemId)
-          };
-        }
-        return list;
-      }));
-    } catch (error) {
-      console.error('Error removing from list:', error);
-    } finally {
-      setBookmarkLoading(itemId, false);
-    }
-  };
+  const createList = useMutation({
+    mutationFn: async ({ name, type = 'custom' }: { name: string; type?: ListType }) => {
+      if (!user) throw new Error('User not authenticated');
 
-  const createList = async (name: string, type: ListType = 'custom') => {
-    if (!user) return;
-
-    try {
       const listRef = doc(collection(db, 'users', user.uid, 'lists'));
       const newList: BookmarkList = {
         id: listRef.id,
@@ -153,37 +161,36 @@ export function useBookmarks() {
       };
 
       await setDoc(listRef, newList);
-      setLists(prev => [...prev, newList]);
       return newList;
-    } catch (error) {
-      console.error('Error creating list:', error);
-    }
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+    },
+  });
 
-  const deleteList = async (listId: string) => {
-    if (!user) return;
-
-    try {
+  const deleteList = useMutation({
+    mutationFn: async (listId: string) => {
+      if (!user) throw new Error('User not authenticated');
       await deleteDoc(doc(db, 'users', user.uid, 'lists', listId));
-      setLists(prev => prev.filter(list => list.id !== listId));
-    } catch (error) {
-      console.error('Error deleting list:', error);
-    }
-  };
-
-  const isBookmarked = (itemId: string) => {
-    return lists.some(list => 
-      list.items.some(item => item.id === itemId)
-    );
-  };
+      return listId;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+    },
+  });
 
   return {
     lists,
-    loading,
-    addToList,
-    removeFromList,
-    createList,
-    deleteList,
-    isBookmarked
+    listsLoading,
+    useListItems,
+    addToList: (listId: string, item: Omit<BookmarkedItem, 'addedAt'>) =>
+      addToList.mutateAsync({ listId, item }),
+    removeFromList: (listId: string, itemId: string) =>
+      removeFromList.mutateAsync({ listId, itemId }),
+    createList: (name: string, type?: ListType) =>
+      createList.mutateAsync({ name, type }),
+    deleteList: (listId: string) => deleteList.mutateAsync(listId),
+    isBookmarked: (itemId: string) =>
+      lists.some(list => list.items.some(item => item.id === itemId))
   };
 }
