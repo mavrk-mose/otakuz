@@ -87,7 +87,7 @@ export function useBookmarks() {
         };
       },
       getNextPageParam: (lastPage) => lastPage.lastDoc,
-      initialPageParam: null, // Define the initial page parameter
+      initialPageParam: null, 
       enabled: !!user && !!listId,
     });
   };

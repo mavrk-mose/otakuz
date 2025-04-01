@@ -1,15 +1,17 @@
-"use client"
+"use client";
 
-import { useBookmarks } from '@/hooks/use-bookmarks';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Share2, Trash2, Plus } from 'lucide-react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { useEffect } from 'react';
+import { useBookmarks } from "@/hooks/use-bookmarks";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Share2, Trash2, Plus } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
+import { BookmarkedItem } from "@/hooks/use-bookmarks";
+import { DocumentSnapshot } from "firebase/firestore";
 
 interface UserListsProps {
   userId: string;
@@ -23,8 +25,8 @@ export function UserLists({ userId, onShare }: UserListsProps) {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
+      transition: { staggerChildren: 0.1 },
+    },
   };
 
   return (
@@ -51,12 +53,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
 
 function ListCard({ list, onShare, onDelete, useListItems }: any) {
   const { ref, inView } = useInView();
-  const { 
-    data, 
-    fetchNextPage, 
-    hasNextPage, 
-    isFetchingNextPage 
-  } = useListItems(list.id);
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useListItems(
+    list.id
+  );
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -64,15 +63,19 @@ function ListCard({ list, onShare, onDelete, useListItems }: any) {
     }
   }, [inView, hasNextPage, fetchNextPage]);
 
-  const allItems = data?.pages.flatMap(page => page.items) || [];
+  interface PageType {
+    items: BookmarkedItem[];
+    lastDoc: DocumentSnapshot | null;
+  }
 
+  const allItems: BookmarkedItem[] =
+    data?.pages.flatMap((page: PageType) => page.items) || [];
 
   const item = {
     hidden: { opacity: 0, y: 20 },
-    show: { opacity: 1, y: 0 }
+    show: { opacity: 1, y: 0 },
   };
 
-  
   return (
     <motion.div
       variants={item}
@@ -89,20 +92,22 @@ function ListCard({ list, onShare, onDelete, useListItems }: any) {
               <Button
                 variant="ghost"
                 size="icon"
-                onClick={() => onShare({
-                  type: 'list',
-                  data: {
-                    id: list.id,
-                    title: list.name,
-                    image: allItems[0]?.image || '',
-                    items: allItems
-                  }
-                })}
+                onClick={() =>
+                  onShare({
+                    type: "list",
+                    data: {
+                      id: list.id,
+                      title: list.name,
+                      image: allItems[0]?.image || "",
+                      items: allItems,
+                    },
+                  })
+                }
               >
                 <Share2 className="h-4 w-4" />
               </Button>
             )}
-            {list.type === 'custom' && (
+            {list.type === "custom" && (
               <Button
                 variant="ghost"
                 size="icon"
@@ -125,10 +130,7 @@ function ListCard({ list, onShare, onDelete, useListItems }: any) {
                   exit={{ opacity: 0, scale: 0.8 }}
                   transition={{ delay: index * 0.1 }}
                 >
-                  <Link
-                    href={`/${item.type}/${item.id}`}
-                    className="group"
-                  >
+                  <Link href={`/${item.type}/${item.id}`} className="group">
                     <div className="relative aspect-[2/3] rounded-lg overflow-hidden">
                       <Image
                         src={item.image}
@@ -147,10 +149,7 @@ function ListCard({ list, onShare, onDelete, useListItems }: any) {
           </div>
 
           {hasNextPage && (
-            <div
-              ref={ref}
-              className="flex justify-center mt-4"
-            >
+            <div ref={ref} className="flex justify-center mt-4">
               {isFetchingNextPage ? (
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               ) : (
