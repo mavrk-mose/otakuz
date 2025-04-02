@@ -1,7 +1,6 @@
 "use client"
 
 import { useAuth } from '@/hooks/use-auth';
-import { useBookmarks } from '@/hooks/use-bookmarks';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';

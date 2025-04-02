@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { db, storage } from '@/lib/firebase'
-import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, setDoc } from 'firebase/firestore'
+import { collection, query, orderBy, limit, onSnapshot, addDoc, serverTimestamp, updateDoc, deleteDoc, doc, setDoc, getDocs } from 'firebase/firestore'
 import { ref as dbRef, push, set, onChildAdded, onChildChanged, onChildRemoved } from 'firebase/database'
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
 import { useMessagesStore } from "@/store/use-messages-store"

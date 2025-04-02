@@ -10,6 +10,8 @@ import { AnimatePresence } from 'framer-motion'
 import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {MessageComponent} from "@/components/chat/message-component";
 import useAudioRecorder from "@/hooks/chat/use-audio-recorder";
+import useRoomDetails from "@/hooks/chat/use-room-details";
+import { createChatNotification } from '@/lib/notifications';
 
 interface ChatRoomProps {
     roomId: string
@@ -31,6 +33,8 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         sendAudioMessage,
         resetRecording,
     } = useAudioRecorder();
+    const { roomDetails, loading, refetch } = useRoomDetails(roomId);
+
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -38,6 +42,12 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         await sendMessage(newMessage, user.uid, user.displayName || 'Anonymous')
         setNewMessage('')
         scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+
+        roomDetails?.members.forEach((member) => { 
+            if (member !== user?.uid) {
+                createChatNotification(member, title, 'New message received');
+            }
+        })
     }
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
