@@ -16,6 +16,7 @@ import {
   startAfter,
   serverTimestamp,
   DocumentSnapshot,
+  updateDoc,
 } from 'firebase/firestore';
 
 export type ListType = 'favorites' | 'watched' | 'planning' | 'custom';
@@ -27,6 +28,9 @@ export interface BookmarkList {
   items: BookmarkedItem[];
   createdAt: Date;
   updatedAt: Date;
+  collaborative: boolean;
+  public: boolean;
+  collaborators: string[];
 }
 
 export interface BookmarkedItem {
@@ -98,7 +102,7 @@ export function useBookmarks() {
       item
     }: {
       listId: string;
-      item: Omit<BookmarkedItem, 'addedAt'>;
+      item: Omit<BookmarkedItem, 'addedAt' | 'addedBy'>;
     }) => {
       if (!user) throw new Error('User not authenticated');
 
@@ -115,6 +119,7 @@ export function useBookmarks() {
       await setDoc(bookmarkRef, {
         ...item,
         addedAt: serverTimestamp(),
+        addedBy: user.uid
       });
 
       return { listId, item };
@@ -157,7 +162,10 @@ export function useBookmarks() {
         type,
         items: [],
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        collaborative: false,
+        public: false,
+        collaborators: []
       };
 
       await setDoc(listRef, newList);
@@ -179,6 +187,23 @@ export function useBookmarks() {
     },
   });
 
+  const updateListSettings = useMutation({
+    mutationFn: async ({ listId, settings }: { listId: string; settings: Partial<BookmarkList> }) => {
+      if (!user) throw new Error('User not authenticated');
+      
+      const listRef = doc(db, 'users', user.uid, 'lists', listId);
+      await updateDoc(listRef, {
+        ...settings,
+        updatedAt: serverTimestamp()
+      });
+      
+      return { listId, settings };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+    },
+  });
+
   return {
     lists,
     listsLoading,
@@ -191,6 +216,8 @@ export function useBookmarks() {
       createList.mutateAsync({ name, type }),
     deleteList: (listId: string) => deleteList.mutateAsync(listId),
     isBookmarked: (itemId: string) =>
-      lists.some(list => list.items.some(item => item.id === itemId))
+      lists.some(list => list.items.some(item => item.id === itemId)),
+    updateListSettings: (listId: string, settings: Partial<BookmarkList>) =>
+      updateListSettings.mutateAsync({ listId, settings }),
   };
 }
