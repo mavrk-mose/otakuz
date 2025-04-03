@@ -113,21 +113,21 @@ export default function Navbar() {
               <div className="w-12 h-[2px] bg-border rounded-full my-2" />
             </motion.div>
 
-            {navItems.map((item) => (
-              <motion.div key={item.href} variants={item} className="w-full">
+            {navItems.map((navItem) => (
+              <motion.div key={navItem.href} variants={item} className="w-full">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link href={item.href}>
+                    <Link href={navItem.href}>
                       <Button
                         variant="ghost"
                         size="icon"
                         className={cn(
                           "w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300",
-                          pathname === item.href && "bg-accent"
+                          pathname === navItem.href && "bg-accent"
                         )}
                       >
-                        <item.icon className="h-5 w-5" />
-                        <span className="sr-only">{item.label}</span>
+                        <navItem.icon className="h-5 w-5" />
+                        <span className="sr-only">{navItem.label}</span>
                       </Button>
                     </Link>
                   </TooltipTrigger>
