@@ -1,98 +1,85 @@
 "use client"
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { 
-  Search, 
-  Menu, 
-  Moon, 
-  Sun, 
-  Trophy,
+import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import {
+  Moon,
+  Sun,
   Home,
   Newspaper,
   Tv2,
   BookOpen,
-  Calendar as CalendarIcon,
-  Image as ImageIcon,
   ShoppingBag,
   MessageSquare,
-  Settings,
-  LogOut
-} from 'lucide-react';
-import { useTheme } from 'next-themes';
-import { SearchDropdown } from './search-dropdown';
-import { MobileNav } from './mobile-nav';
-import { MobileSearch } from './mobile-search';
-import { NotificationBell } from '@/components/notification-bell';
-import { useAuth } from '@/hooks/use-auth';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useAnimeStore } from '@/store/use-anime-store';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { usePathname } from 'next/navigation';
+  LogOut,
+  PartyPopper,
+} from "lucide-react"
+import { useTheme } from "next-themes"
+import { useAuth } from "@/hooks/use-auth"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { motion } from "framer-motion"
+import { cn } from "@/lib/utils"
+import { usePathname } from "next/navigation"
 
 export default function Navbar() {
-  const { setTheme } = useTheme();
-  const { setSearchQuery, searchQuery } = useAnimeStore();
-  const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const { user, signOut } = useAuth();
-  const pathname = usePathname();
+  const { setTheme } = useTheme()
+  const { user, signOut } = useAuth()
+  const pathname = usePathname()
+  const [isExpanded, setIsExpanded] = useState(false)
 
   const handleSignOut = async () => {
     try {
-      await signOut();
+      await signOut()
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Error signing out:", error)
     }
-  };
+  }
 
   const navItems = [
-    { href: '/', icon: Home, label: 'Home' },
-    { href: '/news', icon: Newspaper, label: 'News' },
-    { href: '/anime', icon: Tv2, label: 'Anime' },
-    { href: '/manga', icon: BookOpen, label: 'Manga' },
+    { href: "/", icon: Home, label: "Home" },
+    { href: "/news", icon: Newspaper, label: "News" },
+    { href: "/anime", icon: Tv2, label: "Anime" },
+    { href: "/manga", icon: BookOpen, label: "Manga" },
     // { href: '/calendar', icon: CalendarIcon, label: 'Calendar' },
-    { href: '/gallery', icon: ImageIcon, label: 'Gallery' },
-    { href: '/shop', icon: ShoppingBag, label: 'Shop' },
-    { href: '/chat', icon: MessageSquare, label: 'Chat' },
-  ];
+    { href: "/events", icon: PartyPopper, label: "Events" },
+    { href: "/shop", icon: ShoppingBag, label: "Shop" },
+    { href: "/chat", icon: MessageSquare, label: "Chat" },
+  ]
 
   const container = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
-  };
+        staggerChildren: 0.1,
+      },
+    },
+  }
 
   const item = {
     hidden: { x: -20, opacity: 0 },
-    show: { x: 0, opacity: 1 }
-  };
+    show: { x: 0, opacity: 1 },
+  }
 
   return (
     <>
       <motion.aside
         initial={{ width: 0, opacity: 0 }}
-        animate={{ width: "72px", opacity: 1 }}
-        className="fixed left-0 top-0 bottom-0 z-50 flex flex-col items-center gap-2 border-r bg-background p-3"
+        animate={{
+          width: isExpanded ? "240px" : "72px",
+          opacity: 1,
+          transition: {
+            duration: 0.3,
+            ease: "easeInOut",
+          },
+        }}
+        onMouseEnter={() => setIsExpanded(true)}
+        onMouseLeave={() => setIsExpanded(false)}
+        className="fixed left-0 top-0 bottom-0 z-50 flex flex-col items-center gap-2 border-r bg-background p-3 overflow-hidden"
       >
         <TooltipProvider delayDuration={0}>
           <motion.div
@@ -102,10 +89,11 @@ export default function Navbar() {
             className="flex flex-col items-center gap-2 w-full"
           >
             <motion.div variants={item} className="w-full">
-              <Link href="/" className="flex justify-center">
+              <Link href="/" className="flex justify-center w-full">
                 <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl hover:rounded-xl transition-all duration-300">
                   O
                 </div>
+                {isExpanded && <div className="ml-3 font-bold text-xl flex items-center">Otaku</div>}
               </Link>
             </motion.div>
 
@@ -117,16 +105,20 @@ export default function Navbar() {
               <motion.div key={navItem.href} variants={item} className="w-full">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link href={navItem.href}>
+                    <Link href={navItem.href} className="w-full">
                       <Button
                         variant="ghost"
-                        size="icon"
                         className={cn(
-                          "w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300",
-                          pathname === navItem.href && "bg-accent"
+                          "w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300 justify-start",
+                          pathname === navItem.href && "bg-accent",
                         )}
                       >
-                        <navItem.icon className="h-5 w-5" />
+                        <navItem.icon className="h-5 w-5 min-w-5" />
+                        {isExpanded && (
+                          <span className="ml-3 text-sm font-medium overflow-hidden whitespace-nowrap">
+                            {navItem.label}
+                          </span>
+                        )}
                         <span className="sr-only">{navItem.label}</span>
                       </Button>
                     </Link>
@@ -147,12 +139,14 @@ export default function Navbar() {
                 <TooltipTrigger asChild>
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300"
-                    onClick={() => setTheme(theme => theme === "dark" ? "light" : "dark")}
+                    className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300 justify-start"
+                    onClick={() => setTheme((theme) => (theme === "dark" ? "light" : "dark"))}
                   >
-                    <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                    <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                    <div className="relative h-5 w-5 min-w-5">
+                      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
+                      <Moon className="h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 absolute" />
+                    </div>
+                    {isExpanded && <span className="ml-3 text-sm font-medium">Toggle theme</span>}
                     <span className="sr-only">Toggle theme</span>
                   </Button>
                 </TooltipTrigger>
@@ -168,12 +162,17 @@ export default function Navbar() {
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
-                      className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300"
+                      className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300 justify-start"
                     >
-                      <Avatar className="h-8 w-8">
+                      <Avatar className="h-8 w-8 min-w-8">
                         <AvatarImage src={user.photoURL || undefined} alt={user.displayName || "User avatar"} />
                         <AvatarFallback>{user.displayName?.[0] || "U"}</AvatarFallback>
                       </Avatar>
+                      {isExpanded && (
+                        <span className="ml-3 text-sm font-medium truncate max-w-[140px]">
+                          {user.displayName || user.email}
+                        </span>
+                      )}
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -185,9 +184,7 @@ export default function Navbar() {
                         </div>
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={handleSignOut}>
-                      Log out
-                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>Log out</DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
               </motion.div>
@@ -195,13 +192,13 @@ export default function Navbar() {
               <motion.div variants={item} className="w-full mt-auto">
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Link href="/auth">
+                    <Link href="/auth" className="w-full">
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300"
+                        className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300 justify-start"
                       >
-                        <LogOut className="h-5 w-5" />
+                        <LogOut className="h-5 w-5 min-w-5" />
+                        {isExpanded && <span className="ml-3 text-sm font-medium">Sign In</span>}
                         <span className="sr-only">Sign In</span>
                       </Button>
                     </Link>
@@ -215,38 +212,7 @@ export default function Navbar() {
           </motion.div>
         </TooltipProvider>
       </motion.aside>
-
-      <div className="pl-[72px]">
-        <header className="sticky top-0 z-40 border-b bg-background">
-          <div className="container flex h-16 items-center px-4">
-            <div className="flex-1" />
-            <div className="flex items-center gap-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input
-                  type="search"
-                  placeholder="Search..."
-                  className="pl-10 w-[300px]"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <SearchDropdown />
-              </div>
-              {user && <NotificationBell />}
-            </div>
-          </div>
-        </header>
-      </div>
-
-      <MobileNav
-        isOpen={showMobileMenu}
-        onClose={() => setShowMobileMenu(false)}
-      />
-
-      <MobileSearch
-        isOpen={showMobileSearch}
-        onClose={() => setShowMobileSearch(false)}
-      />
     </>
-  );
+  )
 }
+
