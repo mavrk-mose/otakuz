@@ -7,7 +7,9 @@ import { AnimatePresence, motion } from 'framer-motion'
 import useFetchAnime from "@/hooks/anime/use-fetch-anime" 
 import { DiscoverSkeleton } from '@/components/skeletons/discover-skeleton'
 
-const VISIBLE_CARDS = 3 // Reduced to show only 3 cards const FETCH_THRESHOLD = 20 // Fetch more when 20 cards remaining const MIN_CARDS_BUFFER = 10 // Minimum number of cards to keep in buffer
+const VISIBLE_CARDS = 3 // Reduced to show only 3 cards 
+const FETCH_THRESHOLD = 20 // Fetch more when 20 cards remaining 
+const MIN_CARDS_BUFFER = 10 // Minimum number of cards to keep in buffer
 
 export default function DiscoverPage() { 
 const [currentIndex, setCurrentIndex] = useState(0); 
