@@ -44,4 +44,11 @@ export function onMessageListener() {
   });
 }
 
+navigator.serviceWorker
+  .register("/api/firebase-sw")
+  .then((registration) => {
+    console.log("Service Worker registered:", registration);
+  })
+  .catch((err) => console.error("Service Worker registration failed:", err));
+
 export { app, auth, db, storage, messaging };

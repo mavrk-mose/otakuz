@@ -116,16 +116,24 @@ export function useBookmarks() {
         item.id
       );
 
+      const listRef = doc(db, 'users', user.uid, 'lists', listId);
+
       await setDoc(bookmarkRef, {
         ...item,
         addedAt: serverTimestamp(),
         addedBy: user.uid
       });
 
+      await updateDoc(listRef, {
+        updatedAt: serverTimestamp(),
+      });
+  
+
       return { listId, item };
     },
     onSuccess: ({ listId }) => {
       queryClient.invalidateQueries({ queryKey: ['listItems', listId] });
+      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
     },
   });
 
@@ -143,11 +151,19 @@ export function useBookmarks() {
         itemId
       );
 
+      const listRef = doc(db, 'users', user.uid, 'lists', listId);
+
       await deleteDoc(bookmarkRef);
+
+      await updateDoc(listRef, {
+        updatedAt: serverTimestamp(),
+      });
+
       return { listId, itemId };
     },
     onSuccess: ({ listId }) => {
       queryClient.invalidateQueries({ queryKey: ['listItems', listId] });
+      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
     },
   });
 

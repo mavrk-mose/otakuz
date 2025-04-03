@@ -22,6 +22,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Bookmark, Plus, Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from 'sonner';
 
 interface BookmarkButtonProps {
   itemId: string;
@@ -57,11 +58,23 @@ export function BookmarkButton({
   );
 
   const handleAddToList = async (listId: string) => {
-    await addToList(listId, { id: itemId, type, title, image });
+    try {
+      await addToList(listId, { id: itemId, type, title, image });
+      toast.success("Item added to list successfully!");
+    } catch (error) {
+      console.error("Error adding item to list:", error);
+      toast.error("Failed to add item to list.");
+    }
   };
 
   const handleRemoveFromList = async (listId: string) => {
-    await removeFromList(listId, itemId);
+    try {
+      await removeFromList(listId, itemId);
+      toast.success("Item removed from list successfully!");
+    } catch(error) {
+       console.error("Error removing item from list:", error);
+       toast.error("Failed to remove item from list.");
+    }
   };
 
   const handleCreateList = async () => {
@@ -71,8 +84,10 @@ export function BookmarkButton({
       if (newList?.id) {
         await addToList(newList.id, { id: itemId, type, title, image });
       }
+      toast.success("List created and item added successfully!");
     } catch (error) {
       console.error("Error creating list or adding item:", error);
+      toast.error("Failed to create list or add item.");
     } finally {
       setNewListName("");
       setShowNewListDialog(false);
