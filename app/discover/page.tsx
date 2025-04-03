@@ -9,7 +9,10 @@ import { DiscoverSkeleton } from '@/components/skeletons/discover-skeleton'
 
 const VISIBLE_CARDS = 3 // Reduced to show only 3 cards const FETCH_THRESHOLD = 20 // Fetch more when 20 cards remaining const MIN_CARDS_BUFFER = 10 // Minimum number of cards to keep in buffer
 
-export default function DiscoverPage() { const [currentIndex, setCurrentIndex] = useState(0) const { data, isLoading, fetchNextPage, hasNextPage } = useFetchAnime() const animeList = data?.pages.flatMap((page) => page.data) ?? []
+export default function DiscoverPage() { 
+const [currentIndex, setCurrentIndex] = useState(0); 
+const { data, isLoading, fetchNextPage, hasNextPage } = useFetchAnime(); 
+const animeList = data?.pages.flatMap((page) => page.data) ?? []
 
 const handleSwipe = (direction: 'left' | 'right') => {
     setCurrentIndex(prev => prev + 1)
