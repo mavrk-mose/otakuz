@@ -13,13 +13,17 @@ const MIN_CARDS_BUFFER = 10 // Minimum number of cards to keep in buffer
 
 export default function DiscoverPage() { 
 const [currentIndex, setCurrentIndex] = useState(0); 
+const [activeCards, setActiveCards] = useState(VISIBLE_CARDS);
 const { data, isLoading, fetchNextPage, hasNextPage } = useFetchAnime(); 
 const animeList = data?.pages.flatMap((page) => page.data) ?? []
 
 const handleSwipe = (direction: 'left' | 'right') => {
-    setCurrentIndex(prev => prev + 1)
-}
-
+        setActiveCards(prev => Math.max(0, prev - 1))
+        setTimeout(() => {
+            setCurrentIndex(prev => prev + 1)
+            setActiveCards(VISIBLE_CARDS)
+        }, 300) // Delay to allow smooth animation transition
+    }
 // Fetch more data when approaching threshold
 useEffect(() => {
     const remainingCards = animeList.length - currentIndex
@@ -66,7 +70,7 @@ return (
                         animate={{ scale: 1, opacity: 1 }}
                         exit={{ scale: 0.9, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="absolute w-full h-full"
+                        className="absolute w-full h-full ${index >= activeCards ? 'hidden' : ''}"
                     >
                         <SwipableAnimeCard
                             anime={anime}
