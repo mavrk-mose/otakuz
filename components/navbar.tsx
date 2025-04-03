@@ -132,7 +132,7 @@ export default function Navbar() {
                     </Link>
                   </TooltipTrigger>
                   <TooltipContent side="right" sideOffset={10}>
-                    {item.label}
+                    {navItem.label}
                   </TooltipContent>
                 </Tooltip>
               </motion.div>
