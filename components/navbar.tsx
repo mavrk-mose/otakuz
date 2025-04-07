@@ -21,7 +21,7 @@ import {
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -119,20 +119,15 @@ export default function Navbar() {
         >
           <motion.div variants={item} className="w-full">
             <Link href="/" className="flex justify-center w-full">
-              <div className="w-12 h-12 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-xl hover:rounded-xl transition-all duration-300">
+              <div className="w-50 h-50 rounded-2xl bg-transparent flex items-center justify-center text-primary-foreground font-bold text-xl hover:rounded-xl transition-all duration-300">
                 <Image
                   src="/assets/logo.png" 
                   alt="Otakuz Logo"
-                  width={48} 
-                  height={48}
+                  width={100}
+                  height={100}
                   className="rounded-2xl"
                 />
               </div>
-              {isExpanded && (
-                <div className="ml-3 font-bold text-xl flex items-center">
-                  Otakuz
-                </div>
-              )}
             </Link>
           </motion.div>
 
@@ -148,7 +143,7 @@ export default function Navbar() {
                     <Button
                       variant="ghost"
                       className={cn(
-                        "w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300 justify-start",
+                        "w-full h-12 rounded-2xl hover:rounded-xl justify-start",
                         pathname === navItem.href && "bg-accent"
                       )}
                     >
@@ -276,7 +271,10 @@ export default function Navbar() {
 
   const MobileMenu = () => (
     <div className="fixed top-4 left-4 z-50 lg:hidden">
-      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+      <Sheet
+          open={isMobileMenuOpen}
+          onOpenChange={setIsMobileMenuOpen}
+      >
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="rounded-full">
             <Menu className="h-5 w-5" />
@@ -284,6 +282,9 @@ export default function Navbar() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-[280px]">
+          <div className="absolute top-0 right-0 hidden">
+            <SheetClose />
+          </div>
           <div className="flex flex-col h-full p-4">
             <div className="flex items-center justify-between mb-6">
               <Link
@@ -291,16 +292,15 @@ export default function Navbar() {
                 className="flex items-center gap-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
+                <div className="w-50 h-50 rounded-2xl bg-transparent flex items-center justify-center text-primary-foreground font-bold text-lg">
                   <Image
                     src="/assets/logo.png" 
                     alt="Otakuz Logo"
-                    width={48} 
-                    height={48}
+                    width={100}
+                    height={100}
                     className="rounded-2xl"
                   />
                 </div>
-                <span className="font-bold text-xl">Otaku</span>
               </Link>
               <Button
                 variant="ghost"
@@ -352,23 +352,26 @@ export default function Navbar() {
             <div className="mt-auto">
               {user ? (
                 <div className="space-y-2">
-                  <div className="flex items-center gap-3 px-3 py-2">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage
-                        src={user.photoURL || undefined}
-                        alt={user.displayName || "User avatar"}
-                      />
-                      <AvatarFallback>
-                        {user.displayName?.[0] || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="flex flex-col">
-                      <p className="text-sm font-medium">{user.displayName}</p>
-                      <p className="text-xs text-muted-foreground truncate max-w-[180px]">
-                        {user.email}
-                      </p>
-                    </div>
-                  </div>
+                  <Link href="/profile">
+                      <div className="flex items-center gap-3 px-3 py-2">
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage
+                              src={user.photoURL || undefined}
+                              alt={user.displayName || "User avatar"}
+                          />
+                          <AvatarFallback>
+                            {user.displayName?.[0] || "U"}
+                          </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col">
+                          <p className="text-sm font-medium">{user.displayName}</p>
+                          <p className="text-xs text-muted-foreground truncate max-w-[180px]">
+                            {user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </Link>
+
                   <Button
                     variant="ghost"
                     className="w-full justify-start"

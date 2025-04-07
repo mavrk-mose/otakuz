@@ -58,7 +58,7 @@ export default function ProfilePage() {
             <h3 className="font-semibold mb-4">Stats</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Joined</span>
+                <span className="text-muted-foreground">Joined </span>
                 <span>{user.metadata.creationTime?.split('T')[0]}</span>
               </div>
               <div className="flex justify-between">

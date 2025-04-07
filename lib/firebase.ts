@@ -46,7 +46,7 @@ export function onMessageListener() {
 
 if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
   navigator.serviceWorker
-    .register("/api/firebase-sw")
+    .register("/firebase-service-worker.js")
     .then((registration) => {
       console.log("Service Worker registered:", registration);
     })

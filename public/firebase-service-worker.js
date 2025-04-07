@@ -28,8 +28,6 @@ self.addEventListener('push', (e) => {
 
     const oldData = e.data;
 
-    // Create a new event to dispatch, pull values from notification key and put it in data key,
-    // and then remove notification key
     const newEvent = new CustomPushEvent({
         data: {
             ehheh: oldData.json(),

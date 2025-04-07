@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useBookmarks } from "@/hooks/use-bookmarks";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Share2, Trash2, Plus, Users, Lock, Globe } from "lucide-react";
 import {
   Dialog,
