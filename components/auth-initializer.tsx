@@ -6,8 +6,7 @@ export async function AuthInitializer() {
     const token = cookieStore.get('auth_token');
 
     if (token) {
-        // You might want to verify the token on the server-side here
-        // For now, we'll just set it in the store
+        //TODO: verify the token on the server-side here For now, we'll just set it in the store
         useAuthStore.getState().setToken(token.value);
     }
 

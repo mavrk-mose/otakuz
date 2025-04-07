@@ -23,8 +23,6 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
 
   usePostHogPageTracking();
 
-  // I should create an authentication provider that will check for auth state
-
   return (
     <QueryClientProvider client={queryClient}>
       <PostHogProvider client={posthog}>

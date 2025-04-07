@@ -11,6 +11,11 @@ const inter = Inter({subsets: ['latin']});
 export const metadata: Metadata = {
     title: 'Otakuz - Your Anime Community',
     description: 'Discover, track, and watch your favorite anime series',
+    icons: {
+        icon: '/assets/logo.png',
+        shortcut: '/assets/logo.png',
+        apple: '/assets/logo.png',
+    },
 };
 
 export default function RootLayout({children,}: { children: React.ReactNode; }) {
