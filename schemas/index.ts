@@ -5,6 +5,7 @@ import author from './author';
 import category from './category';
 import organizer from './organizer';
 import title from "@/schemas/title";
+import merchant from './merchant';
 
 export const schemaTypes = [
   event,
@@ -13,5 +14,6 @@ export const schemaTypes = [
   author,
   category,
   organizer,
-  title
+  title,
+  merchant
 ];

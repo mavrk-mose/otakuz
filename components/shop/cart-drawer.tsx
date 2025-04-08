@@ -148,7 +148,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                 <span className="font-bold">${total.toFixed(2)}</span>
               </div>
               <Button className="w-full" onClick={handleCheckout}>
-                Checkout via WhatsApp
+                Checkout
               </Button>
             </div>
           )}

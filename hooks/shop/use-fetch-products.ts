@@ -16,22 +16,18 @@ const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListPr
     } = useQuery({
         queryKey: ['products', category, priceRange, sortBy, title],
         queryFn: async () => {
-            // Fetch all products
             let filteredProducts: Product[] = await getProducts();
 
-            // Filter products based on category
             if (category && category !== 'all') {
                 filteredProducts = filteredProducts.filter((p) => p.category === category);
             }
 
-            // Filter products based on price range
             if (priceRange) {
                 filteredProducts = filteredProducts.filter(
                     (p: { price: number }) => p.price >= priceRange[0] && p.price <= priceRange[1]
                 );
             }
 
-            // Sort products based on criteria
             if (sortBy) {
                 filteredProducts.sort((a, b) => {
                     switch (sortBy) {
@@ -47,14 +43,11 @@ const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListPr
                 });
             }
 
-            console.log("title", title);
-
             if (title) {
                 const decodedTitle = decodeURIComponent(title);
                 filteredProducts = filteredProducts.filter((p) => p.title['name'] === decodedTitle);
             }
 
-            // Return all filtered and sorted products
             return filteredProducts;
         },
         staleTime: Infinity

@@ -12,11 +12,6 @@ const useFetchEvents = () => {
         staleTime: Infinity
     });
 
-    //add filters if applicable sort the events, filter by category etc
-    const sortedEvents = events?.sort((a, b) =>
-        new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-
     return {
         events,
         isLoading
