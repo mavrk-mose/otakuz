@@ -49,22 +49,6 @@ export interface CartItem extends Product {
   quantity: number;
 }
 
-export interface Merchant {
-  _id: string;
-  businessName: string;
-  whatsappNumber: string;
-  description: string;
-  logo: {
-    _type: "image";
-    asset: {
-      _ref: string;
-      _type: "reference";
-    };
-  };
-  paymentDetails: string;
-  createdAt: string;
-  updatedAt: string;
-}
 
 export interface Order {
   _id: string;

@@ -5,6 +5,7 @@ import {Providers} from './providers';
 import Navbar from '@/components/navbar';
 import {AuthInitializer} from "@/components/auth-initializer";
 import { Toaster } from '@/components/ui/sonner';
+import { Search } from '@/components/search';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -27,6 +28,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
             <Toaster />
             <div className="flex min-h-screen flex-col">
                 <Navbar />
+                <Search/>
                 <main className="flex-1">{children}</main>
           </div>
         </Providers>
