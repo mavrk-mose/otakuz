@@ -56,12 +56,12 @@ export function Search() {
                   <motion.div
                     key="expanded"
                     initial={{ width: 40, opacity: 0.5 }}
-                    animate={{ width: 300, opacity: 1 }}
+                    animate={{ width: "min(300px, 90vw)", opacity: 1 }}
                     exit={{ width: 40, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="relative"
                   >
-                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <SearchIcon className="absolute left-3 top-1/ 2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                       ref={inputRef}
                       type="search"
