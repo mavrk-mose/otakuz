@@ -60,7 +60,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <div key={item._id} className="flex gap-4">
                     <div className="relative w-20 h-20">
                       <Image
-                        src={urlFor(item?.image[0].asset._ref).url()}
+                        src={urlFor(item?.image[0].asset?._ref).url()}
                         alt={item.name}
                         fill
                         className="object-cover rounded"
