@@ -12,6 +12,7 @@ import { useWatchStore } from "@/store/use-watch-store";
 import useFetchAnime from "@/hooks/anime/use-fetch-anime";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
+import {BookmarkButton} from "@/components/bookmark-button";
 
 export default function AnimeCollection() {
     const {setSelectedAnime} = useWatchStore();
@@ -59,8 +60,7 @@ export default function AnimeCollection() {
                                     className="object-cover transition-transform group-hover:scale-105"
                                 />
                             </Link>
-                            <div
-                                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
                                 <div className="absolute bottom-4 left-4 right-4">
                                     <Button
                                         className="w-full gap-2"
@@ -73,6 +73,14 @@ export default function AnimeCollection() {
                                         </Link>
                                     </Button>
                                 </div>
+                            </div>
+                            <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <BookmarkButton
+                                    itemId={anime.mal_id.toString()}
+                                    type="anime"
+                                    title={anime.title}
+                                    image={anime.images.jpg.large_image_url}
+                                />
                             </div>
                         </div>
                         <div className="p-4">

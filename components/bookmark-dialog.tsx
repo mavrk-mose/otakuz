@@ -64,43 +64,6 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
         }
     };
 
-    // const handleAddToList = async (listId: string) => {
-    //     try {
-    //         await addToList(listId, { id: itemId, type, title, image });
-    //         toast.success("Item added to list successfully!");
-    //     } catch (error) {
-    //         console.error("Error adding item to list:", error);
-    //         toast.error("Failed to add item to list.");
-    //     }
-    // };
-
-    // const handleRemoveFromList = async (listId: string) => {
-    //     try {
-    //         await removeFromList(listId, itemId);
-    //         toast.success("Item removed from list successfully!");
-    //     } catch(error) {
-    //         console.error("Error removing item from list:", error);
-    //         toast.error("Failed to remove item from list.");
-    //     }
-    // };
-    //
-    // const handleCreateList = async () => {
-    //     if (!newListName.trim()) return;
-    //     try {
-    //         const newList = await createList(newListName);
-    //         if (newList?.id) {
-    //             await addToList(newList.id, { id: itemId, type, title, image });
-    //         }
-    //         toast.success("List created and item added successfully!");
-    //     } catch (error) {
-    //         console.error("Error creating list or adding item:", error);
-    //         toast.error("Failed to create list or add item.");
-    //     } finally {
-    //         setNewListName("");
-    //         setShowNewListDialog(false);
-    //     }
-    // };
-
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">
