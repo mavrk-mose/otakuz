@@ -52,7 +52,7 @@ export function BookmarkButton({
       const newList = await createList(newListName);
       setNewListName('');
       setShowNewListInput(false);
-      setSelectedListId(newList.id);
+      setSelectedListId(newList.id);x
       toast.success("List created!");
     } catch (err) {
       console.error(err);
@@ -61,6 +61,8 @@ export function BookmarkButton({
   };
 
   const handleSave = async (listId: string | null) => {
+    if (!listId || !user) return;
+
     setSelectedListId(listId);
     
     if (!selectedListId) return;
@@ -97,7 +99,7 @@ export function BookmarkButton({
         <Button
           variant="ghost"
           size="icon"
-          className="opacity-0 group-hover:opacity-100 transition-opacity"
+          className="transition-opacity"
           onClick={() => setPopoverOpen(true)}
         >
           <AnimatePresence>
@@ -115,7 +117,7 @@ export function BookmarkButton({
                 className="relative"
               >
                 <Bookmark
-                  className={`h-8 w- transition-colors ${
+                  className={`h-8 w-8 transition-colors ${
                     isBookmarked(itemId) ? "fill-primary" : ""
                   }`}
                 />
@@ -177,7 +179,7 @@ export function BookmarkButton({
                 >
                   <div className="w-10 h-10 relative rounded overflow-hidden bg-muted shrink-0">
                     <Image 
-                      src={list?.items[0]?.image} 
+                      src={list.items[0].image} 
                       alt={list.name} 
                       fill 
                       className="object-cover" 
@@ -199,9 +201,3 @@ export function BookmarkButton({
     </Popover>
   );
 }
-
-// <BookmarkDialog
-//             isOpen={showBookmarkDialog}
-//             onClose={() => setShowBookmarkDialog(false)}
-//             item={{ id: itemId, type, title, image }}
-//         />

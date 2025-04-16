@@ -60,6 +60,10 @@ export function UserLists({ userId, onShare }: UserListsProps) {
     }
   };
 
+  const sortedLists = [...lists].sort(
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  );
+
   return (
     <>
       <motion.div
@@ -69,7 +73,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
       >
         <AnimatePresence>
-          {lists.map((list) => (
+          {sortedLists.map((list) => (
             <ListCard
               key={list.id}
               list={list}

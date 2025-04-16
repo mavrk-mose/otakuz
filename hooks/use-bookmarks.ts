@@ -58,10 +58,30 @@ export function useBookmarks() {
       );
       
       const snapshot = await getDocs(q);
-      return snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      })) as BookmarkList[];
+      const listsWithPreview = await Promise.all(
+        snapshot.docs.map(async (docSnap) => {
+          const list = { id: docSnap.id, ...docSnap.data() } as BookmarkList;
+    
+          const itemsRef = collection(db, 'users', user.uid, 'lists', list.id, 'items');
+          const itemSnapshot = await getDocs(query(
+            itemsRef, 
+            orderBy('addedAt', 'desc'), 
+            limit(1)
+          ));
+    
+          const items = itemSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          })) as BookmarkedItem[];
+    
+          return {
+            ...list,
+            items,
+          };
+        })
+      );
+    
+      return listsWithPreview;
     },
     enabled: !!user
   });

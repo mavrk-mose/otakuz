@@ -74,15 +74,13 @@ export default function AnimeCollection() {
                                     </Button>
                                 </div>
                             </div>
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <div className="absolute top-4 right-4">
-                                    <BookmarkButton
-                                        itemId={anime.mal_id.toString()}
-                                        type="anime"
-                                        title={anime.title}
-                                        image={anime.images.jpg.large_image_url}
-                                    />
-                                </div>
+                            <div className="absolute top-4 right-4">
+                                <BookmarkButton
+                                    itemId={anime.mal_id.toString()}
+                                    type="anime"
+                                    title={anime.title}
+                                    image={anime.images.jpg.large_image_url}
+                                />
                             </div>
                         </div>
                         <div className="p-4">

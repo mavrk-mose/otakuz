@@ -15,7 +15,7 @@ export default function ProfilePage() {
   const router = useRouter();
   
   if (!user) {
-    router.push('/auth');
+    window.location.href = "/auth"
     return null;
   }
 
