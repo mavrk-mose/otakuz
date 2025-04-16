@@ -52,7 +52,7 @@ export function BookmarkButton({
       const newList = await createList(newListName);
       setNewListName('');
       setShowNewListInput(false);
-      setSelectedListId(newList.id);x
+      setSelectedListId(newList.id);
       toast.success("List created!");
     } catch (err) {
       console.error(err);
