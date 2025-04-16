@@ -56,7 +56,7 @@ export function Search() {
                   <motion.div
                     key="expanded"
                     initial={{ width: 40, opacity: 0.5 }}
-                    animate={{ width: "min(300px, 90vw)", opacity: 1 }}
+                    animate={{ width: 300, opacity: 1 }}
                     exit={{ width: 40, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
                     className="relative"
