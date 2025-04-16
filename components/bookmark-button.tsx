@@ -115,7 +115,7 @@ export function BookmarkButton({
                 className="relative"
               >
                 <Bookmark
-                  className={`h-4 w-4 transition-colors ${
+                  className={`h-8 w- transition-colors ${
                     isBookmarked(itemId) ? "fill-primary" : ""
                   }`}
                 />
