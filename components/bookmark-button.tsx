@@ -177,7 +177,7 @@ export function BookmarkButton({
                 >
                   <div className="w-10 h-10 relative rounded overflow-hidden bg-muted shrink-0">
                     <Image 
-                      src={list.items[0].image} 
+                      src={list?.items[0]?.image} 
                       alt={list.name} 
                       fill 
                       className="object-cover" 

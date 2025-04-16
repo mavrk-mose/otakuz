@@ -51,14 +51,6 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             height={450}
                             className="w-full object-cover"
                         />
-                        <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <BookmarkButton
-                                itemId={anime.mal_id.toString()}
-                                type="anime"
-                                title={anime.title}
-                                image={anime.images.jpg.large_image_url}
-                            />
-                        </div>
                     </Card>
                     <div className="grid grid-cols-2 gap-2">
                         <Button
@@ -70,6 +62,12 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                                 <PlayCircle className="w-4 h-4" /> Watch Trailer
                             </Link>
                         </Button>
+                        <BookmarkButton
+                            itemId={anime.mal_id.toString()}
+                            type="anime"
+                            title={anime.title}
+                            image={anime.images.jpg.large_image_url}
+                        />
                     </div>
                     <Button
                         variant="secondary"
