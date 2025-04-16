@@ -9,15 +9,19 @@ import { UserLists } from '@/components/profile/user-lists';
 import { motion } from 'framer-motion';
 import { Settings, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function ProfilePage() {
   const { user } = useAuth();
   const router = useRouter();
   
-  if (!user) {
-    window.location.href = "/auth"
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      router.push("/auth");
+    }
+  }, [user, router]);
+
+  if (!user) return null;
 
   return (
     <div className="container mx-auto px-4 py-8">
