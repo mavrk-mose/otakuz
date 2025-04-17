@@ -40,7 +40,6 @@ export interface BookmarkedItem {
   title: string;
   image: string;
   addedAt: Date;
-  addedBy: string;
 }
 
 const ITEMS_PER_PAGE = 12;
