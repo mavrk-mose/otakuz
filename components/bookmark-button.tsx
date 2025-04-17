@@ -32,6 +32,7 @@ export function BookmarkButton({
 }: BookmarkButtonProps) {
   const { user } = useAuth();
   const { lists, createList, addToList, isBookmarked } = useBookmarks();
+  const { data: isItemBookmarked, isLoading } = isBookmarked(itemId);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [selectedListId, setSelectedListId] = useState<string | null>(null);
   const [showNewListInput, setShowNewListInput] = useState(false);
@@ -118,7 +119,7 @@ export function BookmarkButton({
               >
                 <Bookmark
                   className={`h-8 w-8 transition-colors ${
-                    isBookmarked(itemId) ? "fill-primary" : ""
+                    isItemBookmarked ? "fill-primary" : ""
                   }`}
                 />
               </motion.div>

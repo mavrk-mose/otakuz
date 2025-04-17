@@ -17,6 +17,7 @@ import {
   serverTimestamp,
   DocumentSnapshot,
   updateDoc,
+  collectionGroup
 } from 'firebase/firestore';
 
 export type ListType = 'favorites' | 'watched' | 'planning' | 'custom';
@@ -39,6 +40,7 @@ export interface BookmarkedItem {
   title: string;
   image: string;
   addedAt: Date;
+  addedBy: string;
 }
 
 const ITEMS_PER_PAGE = 12;
@@ -223,6 +225,28 @@ export function useBookmarks() {
     },
   });
 
+  const useIsItemBookmarked = (itemId: string) => {
+    const { user } = useAuth();
+    
+    return useQuery({
+      queryKey: ['isBookmarked', user?.uid, itemId],
+      queryFn: async () => {
+        if (!user) return false;
+        
+        const itemsQuery = query(
+          collectionGroup(db, 'items'),
+          where('id', '==', itemId),
+          where('addedBy', '==', user.uid)
+        );
+        
+        const querySnapshot = await getDocs(itemsQuery);
+        
+        return !querySnapshot.empty;
+      },
+      enabled: !!user && !!itemId,
+    });
+  };
+
   const updateListSettings = useMutation({
     mutationFn: async ({ listId, settings }: { listId: string; settings: Partial<BookmarkList> }) => {
       if (!user) throw new Error('User not authenticated');
@@ -251,8 +275,7 @@ export function useBookmarks() {
     createList: (name: string, type?: ListType) =>
       createList.mutateAsync({ name, type }),
     deleteList: (listId: string) => deleteList.mutateAsync(listId),
-    isBookmarked: (itemId: string) =>
-      lists.some(list => list.items.some(item => item.id === itemId)),
+    isBookmarked: useIsItemBookmarked,
     updateListSettings: (listId: string, settings: Partial<BookmarkList>) =>
       updateListSettings.mutateAsync({ listId, settings }),
   };
