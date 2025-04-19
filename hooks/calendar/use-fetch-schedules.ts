@@ -1,40 +1,134 @@
-"use client"
+"use client";
 
-import {useInfiniteQuery} from "@tanstack/react-query";
-import {API_BASE_URL} from "@/lib/api";
-import {AnimeSearchResults} from "@/types/anime";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { API_BASE_URL } from "@/lib/api";
+import { AnimeDetails, PaginatedAnime } from "@/types/anime";
 
-const useFetchSchedules = () => {
-    const {
-        data: schedule,
-        isLoading,
-        fetchNextPage,
-        hasNextPage
-    } = useInfiniteQuery<AnimeSearchResults>({
-        queryKey: ['animeSchedule'],
-        queryFn: async ({ pageParam = 1 }) => {
-            const response = await fetch(`${API_BASE_URL}/schedules?page=${pageParam}`);
-            if (!response.ok) throw new Error('Failed to fetch anime schedule');
-
-            const data = await response.json();
-            return data.data;
-        },
-        getNextPageParam: (lastPage) => {
-            if (lastPage.pagination?.has_next_page) {
-                return lastPage.pagination.current_page + 1;
-            }
-            return undefined;
-        },
-        initialPageParam: 1,
-        staleTime: Infinity
-    });
-
-    return {
-        schedule,
-        isLoading,
-        fetchNextPage,
-        hasNextPage
-    }
+interface UseAnimeSchedulesOptions {
+  day: string;
+  kids?: boolean;
+  sfw?: boolean;
+  limit?: number;
 }
 
-export default useFetchSchedules;
+export type GroupedSchedules = Record<string, AnimeDetails[]>;
+
+// Global request queue to manage API calls
+let lastRequestTime = 0;
+const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
+
+export function useFetchSchedules({
+  day,
+  kids = false,
+  sfw = true,
+  limit = 25
+}: UseAnimeSchedulesOptions) {
+  return useInfiniteQuery({
+    queryKey: ["animeSchedules", day, kids, sfw, limit],
+    queryFn: async ({ pageParam = 1 }) => {
+      if (!day) {
+        return {};
+      }
+
+      const params = new URLSearchParams({
+        filter: day,
+        kids: kids.toString(),
+        sfw: sfw.toString(),
+        limit: limit.toString(),
+        page: pageParam.toString(),
+      });
+
+      try {
+        const now = Date.now();
+        const timeToWait = Math.max(
+          0,
+          MIN_REQUEST_INTERVAL - (now - lastRequestTime)
+        );
+
+        if (timeToWait > 0) {
+          await new Promise((resolve) => setTimeout(resolve, timeToWait));
+        }
+
+        lastRequestTime = Date.now();
+
+        const response = await fetch(
+          `${API_BASE_URL}/schedules?${params}`,
+          {
+            headers: {
+              // Add cache control headers
+              "Cache-Control": "max-age=3600", // Cache for 1 hour
+            },
+          }
+        );
+
+        // Handle rate limiting response
+        if (response.status === 429) {
+          const retryAfter = response.headers.get("Retry-After") || "5";
+          const waitTime = Number.parseInt(retryAfter, 10) * 1000;
+          console.warn(
+            `Rate limited. Waiting for ${waitTime}ms before retrying.`
+          );
+          await new Promise((resolve) => setTimeout(resolve, waitTime));
+          throw new Error("Rate limited. Retrying after cooldown.");
+        }
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error("API Error:", errorData);
+          throw new Error(
+            errorData.messages
+              ? `API Error: ${JSON.stringify(errorData.messages)}`
+              : `Failed to fetch schedules: ${response.status}`
+          );
+        }
+
+        const data: PaginatedAnime = await response.json();
+
+        const animeByTime: GroupedSchedules = {};
+
+        if (data && Array.isArray(data.data)) {
+          data.data.forEach((anime) => {
+            const time = anime.broadcast?.time || "Unknown";
+            if (!animeByTime[time]) {
+              animeByTime[time] = [];
+            }
+            animeByTime[time].push(anime);
+          });
+        } else {
+          console.error("Unexpected API response format:", data);
+          return {};
+        }
+
+        return animeByTime;
+      } catch (error) {
+        console.error("Error fetching schedules:", error);
+        throw error;
+      }
+    },
+    getNextPageParam: (_, pages) => {
+      return pages.length < 3 ? pages.length + 1 : undefined;
+    },
+    initialPageParam: 1,
+    staleTime: 30 * 60 * 1000, 
+    gcTime: 60 * 60 * 1000, // Keep unused data in cache for 1 hour
+    retry: (failureCount, error) => {
+      // Don't retry on 4xx errors except rate limiting (429)
+      if (
+        error instanceof Error &&
+        error.message.includes("Failed to fetch schedules: 4") &&
+        !error.message.includes("429")
+      ) {
+        return false;
+      }
+      return failureCount < 3; // Retry up to 3 times for other errors
+    },
+    retryDelay: (attemptIndex) => {
+      // Exponential backoff: 2s, 4s, 8s, etc.
+      return Math.min(1000 * 2 ** attemptIndex, 30000);
+    },
+    enabled: !!day, // Only run the query if day is provided
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+  });
+}

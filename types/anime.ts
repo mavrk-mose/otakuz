@@ -186,7 +186,7 @@ export type RecentAnime = {
     };
 }
 
-export type AnimeSearchResults = {
+export type PaginatedAnime = {
     data: AnimeDetails[];
     pagination: {
         last_visible_page: number;
