@@ -27,7 +27,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
             <AuthInitializer />
             <Toaster />
             <div className="flex min-h-screen flex-row">
-                <aside className="w-16 md:w-20 lg:w-24 bg-black text-white">
+                <aside className="bg-black text-white">
                     <Navbar /> 
                 </aside>
                 <div className="flex-1">
