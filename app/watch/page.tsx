@@ -18,11 +18,11 @@ import Link from "next/link"
 import {useSelectedVideo} from "@/hooks/watch/use-selected-video";
 
 export default function WatchPage() {
-    const { ref, inView } = useInView()
-    const { data, isLoading, fetchNextPage, hasNextPage } = useRecentAnime()
-    const initialAnimeData = data?.pages[0]?.data[0]?.entry[0] || null
-    const { selectedAnime, selectedVideoUrl, handleVideoSelect, handleAnimeSelect } = useSelectedVideo(undefined, initialAnimeData)
-    const { data: animeVideos, isLoading: isLoadingVideos } = useAnimeVideos(selectedAnime?.mal_id.toString() ?? '')
+    const { ref, inView } = useInView();
+    const { data, isLoading, fetchNextPage, hasNextPage } = useRecentAnime();
+    const initialAnimeData = data?.pages[0]?.data[0]?.entry[0] || null;
+    const { selectedAnime, selectedVideoUrl, handleVideoSelect, handleAnimeSelect } = useSelectedVideo(undefined, initialAnimeData);
+    const { data: animeVideos, isLoading: isLoadingVideos } = useAnimeVideos(selectedAnime?.mal_id.toString() ?? '');
 
     useEffect(() => {
         if (inView && hasNextPage) {

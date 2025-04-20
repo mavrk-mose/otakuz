@@ -2,7 +2,6 @@
 
 import {useInfiniteQuery} from '@tanstack/react-query';
 import {API_BASE_URL} from "@/lib/api";
-import AnimeDetailClient from '@/components/anime/anime-detail-client';
 
 export function useRecentAnime() {
   const {data, isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({

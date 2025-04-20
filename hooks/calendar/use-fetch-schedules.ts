@@ -17,7 +17,7 @@ export type GroupedSchedules = Record<string, AnimeDetails[]>;
 let lastRequestTime = 0;
 const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
 
-export function useFetchSchedules({
+export default function useFetchSchedules({
   day,
   kids = false,
   sfw = true,

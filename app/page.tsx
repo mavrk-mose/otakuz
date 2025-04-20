@@ -4,6 +4,7 @@ import { AnimeSection } from '@/components/anime/anime-section';
 import { MangaSection } from '@/components/manga/manga-section';
 import { NewsSection } from '@/components/news/news-section';
 import { EventsSection } from '@/components/events/events-section';
+import { CalendarSection } from '@/components/calendar/calendar-section';
 
 export default function Home() {
     return (
@@ -21,6 +22,10 @@ export default function Home() {
 
                 <Suspense fallback={<div>Loading...</div>}>
                     <NewsSection />
+                </Suspense>
+
+                <Suspense fallback={<div>Loading...</div>}>
+                    <CalendarSection />
                 </Suspense>
 
                 <Suspense fallback={<div>Loading...</div>}>
