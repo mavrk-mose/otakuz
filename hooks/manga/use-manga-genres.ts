@@ -1,4 +1,4 @@
-import {getAnimeGenres, getMangaGenres} from "@/lib/api";
+import {getMangaGenres} from "@/lib/api";
 import {useQuery} from "@tanstack/react-query";
 
 const useMangaGenres =  () => {

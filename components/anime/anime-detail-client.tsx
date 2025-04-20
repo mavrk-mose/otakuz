@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Heart, PlayCircle, Share2, Star } from 'lucide-react';
+import { PlayCircle, Share2, Star } from 'lucide-react';
 import { BookmarkButton } from '../bookmark-button';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from "next/navigation";
 import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import { AnimeRecommendations } from './anime-recommendations';
 import { AnimeGallery } from './anime-gallery';
@@ -17,13 +18,15 @@ import React, { useState } from 'react';
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
 import useAnimeDetails from "@/hooks/anime/use-anime-details";
 import {useWatchStore} from "@/store/use-watch-store";
-import {AnimeDetails, AnimeEntry} from "@/types/anime";
 import {handleWatchClick} from "@/lib/utils";
+import { useGenreStore } from '@/store/use-genre-store';
 
 export default function AnimeDetailClient({ id }: { id: string }) {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
     const { setSelectedAnime } = useWatchStore();
+    const router = useRouter();
     const { data: anime, isLoading } = useAnimeDetails(id);
+    const { setAnimeGenre } = useGenreStore();
 
     if (isLoading) {
         return (
@@ -115,7 +118,15 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                         <h2 className="text-xl text-muted-foreground mb-4">{anime.title_japanese}</h2>
                         <div className="flex flex-wrap gap-2">
                             {anime.genres.map((genre) => (
-                                <Badge key={genre.mal_id} variant="secondary">
+                                <Badge 
+                                    key={genre.mal_id} 
+                                    variant="secondary"
+                                    onClick={() => {
+                                        setAnimeGenre(genre.mal_id.toString());
+                                        router.push('/anime');
+                                    }}
+                                    className="cursor-pointer"
+                                >
                                     {genre.name}
                                 </Badge>
                             ))}

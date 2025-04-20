@@ -12,6 +12,8 @@ import {use} from "react";
 import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
 import useMangaDetails from "@/hooks/manga/use-manga-details";
+import { useGenreStore } from "@/store/use-genre-store";
+import { useRouter } from "next/navigation"
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -21,6 +23,8 @@ export default function MangaDetailPage(props: Props) {
     const params = use(props.params);
 
     const {manga, isLoading} = useMangaDetails(params.id);
+    const { mangaGenre, setMangaGenre } = useGenreStore();
+    const router = useRouter();
 
     if (isLoading) {
         return (
@@ -95,7 +99,15 @@ export default function MangaDetailPage(props: Props) {
                         </h2>
                         <div className="flex flex-wrap gap-2">
                             {manga.genres.map((genre: any) => (
-                                <Badge key={genre.mal_id} variant="secondary">
+                                <Badge 
+                                    key={genre.mal_id} 
+                                    variant="secondary"
+                                    onClick={() => {
+                                        setMangaGenre(genre.mal_id.toString());
+                                        router.push('/manga');
+                                    }}
+                                    className="cursor-pointer"
+                                >
                                     {genre.name}
                                 </Badge>
                             ))}

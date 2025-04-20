@@ -39,17 +39,24 @@ export default function ShopPage() {
 
   return (
     <div className="min-h-screen pb-4">
-      {/* Featured Products */}
       <section className="py-4">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2 className="text-2xl font-semibold mb-8">New Arrivals</h2>
+          <div className="flex items-center justify-between mb-8">
+            <h2 
+              className="text-[4rem] font-bold mb-8 leading-none tracking-tighter text-transparent"
+              style={{ WebkitTextStroke: "2px white" }}
+            >
+              New Arrivals
+            </h2>
+            <Button variant="outline" className="mt-4 md:mt-0" onClick={() => setIsCartOpen(true)}>
+              <ShoppingCart className="h-4 w-4" />
+              Cart ({totalItems})
+            </Button>
+          </div>
+          
           <ProductList category={selectedCategory} limit={4} />
         </div>
 
-        <Button variant="outline" className="mt-4 md:mt-0" onClick={() => setIsCartOpen(true)}>
-          <ShoppingCart className="mr-2 h-4 w-4" />
-          Cart ({totalItems})
-        </Button>
       </section>
 
       {/* Shop By Title */}
@@ -93,7 +100,12 @@ export default function ShopPage() {
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-semibold mb-8">All Products</h2>
+            <h2 
+              className="text-[4rem] font-bold mb-8 leading-none tracking-tighter text-transparent"
+              style={{ WebkitTextStroke: "2px white" }}
+            >
+              All Products
+              </h2>
             <Button variant="ghost" asChild>
               <Link href="/anime" className="gap-2">
                 View All <ArrowRight className="w-4 h-4" />

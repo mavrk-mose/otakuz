@@ -13,6 +13,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
 import useFetchSchedules from "@/hooks/calendar/use-fetch-schedules";
 import { RealtimeClock } from "./clock";
+import Link from "next/link";
 
 export function CalendarSection() {
   const [currentDate, setCurrentDate] = useState(startOfToday());
@@ -282,41 +283,42 @@ export function CalendarSection() {
           ) : (
             <>
               {visibleAnimeEntries.map(({ time, anime }, index) => (
-                <motion.div
-                  key={`${anime.mal_id}-${index}`}
-                  variants={itemVariants}
-                  className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border-b border-border hover:bg-accent/50 transition-colors"
-                >
-                  <div className="w-12 sm:w-16 font-mono text-xs sm:text-sm text-muted-foreground">
-                    {time === "Unknown" ? "--:--" : time}
-                  </div>
-                  <div className="relative w-10 h-14 sm:w-12 sm:h-16 rounded-md overflow-hidden flex-shrink-0 bg-muted">
-                    <Image
-                      src={
-                        anime.images?.jpg?.image_url ||
-                        "/placeholder.svg?height=64&width=48"
-                      }
-                      alt={anime.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 40px, 48px"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-medium text-sm sm:text-base truncate">
-                      {anime.title_english || anime.title}
-                    </h3>
-                    {anime.title_japanese && (
-                      <p className="text-xs text-muted-foreground truncate">
-                        {anime.title_japanese}
-                      </p>
-                    )}
-                  </div>
-                  <div className="flex items-center text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
-                    <Play className="h-3 w-3 mr-1" />
-                    Episode {anime.episodes || "?"}
-                  </div>
-                </motion.div>
+                <Link key={`${anime.mal_id}-${index}`} href={`/anime/${anime.mal_id}`}>
+                  <motion.div
+                    variants={itemVariants}
+                    className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border-b border-border hover:bg-accent/50 transition-colors"
+                  >
+                    <div className="w-12 sm:w-16 font-mono text-xs sm:text-sm text-muted-foreground">
+                      {time === "Unknown" ? "--:--" : time}
+                    </div>
+                    <div className="relative w-10 h-14 sm:w-12 sm:h-16 rounded-md overflow-hidden flex-shrink-0 bg-muted">
+                      <Image
+                        src={
+                          anime.images?.jpg?.image_url ||
+                          "/placeholder.svg?height=64&width=48"
+                        }
+                        alt={anime.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 640px) 40px, 48px"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-sm sm:text-base truncate">
+                        {anime.title_english || anime.title}
+                      </h3>
+                      {anime.title_japanese && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          {anime.title_japanese}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex items-center text-xs sm:text-sm text-muted-foreground whitespace-nowrap">
+                      <Play className="h-3 w-3 mr-1" />
+                      Episode {anime.episodes || "?"}
+                    </div>
+                  </motion.div>
+                </Link>
               ))}
 
               {hasMoreEntries && (
