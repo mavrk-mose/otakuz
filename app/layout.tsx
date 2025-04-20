@@ -26,15 +26,16 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
         <Providers attribute="class" defaultTheme="system" enableSystem>
             <AuthInitializer />
             <Toaster />
-            <div className="flex min-h-screen flex-row">
-                <aside className="w-16 md:w-20 lg:w-20 bg-black text-white">
-                    <Navbar /> 
+            <div className="flex min-h-screen flex-col md:flex-row">
+                <aside className="md:block w-20 lg:w-20 bg-black text-white">
+                    <Navbar />
                 </aside>
+
                 <div className="flex-1">
                     <Search />
                     <main className="p-4">{children}</main>
                 </div>
-          </div>
+            </div>
         </Providers>
         </body>
         </html>
