@@ -175,7 +175,7 @@ export function CalendarSection() {
   return (
     <section className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary">Estimated Schedule</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">Schedule</h1>
         <RealtimeClock />
       </div>
 
