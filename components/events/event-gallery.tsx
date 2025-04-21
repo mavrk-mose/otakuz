@@ -1,13 +1,13 @@
 "use client"
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import { urlFor } from "@/lib/sanity";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from "@/components/ui/carousel";
 
 interface EventGalleryProps {
   gallery: Array<{
@@ -19,7 +19,7 @@ interface EventGalleryProps {
 
 export function Gallery({ gallery }: EventGalleryProps) {
   const [isGalleryOpen, setIsGalleryOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const carouselRef = useRef<CarouselApi | null>(null)
 
   return (
     <div className="space-y-4 w-full">
@@ -44,8 +44,10 @@ export function Gallery({ gallery }: EventGalleryProps) {
                   transition: { duration: 0.3 },
                 }}
                 onClick={() => {
-                  setCurrentImageIndex(index)
                   setIsGalleryOpen(true)
+                  if (isGalleryOpen && carouselRef.current) {
+                    carouselRef.current.scrollTo(index)
+                  }
                 }}
               >
                 <Card className="overflow-hidden cursor-pointer shadow-xl">
@@ -71,10 +73,10 @@ export function Gallery({ gallery }: EventGalleryProps) {
 
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
         <DialogContent className="max-w-3xl w-full p-0">
-          <Carousel className="w-full" defaultIndex={currentImageIndex}>
+          <Carousel className="w-full" setApi={(api) => (carouselRef.current = api)}>
             <CarouselContent>
               {gallery?.map((image, index) => (
-                <CarouselItem key={index}>
+                <CarouselItem key={index} >
                   <div className="relative aspect-[3/4] w-full">
                     <Image
                       src={urlFor(image.asset._ref).url() || "/placeholder.svg"}

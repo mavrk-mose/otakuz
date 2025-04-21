@@ -1,19 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import Image from "next/image"
 import { Card } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { motion } from "framer-motion"
 import { useAnimePictures } from "@/hooks/anime/use-anime-pictures"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
-import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel"
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious, type CarouselApi } from "@/components/ui/carousel"
 
 export function AnimeGallery({ id }: { id: string }) {
   const { data: pictures, isLoading } = useAnimePictures(id)
   const [isGalleryOpen, setIsGalleryOpen] = useState(false)
-  const [currentImageIndex, setCurrentImageIndex] = useState(0)
-
+  const carouselRef = useRef<CarouselApi | null>(null)
+  
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -68,8 +68,10 @@ export function AnimeGallery({ id }: { id: string }) {
                 transition: { duration: 0.3 },
               }}
               onClick={() => {
-                setCurrentImageIndex(idx)
                 setIsGalleryOpen(true)
+                if (isGalleryOpen && carouselRef.current) {
+                  carouselRef.current.scrollTo(idx)
+                }
               }}
             >
               <Card className="overflow-hidden cursor-pointer shadow-xl">
@@ -94,7 +96,7 @@ export function AnimeGallery({ id }: { id: string }) {
       {/* Gallery Pop-up */}
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
         <DialogContent className="max-w-4xl w-full p-0">
-          <Carousel className="w-full" defaultIndex={currentImageIndex}>
+          <Carousel className="w-full" setApi={(api) => (carouselRef.current = api)}>
             <CarouselContent>
               {pictures?.map((picture, index) => (
                 <CarouselItem key={index}>
