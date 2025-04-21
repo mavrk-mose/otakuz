@@ -1,84 +1,96 @@
 "use client"
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
+import { useState } from "react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
+import { urlFor } from "@/lib/sanity";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 
 interface EventGalleryProps {
-  eventId: string;
-  photos: Array<{
-    id: string;
-    url: string;
-    caption?: string;
-  }>;
+  gallery: Array<{
+    asset: {
+      _ref: string
+    }
+  }>
 }
 
-export function EventGallery({ eventId, photos }: EventGalleryProps) {
-  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
-
-  const container = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
-    }
-  };
-
-  const item = {
-    hidden: { opacity: 0, scale: 0.8 },
-    show: { opacity: 1, scale: 1 }
-  };
+export function Gallery({ gallery }: EventGalleryProps) {
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
   return (
-    <>
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
-        className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
-      >
-        {photos.map((photo) => (
-          <motion.div
-            key={photo.id}
-            variants={item}
-            whileHover={{ scale: 1.05 }}
-            className="cursor-pointer"
-            onClick={() => setSelectedPhoto(photo.url)}
-          >
-            <Card className="overflow-hidden">
-              <div className="relative aspect-square">
-                <Image
-                  src={photo.url}
-                  alt={photo.caption || 'Event photo'}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            </Card>
-          </motion.div>
-        ))}
-      </motion.div>
+    <div className="space-y-4 w-full">
+      <h2 className="text-xl md:text-2xl font-bold">Event Gallery</h2>
+      <Card className="p-4 bg-black/50 backdrop-blur-sm">
+        <ScrollArea className="w-full whitespace-nowrap">
+          <div className="flex gap-4 pb-4 pl-4 pr-16 py-8">
+            {gallery?.map((image, index) => (
+              <motion.div
+                key={index}
+                className="w-[150px] sm:w-[200px] shrink-0 relative"
+                style={{
+                  transformOrigin: "center bottom",
+                  rotate: `${-5 + (index % 3) * 5}deg`,
+                  zIndex: index,
+                  marginLeft: index > 0 ? "-40px" : "0",
+                }}
+                whileHover={{
+                  rotate: "0deg",
+                  scale: 1.1,
+                  zIndex: 50,
+                  transition: { duration: 0.3 },
+                }}
+                onClick={() => {
+                  setCurrentImageIndex(index)
+                  setIsGalleryOpen(true)
+                }}
+              >
+                <Card className="overflow-hidden cursor-pointer shadow-xl">
+                  <div className="relative aspect-[3/4]">
+                    <Image
+                      src={urlFor(image.asset._ref).url() || "/placeholder.svg"}
+                      alt={`Event photo ${index + 1}`}
+                      fill
+                      className="object-cover rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/30 pointer-events-none" />
+                  </div>
+                </Card>
+                <div className="absolute bottom-0 left-0 right-0 h-[20%] bg-gradient-to-t from-black/70 to-transparent rounded-b-lg flex items-end p-2">
+                  <span className="text-white text-xs font-medium truncate">Photo {index + 1}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </Card>
 
-      <Dialog open={!!selectedPhoto} onOpenChange={() => setSelectedPhoto(null)}>
-        <DialogContent className="max-w-4xl">
-          <ScrollArea className="h-[80vh]">
-            {selectedPhoto && (
-              <div className="relative aspect-auto">
-                <Image
-                  src={selectedPhoto}
-                  alt="Event photo"
-                  width={1200}
-                  height={800}
-                  className="object-contain"
-                />
-              </div>
-            )}
-          </ScrollArea>
+      <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
+        <DialogContent className="max-w-3xl w-full p-0">
+          <Carousel className="w-full" defaultIndex={currentImageIndex}>
+            <CarouselContent>
+              {gallery?.map((image, index) => (
+                <CarouselItem key={index}>
+                  <div className="relative aspect-[3/4] w-full">
+                    <Image
+                      src={urlFor(image.asset._ref).url() || "/placeholder.svg"}
+                      alt={`Event photo ${index + 1}`}
+                      fill
+                      className="object-contain"
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </DialogContent>
       </Dialog>
-    </>
-  );
+    </div>
+  )
 }

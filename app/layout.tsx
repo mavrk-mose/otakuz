@@ -22,22 +22,22 @@ export const metadata: Metadata = {
 export default function RootLayout({children,}: { children: React.ReactNode; }) {
     return (
         <html lang="en" suppressHydrationWarning>
-        <body className={inter.className} suppressHydrationWarning>
-        <Providers attribute="class" defaultTheme="system" enableSystem>
-            <AuthInitializer />
-            <Toaster />
-            <div className="flex min-h-screen flex-col md:flex-row">
-                <aside className="md:block w-20 lg:w-20 bg-black text-white">
-                    <Navbar />
-                </aside>
+            <body className={inter.className} suppressHydrationWarning>
+                <Providers attribute="class" defaultTheme="system" enableSystem>
+                    <AuthInitializer />
+                    <Toaster />
+                    <div className="flex min-h-screen flex-col md:flex-row">
+                        <aside className="md:block w-20 lg:w-20 bg-black text-white">
+                            <Navbar />
+                        </aside>
 
-                <div className="flex-1">
-                    <Search />
-                    <main className="p-4">{children}</main>
-                </div>
-            </div>
-        </Providers>
-        </body>
+                        <div className="flex-1">
+                            <Search />
+                            <main className="p-4">{children}</main>
+                        </div>
+                    </div>
+                </Providers>
+            </body>
         </html>
     );
 }
