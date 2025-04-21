@@ -21,7 +21,7 @@ export function Gallery({ gallery }: EventGalleryProps) {
   return (
     <div className="space-y-4 w-full">
       <h2 className="text-xl md:text-2xl font-bold">Event Gallery</h2>
-      <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4">
+      <div className="rounded-lg p-4">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-4 pb-4 pl-4 pr-16 py-8">
             {gallery?.map((image, index) => (
@@ -58,9 +58,6 @@ export function Gallery({ gallery }: EventGalleryProps) {
                     <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/30 pointer-events-none" />
                   </div>
                 </Card>
-                <div className="absolute bottom-0 left-0 right-0 h-[20%] bg-gradient-to-t from-black/70 to-transparent rounded-b-lg flex items-end p-2">
-                  <span className="text-white text-xs font-medium truncate">Photo {index + 1}</span>
-                </div>
               </motion.div>
             ))}
           </div>
