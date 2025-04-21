@@ -8,13 +8,10 @@ import { urlFor } from "@/lib/sanity";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from "@/components/ui/carousel";
+import { Event } from "@/types/events";
 
 interface EventGalleryProps {
-  gallery: Array<{
-    asset: {
-      _ref: string
-    }
-  }>
+  gallery?: Pick<Event, "gallery">["gallery"];
 }
 
 export function Gallery({ gallery }: EventGalleryProps) {
@@ -24,7 +21,7 @@ export function Gallery({ gallery }: EventGalleryProps) {
   return (
     <div className="space-y-4 w-full">
       <h2 className="text-xl md:text-2xl font-bold">Event Gallery</h2>
-      <Card className="p-4 bg-black/50 backdrop-blur-sm">
+      <div className="bg-black/50 backdrop-blur-sm rounded-lg p-4">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-4 pb-4 pl-4 pr-16 py-8">
             {gallery?.map((image, index) => (
@@ -69,7 +66,7 @@ export function Gallery({ gallery }: EventGalleryProps) {
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      </Card>
+      </div>
 
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
         <DialogContent className="max-w-3xl w-full p-0">

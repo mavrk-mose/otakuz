@@ -209,9 +209,9 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                             </Card>
                         </TabsContent>
                         <TabsContent value="gallery">
-                            <Card className="mt-8 overflow-x-auto px-4">
+                            <div className="mt-8 overflow-x-auto px-4">
                                 <AnimeGallery id={id} />
-                            </Card>
+                            </div>
                         </TabsContent>
                     </Tabs>
                     <div className="mt-8 overflow-x-auto px-4">

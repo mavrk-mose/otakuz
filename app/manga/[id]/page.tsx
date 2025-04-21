@@ -149,10 +149,10 @@ export default function MangaDetailPage(props: Props) {
                                 </div>
                             </Card>
                         </TabsContent>
-                        <TabsContent value="gallery">
-                            <Card className="mt-8 overflow-x-auto px-4">
+                        <TabsContent value="gallery" className="space-y-4 transition-opacity duration-300">
+                            <div className="mt-8 overflow-x-auto px-4">
                                 <MangaGallery id={params.id}/>
-                            </Card>
+                            </div>
                         </TabsContent>
                     </Tabs>
                     <div className="mt-8 overflow-x-auto px-4">

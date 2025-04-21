@@ -89,7 +89,7 @@ export function MangaGallery({ id }: { id: string }) {
               }}
               onClick={() => handleImageClick(idx)}
             >
-              <Card className="overflow-hidden cursor-pointer shadow-xl">
+              <div className="overflow-hidden cursor-pointer shadow-xl">
                 <div className="relative aspect-[2/3]">
                   <Image
                     src={picture.jpg.large_image_url || "/placeholder.svg"}
