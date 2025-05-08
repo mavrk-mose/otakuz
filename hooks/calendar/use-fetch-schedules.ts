@@ -3,8 +3,8 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/lib/api";
 import { AnimeDetails, PaginatedAnime } from "@/types/anime";
-import { format, toZonedTime } from "date-fns-tz";
-import { parse } from "date-fns";
+import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { parse, format } from "date-fns";
 
 interface UseAnimeSchedulesOptions {
   day: string;
@@ -87,34 +87,36 @@ export default function useFetchSchedules({
         const data: PaginatedAnime = await response.json();
 
         const animeByTime: GroupedSchedules = {};
-
         const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const japanTimezone = 'Asia/Tokyo';
 
         if (data && Array.isArray(data.data)) {
           data.data.forEach((anime) => {
-            const time = anime.broadcast?.time || "Unknown";
-            if (!animeByTime[time]) {
-              animeByTime[time] = [];
+            const broadcastTime = anime.broadcast?.time;
+        
+            if (!broadcastTime) {
+              if (!animeByTime['Unknown']) animeByTime['Unknown'] = [];
+              animeByTime['Unknown'].push(anime);
+              return;
             }
-            const [hours, minutes] = anime.broadcast.time.split(':').map(Number);
-            const jstDate = new Date();
-            jstDate.setHours(hours, minutes, 0, 0);
-            
-            const jstTimeString = `${jstDate.getFullYear()}-${String(jstDate.getMonth() + 1).padStart(2, '0')}-${String(jstDate.getDate()).padStart(2, '0')} ${anime.broadcast.time}:00`;
-            
-            const jstDateTime = parse(jstTimeString, 'yyyy-MM-dd HH:mm:ss', new Date());
-            const userDateTime = toZonedTime(jstDateTime, userTimezone);
-            const localTime = format(userDateTime, 'HH:mm', { timeZone: userTimezone });
-
-            if (!animeByTime[localTime]) {
-              animeByTime[localTime] = [];
-            }
+        
+            const now = new Date();
+            const dateStr = format(now, 'yyyy-MM-dd');
+            const jstDateTimeStr = `${dateStr} ${broadcastTime}`;
+            const parsedJstDate = parse(jstDateTimeStr, 'yyyy-MM-dd HH:mm', new Date());
+        
+            const jstDateInZone = fromZonedTime(parsedJstDate, japanTimezone);
+            const userDateTime = toZonedTime(jstDateInZone, userTimezone);
+        
+            const localTime = format(userDateTime, 'HH:mm');
+        
+            if (!animeByTime[localTime]) animeByTime[localTime] = [];
             animeByTime[localTime].push({
               ...anime,
               broadcast: {
                 ...anime.broadcast,
-                time: localTime
-              }
+                time: localTime,
+              },
             });
           });
         } else {
