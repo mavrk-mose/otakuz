@@ -4,9 +4,10 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { AnimeVideos } from "@/types/anime";
 
 interface VideoTabsProps {
-  animeVideos: any;
+  animeVideos: AnimeVideos | undefined;
   selectedVideoUrl: string;
   onVideoSelect: (url: string) => void;
 }
@@ -18,12 +19,11 @@ export default function VideoTabs({
 }: VideoTabsProps) {
   if (!animeVideos) return null;
 
-  const { episodes = [], promo = [], music_videos = [] } = animeVideos;
+  const { episodes, promo, music_videos } = animeVideos;
 
   return (
     <div className="p-4 bg-[#18181B]">
       <Tabs defaultValue="episodes" className="w-full">
-
         {/* TAB LABELS */}
         <TabsList className="bg-[#2A2A2F] mb-4">
           {episodes.length > 0 && <TabsTrigger value="episodes">Episodes</TabsTrigger>}
@@ -34,7 +34,7 @@ export default function VideoTabs({
         {/* EPISODES TAB */}
         <TabsContent value="episodes">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {episodes.map((ep: any) => (
+            {episodes.map((ep) => (
               <Card
                 key={ep.mal_id}
                 onClick={() => onVideoSelect(ep.url)}
@@ -47,7 +47,7 @@ export default function VideoTabs({
               >
                 <div className="relative aspect-video w-full">
                   <Image
-                    src={ep.image}
+                    src={ep.images?.jpg?.image_url || "/placeholder.png"}
                     alt={ep.title}
                     fill
                     className="object-cover rounded"
@@ -62,8 +62,9 @@ export default function VideoTabs({
         {/* PROMOS TAB */}
         <TabsContent value="promo">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {promo.map((p: any) => {
+            {promo.map((p) => {
               const url = p.trailer.embed_url;
+              const imageUrl = p.trailer.images?.maximum_image_url || "/placeholder.png";
               return (
                 <Card
                   key={p.title}
@@ -77,7 +78,7 @@ export default function VideoTabs({
                 >
                   <div className="relative aspect-video w-full">
                     <Image
-                      src={p.trailer.images?.maximum_image_url}
+                      src={imageUrl}
                       alt={p.title}
                       fill
                       className="object-cover rounded"
@@ -93,8 +94,9 @@ export default function VideoTabs({
         {/* MUSIC VIDEOS TAB */}
         <TabsContent value="music">
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-            {music_videos.map((mv: any) => {
+            {music_videos.map((mv) => {
               const url = mv.video.embed_url;
+              const imageUrl = mv.video.images?.maximum_image_url || "/placeholder.png";
               return (
                 <Card
                   key={mv.title}
@@ -108,7 +110,7 @@ export default function VideoTabs({
                 >
                   <div className="relative aspect-video w-full">
                     <Image
-                      src={mv.video.images?.maximum_image_url}
+                      src={imageUrl}
                       alt={mv.title}
                       fill
                       className="object-cover rounded"
