@@ -1,13 +1,7 @@
 {
   "functions": {
     "api/**": {
-      "runtime": "nodejs20.x"
-    },
-    "app/**": {
-      "runtime": "nodejs20.x"
-    },
-    "pages/**": {
-      "runtime": "nodejs20.x"
+      "runtime": "nodejs20.19.5"
     }
   }
 }
