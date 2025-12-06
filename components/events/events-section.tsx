@@ -76,7 +76,7 @@ export function EventsSection() {
                                     <div className="space-y-2 text-sm text-muted-foreground">
                                         <div className="flex items-center">
                                             <Calendar className="h-4 w-4 mr-2" />
-                                            {format(event.date, 'PPP')}
+                                            {event.date ? format(new Date(event.date), 'MMMM dd, yyyy') : 'Date TBA'}
                                         </div>
                                         <div className="flex items-center">
                                             <MapPin className="h-4 w-4 mr-2" />
