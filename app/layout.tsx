@@ -6,6 +6,7 @@ import Navbar from '@/components/navbar';
 import {AuthInitializer} from "@/components/auth-initializer";
 import { Toaster } from '@/components/ui/sonner';
 import { Search } from '@/components/search';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -25,6 +26,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
             <body className={inter.className} suppressHydrationWarning>
                 <Providers attribute="class" defaultTheme="system" enableSystem>
                     <AuthInitializer />
+                     <ReactQueryDevtools initialIsOpen={false} />
                     <Toaster />
                     <div className="flex min-h-screen flex-col md:flex-row">
                         <aside className="md:block w-20 lg:w-20 bg-black text-white">

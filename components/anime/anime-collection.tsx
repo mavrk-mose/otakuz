@@ -5,17 +5,14 @@ import { Card } from "@/components/ui/card";
 import Link from "next/link";
 import Image from "next/image";
 import {Button} from "@/components/ui/button";
-import { handleWatchClick } from "@/lib/utils";
 import {Play, Star} from "lucide-react";
 import {Badge} from "@/components/ui/badge";
-import { useWatchStore } from "@/store/use-watch-store";
 import useFetchAnime from "@/hooks/anime/use-fetch-anime";
 import { useEffect } from "react";
 import { useInView } from "react-intersection-observer";
 import {BookmarkButton} from "@/components/bookmark-button";
 
 export default function AnimeCollection() {
-    const {setSelectedAnime} = useWatchStore();
     const {data, isLoading, fetchNextPage, hasNextPage} = useFetchAnime();
     const {ref, inView} = useInView();
 
@@ -65,9 +62,8 @@ export default function AnimeCollection() {
                                     <Button
                                         className="w-full gap-2"
                                         asChild
-                                        onClick={() => handleWatchClick(anime, setSelectedAnime)}
                                     >
-                                        <Link href="/watch">
+                                        <Link href={`/watch/${anime.mal_id}`}>
                                             <Play className="h-4 w-4"/>
                                             Watch Now
                                         </Link>

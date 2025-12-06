@@ -6,13 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Info, PlayCircle} from 'lucide-react';
 import Link from 'next/link';
 import useRandomAnime from "@/hooks/anime/use-random-anime";
-import {handleWatchClick} from "@/lib/utils";
-import {useWatchStore} from "@/store/use-watch-store";
 
 export function HeroSection() {
   const { data: anime } = useRandomAnime(); // Default to a popular anime
   const [background, setBackground] = useState('');
-  const { setSelectedAnime } = useWatchStore();
 
   useEffect(() => {
     if (anime?.images?.webp?.image_url) {
@@ -58,9 +55,8 @@ export function HeroSection() {
             <Button
                 className="w-full gap-2"
                 asChild
-                onClick={() => handleWatchClick(anime, setSelectedAnime)}
             >
-              <Link href="/watch">
+              <Link href={`/watch/${anime.mal_id}`}>
                 <PlayCircle className="w-4 h-4" /> Watch Trailer
               </Link>
             </Button>

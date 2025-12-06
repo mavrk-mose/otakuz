@@ -1,137 +1,126 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import { MessageCircle, Play, Users } from 'lucide-react'
-import { Card } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { AnimeVideos } from "@/types/anime"
-import { CommentSection } from "@/components/comment-section"
-import { WatchPartySection } from "@/components/watch/watch-party-section"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
 
-interface Props {
-    animeVideos: AnimeVideos | undefined
-    onVideoSelect: (url: string) => void
-    selectedVideoUrl: string
+interface VideoTabsProps {
+  animeVideos: any;
+  selectedVideoUrl: string;
+  onVideoSelect: (url: string) => void;
 }
 
-export default function VideoTabs({ animeVideos, onVideoSelect, selectedVideoUrl }: Props) {
-    const [activeTab, setActiveTab] = useState("promo")
+export default function VideoTabs({
+  animeVideos,
+  selectedVideoUrl,
+  onVideoSelect,
+}: VideoTabsProps) {
+  if (!animeVideos) return null;
 
-    if (!animeVideos) {
-        return <div>No videos available</div>
-    }
+  const { episodes = [], promo = [], music_videos = [] } = animeVideos;
 
-    const handleVideoClick = (url: string) => {
-        onVideoSelect(url)
-    }
+  return (
+    <div className="p-4 bg-[#18181B]">
+      <Tabs defaultValue="episodes" className="w-full">
 
-    return (
-        <div className="p-4">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <ScrollArea className="w-full">
-                    <TabsList className="mb-4 inline-flex w-max">
-                        <TabsTrigger value="promo">Promo Videos</TabsTrigger>
-                        <TabsTrigger value="episodes">Episodes</TabsTrigger>
-                        <TabsTrigger value="music">Music Videos</TabsTrigger>
-                        <TabsTrigger value="party" className="flex-1">
-                            <Users className="w-4 h-4 mr-2" />
-                            Party
-                        </TabsTrigger>
-                    </TabsList>
-                    <ScrollBar orientation="horizontal" />
-                </ScrollArea>
+        {/* TAB LABELS */}
+        <TabsList className="bg-[#2A2A2F] mb-4">
+          {episodes.length > 0 && <TabsTrigger value="episodes">Episodes</TabsTrigger>}
+          {promo.length > 0 && <TabsTrigger value="promo">Promos</TabsTrigger>}
+          {music_videos.length > 0 && <TabsTrigger value="music">Music Videos</TabsTrigger>}
+        </TabsList>
 
-                <TabsContent value="promo">
-                    <ScrollArea className="w-full whitespace-nowrap">
-                        <div className="flex space-x-4">
-                            {animeVideos?.promo.map((promo, index) => (
-                                <Card
-                                    key={`promo-${index}-${promo.title}`}
-                                    className={`w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0 ${selectedVideoUrl === promo.trailer.embed_url ? 'ring-2 ring-primary' : ''}`}
-                                    onClick={() => handleVideoClick(promo.trailer.embed_url)}
-                                >
-                                    <div className="relative aspect-video">
-                                        <Image
-                                            src={promo.trailer.images.maximum_image_url}
-                                            alt={promo.title}
-                                            layout="fill"
-                                            objectFit="cover"
-                                        />
-                                        <Play className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-white opacity-75" />
-                                    </div>
-                                    <div className="p-2">
-                                        <h3 className="font-medium text-sm line-clamp-2">{promo.title}</h3>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                        <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                </TabsContent>
+        {/* EPISODES TAB */}
+        <TabsContent value="episodes">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {episodes.map((ep: any) => (
+              <Card
+                key={ep.mal_id}
+                onClick={() => onVideoSelect(ep.url)}
+                className={cn(
+                  "bg-[#26262C] p-2 cursor-pointer border transition",
+                  ep.url === selectedVideoUrl
+                    ? "border-primary shadow-md"
+                    : "border-transparent hover:border-[#3A3A40]"
+                )}
+              >
+                <div className="relative aspect-video w-full">
+                  <Image
+                    src={ep.image}
+                    alt={ep.title}
+                    fill
+                    className="object-cover rounded"
+                  />
+                </div>
+                <p className="text-sm mt-2 line-clamp-2">{ep.title}</p>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
 
-                <TabsContent value="episodes">
-                    <ScrollArea className="w-full whitespace-nowrap">
-                        <div className="flex space-x-4">
-                            {animeVideos?.episodes.map((episode) => (
-                                <Card
-                                    key={episode.mal_id}
-                                    className={`w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0 ${selectedVideoUrl === episode.url ? 'ring-2 ring-primary' : ''}`}
-                                    onClick={() => handleVideoClick(episode.url)}
-                                >
-                                    <div className="relative aspect-video">
-                                        <Image
-                                            src={episode.images.jpg.image_url}
-                                            alt={episode.title}
-                                            layout="fill"
-                                            objectFit="cover"
-                                        />
-                                        <Play className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-white opacity-75" />
-                                    </div>
-                                    <div className="p-2">
-                                        <h3 className="font-medium text-sm line-clamp-2">{episode.title}</h3>
-                                        <p className="text-xs text-[#ADADB8]">{episode.episode}</p>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                        <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                </TabsContent>
+        {/* PROMOS TAB */}
+        <TabsContent value="promo">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {promo.map((p: any) => {
+              const url = p.trailer.embed_url;
+              return (
+                <Card
+                  key={p.title}
+                  onClick={() => onVideoSelect(url)}
+                  className={cn(
+                    "bg-[#26262C] p-2 cursor-pointer border transition",
+                    url === selectedVideoUrl
+                      ? "border-primary shadow-md"
+                      : "border-transparent hover:border-[#3A3A40]"
+                  )}
+                >
+                  <div className="relative aspect-video w-full">
+                    <Image
+                      src={p.trailer.images?.maximum_image_url}
+                      alt={p.title}
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                  <p className="text-sm mt-2 line-clamp-2">{p.title}</p>
+                </Card>
+              );
+            })}
+          </div>
+        </TabsContent>
 
-                <TabsContent value="music">
-                    <ScrollArea className="w-full whitespace-nowrap">
-                        <div className="flex space-x-4">
-                            {animeVideos?.music_videos.map((mv, index) => (
-                                <Card
-                                    key={`music-${index}-${mv.title}`}
-                                    className={`w-[300px] bg-[#26262C] overflow-hidden cursor-pointer flex-shrink-0 ${selectedVideoUrl === mv.video.embed_url ? 'ring-2 ring-primary' : ''}`}
-                                    onClick={() => handleVideoClick(mv.video.embed_url)}
-                                >
-                                    <div className="relative aspect-video">
-                                        <Image
-                                            src={mv.video.images.maximum_image_url}
-                                            alt={mv.title}
-                                            layout="fill"
-                                            objectFit="cover"
-                                        />
-                                        <Play className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-12 h-12 text-white opacity-75" />
-                                    </div>
-                                    <div className="p-2">
-                                        <h3 className="font-medium text-sm line-clamp-2">{mv.title}</h3>
-                                        <p className="text-xs text-[#ADADB8]">{mv.meta.author}</p>
-                                    </div>
-                                </Card>
-                            ))}
-                        </div>
-                        <ScrollBar orientation="horizontal" />
-                    </ScrollArea>
-                </TabsContent>
-                <TabsContent value="party" className="p-4">
-                    <WatchPartySection />
-                </TabsContent>
-            </Tabs>
-        </div>
-    )
+        {/* MUSIC VIDEOS TAB */}
+        <TabsContent value="music">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {music_videos.map((mv: any) => {
+              const url = mv.video.embed_url;
+              return (
+                <Card
+                  key={mv.title}
+                  onClick={() => onVideoSelect(url)}
+                  className={cn(
+                    "bg-[#26262C] p-2 cursor-pointer border transition",
+                    url === selectedVideoUrl
+                      ? "border-primary shadow-md"
+                      : "border-transparent hover:border-[#3A3A40]"
+                  )}
+                >
+                  <div className="relative aspect-video w-full">
+                    <Image
+                      src={mv.video.images?.maximum_image_url}
+                      alt={mv.title}
+                      fill
+                      className="object-cover rounded"
+                    />
+                  </div>
+                  <p className="text-sm mt-2 line-clamp-2">{mv.title}</p>
+                </Card>
+              );
+            })}
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 }
