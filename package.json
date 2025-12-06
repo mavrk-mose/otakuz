@@ -63,7 +63,6 @@
     "fs": "^0.0.1-security",
     "groq": "^3.65.1",
     "input-otp": "^1.2.4",
-    "isomorphic-dompurify": "2.32.0",
     "lottie-react": "^2.4.0",
     "lucide-react": "^0.446.0",
     "next": "^15.0.3",
@@ -92,8 +91,5 @@
     "vaul": "^0.9.9",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
-  },
-  "resolutions": {
-    "isomorphic-dompurify": "2.32.0"
   }
 }
