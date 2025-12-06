@@ -32,8 +32,9 @@ export default function WatchPage() {
 
   const initialAnimeData = data?.pages[0]?.data?.[0]?.entry?.[0] ?? null;
 
-  const { data: animeVideos, isLoading: isLoadingVideos } =
-    useAnimeVideos(currentId ?? "");
+  const { data: animeVideos, isLoading: isLoadingVideos } = useAnimeVideos(
+    currentId ?? ""
+  );
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
@@ -66,10 +67,11 @@ export default function WatchPage() {
 
   return (
     <div className="flex h-screen overflow-hidden">
-
       {/* LEFT SIDEBAR */}
       <aside className="w-64 flex-shrink-0 bg-[#1F1F23] overflow-hidden flex-col hidden md:flex">
-        <h2 className="text-sm font-semibold p-4 text-[#EFEFF1]">RECENT ANIME</h2>
+        <h2 className="text-sm font-semibold p-4 text-[#EFEFF1]">
+          RECENT ANIME
+        </h2>
 
         <ScrollArea className="flex-grow">
           <div className="space-y-2 p-4">
@@ -103,23 +105,20 @@ export default function WatchPage() {
 
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-hidden">
-
         <ScrollArea className="h-full">
-
           {/* VIDEO PLAYER */}
-          <div className="sticky top-0 z-10 w-full bg-black">
-            <div className="container mx-auto">
-              <div className="aspect-video">
-                {selectedVideoUrl ? (
-                  <VideoPlayer videoUrl={selectedVideoUrl} />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <Loader2 className="w-8 h-8 animate-spin text-primary" />
-                  </div>
-                )}
+          <div className="container mx-auto sm:relative sm:z-auto w-full sticky top-0 z-10">
+          <div className="aspect-video">
+            {selectedVideoUrl ? (
+              <VideoPlayer videoUrl={selectedVideoUrl} />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
               </div>
-            </div>
+            )}
           </div>
+        </div>
+
 
           {/* ANIME INFO */}
           {selectedAnime && (
@@ -128,9 +127,7 @@ export default function WatchPage() {
 
               <div className="flex items-center space-x-2">
                 <Avatar className="w-10 h-10">
-                  <AvatarImage
-                    src={selectedAnime.images.jpg.small_image_url}
-                  />
+                  <AvatarImage src={selectedAnime.images.jpg.small_image_url} />
                   <AvatarFallback>{selectedAnime.title[0]}</AvatarFallback>
                 </Avatar>
 
@@ -171,9 +168,7 @@ export default function WatchPage() {
                     <Card
                       key={`${animeData.content}-${anime.mal_id}`}
                       className="bg-[#26262C] overflow-hidden cursor-pointer"
-                      onClick={() =>
-                        router.push(`/watch/${anime.mal_id}`)
-                      }
+                      onClick={() => router.push(`/watch/${anime.mal_id}`)}
                     >
                       <div className="relative aspect-video">
                         <Image
