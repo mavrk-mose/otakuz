@@ -95,8 +95,5 @@
   },
   "resolutions": {
     "isomorphic-dompurify": "2.32.0"
-  },
-  "engines": {
-    "node": "20.19.5"
   }
 }
