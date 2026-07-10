@@ -7,7 +7,8 @@ const useFetchAnime = () => {
         data,
         isLoading,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
+        isFetchingNextPage
     } = useInfiniteQuery<AnimeResponse>({
         queryKey: ['animeList'],
         queryFn: async ({ pageParam = 1 }) => {
@@ -32,7 +33,8 @@ const useFetchAnime = () => {
         data,
         isLoading,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
+        isFetchingNextPage
     }
 }
 
