@@ -13,13 +13,12 @@ import { useAnimeVideos } from "@/hooks/anime/use-anime-videos";
 import WatchSkeleton from "@/components/skeletons/watch-skeleton";
 import Image from "next/image";
 import RecentAnime from "@/components/anime/recent-anime";
-import { AnimeEntry } from "@/types/anime";
-import { VideoPlayer } from "@/components/watch/video-player";
+import { AnimeEntry, AnimeVideos } from "@/types/anime";
 import VideoTabs from "@/components/watch/video-tabs";
 
-import { Loader2 } from "lucide-react";
 import Link from "next/link";
 import { useI18n } from "@/components/i18n-provider";
+import { usePlayerStore } from "@/store/use-player-store";
 
 export default function WatchPage() {
   const { t } = useI18n();
@@ -58,6 +57,58 @@ export default function WatchPage() {
     : null;
 
   const selectedVideoUrl = videoFromQuery || defaultVideoUrl;
+
+  const selectedVideoTitle = animeVideos
+    ? animeVideos.episodes?.find(
+        (episode: AnimeVideos["episodes"][number]) =>
+          episode.url === selectedVideoUrl
+      )?.title ||
+      animeVideos.promo?.find(
+        (promo: AnimeVideos["promo"][number]) =>
+          promo.trailer.embed_url === selectedVideoUrl
+      )?.title ||
+      animeVideos.music_videos?.find(
+        (musicVideo: AnimeVideos["music_videos"][number]) =>
+          musicVideo.video.embed_url === selectedVideoUrl
+      )?.title ||
+      "Anime video"
+    : "Anime video";
+
+  const selectedVideoPoster = animeVideos
+    ? animeVideos.episodes?.find(
+        (episode: AnimeVideos["episodes"][number]) =>
+          episode.url === selectedVideoUrl
+      )?.images?.jpg?.image_url ||
+      animeVideos.promo?.find(
+        (promo: AnimeVideos["promo"][number]) =>
+          promo.trailer.embed_url === selectedVideoUrl
+      )?.trailer.images?.maximum_image_url ||
+      animeVideos.music_videos?.find(
+        (musicVideo: AnimeVideos["music_videos"][number]) =>
+          musicVideo.video.embed_url === selectedVideoUrl
+      )?.video.images?.maximum_image_url
+    : undefined;
+
+  useEffect(() => {
+    if (!currentId || !selectedVideoUrl) {
+      return;
+    }
+
+    usePlayerStore.getState().openPlayer({
+      id: `${currentId}:${selectedVideoUrl}`,
+      src: selectedVideoUrl,
+      title: selectedVideoTitle,
+      posterUrl: selectedVideoPoster,
+      playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(
+        selectedVideoUrl
+      )}`,
+    });
+  }, [
+    currentId,
+    selectedVideoPoster,
+    selectedVideoTitle,
+    selectedVideoUrl,
+  ]);
 
   const selectedAnime =
     data?.pages
@@ -108,20 +159,6 @@ export default function WatchPage() {
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
-          {/* VIDEO PLAYER */}
-          <div className="container mx-auto sm:relative sm:z-auto w-full sticky top-0 z-10">
-          <div className="aspect-video">
-            {selectedVideoUrl ? (
-              <VideoPlayer videoUrl={selectedVideoUrl} />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <Loader2 className="w-8 h-8 animate-spin text-primary" />
-              </div>
-            )}
-          </div>
-        </div>
-
-
           {/* ANIME INFO */}
           {selectedAnime && (
             <div className="border-y bg-muted/40 p-4">

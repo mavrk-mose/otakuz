@@ -9,6 +9,7 @@ import {AuthInitializer} from "@/components/auth-initializer";
 import { Toaster } from '@/components/ui/sonner';
 import { Search } from '@/components/search';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { PlayerLayout } from '@/components/watch/player-layout';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -34,7 +35,9 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
                         <Navbar />
                         <div className="min-h-screen lg:pl-[72px]">
                             <Search />
-                            <main className="p-4">{children}</main>
+                            <PlayerLayout>
+                                <main className="p-4">{children}</main>
+                            </PlayerLayout>
                         </div>
                     </div>
                 </Providers>
