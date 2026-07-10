@@ -36,40 +36,31 @@ export async function getEvents() {
 }
 
 export const newsStoriesQuery = defineQuery(`
-  *[_type == "event" && defined(section)] | order(publishedAt desc) {
+  *[_type == "article"] | order(publishedAt desc) {
     _id,
     title,
-    description,
-    summary,
+    "description": pt::text(content),
     "authorName": coalesce(author->name, "Staff"),
     publishedAt,
-    commentsCount,
-    tag,
-    tags,
-    section,
-    panelClassName,
-    textClassName,
-    itemClassName,
-    isFeatured,
-    "imageUrl": thumbnailUrl.asset->url
+    "tag": categories[0]->title,
+    "tags": categories[]->title,
+    "section": categories[0]->title,
+    "imageUrl": mainImage.asset->url
   }
 `);
 
 export const newsArticleByIdQuery = defineQuery(`
-  *[_type == "event" && defined(section) && _id == $id][0] {
+  *[_type == "article" && _id == $id][0] {
     _id,
     title,
-    description,
-    summary,
+    "description": pt::text(content),
     content,
-    imageCaption,
+    polls,
     publishedAt,
-    commentsCount,
-    tag,
-    tags,
-    section,
-    isFeatured,
-    "imageUrl": thumbnailUrl.asset->url,
+    "tag": categories[0]->title,
+    "tags": categories[]->title,
+    "section": categories[0]->title,
+    "imageUrl": mainImage.asset->url,
     "authorName": coalesce(author->name, "Staff"),
     author->{
       _id,
@@ -79,20 +70,18 @@ export const newsArticleByIdQuery = defineQuery(`
       "imageUrl": image.asset->url
     },
     "relatedStories": *[
-      _type == "event" &&
-      defined(section) &&
+      _type == "article" &&
       _id != ^._id &&
-      section == ^.section
+      references(^.categories[]._ref)
     ] | order(publishedAt desc)[0...3] {
       _id,
       title,
-      summary,
-      description,
+      "description": pt::text(content),
       publishedAt,
-      tag,
-      section,
-      commentsCount,
-      "imageUrl": thumbnailUrl.asset->url,
+      "tag": categories[0]->title,
+      "tags": categories[]->title,
+      "section": categories[0]->title,
+      "imageUrl": mainImage.asset->url,
       "authorName": coalesce(author->name, "Staff")
     }
   }

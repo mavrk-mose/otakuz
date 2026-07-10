@@ -4,7 +4,7 @@ import article from './article';
 import author from './author';
 import category from './category';
 import organizer from './organizer';
-import title from "@/schemas/title";
+import title from './title';
 
 export const schemaTypes = [
   event,
