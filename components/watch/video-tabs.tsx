@@ -1,11 +1,84 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { AnimeVideos } from "@/types/anime";
 import { useI18n } from "@/components/i18n-provider";
+import { PlayCircle } from "lucide-react";
+
+type VideoImages = Partial<{
+  image_url: string | null;
+  small_image_url: string | null;
+  medium_image_url: string | null;
+  large_image_url: string | null;
+  maximum_image_url: string | null;
+}>;
+
+interface VideoThumbnailProps {
+  images?: VideoImages;
+  youtubeId?: string | null;
+  title: string;
+}
+
+function VideoThumbnail({ images, youtubeId, title }: VideoThumbnailProps) {
+  const sources = useMemo(() => {
+    const candidates = [
+      images?.large_image_url,
+      youtubeId ? `https://i.ytimg.com/vi/${youtubeId}/hqdefault.jpg` : null,
+      images?.medium_image_url,
+      images?.image_url,
+      images?.small_image_url,
+      images?.maximum_image_url,
+    ].filter(
+      (source): source is string =>
+        typeof source === "string" && source.trim().length > 0
+    );
+
+    return candidates.filter(
+      (source, index) => candidates.indexOf(source) === index
+    );
+  }, [
+    images?.image_url,
+    images?.large_image_url,
+    images?.maximum_image_url,
+    images?.medium_image_url,
+    images?.small_image_url,
+    youtubeId,
+  ]);
+
+  const [sourceIndex, setSourceIndex] = useState(0);
+  const sourceKey = sources.join("|");
+
+  useEffect(() => {
+    setSourceIndex(0);
+  }, [sourceKey]);
+
+  const source = sources[sourceIndex];
+
+  if (!source) {
+    return (
+      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-muted to-muted/50 text-muted-foreground">
+        <PlayCircle className="h-10 w-10" aria-hidden="true" />
+        <span className="sr-only">No thumbnail available for {title}</span>
+      </div>
+    );
+  }
+
+  return (
+    <Image
+      key={source}
+      src={source}
+      alt={title}
+      fill
+      sizes="(min-width: 768px) 33vw, 50vw"
+      className="rounded object-cover"
+      onError={() => setSourceIndex((index) => index + 1)}
+    />
+  );
+}
 
 interface VideoTabsProps {
   animeVideos: AnimeVideos | undefined;
@@ -47,12 +120,10 @@ export default function VideoTabs({
                     : "border-border hover:bg-accent"
                 )}
               >
-                <div className="relative aspect-video w-full">
-                  <Image
-                    src={ep.images?.jpg?.image_url || "/placeholder.png"}
-                    alt={ep.title}
-                    fill
-                    className="object-cover rounded"
+                <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">
+                  <VideoThumbnail
+                    images={{ image_url: ep.images?.jpg?.image_url }}
+                    title={ep.title}
                   />
                 </div>
                 <p className="text-sm mt-2 line-clamp-2">{ep.title}</p>
@@ -66,7 +137,6 @@ export default function VideoTabs({
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {promo.map((p) => {
               const url = p.trailer.embed_url;
-              const imageUrl = p.trailer.images?.maximum_image_url || "/placeholder.png";
               return (
                 <Card
                   key={p.title}
@@ -78,12 +148,11 @@ export default function VideoTabs({
                       : "border-border hover:bg-accent"
                   )}
                 >
-                  <div className="relative aspect-video w-full">
-                    <Image
-                      src={imageUrl}
-                      alt={p.title}
-                      fill
-                      className="object-cover rounded"
+                  <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">
+                    <VideoThumbnail
+                      images={p.trailer.images}
+                      youtubeId={p.trailer.youtube_id}
+                      title={p.title}
                     />
                   </div>
                   <p className="text-sm mt-2 line-clamp-2">{p.title}</p>
@@ -98,7 +167,6 @@ export default function VideoTabs({
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {music_videos.map((mv) => {
               const url = mv.video.embed_url;
-              const imageUrl = mv.video.images?.maximum_image_url || "/placeholder.png";
               return (
                 <Card
                   key={mv.title}
@@ -110,12 +178,11 @@ export default function VideoTabs({
                       : "border-border hover:bg-accent"
                   )}
                 >
-                  <div className="relative aspect-video w-full">
-                    <Image
-                      src={imageUrl}
-                      alt={mv.title}
-                      fill
-                      className="object-cover rounded"
+                  <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">
+                    <VideoThumbnail
+                      images={mv.video.images}
+                      youtubeId={mv.video.youtube_id}
+                      title={mv.title}
                     />
                   </div>
                   <p className="text-sm mt-2 line-clamp-2">{mv.title}</p>

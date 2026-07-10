@@ -82,11 +82,19 @@ export default function WatchPage() {
       animeVideos.promo?.find(
         (promo: AnimeVideos["promo"][number]) =>
           promo.trailer.embed_url === selectedVideoUrl
-      )?.trailer.images?.maximum_image_url ||
+      )?.trailer.images?.large_image_url ||
+      animeVideos.promo?.find(
+        (promo: AnimeVideos["promo"][number]) =>
+          promo.trailer.embed_url === selectedVideoUrl
+      )?.trailer.images?.medium_image_url ||
       animeVideos.music_videos?.find(
         (musicVideo: AnimeVideos["music_videos"][number]) =>
           musicVideo.video.embed_url === selectedVideoUrl
-      )?.video.images?.maximum_image_url
+      )?.video.images?.large_image_url ||
+      animeVideos.music_videos?.find(
+        (musicVideo: AnimeVideos["music_videos"][number]) =>
+          musicVideo.video.embed_url === selectedVideoUrl
+      )?.video.images?.medium_image_url
     : undefined;
 
   useEffect(() => {
@@ -98,7 +106,7 @@ export default function WatchPage() {
       id: `${currentId}:${selectedVideoUrl}`,
       src: selectedVideoUrl,
       title: selectedVideoTitle,
-      posterUrl: selectedVideoPoster,
+      posterUrl: selectedVideoPoster!,
       playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(
         selectedVideoUrl
       )}`,

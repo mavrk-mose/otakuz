@@ -209,11 +209,11 @@ export type AnimeVideos = {
             url: string;
             embed_url: string;
             images: {
-                image_url: string;
-                small_image_url: string;
-                medium_image_url: string;
-                large_image_url: string;
-                maximum_image_url: string;
+                image_url: string | null;
+                small_image_url: string | null;
+                medium_image_url: string | null;
+                large_image_url: string | null;
+                maximum_image_url: string | null;
             };
         };
     }[];
@@ -235,11 +235,11 @@ export type AnimeVideos = {
             url: string;
             embed_url: string;
             images: {
-                image_url: string;
-                small_image_url: string;
-                medium_image_url: string;
-                large_image_url: string;
-                maximum_image_url: string;
+                image_url: string | null;
+                small_image_url: string | null;
+                medium_image_url: string | null;
+                large_image_url: string | null;
+                maximum_image_url: string | null;
             };
         };
         meta: {
