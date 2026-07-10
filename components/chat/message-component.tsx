@@ -2,9 +2,8 @@ import { useState } from 'react'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Pencil, Trash2, Reply, MoreVertical } from 'lucide-react'
+import { AlertCircle, Clock3, Pencil, Trash2, Reply, MoreVertical } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {
   Popover,
   PopoverContent,
@@ -13,21 +12,22 @@ import {
 import Image from 'next/image'
 import Link from 'next/link'
 import {MessageProps} from "@/types/message";
+import { useI18n } from '@/components/i18n-provider';
 
-export function MessageComponent({ message, currentUserId, roomId }: MessageProps) {
+export function MessageComponent({ message, currentUserId, onEdit, onDelete }: MessageProps) {
+  const { locale, t } = useI18n();
   const [isEditing, setIsEditing] = useState(false)
   const [editedMessage, setEditedMessage] = useState(message.message)
-  const { editMessage, deleteMessage } = useFirebaseChat(roomId)
 
   const handleEdit = async () => {
     if (editedMessage.trim() !== message.message) {
-      await editMessage(message.id, editedMessage)
+      await onEdit(message.id, editedMessage)
     }
     setIsEditing(false)
   }
 
   const handleDelete = async () => {
-    await deleteMessage(message.id)
+    await onDelete(message.id)
   }
 
   const handleReply = async () => {
@@ -38,7 +38,16 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
   const renderContent = () => {
     switch (message.type) {
       case 'image':
-        return <img src={message.fileUrl} alt="Uploaded image" className="max-w-xs rounded-lg" />
+        return message.fileUrl ? (
+          <Image
+            src={message.fileUrl}
+            alt="Uploaded image"
+            width={320}
+            height={320}
+            unoptimized
+            className="h-auto max-w-xs rounded-lg object-contain"
+          />
+        ) : null
       case 'video':
         return <video src={message.fileUrl} controls className="max-w-xs rounded-lg" />
       case 'audio':
@@ -62,7 +71,7 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
                 </h3>
                 <Button variant="link" asChild className="p-0 h-auto text-xs">
                   <Link href={`/anime/${message.animeData?.id}`}>
-                    View Details
+                    {t("chat.viewDetails")}
                   </Link>
                 </Button>
               </div>
@@ -93,9 +102,26 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
           <div className="flex items-baseline gap-2 mb-1">
             <span className="text-sm font-medium">{message.username}</span>
             <span className="text-xs text-muted-foreground">
-            {new Date(message.timestamp).toLocaleTimeString()}
+            {new Date(message.timestamp).toLocaleTimeString(locale === "ja" ? "ja-JP" : "en-US")}
+            {message.editedAt ? ` · ${t("chat.edited")}` : ''}
           </span>
           </div>
+          {isCurrentUser && message.deliveryStatus !== 'sent' && (
+            <div
+              className={`mt-1 flex items-center gap-1 text-xs ${
+                message.deliveryStatus === 'error'
+                  ? 'text-destructive'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              {message.deliveryStatus === 'error' ? (
+                <AlertCircle className="h-3 w-3" />
+              ) : (
+                <Clock3 className="h-3 w-3" />
+              )}
+              {message.deliveryStatus === 'error' ? t("chat.sendFailed") : t("chat.sending")}
+            </div>
+          )}
           <div
               className={`rounded-lg ${
                   isCurrentUser ? 'bg-primary text-primary-foreground' : 'bg-muted'
@@ -124,15 +150,15 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
                 {isCurrentUser && (
                     <>
                       <Button size="sm" variant="ghost" onClick={() => setIsEditing(!isEditing)}>
-                        <Pencil className="h-4 w-4 mr-2" /> Edit
+                        <Pencil className="h-4 w-4 mr-2" /> {t("chat.edit")}
                       </Button>
                       <Button size="sm" variant="ghost" onClick={handleDelete}>
-                        <Trash2 className="h-4 w-4 mr-2" /> Delete
+                        <Trash2 className="h-4 w-4 mr-2" /> {t("common.delete")}
                       </Button>
                     </>
                 )}
                 <Button size="sm" variant="ghost" onClick={handleReply}>
-                  <Reply className="h-4 w-4 mr-2" /> Reply
+                  <Reply className="h-4 w-4 mr-2" /> {t("chat.reply")}
                 </Button>
               </div>
             </PopoverContent>
@@ -141,4 +167,3 @@ export function MessageComponent({ message, currentUserId, roomId }: MessageProp
       </motion.div>
   )
 }
-

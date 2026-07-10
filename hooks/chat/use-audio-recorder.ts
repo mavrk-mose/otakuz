@@ -7,7 +7,7 @@ interface UseAudioRecorderReturn {
     startRecording: () => Promise<void>;
     stopRecording: () => void;
     sendAudioMessage: (
-        sendFile: (blob: Blob, uid: string, displayName: string, type: string) => Promise<void>,
+        sendFile: (blob: Blob, type?: string) => Promise<void>,
         user: User | null
     ) => Promise<void>;
     resetRecording: () => void;
@@ -53,14 +53,14 @@ const useAudioRecorder = (): UseAudioRecorderReturn => {
     };
 
     const sendAudioMessage = async (
-        sendFile: (blob: Blob, uid: string, displayName: string, type: string) => Promise<void>,
+        sendFile: (blob: Blob, type?: string) => Promise<void>,
         user: User | null
     ) => {
         if (audioPreview && user) {
             try {
                 const response = await fetch(audioPreview);
                 const audioBlob = await response.blob();
-                await sendFile(audioBlob, user.uid, user.displayName || 'Anonymous', 'audio/webm');
+                await sendFile(audioBlob, 'audio/webm');
                 resetRecording();
             } catch (error) {
                 console.error('Error sending audio message:', error);

@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
 import { useFirebaseChatActions } from '@/hooks/chat/use-firebase-chat-actions';
 import { Room } from '@/types/room';
+import { useAuth } from '@/hooks/use-auth';
 
 const useFilteredRooms = (searchQuery: string | null) => {
     const { getRooms } = useFirebaseChatActions();
+    const { user } = useAuth();
 
     const {
         data: rooms = [],
@@ -13,11 +15,13 @@ const useFilteredRooms = (searchQuery: string | null) => {
     } = useQuery<Room[]>({
         queryKey: ['rooms'],
         queryFn: getRooms,
+        enabled: !!user,
+        retry: false,
         staleTime: Infinity
     });
 
     const filteredRooms = searchQuery
-        ? rooms.filter(room =>
+        ? rooms.filter((room: Room) =>
             room.title.toLowerCase().includes(searchQuery.toLowerCase())
         )
         : rooms;

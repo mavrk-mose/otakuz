@@ -8,6 +8,9 @@ import {
     signInWithPhoneNumber,
     signOut as firebaseSignOut
 } from 'firebase/auth';
+import { useMessagesStore } from '@/store/use-messages-store';
+
+let authInitialization: Promise<void> | null = null;
 
 interface IAuth {
     user: User | null;
@@ -65,6 +68,7 @@ const useAuthStore = create<IAuth>((set, get) => ({
     signOut: async () => {
         try {
             await firebaseSignOut(auth);
+            useMessagesStore.getState().clearMessages();
             set({ user: null, token: null });
         } catch (error) {
             console.error('Sign-out error:', error);
@@ -72,18 +76,36 @@ const useAuthStore = create<IAuth>((set, get) => ({
         }
     },
     initialize: async () => {
-        return new Promise<void>((resolve) => {
-            const unsubscribe = auth.onAuthStateChanged(async (user) => {
-                if (user) {
-                    const token = await user.getIdToken();
-                    set({ user, token, loading: false });
-                } else {
-                    set({ user: null, token: null, loading: false });
+        if (authInitialization) return authInitialization;
+
+        authInitialization = new Promise<void>((resolve) => {
+            let initialSessionResolved = false;
+
+            auth.onAuthStateChanged(async (user) => {
+                const previousUser = get().user;
+                if (previousUser && previousUser.uid !== user?.uid) {
+                    useMessagesStore.getState().clearMessages();
                 }
-                unsubscribe();
-                resolve();
+
+                try {
+                    if (user) {
+                        const token = await user.getIdToken();
+                        set({ user, token, loading: false });
+                    } else {
+                        set({ user: null, token: null, loading: false });
+                    }
+                } catch {
+                    set({ user, token: null, loading: false });
+                }
+
+                if (!initialSessionResolved) {
+                    initialSessionResolved = true;
+                    resolve();
+                }
             });
         });
+
+        return authInitialization;
     },
 }));
 

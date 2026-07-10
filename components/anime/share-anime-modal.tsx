@@ -12,6 +12,7 @@ import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import { toast } from 'sonner';
 import { useI18n } from '@/components/i18n-provider';
+import type { Room } from '@/types/room';
 
 interface ShareAnimeModalProps {
     isOpen: boolean;
@@ -55,7 +56,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
                 title: anime.title,
                 image: anime.images.jpg.large_image_url,
                 id: anime.mal_id,
-            }, user.uid);
+            });
             toast(t("common.success"), {
                 description: t("anime.shareSuccess")
             });
@@ -83,7 +84,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
                         </Label>
                         {user ? (
                             <ScrollArea className="w-full whitespace-nowrap">
-                                {rooms.map((room) => (
+                                {rooms.map((room: Room) => (
                                     <div
                                         key={room.id}
                                         onClick={() => handleSelectedRoom(room.id)}

@@ -14,6 +14,8 @@ import Lottie from "lottie-react";
 import WavingGirl from "@/public/lottie/Animation - 1734031068177.json"
 import RoomHeader from "@/components/chat/room-header";
 import useRoomDetails from "@/hooks/chat/use-room-details";
+import { useFirebaseChatActions } from '@/hooks/chat/use-firebase-chat-actions';
+import type { Room } from '@/types/room';
 
 export default function ChatPage() {
     const { user, loading } = useAuth()
@@ -22,6 +24,12 @@ export default function ChatPage() {
     const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
     const { rooms } = useFilteredRooms(searchQuery)
     const { roomDetails } = useRoomDetails(selectedRoom);
+    const { joinRoom } = useFirebaseChatActions();
+
+    const handleSelectRoom = async (roomId: string) => {
+        await joinRoom(roomId)
+        setSelectedRoom(roomId)
+    }
 
     useEffect(() => {
         if (!loading && !user) {
@@ -48,7 +56,7 @@ export default function ChatPage() {
                 <RoomSidebar
                     rooms={rooms}
                     selectedRoom={selectedRoom}
-                    onSelectRoom={setSelectedRoom}
+                    onSelectRoom={(roomId) => void handleSelectRoom(roomId)}
                     className="h-screen"
                 />
             </div>
@@ -60,10 +68,10 @@ export default function ChatPage() {
                     {selectedRoom && window.innerWidth >= 768 ? (
                             <>
                                 <RoomHeader roomId={selectedRoom} roomDetails={roomDetails}/>
-                                <ChatRoom roomId={selectedRoom} title={rooms.find(r => r.id === selectedRoom)?.title || ''} />
+                                <ChatRoom roomId={selectedRoom} title={rooms.find((room: Room) => room.id === selectedRoom)?.title || ''} />
                             </>
                     ) : (
-                        rooms.map((room) => (
+                        rooms.map((room: Room) => (
                             <Link
                                 key={room.id}
                                 href={`/chat/${room.id}`}
@@ -115,4 +123,3 @@ export default function ChatPage() {
         </div>
     )
 }
-

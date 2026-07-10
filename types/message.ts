@@ -7,23 +7,18 @@ export interface Message {
     type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'anime_share'
     fileUrl?: string
     fileType?: string
+    deliveryStatus?: 'sending' | 'sent' | 'error'
+    editedAt?: number
+    animeData?: {
+        title: string
+        image: string
+        id: string | number
+    }
 }
 
 export interface MessageProps {
-    message: {
-        id: string
-        userId: string
-        username: string
-        message: string
-        timestamp: number
-        type?: 'text' | 'image' | 'video' | 'audio' | 'file' | 'anime_share'
-        fileUrl?: string
-        animeData?: {
-            title: string
-            image: string
-            id: string
-        }
-    }
+    message: Message
     currentUserId: string | undefined
-    roomId: string
+    onEdit: (messageId: string, content: string) => Promise<void>
+    onDelete: (messageId: string) => Promise<void>
 }

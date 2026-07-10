@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef, useEffect, use } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
@@ -22,10 +22,19 @@ interface ChatRoomProps {
 export default function ChatRoom({ roomId, title }: ChatRoomProps) {
     const { t } = useI18n()
     const [newMessage, setNewMessage] = useState('')
-    const [typingUsers, setTypingUsers] = useState<string[]>([])
     const { user } = useAuth()
     const scrollRef = useRef<HTMLDivElement>(null)
-    const { messages, sendMessage, sendFile, setTyping } = useFirebaseChat(roomId)
+    const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+    const {
+        messages,
+        loading: messagesLoading,
+        error,
+        sendMessage,
+        sendFile,
+        editMessage,
+        deleteMessage,
+        setTyping,
+    } = useFirebaseChat(roomId)
     const fileInputRef = useRef<HTMLInputElement>(null)
     const {
         isRecording,
@@ -33,52 +42,79 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         startRecording,
         stopRecording,
         sendAudioMessage,
-        resetRecording,
     } = useAudioRecorder();
-    const { roomDetails, loading, refetch } = useRoomDetails(roomId);
+    const { roomDetails } = useRoomDetails(roomId);
+
+    useEffect(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
+    }, [messages])
+
+    useEffect(() => {
+        return () => {
+            if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+            void setTyping(false)
+        }
+    }, [setTyping])
 
 
     const handleSendMessage = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!user || !newMessage.trim()) return
-        await sendMessage(newMessage, user.uid, user.displayName || 'Anonymous')
-        setNewMessage('')
-        scrollRef?.current?.scrollIntoView({ behavior: 'smooth' })
+        const content = newMessage.trim()
+        if (!user || !content) return
 
-        roomDetails?.members.forEach((member) => { 
-            if (member !== user?.uid) {
-                createChatNotification(member, title, 'New message received');
-            }
-        })
+        setNewMessage('')
+        void setTyping(false)
+
+        try {
+            await sendMessage(content)
+
+            roomDetails?.members.forEach((member: string) => {
+                if (member !== user.uid) {
+                    void createChatNotification(member, title, roomId, content)
+                }
+            })
+        } catch {
+            setNewMessage((current) => current || content)
+        }
     }
 
     const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0]
         if (file && user) {
-            await sendFile(file, user.uid, user.displayName || 'Anonymous')
+            try {
+                await sendFile(file)
+            } finally {
+                e.target.value = ''
+            }
         }
     }
 
     return (
         <div className="flex flex-col h-full">
+            {error && (
+                <div role="alert" className="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
+                    {t("chat.liveSyncError")}: {error.message}
+                </div>
+            )}
             <ScrollArea className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
+                {messagesLoading && messages.length === 0 && (
+                    <div className="py-8 text-center text-sm text-muted-foreground">
+                        {t("common.loading")}
+                    </div>
+                )}
                 <AnimatePresence initial={false}>
                     {messages.map((message) => (
                         <MessageComponent
                             key={message.id}
                             message={message}
                             currentUserId={user?.uid}
-                            roomId={roomId}
+                            onEdit={editMessage}
+                            onDelete={deleteMessage}
                         />
                     ))}
                     <div ref={scrollRef}></div>
                 </AnimatePresence>
             </ScrollArea>
-            {typingUsers.length > 0 && (
-                <div className="px-4 py-2 text-sm text-muted-foreground">
-                    {typingUsers.join(', ')} {typingUsers.length === 1 ? 'is' : 'are'} typing...
-                </div>
-            )}
             <div className="border-t p-4 sticky bottom-0 z-50">
                 <form onSubmit={handleSendMessage} className="flex flex-wrap gap-2 items-center">
                     <Input
@@ -86,11 +122,17 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                         onChange={(e) => {
                             setNewMessage(e.target.value)
                             if (user) {
-                                setTyping(user.uid, true)
+                                void setTyping(true)
+                                if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current)
+                                typingTimeoutRef.current = setTimeout(() => {
+                                    void setTyping(false)
+                                }, 1500)
                             }
                         }}
+                        onBlur={() => void setTyping(false)}
                         placeholder={t("chat.typeMessage")}
                         className="flex-1"
+                        disabled={!user || messagesLoading}
                     />
                     <div className="flex gap-2">
                         <input
@@ -131,7 +173,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                                 </Button>
                             </>
                         )}
-                        <Button type="submit" size="icon">
+                        <Button type="submit" size="icon" disabled={!user || !newMessage.trim()}>
                             <Send className="h-4 w-4" />
                         </Button>
                     </div>

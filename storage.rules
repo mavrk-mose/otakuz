@@ -1,0 +1,34 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isRoomMember(roomId) {
+      return signedIn()
+        && firestore.get(
+          /databases/(default)/documents/chatrooms/$(roomId)
+        ).data.members.hasAny([request.auth.uid]);
+    }
+
+    match /chatrooms/{roomId}/{userId}/{messageId}/{fileName} {
+      allow read: if isRoomMember(roomId);
+
+      allow create: if isRoomMember(roomId)
+        && request.auth.uid == userId
+        && request.resource.size < 25 * 1024 * 1024
+        && request.resource.contentType.matches(
+          '^(image|video|audio)/.*$|^application/(pdf|octet-stream)$'
+        );
+
+      allow delete: if isRoomMember(roomId) && request.auth.uid == userId;
+      allow update: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

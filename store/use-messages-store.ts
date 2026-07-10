@@ -1,61 +1,73 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
-import {Message} from "@/types/message";
+import type { Message } from '@/types/message'
 
 interface MessagesState {
     messages: { [roomId: string]: Message[] }
-    addMessage: (roomId: string, message: Message) => void
-    setMessages: (roomId: string, messages: { [p: string]: any; id: string; timestamp: number }[]) => void
+    upsertMessage: (roomId: string, message: Message) => void
+    setMessages: (roomId: string, messages: Message[]) => void
     updateMessage: (roomId: string, messageId: string, updates: Partial<Message>) => void
     removeMessage: (roomId: string, messageId: string) => void
+    clearMessages: () => void
 }
 
-export const useMessagesStore = create<MessagesState>()(
-    persist(
-        (set) => ({
-            messages: {},
-            addMessage: (roomId, message) =>
-                set((state) => ({
-                    messages: {
-                        ...state.messages,
-                        [roomId]: [...(state.messages[roomId] || []), message],
-                    },
-                })),
-            setMessages: (roomId, messages) =>
-                set((state) => ({
-                    messages: {
-                        ...state.messages,
-                        [roomId]: messages.map((msg) => ({
-                            ...msg,
-                            userId: msg.userId || '',
-                            username: msg.username || '',
-                            message: msg.message || '',
-                            type: msg.type || 'text',
-                            fileUrl: msg.fileUrl || undefined,
-                            fileType: msg.fileType || undefined,
-                        })),
-                    },
-                })),
-            updateMessage: (roomId, messageId, updates) =>
-                set((state) => ({
-                    messages: {
-                        ...state.messages,
-                        [roomId]: state.messages[roomId].map((msg) =>
-                            msg.id === messageId ? { ...msg, ...updates } : msg
-                        ),
-                    },
-                })),
-            removeMessage: (roomId, messageId) =>
-                set((state) => ({
-                    messages: {
-                        ...state.messages,
-                        [roomId]: state.messages[roomId].filter((msg) => msg.id !== messageId),
-                    },
-                })),
-        }),
-        {
-            name: 'messages-storage'
-        }
-    )
-)
+const byTimestamp = (a: Message, b: Message) => a.timestamp - b.timestamp
 
+export const useMessagesStore = create<MessagesState>((set) => ({
+    messages: {},
+    upsertMessage: (roomId, message) =>
+        set((state) => {
+            const currentMessages = state.messages[roomId] || []
+            const existingIndex = currentMessages.findIndex((item) => item.id === message.id)
+            const nextMessages = [...currentMessages]
+
+            if (existingIndex >= 0) {
+                nextMessages[existingIndex] = {
+                    ...nextMessages[existingIndex],
+                    ...message,
+                }
+            } else {
+                nextMessages.push(message)
+            }
+
+            return {
+                messages: {
+                    ...state.messages,
+                    [roomId]: nextMessages.sort(byTimestamp),
+                },
+            }
+        }),
+    setMessages: (roomId, messages) =>
+        set((state) => {
+            const snapshotIds = new Set(messages.map((message) => message.id))
+            const localMessages = (state.messages[roomId] || []).filter(
+                (message) =>
+                    message.deliveryStatus !== 'sent' && !snapshotIds.has(message.id)
+            )
+
+            return {
+                messages: {
+                    ...state.messages,
+                    [roomId]: [...messages, ...localMessages].sort(byTimestamp),
+                },
+            }
+        }),
+    updateMessage: (roomId, messageId, updates) =>
+        set((state) => ({
+            messages: {
+                ...state.messages,
+                [roomId]: (state.messages[roomId] || []).map((message) =>
+                    message.id === messageId ? { ...message, ...updates } : message
+                ),
+            },
+        })),
+    removeMessage: (roomId, messageId) =>
+        set((state) => ({
+            messages: {
+                ...state.messages,
+                [roomId]: (state.messages[roomId] || []).filter(
+                    (message) => message.id !== messageId
+                ),
+            },
+        })),
+    clearMessages: () => set({ messages: {} }),
+}))

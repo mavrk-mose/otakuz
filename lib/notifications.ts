@@ -83,13 +83,13 @@ export async function deleteNotification(notificationId: string) {
   }
 }
 
-export function createChatNotification(userId: string, roomName: string, message: string) {
+export function createChatNotification(userId: string, roomName: string, roomId: string, message: string) {
   return createNotification({
     userId,
     type: 'chat',
     title: `New message in ${roomName}`,
     message,
-    link: `/chat/${roomName}`,
+    link: `/chat/${roomId}`,
   });
 }
 

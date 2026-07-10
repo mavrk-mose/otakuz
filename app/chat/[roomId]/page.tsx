@@ -11,6 +11,8 @@ import useRoomDetails from "@/hooks/chat/use-room-details";
 import Lottie from "lottie-react";
 import WavingGirl from "@/public/lottie/Animation - 1734031068177.json";
 import RoomHeader from "@/components/chat/room-header";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface Props {
     params: Promise<{ roomId: string }>;
@@ -18,25 +20,32 @@ interface Props {
 
 export default function Room(props: Props) {
     const params = use(props.params);
-    const { user } = useAuth()
+    const { user, loading: authLoading } = useAuth()
     const { joinRoom } = useFirebaseChatActions()
+    const router = useRouter()
 
     const { roomDetails, loading, refetch } = useRoomDetails(params.roomId);
 
+    useEffect(() => {
+        if (!authLoading && !user) router.replace('/auth')
+    }, [authLoading, router, user])
+
     const handleJoinRoom = async () => {
         if (user) {
-            await joinRoom(params.roomId, user.uid);
+            await joinRoom(params.roomId);
             await refetch();
         }
     }
 
-    if(loading) {
+    if(authLoading || loading) {
         return (
             <div className="flex items-center justify-center h-screen">
                 <Lottie animationData={WavingGirl}/>
             </div>
         )
     }
+
+    if (!user) return null
 
     const isUserInRoom = roomDetails?.members.includes(user?.uid || '');
 

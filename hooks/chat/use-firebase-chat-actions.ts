@@ -1,117 +1,118 @@
 import { useCallback } from 'react'
-import { db } from '@/lib/firebase'
-import {collection, addDoc, serverTimestamp, getDocs, updateDoc, arrayUnion, getDoc, doc} from 'firebase/firestore'
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    runTransaction,
+    serverTimestamp,
+    setDoc,
+} from 'firebase/firestore'
+import { auth, db } from '@/lib/firebase'
+import type { Room, RoomDetails } from '@/types/room'
+
+function requireUser() {
+    const user = auth.currentUser
+    if (!user) throw new Error('You must be signed in to use chat.')
+    return user
+}
 
 export function useFirebaseChatActions() {
-    const createRoom = useCallback(
-        async (title: string) => {
-            if (!db) return
-            try {
-                const docRef = await addDoc(collection(db, 'chatrooms'), {
-                    title,
-                    createdAt: serverTimestamp(),
-                    memberCount: 0,
-                    members: []
-                })
-                return docRef.id
-            } catch (error) {
-                console.error('Error creating room:', error)
-            }
-        },
-        []
-    )
+    const createRoom = useCallback(async (title: string) => {
+        const user = requireUser()
+        const trimmedTitle = title.trim()
+        if (!trimmedTitle) throw new Error('Room title is required.')
 
-    const inviteUser = useCallback(
-        async (roomId: string, userEmail: string) => {
-            if (!db) return
-            try {
-                await addDoc(collection(db, 'chatrooms', roomId, 'invites'), {
-                    userEmail,
-                    invitedAt: serverTimestamp()
-                })
-            } catch (error) {
-                console.error('Error inviting user:', error)
-            }
-        },
-        []
-    )
+        const roomRef = doc(collection(db, 'chatrooms'))
+        await setDoc(roomRef, {
+            title: trimmedTitle,
+            createdBy: user.uid,
+            createdAt: serverTimestamp(),
+            memberCount: 1,
+            members: [user.uid],
+        })
+        return roomRef.id
+    }, [])
+
+    const inviteUser = useCallback(async (roomId: string, userEmail: string) => {
+        const user = requireUser()
+        const inviteRef = doc(collection(db, 'chatrooms', roomId, 'invites'))
+        await setDoc(inviteRef, {
+            userEmail: userEmail.trim().toLowerCase(),
+            invitedBy: user.uid,
+            invitedAt: serverTimestamp(),
+        })
+    }, [])
 
     const shareAnimeToChat = useCallback(
-        async (roomId: string, animeData: { title: string; image: string; id: number }, userId: string) => {
-            if (!db) return
-            try {
-                await addDoc(collection(db, 'chatrooms', roomId, 'messages'), {
-                    type: 'anime_share',
-                    animeData,
-                    userId,
-                    timestamp: serverTimestamp()
-                })
-            } catch (error) {
-                console.error('Error sharing anime to chat:', error)
-            }
+        async (
+            roomId: string,
+            animeData: { title: string; image: string; id: number }
+        ) => {
+            const user = requireUser()
+            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            await setDoc(messageRef, {
+                type: 'anime_share',
+                animeData,
+                message: '',
+                userId: user.uid,
+                username: user.displayName || user.email || 'Anonymous',
+                timestamp: serverTimestamp(),
+                createdAtClient: Date.now(),
+            })
+            return messageRef.id
         },
         []
     )
 
-    const joinRoom = useCallback(
-        async (roomId: string, userId: string) => {
-            if (!db) return
-            try {
-                const roomRef = doc(db, 'chatrooms', roomId)
-                await updateDoc(roomRef, {
-                    members: arrayUnion(userId),
-                    memberCount: (await getDoc(roomRef)).data()?.memberCount + 1 || 1
-                })
-            } catch (error) {
-                console.error('Error joining room:', error)
-            }
-        },
-        []
-    )
+    const joinRoom = useCallback(async (roomId: string) => {
+        const user = requireUser()
+        const roomRef = doc(db, 'chatrooms', roomId)
 
-    const getRooms = useCallback(
-        async () => {
-            if (!db) return []
-            try {
-                const querySnapshot = await getDocs(collection(db, 'chatrooms'))
-                return querySnapshot.docs.map(doc => ({
-                    id: doc.id,
-                    title: doc.data().title
-                }))
-            } catch (error) {
-                console.error('Error getting rooms:', error)
-                return []
-            }
-        },
-        []
-    )
+        await runTransaction(db, async (transaction) => {
+            const roomSnapshot = await transaction.get(roomRef)
+            if (!roomSnapshot.exists()) throw new Error('Chat room not found.')
+
+            const members = (roomSnapshot.data().members || []) as string[]
+            if (members.includes(user.uid)) return
+
+            const nextMembers = [...members, user.uid]
+            transaction.update(roomRef, {
+                members: nextMembers,
+                memberCount: nextMembers.length,
+            })
+        })
+    }, [])
+
+    const getRooms = useCallback(async (): Promise<Room[]> => {
+        requireUser()
+        const querySnapshot = await getDocs(collection(db, 'chatrooms'))
+        return querySnapshot.docs.map((roomSnapshot) => ({
+            id: roomSnapshot.id,
+            title: roomSnapshot.data().title,
+            createdBy: roomSnapshot.data().createdBy,
+            memberCount: roomSnapshot.data().memberCount || 0,
+            members: roomSnapshot.data().members || [],
+        }))
+    }, [])
 
     const getRoomDetails = useCallback(
-        async (roomId: string | null) => {
-            if (!db || !roomId) {
-                return null
-            }
+        async (roomId: string | null): Promise<RoomDetails | null> => {
+            if (!roomId) return null
+            requireUser()
 
-            try {
-                const docRef = doc(db, 'chatrooms', roomId)
-                const docSnap = await getDoc(docRef)
-                if (docSnap.exists()) {
-                    return {
-                        title: docSnap.data().title,
-                        memberCount: docSnap.data().memberCount || 0,
-                        members: docSnap.data().members || []
-                    }
-                }
-                return null
-            } catch (error) {
-                console.error('Error getting room details:', error)
-                return null
+            const roomSnapshot = await getDoc(doc(db, 'chatrooms', roomId))
+            if (!roomSnapshot.exists()) return null
+
+            return {
+                title: roomSnapshot.data().title,
+                createdBy: roomSnapshot.data().createdBy,
+                memberCount: roomSnapshot.data().memberCount || 0,
+                members: roomSnapshot.data().members || [],
             }
         },
         []
     )
-
-
 
     return {
         createRoom,
@@ -119,7 +120,6 @@ export function useFirebaseChatActions() {
         shareAnimeToChat,
         getRooms,
         joinRoom,
-        getRoomDetails
+        getRoomDetails,
     }
 }
-

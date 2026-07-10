@@ -86,7 +86,7 @@ export function RoomSidebar({ selectedRoom, onSelectRoom, className }: RoomSideb
                 {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
                 {!loading && !error && (
                     <div className="p-2">
-                        {rooms.map((room) => (
+                        {rooms.map((room: Room) => (
                             <Button
                                 key={room.id}
                                 variant={selectedRoom === room.id ? "secondary" : "ghost"}
