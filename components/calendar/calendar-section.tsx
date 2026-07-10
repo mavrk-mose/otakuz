@@ -14,8 +14,10 @@ import { AlertCircle } from "lucide-react";
 import useFetchSchedules from "@/hooks/calendar/use-fetch-schedules";
 import { RealtimeClock } from "./clock";
 import Link from "next/link";
+import { useI18n } from "@/components/i18n-provider";
 
 export function CalendarSection() {
+  const { t } = useI18n();
   const [currentDate, setCurrentDate] = useState(startOfToday());
   const [activeDay, setActiveDay] = useState<string>("");
   const [direction, setDirection] = useState(0);
@@ -176,17 +178,16 @@ export function CalendarSection() {
   return (
     <section className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-primary">Schedule</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-primary">{t("home.schedule")}</h1>
         <RealtimeClock />
       </div>
 
       {isRateLimited && (
         <Alert variant="destructive" className="mb-4">
           <AlertCircle className="h-4 w-4" />
-          <AlertTitle>Rate Limited</AlertTitle>
+          <AlertTitle>{t("calendar.rateLimited")}</AlertTitle>
           <AlertDescription>
-            We're being rate limited by the API. Please wait a moment before
-            trying again.
+            {t("calendar.rateLimitedDescription")}
           </AlertDescription>
         </Alert>
       )}

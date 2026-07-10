@@ -2,6 +2,7 @@
 
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { useI18n } from "@/components/i18n-provider"
 
 interface FilterSectionProps {
     filters: {
@@ -12,20 +13,21 @@ interface FilterSectionProps {
 }
 
 export function FilterSection({ filters, setFilters }: FilterSectionProps) {
+    const { t } = useI18n()
     const styles = [
-        { id: 'tshirts', label: 'T-Shirts' },
-        { id: 'hoodies', label: 'Hoodies & Sweatshirts' },
-        { id: 'accessories', label: 'Accessories' },
-        { id: 'home', label: 'Home' },
-        { id: 'collectibles', label: 'Collectibles' },
-    ]
+        { id: 'tshirts', labelKey: 'shop.tshirts' },
+        { id: 'hoodies', labelKey: 'shop.hoodies' },
+        { id: 'accessories', labelKey: 'shop.accessories' },
+        { id: 'home', labelKey: 'shop.home' },
+        { id: 'collectibles', labelKey: 'shop.collectibles' },
+    ] as const
 
     const priceRanges = [
-        { id: 'under-25', label: 'Under $25' },
-        { id: '25-50', label: '$25 - $50' },
-        { id: '50-100', label: '$50 - $100' },
-        { id: 'over-100', label: 'Over $100' },
-    ]
+        { id: 'under-25', labelKey: 'shop.under25' },
+        { id: '25-50', labelKey: 'shop.from25to50' },
+        { id: '50-100', labelKey: 'shop.from50to100' },
+        { id: 'over-100', labelKey: 'shop.over100' },
+    ] as const
 
     const toggleFilter = (type: 'style' | 'price', value: string) => {
         setFilters((prev: any) => ({
@@ -39,7 +41,7 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
     return (
         <div className="space-y-8">
             <div>
-                <h3 className="text-lg font-semibold mb-4">Style</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("shop.style")}</h3>
                 <div className="space-y-3">
                     {styles.map((style) => (
                         <div key={style.id} className="flex items-center space-x-2">
@@ -53,7 +55,7 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
                                 htmlFor={style.id}
                                 className="text-sm text-foreground"
                             >
-                                {style.label}
+                                {t(style.labelKey)}
                             </Label>
                         </div>
                     ))}
@@ -61,7 +63,7 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold mb-4">Price</h3>
+                <h3 className="text-lg font-semibold mb-4">{t("common.price")}</h3>
                 <div className="space-y-3">
                     {priceRanges.map((range) => (
                         <div key={range.id} className="flex items-center space-x-2">
@@ -75,7 +77,7 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
                                 htmlFor={range.id}
                                 className="text-sm text-foreground"
                             >
-                                {range.label}
+                                {t(range.labelKey)}
                             </Label>
                         </div>
                     ))}

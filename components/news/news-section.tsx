@@ -8,8 +8,10 @@ import {ArrowRight, CalendarDays} from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import {Button} from "@/components/ui/button";
+import { useI18n } from '@/components/i18n-provider';
 
 export function NewsSection() {
+    const { locale, t } = useI18n();
     const {data: newsList, isLoading} = useQuery({
         queryKey: ['animeNews'],
         queryFn: getAnimeNews
@@ -48,12 +50,12 @@ export function NewsSection() {
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold mb-2">Latest News</h2>
-                    <p className="text-muted-foreground">catch-up on latest anime news</p>
+                    <h2 className="text-3xl font-bold mb-2">{t("home.latestNews")}</h2>
+                    <p className="text-muted-foreground">{t("home.latestNewsDescription")}</p>
                 </div>
                 <Button variant="ghost" asChild>
                     <Link href="/news" className="gap-2">
-                        View All <ArrowRight className="w-4 h-4"/>
+                        {t("common.viewAll")} <ArrowRight className="w-4 h-4"/>
                     </Link>
                 </Button>
             </div>
@@ -76,7 +78,7 @@ export function NewsSection() {
                                 </h3>
                                 <div className="flex items-center text-sm text-muted-foreground">
                                     <CalendarDays className="h-4 w-4 mr-2"/>
-                                    {new Date(news.date).toLocaleDateString()}
+                                    {new Date(news.date).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US")}
                                 </div>
                                 <p className="text-sm text-muted-foreground mt-2 line-clamp-2">
                                     {news.excerpt}

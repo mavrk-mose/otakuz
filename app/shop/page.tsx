@@ -12,6 +12,7 @@ import TitleBanner from "@/components/shop/title-banner";
 import { useCart } from "@/store/use-cart";
 import { useState } from "react";
 import { CartDrawer } from "@/components/shop/cart-drawer";
+import { useI18n } from "@/components/i18n-provider";
 
 //TODO: fetch from sanity
 const featuredBanners = [
@@ -32,6 +33,7 @@ const featuredBanners = [
 ];
 
 export default function ShopPage() {
+  const { t } = useI18n();
     const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('popular');
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -43,11 +45,11 @@ export default function ShopPage() {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between mb-8">
             <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
-              New Arrivals
+              {t("shop.newArrivals")}
             </h2>
             <Button variant="outline" className="mt-4 md:mt-0" onClick={() => setIsCartOpen(true)}>
               <ShoppingCart className="h-4 w-4" />
-              Cart ({totalItems})
+              {t("shop.cart")} ({totalItems})
             </Button>
           </div>
           
@@ -60,7 +62,7 @@ export default function ShopPage() {
       <section className="py-4">
         <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
-            Shop By Title
+            {t("shop.shopByTitle")}
           </h2>
           <TitleBanner />
         </div>
@@ -81,7 +83,7 @@ export default function ShopPage() {
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
-            Shop By Category
+            {t("shop.shopByCategory")}
           </h2>
           <CategoryList />
         </div>
@@ -92,11 +94,11 @@ export default function ShopPage() {
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between">
             <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
-              All Products
+              {t("shop.allProducts")}
               </h2>
             <Button variant="ghost" asChild>
               <Link href="/anime" className="gap-2">
-                View All <ArrowRight className="w-4 h-4" />
+                {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
               </Link>
             </Button>
           </div>

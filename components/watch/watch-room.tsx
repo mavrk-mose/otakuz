@@ -8,6 +8,7 @@ import { Label } from "recharts";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
+import { useI18n } from "@/components/i18n-provider";
 
 interface WatchPartyRoomProps {
   roomId: string;
@@ -22,6 +23,7 @@ export function WatchPartyRoom({
   episodeNumber,
   onLeave,
 }: WatchPartyRoomProps) {
+  const { t } = useI18n();
   const { state, isLoading, wsSend, connectionStatus } =
     useWatchPartyRoom(roomId);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -101,7 +103,7 @@ export function WatchPartyRoom({
       <div className="flex items-center justify-center h-full">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4" />
-          <p className="text-muted-foreground">Loading room...</p>
+          <p className="text-muted-foreground">{t("watch.loadingRoom")}</p>
         </div>
       </div>
     );
@@ -114,7 +116,7 @@ export function WatchPartyRoom({
         <div>
           <h2 className="text-xl font-bold">{animeTitle}</h2>
           <p className="text-sm text-muted-foreground">
-            Episode {episodeNumber}
+            {t("watch.episode")} {episodeNumber}
           </p>
         </div>
         <div className="flex items-center gap-4">
@@ -125,7 +127,7 @@ export function WatchPartyRoom({
               <WifiOff className="h-4 w-4 text-red-500" />
             )}
             <span className="text-sm text-muted-foreground">
-              {connectionStatus === "open" ? "Connected" : "Disconnected"}
+              {connectionStatus === "open" ? t("watch.connected") : t("watch.disconnected")}
             </span>
           </div>
           <Badge variant="secondary" className="gap-1">
@@ -133,7 +135,7 @@ export function WatchPartyRoom({
             {state?.clients.length || 0}
           </Badge>
           <Button variant="ghost" size="sm" onClick={onLeave}>
-            Leave
+            {t("watch.leave")}
           </Button>
         </div>
       </div>
@@ -156,7 +158,7 @@ export function WatchPartyRoom({
               <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
                 <Badge variant="secondary" className="gap-2">
                   <Crown className="h-4 w-4 text-yellow-500" />
-                  Host is controlling playback
+                  {t("watch.hostControlling")}
                 </Badge>
               </div>
             )}
@@ -189,7 +191,7 @@ export function WatchPartyRoom({
 
               {/* Playback Rate */}
               <div className="flex items-center gap-3">
-                <Label className="text-xs whitespace-nowrap">Speed:</Label>
+                <Label className="text-xs whitespace-nowrap">{t("watch.speed")}:</Label>
                 <div className="flex gap-2 flex-1">
                   {[0.5, 1, 1.25, 1.5, 2].map((rate) => (
                     <Button
@@ -215,7 +217,7 @@ export function WatchPartyRoom({
           <div className="p-4 border-b">
             <h3 className="font-semibold flex items-center gap-2">
               <Users className="h-4 w-4" />
-              Viewers ({state?.clients.length || 0})
+              {t("watch.viewers")} ({state?.clients.length || 0})
             </h3>
           </div>
           <ScrollArea className="flex-1 p-4">
@@ -236,7 +238,7 @@ export function WatchPartyRoom({
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="text-sm font-medium truncate">
-                          User {clientId.slice(0, 8)}
+                          {t("watch.user")} {clientId.slice(0, 8)}
                         </div>
                       </div>
                       {clientId === state.hostId && (
@@ -253,12 +255,12 @@ export function WatchPartyRoom({
           <div className="p-4 border-t space-y-2">
             <div className="text-xs text-muted-foreground">
               <div className="flex justify-between">
-                <span>Room ID:</span>
+                <span>{t("watch.roomId")}:</span>
                 <span className="font-mono">{roomId.slice(0, 12)}...</span>
               </div>
               <div className="flex justify-between mt-1">
-                <span>Status:</span>
-                <span>{state?.isPlaying ? "Playing" : "Paused"}</span>
+                <span>{t("common.status")}:</span>
+                <span>{state?.isPlaying ? t("watch.playing") : t("watch.paused")}</span>
               </div>
             </div>
           </div>

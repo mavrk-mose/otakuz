@@ -5,9 +5,11 @@ import { GenreStories } from "@/components/anime/genre-stories";
 import AnimeCollection from "@/components/anime/anime-collection";
 import FilteredAnime from "@/components/anime/filtered-anime";
 import {useGenreStore} from "@/store/use-genre-store";
+import { useI18n } from "@/components/i18n-provider";
 
 export default function AnimeListPage() {
     const {animeGenre} = useGenreStore();
+    const { t } = useI18n();
 
     const container = {
         hidden: { opacity: 0 },
@@ -24,9 +26,9 @@ export default function AnimeListPage() {
             </div>
 
             <div className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Anime Collection</h1>
+                <h1 className="text-4xl font-bold mb-2">{t("anime.collection")}</h1>
                 <p className="text-muted-foreground">
-                    Discover and explore your next favorite anime series
+                    {t("anime.collectionDescription")}
                 </p>
             </div>
 

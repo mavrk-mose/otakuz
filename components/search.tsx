@@ -9,10 +9,12 @@ import { Input } from "@/components/ui/input"
 import { SearchIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { useI18n } from "@/components/i18n-provider"
 
 export function Search() {
   const { setSearchQuery, searchQuery } = useAnimeStore()
   const { user } = useAuth()
+  const { t } = useI18n()
   const [isExpanded, setIsExpanded] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -65,7 +67,7 @@ export function Search() {
                     <Input
                       ref={inputRef}
                       type="search"
-                      placeholder="Search..."
+                      placeholder={t("search.placeholder")}
                       className="pl-10 w-full"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
@@ -87,7 +89,7 @@ export function Search() {
                   >
                     <Button variant="ghost" size="icon" onClick={handleSearchClick} className="rounded-full">
                       <SearchIcon className="h-5 w-5" />
-                      <span className="sr-only">Search</span>
+                      <span className="sr-only">{t("common.search")}</span>
                     </Button>
                   </motion.div>
                 )}

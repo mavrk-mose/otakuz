@@ -11,12 +11,14 @@ import { use } from 'react'
 import useFetchProduct from "@/hooks/shop/use-fetch-product"
 import {urlFor} from "@/lib/sanity";
 import { useCart } from '@/store/use-cart'
+import { useI18n } from '@/components/i18n-provider'
 
 interface Props {
   params: Promise<{ id: string }>
 }
 
 export default function ProductPage(props: Props) {
+  const { t } = useI18n()
   const params = use(props.params)
   const { product, isLoading } = useFetchProduct(params.id)
   const { addToCart } = useCart()
@@ -42,7 +44,7 @@ export default function ProductPage(props: Props) {
     return (
         <div className="min-h-screen bg-background text-foreground">
           <div className="container mx-auto px-4 py-8">
-            <div className="text-center">Product not found</div>
+            <div className="text-center">{t("shop.productNotFound")}</div>
           </div>
         </div>
     )
@@ -111,7 +113,7 @@ export default function ProductPage(props: Props) {
 
                   {/* Size Selection */}
                   <div className="space-y-3">
-                    <label className="text-sm font-medium">SIZE</label>
+                    <label className="text-sm font-medium">{t("shop.size").toUpperCase()}</label>
                     <div className="grid grid-cols-3 gap-2">
                       {sizes.map((size) => (
                           <Button
@@ -133,7 +135,7 @@ export default function ProductPage(props: Props) {
                       onClick={() => selectedSize && addToCart(product)}
                       disabled={!selectedSize}
                   >
-                    Add to Cart
+                    {t("shop.addToCart")}
                   </Button>
 
                   {/* Description */}
@@ -142,7 +144,7 @@ export default function ProductPage(props: Props) {
                         className="flex items-center justify-between w-full text-left"
                         onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
                     >
-                      <span className="text-lg font-medium">DESCRIPTION</span>
+                      <span className="text-lg font-medium">{t("shop.description").toUpperCase()}</span>
                       {isDescriptionOpen ? (
                           <ChevronUp className="h-5 w-5" />
                       ) : (

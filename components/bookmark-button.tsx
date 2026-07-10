@@ -16,6 +16,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useI18n } from "@/components/i18n-provider";
 
 interface BookmarkButtonProps {
   itemId: string;
@@ -30,6 +31,7 @@ export function BookmarkButton({
   title,
   image,
 }: BookmarkButtonProps) {
+  const { t } = useI18n();
   const { user } = useAuth();
   const { lists, createList, addToList, isBookmarked } = useBookmarks();
   const { data: isItemBookmarked, isLoading } = isBookmarked(itemId);
@@ -147,12 +149,12 @@ export function BookmarkButton({
         {showNewListInput ? (
           <div className="flex gap-2">
             <Input
-              placeholder="List name"
+              placeholder={t("bookmark.listName")}
               value={newListName}
               onChange={(e) => setNewListName(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleCreateList()}
             />
-            <Button onClick={handleCreateList}>Create</Button>
+            <Button onClick={handleCreateList}>{t("common.create")}</Button>
           </div>
         ) : (
           <Button
@@ -161,7 +163,7 @@ export function BookmarkButton({
             onClick={() => setShowNewListInput(true)}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Create New List
+            {t("bookmark.createNew")}
           </Button>
         )}
 
@@ -169,7 +171,7 @@ export function BookmarkButton({
           <div className="space-y-2">
             {sortedLists.length === 0 ? (
               <p className="text-sm text-center text-muted-foreground">
-                No lists yet. Create one to get started!
+                {t("bookmark.empty")}
               </p>
             ) : (
               sortedLists.map((list) => (
@@ -195,7 +197,7 @@ export function BookmarkButton({
 
         <div className="flex justify-end gap-2">
           <Button variant="ghost" onClick={() => setPopoverOpen(false)}>
-            Cancel
+            {t("common.cancel")}
           </Button>
         </div>
       </PopoverContent>

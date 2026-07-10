@@ -25,6 +25,7 @@ import { useRouter } from 'next/navigation';
 import { markAsRead, markAllAsRead, deleteNotification } from '@/lib/notifications';
 import { useToast } from '@/hooks/use-toast';
 import { initializeNotifications, onMessageListener } from '@/lib/firebase';
+import { useI18n } from '@/components/i18n-provider';
 
 interface Notification {
   id: string;
@@ -37,6 +38,7 @@ interface Notification {
 }
 
 export function NotificationBell() {
+  const { locale, t } = useI18n();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [open, setOpen] = useState(false);
@@ -166,11 +168,11 @@ export function NotificationBell() {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0">
         <div className="flex items-center justify-between p-4 border-b">
-          <h4 className="font-medium">Notifications</h4>
+          <h4 className="font-medium">{t("notifications.title")}</h4>
           {unreadCount > 0 && (
             <Button variant="ghost" size="sm" onClick={handleMarkAllRead}>
               <Check className="h-4 w-4 mr-1" />
-              Mark all read
+              {t("notifications.markAllRead")}
             </Button>
           )}
         </div>
@@ -178,7 +180,7 @@ export function NotificationBell() {
           <div className="p-4">
             {notifications.length === 0 ? (
               <p className="text-center text-muted-foreground py-8">
-                No notifications yet
+                {t("notifications.empty")}
               </p>
             ) : (
               <div className="space-y-4">
@@ -205,7 +207,7 @@ export function NotificationBell() {
                           {notification.message}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {notification.timestamp.toDate().toLocaleString()}
+                          {notification.timestamp.toDate().toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
                         </p>
                       </div>
                       <Button

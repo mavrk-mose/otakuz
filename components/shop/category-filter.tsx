@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { useI18n } from '@/components/i18n-provider'
 
 interface CategoryFilterProps {
     selectedCategory: string
@@ -10,19 +11,20 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryFilterProps) {
+    const { t } = useI18n()
     const categories = [
-        { value: 'all', label: 'All Products' },
-        { value: 'clothing', label: 'Clothing' },
-        { value: 'figures', label: 'Figures & Statues' },
-        { value: 'accessories', label: 'Accessories' },
-        { value: 'manga', label: 'Manga & Books' },
-        { value: 'home', label: 'Home & Decor' },
-        { value: 'collectibles', label: 'Collectibles' },
-    ]
+        { value: 'all', labelKey: 'shop.allProducts' },
+        { value: 'clothing', labelKey: 'shop.clothing' },
+        { value: 'figures', labelKey: 'shop.figures' },
+        { value: 'accessories', labelKey: 'shop.accessories' },
+        { value: 'manga', labelKey: 'shop.mangaBooks' },
+        { value: 'home', labelKey: 'shop.homeDecor' },
+        { value: 'collectibles', labelKey: 'shop.collectibles' },
+    ] as const
 
     return (
         <Card className="p-4">
-            <h2 className="mb-4 font-semibold">Categories</h2>
+            <h2 className="mb-4 font-semibold">{t("common.categories")}</h2>
             <RadioGroup
                 value={selectedCategory}
                 onValueChange={onCategoryChange}
@@ -31,7 +33,7 @@ export function CategoryFilter({ selectedCategory, onCategoryChange }: CategoryF
                 {categories.map((category) => (
                     <div key={category.value} className="flex items-center space-x-2">
                         <RadioGroupItem value={category.value} id={category.value} />
-                        <Label htmlFor={category.value}>{category.label}</Label>
+                        <Label htmlFor={category.value}>{t(category.labelKey)}</Label>
                     </div>
                 ))}
             </RadioGroup>

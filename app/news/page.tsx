@@ -5,16 +5,22 @@ import Link from "next/link";
 import Todays from "@/components/news/Todays";
 import useFetchNewsStories from "@/hooks/news/use-fetch-news";
 import { type NewsStory } from "@/types/news";
+import { useI18n } from "@/components/i18n-provider";
 
-function formatDate(value?: string) {
+function formatDate(value: string | undefined, locale: "en" | "ja") {
   if (!value) {
-    return "Recently published";
+    return null;
   }
 
-  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(value));
 }
 
 export default function NewsPage() {
+  const { locale, t } = useI18n();
   const { stories = [], isLoading } = useFetchNewsStories();
   const featuredStory = stories.find((story) => story.isFeatured) || stories[0];
   const secondaryStories = stories.filter((story) => story._id !== featuredStory?._id).slice(0, 4);
@@ -79,14 +85,14 @@ export default function NewsPage() {
                 {featuredStory ? (
                   <Link href={`/news/${encodeURIComponent(featuredStory._id)}`}>{featuredStory.title}</Link>
                 ) : (
-                  "Latest stories from the community"
+                  t("news.latestCommunity")
                 )}
               </h1>
               <p className="mb-4 text-lg text-muted-foreground">
-                {featuredStory?.summary || featuredStory?.description || "Fresh updates from our latest coverage."}
+                {featuredStory?.summary || featuredStory?.description || t("news.freshUpdates")}
               </p>
               <p className="text-sm text-muted-foreground">
-                {featuredStory?.authorName || featuredStory?.author?.name || "Staff"} - {formatDate(featuredStory?.publishedAt)}
+                {featuredStory?.authorName || featuredStory?.author?.name || t("news.staff")} - {formatDate(featuredStory?.publishedAt, locale) || t("news.recentlyPublished")}
               </p>
             </div>
           </div>
@@ -119,21 +125,21 @@ export default function NewsPage() {
                 {secondaryStories[0].summary || secondaryStories[0].description}
               </p>
               <p className="text-sm text-muted-foreground">
-                {secondaryStories[0].authorName || secondaryStories[0].author?.name || "Staff"} - {formatDate(secondaryStories[0].publishedAt)}
+                {secondaryStories[0].authorName || secondaryStories[0].author?.name || t("news.staff")} - {formatDate(secondaryStories[0].publishedAt, locale) || t("news.recentlyPublished")}
               </p>
             </div>
           ) : null}
         </div>
 
         <div className="rounded-lg border border-indigo-200 bg-indigo-100 p-6 text-indigo-950 shadow-sm dark:border-indigo-800 dark:bg-indigo-950 dark:text-indigo-50 lg:sticky lg:top-20">
-          <h2 className="mb-4 text-2xl font-bold">Latest Headlines</h2>
+          <h2 className="mb-4 text-2xl font-bold">{t("news.latestHeadlines")}</h2>
           <ul className="space-y-4">
             {stories.slice(0, 5).map((item) => (
               <li key={item._id} className="rounded transition duration-200 hover:bg-indigo-200 dark:hover:bg-indigo-900">
                 <Link href={`/news/${encodeURIComponent(item._id)}`} className="block p-4">
                   <h3 className="text-lg font-semibold">{item.title}</h3>
                   <p className="text-sm text-indigo-700 dark:text-indigo-200">
-                    {item.authorName || item.author?.name || "Staff"} - {formatDate(item.publishedAt)} | {item.commentsCount || 0} comments
+                    {item.authorName || item.author?.name || t("news.staff")} - {formatDate(item.publishedAt, locale) || t("news.recentlyPublished")} | {item.commentsCount || 0} {t("news.comments")}
                   </p>
                 </Link>
               </li>
@@ -173,7 +179,7 @@ export default function NewsPage() {
                   {section.featured?.summary || section.featured?.description}
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {section.featured?.authorName || section.featured?.author?.name || "Staff"} - {formatDate(section.featured?.publishedAt)}
+                  {section.featured?.authorName || section.featured?.author?.name || t("news.staff")} - {formatDate(section.featured?.publishedAt, locale) || t("news.recentlyPublished")}
                 </p>
               </div>
             </div>
@@ -188,7 +194,7 @@ export default function NewsPage() {
                     <Link href={`/news/${encodeURIComponent(item._id)}`} className="block p-4">
                       <h3 className="text-lg font-semibold">{item.title}</h3>
                       <p className="text-sm opacity-80">
-                        {item.authorName || item.author?.name || "Staff"} - {formatDate(item.publishedAt)} | {item.commentsCount || 0} comments
+                        {item.authorName || item.author?.name || t("news.staff")} - {formatDate(item.publishedAt, locale) || t("news.recentlyPublished")} | {item.commentsCount || 0} {t("news.comments")}
                       </p>
                     </Link>
                   </li>

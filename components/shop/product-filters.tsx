@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Slider } from '@/components/ui/slider';
 import { useState } from 'react';
+import { useI18n } from '@/components/i18n-provider';
 
 interface ProductFiltersProps {
   onCategoryChange: (category: string) => void;
@@ -17,30 +18,31 @@ export function ProductFilters({
   onPriceRangeChange,
   onSortChange,
 }: ProductFiltersProps) {
+  const { t } = useI18n();
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
   const categories = [
-    { value: 'all', label: 'All Products' },
-    { value: 'clothing', label: 'Clothing' },
-    { value: 'figures', label: 'Figures & Statues' },
-    { value: 'accessories', label: 'Accessories' },
-    { value: 'manga', label: 'Manga & Books' },
-    { value: 'home', label: 'Home & Decor' },
-    { value: 'collectibles', label: 'Collectibles' },
-  ];
+    { value: 'all', labelKey: 'shop.allProducts' },
+    { value: 'clothing', labelKey: 'shop.clothing' },
+    { value: 'figures', labelKey: 'shop.figures' },
+    { value: 'accessories', labelKey: 'shop.accessories' },
+    { value: 'manga', labelKey: 'shop.mangaBooks' },
+    { value: 'home', labelKey: 'shop.homeDecor' },
+    { value: 'collectibles', labelKey: 'shop.collectibles' },
+  ] as const;
 
   const sortOptions = [
-    { value: 'popular', label: 'Most Popular' },
-    { value: 'newest', label: 'Newest Arrivals' },
-    { value: 'price-low', label: 'Price: Low to High' },
-    { value: 'price-high', label: 'Price: High to Low' },
-    { value: 'rating', label: 'Highest Rated' },
-  ];
+    { value: 'popular', labelKey: 'shop.mostPopular' },
+    { value: 'newest', labelKey: 'shop.newest' },
+    { value: 'price-low', labelKey: 'shop.priceLow' },
+    { value: 'price-high', labelKey: 'shop.priceHigh' },
+    { value: 'rating', labelKey: 'shop.highestRated' },
+  ] as const;
 
   return (
     <div className="space-y-6">
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">Categories</h3>
+        <h3 className="font-semibold mb-4">{t("common.categories")}</h3>
         <RadioGroup
           defaultValue="all"
           onValueChange={onCategoryChange}
@@ -49,14 +51,14 @@ export function ProductFilters({
           {categories.map((category) => (
             <div key={category.value} className="flex items-center space-x-2">
               <RadioGroupItem value={category.value} id={category.value} />
-              <Label htmlFor={category.value}>{category.label}</Label>
+              <Label htmlFor={category.value}>{t(category.labelKey)}</Label>
             </div>
           ))}
         </RadioGroup>
       </Card>
 
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">Price Range</h3>
+        <h3 className="font-semibold mb-4">{t("shop.priceRange")}</h3>
         <Slider
           defaultValue={[0, 1000]}
           max={1000}
@@ -75,7 +77,7 @@ export function ProductFilters({
       </Card>
 
       <Card className="p-4">
-        <h3 className="font-semibold mb-4">Sort By</h3>
+        <h3 className="font-semibold mb-4">{t("common.sortBy")}</h3>
         <RadioGroup
           defaultValue="popular"
           onValueChange={onSortChange}
@@ -84,7 +86,7 @@ export function ProductFilters({
           {sortOptions.map((option) => (
             <div key={option.value} className="flex items-center space-x-2">
               <RadioGroupItem value={option.value} id={option.value} />
-              <Label htmlFor={option.value}>{option.label}</Label>
+              <Label htmlFor={option.value}>{t(option.labelKey)}</Label>
             </div>
           ))}
         </RadioGroup>

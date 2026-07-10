@@ -4,6 +4,7 @@ import { ProductCard } from './product-card'
 import useFetchProducts from "@/hooks/shop/use-fetch-products"
 import Lottie from "lottie-react"
 import Pochita from "@/public/lottie/pochita.json"
+import { useI18n } from "@/components/i18n-provider"
 
 interface ProductListProps {
     category?: string
@@ -11,6 +12,7 @@ interface ProductListProps {
 }
 
 export function ProductList({ category = "all", limit }: ProductListProps) {
+    const { t } = useI18n()
     const { products, isLoading } = useFetchProducts({ category })
 
     if (isLoading) {
@@ -33,7 +35,7 @@ export function ProductList({ category = "all", limit }: ProductListProps) {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
-                    <div className="mb-4 text-lg font-semibold text-muted-foreground">No products found</div>
+                    <div className="mb-4 text-lg font-semibold text-muted-foreground">{t("common.noProducts")}</div>
                     <div className="mx-auto w-48 h-48">
                         <Lottie
                             animationData={Pochita}

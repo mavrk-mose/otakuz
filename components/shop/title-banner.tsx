@@ -6,8 +6,10 @@ import {motion} from "framer-motion";
 import Image from "next/image";
 import {urlFor} from "@/lib/sanity";
 import useFetchTitles from "@/hooks/shop/use-fetch-titles";
+import { useI18n } from "@/components/i18n-provider";
 
 export default function TitleBanner() {
+    const { t } = useI18n();
     const {titles, isLoading} = useFetchTitles();
 
     if (isLoading) {
@@ -50,7 +52,7 @@ export default function TitleBanner() {
                             />
                             <div className="absolute bottom-4 left-4 z-20 text-white">
                                 <h3 className="text-2xl font-bold">{show.name}</h3>
-                                <p className="text-sm text-white/80">Shop Collection</p>
+                                <p className="text-sm text-white/80">{t("shop.collection")}</p>
                             </div>
                         </motion.div>
                     </Link>

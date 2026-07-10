@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { AnimeVideos } from "@/types/anime";
+import { useI18n } from "@/components/i18n-provider";
 
 interface VideoTabsProps {
   animeVideos: AnimeVideos | undefined;
@@ -17,6 +18,7 @@ export default function VideoTabs({
   selectedVideoUrl,
   onVideoSelect,
 }: VideoTabsProps) {
+  const { t } = useI18n();
   if (!animeVideos) return null;
 
   const { episodes, promo, music_videos } = animeVideos;
@@ -26,9 +28,9 @@ export default function VideoTabs({
       <Tabs defaultValue="episodes" className="w-full">
         {/* TAB LABELS */}
         <TabsList className="mb-4 bg-muted">
-          {episodes.length > 0 && <TabsTrigger value="episodes">Episodes</TabsTrigger>}
-          {promo.length > 0 && <TabsTrigger value="promo">Promos</TabsTrigger>}
-          {music_videos.length > 0 && <TabsTrigger value="music">Music Videos</TabsTrigger>}
+          {episodes.length > 0 && <TabsTrigger value="episodes">{t("common.episodes")}</TabsTrigger>}
+          {promo.length > 0 && <TabsTrigger value="promo">{t("watch.promos")}</TabsTrigger>}
+          {music_videos.length > 0 && <TabsTrigger value="music">{t("watch.musicVideos")}</TabsTrigger>}
         </TabsList>
 
         {/* EPISODES TAB */}

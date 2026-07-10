@@ -2,7 +2,13 @@ import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
-import { getMessaging, getToken, onMessage } from 'firebase/messaging';
+import {
+  getMessaging,
+  getToken,
+  isSupported,
+  onMessage,
+  type Messaging,
+} from 'firebase/messaging';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -17,40 +23,84 @@ const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
-const messaging = typeof window !== 'undefined' ? getMessaging(app) : null;
+let messaging: Messaging | null = null;
+
+async function getMessagingClient() {
+  if (
+    typeof window === 'undefined' ||
+    !window.isSecureContext ||
+    !('Notification' in window) ||
+    !('serviceWorker' in navigator) ||
+    !(await isSupported())
+  ) {
+    return null;
+  }
+
+  messaging ??= getMessaging(app);
+  return messaging;
+}
 
 export async function initializeNotifications() {
-  try {
-    if (!messaging) return;
+  const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY;
 
-    const permission = await Notification.requestPermission();
-    if (permission === 'granted') {
-      const token = await getToken(messaging, {
-        vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
-      });
-      return token;
-    }
+  // Push notifications are optional. Do not request permission when Firebase
+  // Cloud Messaging has not been fully configured for this environment.
+  if (!vapidKey) return;
+
+  try {
+    const messagingClient = await getMessagingClient();
+    if (!messagingClient) return;
+
+    const permission =
+      Notification.permission === 'default'
+        ? await Notification.requestPermission()
+        : Notification.permission;
+
+    if (permission !== 'granted') return;
+
+    const serviceWorkerRegistration = await navigator.serviceWorker.register(
+      '/firebase-messaging-sw',
+      { scope: '/' }
+    );
+
+    return getToken(messagingClient, {
+      vapidKey,
+      serviceWorkerRegistration,
+    });
   } catch (error) {
-    console.error('Notification initialization failed:', error);
+    // Notifications should never prevent the rest of the application from
+    // loading. Keep the failure visible in development without triggering the
+    // Next.js error overlay.
+    console.warn('Notification initialization skipped:', error);
   }
 }
 
 export function onMessageListener() {
-  if (!messaging) return () => {};
-  
-  return onMessage(messaging, (payload) => {
-    console.log('Message received:', payload);
-    // Handle foreground messages here
-  });
-}
+  let isActive = true;
+  let unsubscribe = () => {};
 
-if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-  navigator.serviceWorker
-    .register("/firebase-service-worker.js")
-    .then((registration) => {
-      console.log("Service Worker registered:", registration);
+  void getMessagingClient()
+    .then((messagingClient) => {
+      if (!messagingClient) return;
+
+      const stopListening = onMessage(messagingClient, (payload) => {
+        console.info('Message received:', payload);
+      });
+
+      if (isActive) {
+        unsubscribe = stopListening;
+      } else {
+        stopListening();
+      }
     })
-    .catch((err) => console.error("Service Worker registration failed:", err));
+    .catch((error) => {
+      console.warn('Foreground notification listener unavailable:', error);
+    });
+
+  return () => {
+    isActive = false;
+    unsubscribe();
+  };
 }
 
 export { app, auth, db, storage, messaging };

@@ -23,6 +23,7 @@ import { useEffect } from "react";
 import Masonry from "react-masonry-css";
 import { BookmarkedItem, BookmarkList } from "@/hooks/use-bookmarks";
 import { DocumentSnapshot } from "firebase/firestore";
+import { useI18n } from "@/components/i18n-provider";
 
 interface UserListsProps {
   userId: string;
@@ -30,6 +31,7 @@ interface UserListsProps {
 }
 
 export function UserLists({ userId, onShare }: UserListsProps) {
+  const { t } = useI18n();
   const { lists, useListItems, deleteList, updateListSettings } =
     useBookmarks();
   const [selectedList, setSelectedList] = useState<any>(null);
@@ -99,10 +101,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Delete List</DialogTitle>
+            <DialogTitle>{t("bookmark.deleteList")}</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete `&quot;`{selectedList?.name}`&quot;`? This
-              action cannot be undone.
+              {t("bookmark.deleteConfirm")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -110,10 +111,10 @@ export function UserLists({ userId, onShare }: UserListsProps) {
               variant="outline"
               onClick={() => setDeleteConfirmOpen(false)}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDeleteList}>
-              Delete
+              {t("common.delete")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -122,14 +123,14 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <Dialog open={listSettingsOpen} onOpenChange={setListSettingsOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>List Settings</DialogTitle>
+            <DialogTitle>{t("bookmark.settings")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Collaboration</Label>
+                <Label>{t("bookmark.collaboration")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Allow others to add items to this list
+                  {t("bookmark.collaborationDescription")}
                 </p>
               </div>
               <Switch
@@ -141,9 +142,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
             </div>
             <div className="flex items-center justify-between">
               <div className="space-y-0.5">
-                <Label>Public List</Label>
+                <Label>{t("bookmark.publicList")}</Label>
                 <p className="text-sm text-muted-foreground">
-                  Make this list visible to everyone
+                  {t("bookmark.publicDescription")}
                 </p>
               </div>
               <Switch
@@ -169,6 +170,7 @@ function ListCard({
   onExpand,
   useListItems,
 }: any) {
+  const { t } = useI18n();
   const { ref, inView } = useInView();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useListItems(
     list.id
@@ -217,7 +219,7 @@ function ListCard({
               )}
             </div>
             <Button variant="ghost" onClick={onExpand}>
-              Close
+              {t("common.close")}
             </Button>
           </div>
 
@@ -263,7 +265,7 @@ function ListCard({
               {isFetchingNextPage ? (
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
               ) : (
-                <Button onClick={() => fetchNextPage()}>Load more</Button>
+                <Button onClick={() => fetchNextPage()}>{t("common.loadMore")}</Button>
               )}
             </div>
           )}

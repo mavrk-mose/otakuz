@@ -5,9 +5,11 @@ import {MangaGenres} from "@/components/manga/manga-genres";
 import {useGenreStore} from "@/store/use-genre-store";
 import MangaCollection from "@/components/manga/manga-collection";
 import FilteredManga from "@/components/manga/filtered-manga";
+import { useI18n } from "@/components/i18n-provider";
 
 export default function MangaListPage() {
     const { mangaGenre } = useGenreStore();
+    const { t } = useI18n();
 
     const container = {
         hidden: { opacity: 0 },
@@ -23,9 +25,9 @@ export default function MangaListPage() {
                 <MangaGenres />
             </div>
             <div className="mb-8">
-                <h1 className="text-4xl font-bold mb-2">Manga Collection</h1>
+                <h1 className="text-4xl font-bold mb-2">{t("manga.collection")}</h1>
                 <p className="text-muted-foreground">
-                    Explore our extensive collection of manga series
+                    {t("manga.collectionDescription")}
                 </p>
             </div>
 

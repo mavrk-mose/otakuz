@@ -3,16 +3,17 @@
 import React from 'react'
 import { AnimeEpisode } from "@/types/anime"
 import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
-import { format } from "date-fns"
 import { PlayCircle, Star } from 'lucide-react'
 import { Button } from '../ui/button'
 import { Badge } from '../ui/badge'
+import { useI18n } from '@/components/i18n-provider'
 
 interface AnimeEpisodeCardProps {
     episode: AnimeEpisode
 }
 
 const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
+    const { locale, t } = useI18n()
     return (
         <Card className="w-full h-full flex flex-col">
             <CardHeader className="flex-none">
@@ -37,12 +38,12 @@ const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
                     </div>
                     <div className="text-right">
                         <span className="text-muted-foreground">
-                          {format(new Date(episode.aired), 'MMM d, yyyy')}
+                          {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(episode.aired))}
                         </span>
                     </div>
                     <div className="col-span-2 flex justify-between text-muted-foreground">
-                        <span>Filler: <span className="font-medium">{episode.filler ? 'Yes' : 'No'}</span></span>
-                        <span>Recap: <span className="font-medium">{episode.recap ? 'Yes' : 'No'}</span></span>
+                        <span>{t("anime.filler")}: <span className="font-medium">{episode.filler ? t("common.yes") : t("common.no")}</span></span>
+                        <span>{t("anime.recap")}: <span className="font-medium">{episode.recap ? t("common.yes") : t("common.no")}</span></span>
                     </div>
                 </div>
             </CardContent>
@@ -56,7 +57,7 @@ const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
                         className="flex items-center justify-center gap-1"
                     >
                         <PlayCircle className="w-3 h-3" />
-                        Watch Episode
+                        {t("anime.watchEpisode")}
                     </a>
                 </Button>
             </CardFooter>
@@ -65,4 +66,3 @@ const AnimeEpisodeCard: React.FC<AnimeEpisodeCardProps> = ({ episode }) => {
 }
 
 export default AnimeEpisodeCard
-

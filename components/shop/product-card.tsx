@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { Product } from "@/types/shop";
 import { urlFor } from "@/lib/sanity";
 import { useCart } from '@/store/use-cart';
+import { useI18n } from '@/components/i18n-provider';
 
 interface ProductCardProps {
   product: Product;
@@ -17,6 +18,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { t } = useI18n();
 
   return (
       <motion.div
@@ -39,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
                       className="absolute top-2 right-2 text-xs sm:text-sm"
                       variant="destructive"
                   >
-                    Low Stock
+                    {t("shop.lowStock")}
                   </Badge>
               )}
             </div>
@@ -72,7 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   className="w-full sm:w-auto text-xs sm:text-sm py-1.5 sm:py-2"
               >
                 <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                Add to Cart
+                {t("shop.addToCart")}
               </Button>
             </div>
           </div>

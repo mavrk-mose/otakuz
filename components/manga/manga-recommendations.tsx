@@ -9,12 +9,14 @@ import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/components/i18n-provider';
 
 interface RecommendationsProps {
     mangaId: string;
 }
 
 export function MangaRecommendations({ mangaId }: RecommendationsProps) {
+    const { t } = useI18n();
     const { data: recommendations, isLoading } = useQuery({
         queryKey: ['mangaRecommendations', mangaId],
         queryFn: async () => {
@@ -28,7 +30,7 @@ export function MangaRecommendations({ mangaId }: RecommendationsProps) {
     if (isLoading) {
         return (
             <div className="space-y-4">
-                <h2 className="text-2xl font-bold">You might alsolike</h2>
+                <h2 className="text-2xl font-bold">{t("anime.recommendations")}</h2>
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex space-x-4">
                         {[...Array(4)].map((_, i) => (
@@ -53,7 +55,7 @@ export function MangaRecommendations({ mangaId }: RecommendationsProps) {
 
     return (
         <div className="space-y-4">
-            <h2 className="text-2xl font-bold">You might also like</h2>
+            <h2 className="text-2xl font-bold">{t("anime.recommendations")}</h2>
             <ScrollArea className="w-full whitespace-nowrap">
                 <div className="flex space-x-4">
                     {recommendations.map((rec: any) => (
@@ -75,7 +77,7 @@ export function MangaRecommendations({ mangaId }: RecommendationsProps) {
                                             <Button asChild>
                                                 <Link href={rec.entry.url} className="w-full flex items-center gap-2">
                                                     <Play className="h-4 w-4" />
-                                                    Read Now
+                                                    {t("manga.readNow")}
                                                 </Link>
                                             </Button>
                                         </div>

@@ -7,12 +7,13 @@ import { Calendar, MapPin, Users, ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { format } from 'date-fns';
 import {useQuery} from "@tanstack/react-query";
 import {Event} from "@/types/events";
 import {getEvents, urlFor} from "@/lib/sanity";
+import { useI18n } from '@/components/i18n-provider';
 
 export function EventsSection() {
+    const { locale, t } = useI18n();
     const {data: events, isLoading} = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
@@ -40,12 +41,12 @@ export function EventsSection() {
         <section className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold mb-2">Upcoming Events</h2>
-                    <p className="text-muted-foreground">Join local anime events</p>
+                    <h2 className="text-3xl font-bold mb-2">{t("home.upcomingEvents")}</h2>
+                    <p className="text-muted-foreground">{t("home.upcomingEventsDescription")}</p>
                 </div>
                 <Button variant="ghost" asChild>
                     <Link href="/events" className="gap-2">
-                        View All <ArrowRight className="w-4 h-4" />
+                        {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
                     </Link>
                 </Button>
             </div>
@@ -76,7 +77,13 @@ export function EventsSection() {
                                     <div className="space-y-2 text-sm text-muted-foreground">
                                         <div className="flex items-center">
                                             <Calendar className="h-4 w-4 mr-2" />
-                                            {event.date ? format(new Date(event.date), 'MMMM dd, yyyy') : 'Date TBA'}
+                                            {event.date
+                                              ? new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
+                                                  year: "numeric",
+                                                  month: "long",
+                                                  day: "numeric",
+                                                }).format(new Date(event.date))
+                                              : t("events.dateTba")}
                                         </div>
                                         <div className="flex items-center">
                                             <MapPin className="h-4 w-4 mr-2" />
@@ -84,7 +91,7 @@ export function EventsSection() {
                                         </div>
                                         <div className="flex items-center">
                                             <Users className="h-4 w-4 mr-2" />
-                                            {event.attendees.length} attending
+                                            {event.attendees.length} {t("events.attending")}
                                         </div>
                                     </div>
                                 </div>

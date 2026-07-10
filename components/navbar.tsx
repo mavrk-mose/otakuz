@@ -17,6 +17,7 @@ import {
   PartyPopper,
   Menu,
   X,
+  Languages,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
@@ -37,10 +38,12 @@ import {
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { useI18n } from "@/components/i18n-provider";
 
 export default function Navbar() {
   const { resolvedTheme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
+  const { locale, t, toggleLocale } = useI18n();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -58,15 +61,15 @@ export default function Navbar() {
   };
 
   const navItems = [
-    { href: "/", icon: Home, label: "Home" },
-    { href: "/news", icon: Newspaper, label: "News" },
-    { href: "/anime", icon: Tv2, label: "Anime" },
-    { href: "/manga", icon: BookOpen, label: "Manga" },
+    { href: "/", icon: Home, labelKey: "nav.home" },
+    { href: "/news", icon: Newspaper, labelKey: "nav.news" },
+    { href: "/anime", icon: Tv2, labelKey: "nav.anime" },
+    { href: "/manga", icon: BookOpen, labelKey: "nav.manga" },
     // { href: '/calendar', icon: CalendarIcon, label: 'Calendar' },
-    { href: "/events", icon: PartyPopper, label: "Events" },
-    { href: "/shop", icon: ShoppingBag, label: "Shop" },
-    { href: "/chat", icon: MessageSquare, label: "Chat" },
-  ];
+    { href: "/events", icon: PartyPopper, labelKey: "nav.events" },
+    { href: "/shop", icon: ShoppingBag, labelKey: "nav.shop" },
+    { href: "/chat", icon: MessageSquare, labelKey: "nav.chat" },
+  ] as const;
 
   const container = {
     hidden: { opacity: 0 },
@@ -146,15 +149,15 @@ export default function Navbar() {
                       <navItem.icon className="h-5 w-5 min-w-5" />
                       {isExpanded && (
                         <span className="ml-3 text-sm font-medium overflow-hidden whitespace-nowrap">
-                          {navItem.label}
+                          {t(navItem.labelKey)}
                         </span>
                       )}
-                      <span className="sr-only">{navItem.label}</span>
+                      <span className="sr-only">{t(navItem.labelKey)}</span>
                     </Button>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" sideOffset={10}>
-                  {navItem.label}
+                  {t(navItem.labelKey)}
                 </TooltipContent>
               </Tooltip>
             </motion.div>
@@ -178,14 +181,37 @@ export default function Navbar() {
                   </div>
                   {isExpanded && (
                     <span className="ml-3 text-sm font-medium">
-                      Toggle theme
+                      {t("nav.toggleTheme")}
                     </span>
                   )}
-                  <span className="sr-only">Toggle theme</span>
+                  <span className="sr-only">{t("nav.toggleTheme")}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" sideOffset={10}>
-                Toggle theme
+                {t("nav.toggleTheme")}
+              </TooltipContent>
+            </Tooltip>
+          </motion.div>
+
+          <motion.div variants={item} className="w-full">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="h-12 w-full justify-start rounded-2xl transition-all duration-300 hover:rounded-xl"
+                  onClick={toggleLocale}
+                  aria-label={t("nav.switchLanguage")}
+                >
+                  <Languages className="h-5 w-5 min-w-5" />
+                  {isExpanded && (
+                    <span className="ml-3 whitespace-nowrap text-sm font-medium">
+                      {locale === "en" ? t("locale.japanese") : t("locale.english")}
+                    </span>
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right" sideOffset={10}>
+                {t("nav.switchLanguage")}: {locale === "en" ? t("locale.japanese") : t("locale.english")}
               </TooltipContent>
             </Tooltip>
           </motion.div>
@@ -228,7 +254,7 @@ export default function Navbar() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
-                    Log out
+                    {t("nav.logOut")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -245,15 +271,15 @@ export default function Navbar() {
                       <LogOut className="h-5 w-5 min-w-5" />
                       {isExpanded && (
                         <span className="ml-3 text-sm font-medium">
-                          Sign In
+                          {t("nav.signIn")}
                         </span>
                       )}
-                      <span className="sr-only">Sign In</span>
+                      <span className="sr-only">{t("nav.signIn")}</span>
                     </Button>
                   </Link>
                 </TooltipTrigger>
                 <TooltipContent side="right" sideOffset={10}>
-                  Sign In
+                  {t("nav.signIn")}
                 </TooltipContent>
               </Tooltip>
             </motion.div>
@@ -272,7 +298,7 @@ export default function Navbar() {
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="rounded-full">
             <Menu className="h-5 w-5" />
-            <span className="sr-only">Toggle menu</span>
+            <span className="sr-only">{t("nav.toggleMenu")}</span>
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-[280px] border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
@@ -302,7 +328,7 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <X className="h-5 w-5" />
-                <span className="sr-only">Close</span>
+                <span className="sr-only">{t("common.close")}</span>
               </Button>
             </div>
 
@@ -325,7 +351,7 @@ export default function Navbar() {
                     )}
                   >
                     <navItem.icon className="h-5 w-5 mr-3" />
-                    {navItem.label}
+                    {t(navItem.labelKey)}
                   </Button>
                 </Link>
               ))}
@@ -342,7 +368,16 @@ export default function Navbar() {
                 <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
                 <Moon className="h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100 absolute" />
               </div>
-              Toggle theme
+              {t("nav.toggleTheme")}
+            </Button>
+
+            <Button
+              variant="ghost"
+              className="h-12 justify-start"
+              onClick={toggleLocale}
+            >
+              <Languages className="mr-3 h-5 w-5" />
+              {locale === "en" ? t("locale.japanese") : t("locale.english")}
             </Button>
 
             <div className="mt-auto">
@@ -377,14 +412,14 @@ export default function Navbar() {
                     }}
                   >
                     <LogOut className="h-5 w-5 mr-3" />
-                    Log out
+                    {t("nav.logOut")}
                   </Button>
                 </div>
               ) : (
                 <Link href="/auth" onClick={() => setIsMobileMenuOpen(false)}>
                   <Button variant="default" className="w-full">
                     <LogOut className="h-5 w-5 mr-2" />
-                    Sign In
+                    {t("nav.signIn")}
                   </Button>
                 </Link>
               )}

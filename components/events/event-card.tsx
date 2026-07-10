@@ -7,7 +7,7 @@ import { Calendar, MapPin, Users, Ticket } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { format } from 'date-fns';
+import { useI18n } from '@/components/i18n-provider';
 
 interface EventCardProps {
   event: {
@@ -27,6 +27,7 @@ interface EventCardProps {
 }
 
 export function EventCard({ event }: EventCardProps) {
+  const { locale, t } = useI18n();
   return (
     <motion.div
       whileHover={{ y: -5 }}
@@ -50,7 +51,7 @@ export function EventCard({ event }: EventCardProps) {
               <div className="flex items-center gap-4 text-white/80 text-sm">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  {format(new Date(event.date), 'PPP')}
+                  {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { dateStyle: "long" }).format(new Date(event.date))}
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
@@ -68,12 +69,12 @@ export function EventCard({ event }: EventCardProps) {
           {event.price && (
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">Starting from</p>
+                <p className="text-sm text-muted-foreground">{t("events.startingFrom")}</p>
                 <p className="text-lg font-bold">${event.price}</p>
               </div>
               <Button>
                 <Ticket className="w-4 h-4 mr-2" />
-                Get Tickets
+                {t("events.purchaseTickets")}
               </Button>
             </div>
           )}

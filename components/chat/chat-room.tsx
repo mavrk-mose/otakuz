@@ -12,6 +12,7 @@ import {MessageComponent} from "@/components/chat/message-component";
 import useAudioRecorder from "@/hooks/chat/use-audio-recorder";
 import useRoomDetails from "@/hooks/chat/use-room-details";
 import { createChatNotification } from '@/lib/notifications';
+import { useI18n } from '@/components/i18n-provider';
 
 interface ChatRoomProps {
     roomId: string
@@ -19,6 +20,7 @@ interface ChatRoomProps {
 }
 
 export default function ChatRoom({ roomId, title }: ChatRoomProps) {
+    const { t } = useI18n()
     const [newMessage, setNewMessage] = useState('')
     const [typingUsers, setTypingUsers] = useState<string[]>([])
     const { user } = useAuth()
@@ -87,7 +89,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                                 setTyping(user.uid, true)
                             }
                         }}
-                        placeholder="Type a message..."
+                        placeholder={t("chat.typeMessage")}
                         className="flex-1"
                     />
                     <div className="flex gap-2">

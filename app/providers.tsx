@@ -8,6 +8,7 @@ import { usePostHogPageTracking } from '@/hooks/use-post-hog-tracking';
 import posthog from 'posthog-js'
 import { useEffect } from 'react';
 import {ToastProvider} from "@/components/ui/toast";
+import { I18nProvider } from '@/components/i18n-provider';
 
 const queryClient = new QueryClient();
 
@@ -27,9 +28,11 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
     <QueryClientProvider client={queryClient}>
       <PostHogProvider client={posthog}>
         <NextThemesProvider {...props}>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
+          <I18nProvider>
+            <ToastProvider>
+              {children}
+            </ToastProvider>
+          </I18nProvider>
         </NextThemesProvider>
       </PostHogProvider>
     </QueryClientProvider>

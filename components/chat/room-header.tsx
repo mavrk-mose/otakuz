@@ -1,3 +1,5 @@
+"use client";
+
 import {Button} from "@/components/ui/button";
 import Link from "next/link";
 import {ArrowLeft, MoreVertical} from "lucide-react";
@@ -6,6 +8,7 @@ import {AvatarFallback} from "@radix-ui/react-avatar";
 import {DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger} from "@/components/ui/dropdown-menu";
 import React from "react";
 import {RoomDetails} from "@/types/room";
+import { useI18n } from "@/components/i18n-provider";
 
 interface Props {
     roomId: string;
@@ -13,6 +16,7 @@ interface Props {
 }
 
 export default function RoomHeader({roomId, roomDetails}: Props): JSX.Element {
+    const { t } = useI18n();
     return (
         <div className="flex items-center gap-4 p-4 border-b sticky top-0 bg-background z-10">
             <Button variant="ghost" size="icon" asChild>
@@ -27,7 +31,7 @@ export default function RoomHeader({roomId, roomDetails}: Props): JSX.Element {
             <div className="flex-1 min-w-0">
                 <h1 className="font-semibold truncate">{roomDetails ? roomDetails.title : ''}</h1>
                 <p className="text-sm text-muted-foreground">
-                    {roomDetails ? roomDetails.memberCount : ''} members
+                    {roomDetails ? roomDetails.memberCount : ''} {t("chat.members")}
                 </p>
             </div>
             <DropdownMenu>
@@ -37,9 +41,9 @@ export default function RoomHeader({roomId, roomDetails}: Props): JSX.Element {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem>View members</DropdownMenuItem>
-                    <DropdownMenuItem>Share room</DropdownMenuItem>
-                    <DropdownMenuItem>Report</DropdownMenuItem>
+                    <DropdownMenuItem>{t("chat.viewMembers")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("chat.shareRoom")}</DropdownMenuItem>
+                    <DropdownMenuItem>{t("chat.report")}</DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>

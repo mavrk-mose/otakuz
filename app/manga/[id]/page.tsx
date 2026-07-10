@@ -14,12 +14,14 @@ import {MangaGallery} from "@/components/manga/manga-gallery";
 import useMangaDetails from "@/hooks/manga/use-manga-details";
 import { useGenreStore } from "@/store/use-genre-store";
 import { useRouter } from "next/navigation"
+import { useI18n } from "@/components/i18n-provider"
 
 interface Props {
     params: Promise<{ id: string }>;
 }
 
 export default function MangaDetailPage(props: Props) {
+    const { t } = useI18n();
     const params = use(props.params);
 
     const {manga, isLoading} = useMangaDetails(params.id);
@@ -47,7 +49,7 @@ export default function MangaDetailPage(props: Props) {
                     </Card>
                     <div className="grid grid-cols-2 gap-2">
                         <Button className="w-full gap-2">
-                            <BookOpen className="w-4 h-4"/> Read Now
+                            <BookOpen className="w-4 h-4"/> {t("manga.readNow")}
                         </Button>
                         <Button variant="outline" className="w-full gap-2">
                             <Users className="w-4 h-4"/> {manga.members.toLocaleString()}
@@ -61,30 +63,30 @@ export default function MangaDetailPage(props: Props) {
                     </div>
                     <Card className="p-4 space-y-4">
                         <div>
-                            <p className="text-sm text-muted-foreground">Score</p>
+                            <p className="text-sm text-muted-foreground">{t("common.score")}</p>
                             <div className="flex items-center gap-2">
                                 <Star className="w-5 h-5 text-yellow-500"/>
                                 <span className="text-lg font-bold">{manga.score}</span>
                                 <span className="text-sm text-muted-foreground">
-                                  ({manga.scored_by.toLocaleString()} users)
+                                  ({manga.scored_by.toLocaleString()} {t("anime.users")})
                                 </span>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div>
-                                <p className="text-muted-foreground">Chapters</p>
-                                <p className="font-medium">{manga.chapters || 'Ongoing'}</p>
+                                <p className="text-muted-foreground">{t("manga.chapters")}</p>
+                                <p className="font-medium">{manga.chapters || t("manga.ongoing")}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground">Volumes</p>
-                                <p className="font-medium">{manga.volumes || 'Ongoing'}</p>
+                                <p className="text-muted-foreground">{t("manga.volumes")}</p>
+                                <p className="font-medium">{manga.volumes || t("manga.ongoing")}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground">Status</p>
+                                <p className="text-muted-foreground">{t("common.status")}</p>
                                 <p className="font-medium">{manga.status}</p>
                             </div>
                             <div>
-                                <p className="text-muted-foreground">Type</p>
+                                <p className="text-muted-foreground">{t("common.type")}</p>
                                 <p className="font-medium">{manga.type}</p>
                             </div>
                         </div>
@@ -116,19 +118,19 @@ export default function MangaDetailPage(props: Props) {
 
                     <Tabs defaultValue="overview">
                         <TabsList>
-                            <TabsTrigger value="overview">Overview</TabsTrigger>
-                            <TabsTrigger value="gallery">Gallery</TabsTrigger>
+                            <TabsTrigger value="overview">{t("anime.overview")}</TabsTrigger>
+                            <TabsTrigger value="gallery">{t("common.gallery")}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="overview" className="space-y-4 transition-opacity duration-300">
                             <Card className="p-6">
-                                <h3 className="text-lg font-semibold mb-4">Synopsis</h3>
+                                <h3 className="text-lg font-semibold mb-4">{t("common.synopsis")}</h3>
                                 <p className="leading-relaxed">{manga.synopsis}</p>
                             </Card>
                             <Card className="p-6">
-                                <h3 className="text-lg font-semibold mb-4">Information</h3>
+                                <h3 className="text-lg font-semibold mb-4">{t("common.information")}</h3>
                                 <div className="grid md:grid-cols-2 gap-4">
                                     <div>
-                                        <h4 className="font-medium mb-2">Authors</h4>
+                                        <h4 className="font-medium mb-2">{t("manga.authors")}</h4>
                                         <div className="space-y-1">
                                             {manga.authors.map((author: any) => (
                                                 <p key={author.mal_id} className="text-sm text-muted-foreground">
@@ -138,12 +140,12 @@ export default function MangaDetailPage(props: Props) {
                                         </div>
                                     </div>
                                     <div>
-                                        <h4 className="font-medium mb-2">Statistics</h4>
+                                        <h4 className="font-medium mb-2">{t("common.statistics")}</h4>
                                         <div className="space-y-1 text-sm text-muted-foreground">
-                                            <p>Rank: #{manga.rank}</p>
-                                            <p>Popularity: #{manga.popularity}</p>
-                                            <p>Members: {manga.members.toLocaleString()}</p>
-                                            <p>Favorites: {manga.favorites.toLocaleString()}</p>
+                                            <p>{t("common.ranked")}: #{manga.rank}</p>
+                                            <p>{t("common.popularity")}: #{manga.popularity}</p>
+                                            <p>{t("anime.members")}: {manga.members.toLocaleString()}</p>
+                                            <p>{t("anime.favorites")}: {manga.favorites.toLocaleString()}</p>
                                         </div>
                                     </div>
                                 </div>

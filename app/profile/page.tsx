@@ -10,8 +10,10 @@ import { motion } from 'framer-motion';
 import { Settings, LogOut } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useI18n } from '@/components/i18n-provider';
 
 export default function ProfilePage() {
+  const { t } = useI18n();
   const { user } = useAuth();
   const router = useRouter();
   
@@ -40,7 +42,7 @@ export default function ProfilePage() {
                 </AvatarFallback>
               </Avatar>
               <h2 className="text-xl font-bold">
-                {user.displayName || 'Anonymous User'}
+                {user.displayName || t("profile.anonymous")}
               </h2>
               <p className="text-sm text-muted-foreground mb-4">
                 {user.email}
@@ -48,29 +50,29 @@ export default function ProfilePage() {
               <div className="flex gap-2 w-full">
                 <Button variant="outline" className="flex-1">
                   <Settings className="h-4 w-4 mr-2" />
-                  Settings
+                  {t("profile.settings")}
                 </Button>
                 <Button variant="outline" className="flex-1">
                   <LogOut className="h-4 w-4 mr-2" />
-                  Sign Out
+                  {t("profile.signOut")}
                 </Button>
               </div>
             </div>
           </Card>
 
           <Card className="p-6">
-            <h3 className="font-semibold mb-4">Stats</h3>
+            <h3 className="font-semibold mb-4">{t("profile.stats")}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Joined </span>
+                <span className="text-muted-foreground">{t("profile.joined")}</span>
                 <span>{user.metadata.creationTime?.split('T')[0]}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Lists</span>
+                <span className="text-muted-foreground">{t("profile.lists")}</span>
                 <span>3</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Saved Items</span>
+                <span className="text-muted-foreground">{t("profile.savedItems")}</span>
                 <span>24</span>
               </div>
             </div>
@@ -80,9 +82,9 @@ export default function ProfilePage() {
         <div>
           <Tabs defaultValue="lists">
             <TabsList className="mb-8">
-              <TabsTrigger value="lists">My Lists</TabsTrigger>
-              <TabsTrigger value="history">Watch History</TabsTrigger>
-              <TabsTrigger value="reviews">Reviews</TabsTrigger>
+              <TabsTrigger value="lists">{t("profile.myLists")}</TabsTrigger>
+              <TabsTrigger value="history">{t("profile.watchHistory")}</TabsTrigger>
+              <TabsTrigger value="reviews">{t("profile.reviews")}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="lists">
@@ -92,7 +94,7 @@ export default function ProfilePage() {
             <TabsContent value="history">
               <Card className="p-6">
                 <p className="text-muted-foreground text-center">
-                  Watch history coming soon...
+                  {t("profile.historyComingSoon")}
                 </p>
               </Card>
             </TabsContent>
@@ -100,7 +102,7 @@ export default function ProfilePage() {
             <TabsContent value="reviews">
               <Card className="p-6">
                 <p className="text-muted-foreground text-center">
-                  Reviews coming soon...
+                  {t("profile.reviewsComingSoon")}
                 </p>
               </Card>
             </TabsContent>

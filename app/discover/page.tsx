@@ -6,12 +6,14 @@ import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import useFetchAnime from "@/hooks/anime/use-fetch-anime";
 import { DiscoverSkeleton } from "@/components/skeletons/discover-skeleton";
+import { useI18n } from "@/components/i18n-provider";
 
 const VISIBLE_CARDS = 3; // Reduced to show only 3 cards
 const FETCH_THRESHOLD = 20; // Fetch more when 20 cards remaining
 const MIN_CARDS_BUFFER = 10; // Minimum number of cards to keep in buffer
 
 export default function DiscoverPage() {
+  const { t } = useI18n();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeCards, setActiveCards] = useState(VISIBLE_CARDS);
   const { data, isLoading, fetchNextPage, hasNextPage } = useFetchAnime();
@@ -61,7 +63,7 @@ export default function DiscoverPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
       <h1 className="mb-8 text-4xl font-bold text-foreground md:mb-12 md:text-5xl lg:text-6xl">
-        Discover Anime
+        {t("anime.discover")}
       </h1>
 
       <div className="w-full max-w-md md:max-w-lg lg:max-w-xl aspect-[3/4] relative perspective-1000">

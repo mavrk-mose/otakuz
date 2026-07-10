@@ -10,8 +10,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
 import { useEffect } from 'react';
+import { useI18n } from '@/components/i18n-provider';
 
 export function GallerySection() {
+    const { t } = useI18n();
     const { ref, inView } = useInView();
     const [images, setImages] = useState<any[]>([]);
 
@@ -55,12 +57,12 @@ export function GallerySection() {
         <section className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold mb-2">Gallery</h2>
-                    <p className="text-muted-foreground">Stunning anime artwork</p>
+                    <h2 className="text-3xl font-bold mb-2">{t("common.gallery")}</h2>
+                    <p className="text-muted-foreground">{t("home.galleryDescription")}</p>
                 </div>
                 <Button variant="ghost" asChild>
                     <Link href="/gallery" className="gap-2">
-                        View All <ArrowRight className="w-4 h-4" />
+                        {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
                     </Link>
                 </Button>
             </div>

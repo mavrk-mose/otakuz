@@ -11,12 +11,14 @@ import { useAnimeStore } from "@/store/use-anime-store";
 import Lottie from "lottie-react";
 import Pochita from "@/public/lottie/Animation - 1734030996440.json";
 import useSearch from "@/hooks/search/use-search";
+import { useI18n } from "@/components/i18n-provider";
 
 interface SearchDropdownProps {
   onSelect?: () => void;
 }
 
 export function SearchDropdown({ onSelect }: SearchDropdownProps) {
+  const { t } = useI18n();
   const { data: searchResults, isLoading } = useSearch();
   const searchQuery = useAnimeStore((state) => state.searchQuery);
   const setSearchQuery = useAnimeStore((state) => state.setSearchQuery);
@@ -75,7 +77,7 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
           </div>
         ) : (
           <div className="p-4 text-center text-muted-foreground">
-            No results found
+            {t("search.noResults")}
           </div>
         )}
       </ScrollArea>

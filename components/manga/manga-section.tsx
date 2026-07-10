@@ -9,8 +9,10 @@ import { Star, BookOpen, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
+import { useI18n } from '@/components/i18n-provider';
 
 export function MangaSection() {
+  const { t } = useI18n();
   const { data: mangaList, isLoading } = useQuery({
     queryKey: ['topManga'],
     queryFn: getTopManga
@@ -33,12 +35,12 @@ export function MangaSection() {
       <section className="space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold mb-2">Popular Manga</h2>
-            <p className="text-muted-foreground">Must-read manga series</p>
+            <h2 className="text-3xl font-bold mb-2">{t("home.popularManga")}</h2>
+            <p className="text-muted-foreground">{t("home.popularMangaDescription")}</p>
           </div>
           <Button variant="ghost" asChild>
             <Link href="/manga" className="gap-2">
-              View All <ArrowRight className="w-4 h-4" />
+              {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
             </Link>
           </Button>
         </div>
@@ -75,7 +77,7 @@ export function MangaSection() {
                             <Button className="w-full gap-2" asChild>
                               <Link href={`/manga/${manga.mal_id}`}>
                                 <BookOpen className="h-4 w-4" />
-                                Read Now
+                                {t("manga.readNow")}
                               </Link>
                             </Button>
                           </div>
@@ -86,7 +88,7 @@ export function MangaSection() {
                           <Star className="h-4 w-4 text-yellow-400 fill-current" />
                           <span className="text-sm font-medium">{manga.score}</span>
                           <Badge variant="secondary" className="ml-auto">
-                            {manga.chapters || 'Ongoing'} CH
+                            {manga.chapters || t("manga.ongoing")} CH
                           </Badge>
                         </div>
                         <Link

@@ -10,6 +10,7 @@ import { useBookmarks } from '@/hooks/use-bookmarks';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {toast} from "sonner";
+import { useI18n } from "@/components/i18n-provider";
 
 interface Props {
     isOpen: boolean;
@@ -23,6 +24,7 @@ interface Props {
 }
 
 export function BookmarkDialog({ isOpen, onClose, item }: Props) {
+    const { t } = useI18n();
     const { lists, createList, addToList } = useBookmarks();
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
     const [showNewListInput, setShowNewListInput] = useState(false);
@@ -68,7 +70,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Save to Collection</DialogTitle>
+                    <DialogTitle>{t("bookmark.saveCollection")}</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex items-center gap-4 p-4 border rounded-lg">
@@ -91,12 +93,12 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                 {showNewListInput ? (
                     <div className="flex gap-2">
                         <Input
-                            placeholder="List name"
+                            placeholder={t("bookmark.listName")}
                             value={newListName}
                             onChange={(e) => setNewListName(e.target.value)}
                             onKeyPress={(e) => e.key === 'Enter' && handleCreateList()}
                         />
-                        <Button onClick={handleCreateList}>Create</Button>
+                        <Button onClick={handleCreateList}>{t("common.create")}</Button>
                     </div>
                 ) : (
                     <Button
@@ -105,7 +107,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                         onClick={() => setShowNewListInput(true)}
                     >
                         <Plus className="mr-2 h-4 w-4" />
-                        Create New List
+                        {t("bookmark.createNew")}
                     </Button>
                 )}
 
@@ -117,7 +119,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                                 animate={{ opacity: 1 }}
                                 className="text-center py-8 text-muted-foreground"
                             >
-                                Create your first list to start saving items
+                                {t("bookmark.empty")}
                             </motion.div>
                         ) : (
                             <motion.div

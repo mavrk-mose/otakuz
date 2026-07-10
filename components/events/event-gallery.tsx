@@ -9,18 +9,20 @@ import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext, type CarouselApi } from "@/components/ui/carousel";
 import { Event } from "@/types/events";
+import { useI18n } from "@/components/i18n-provider";
 
 interface EventGalleryProps {
   gallery?: Pick<Event, "gallery">["gallery"];
 }
 
 export function Gallery({ gallery }: EventGalleryProps) {
+  const { t } = useI18n()
   const [isGalleryOpen, setIsGalleryOpen] = useState(false)
   const carouselRef = useRef<CarouselApi | null>(null)
 
   return (
     <div className="space-y-4 w-full">
-      <h2 className="text-xl md:text-2xl font-bold">Event Gallery</h2>
+      <h2 className="text-xl md:text-2xl font-bold">{t("events.gallery")}</h2>
       <div className="rounded-lg p-4">
         <ScrollArea className="w-full whitespace-nowrap">
           <div className="flex gap-4 pb-4 pl-4 pr-16 py-8">

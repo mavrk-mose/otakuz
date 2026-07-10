@@ -6,8 +6,10 @@ import { Badge } from '@/components/ui/badge';
 import { Info, PlayCircle} from 'lucide-react';
 import Link from 'next/link';
 import useRandomAnime from "@/hooks/anime/use-random-anime";
+import { useI18n } from "@/components/i18n-provider";
 
 export function HeroSection() {
+  const { t } = useI18n();
   const { data: anime } = useRandomAnime(); // Default to a popular anime
   const [background, setBackground] = useState('');
 
@@ -57,13 +59,13 @@ export function HeroSection() {
                 asChild
             >
               <Link href={`/watch/${anime.mal_id}`}>
-                <PlayCircle className="w-4 h-4" /> Watch Trailer
+                <PlayCircle className="w-4 h-4" /> {t("anime.watchTrailer")}
               </Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
               <Link href={`/anime/${anime.mal_id}`}>
                 <Info className="mr-2 h-5 w-5" />
-                More Info
+                {t("anime.moreInfo")}
               </Link>
             </Button>
           </div>

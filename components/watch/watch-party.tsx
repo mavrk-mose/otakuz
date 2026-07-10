@@ -17,6 +17,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Users } from "lucide-react";
 import { WatchPartyRoom } from "./watch-room";
+import { useI18n } from "@/components/i18n-provider";
 
 interface WatchPartyProps {
   animeTitle: string;
@@ -29,6 +30,7 @@ export function WatchParty({
   episodeNumber,
   videoUrl,
 }: WatchPartyProps) {
+  const { t } = useI18n();
   const [showDialog, setShowDialog] = useState(false);
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
   const [roomIdInput, setRoomIdInput] = useState("");
@@ -40,7 +42,7 @@ export function WatchParty({
         <DialogTrigger asChild>
           <Button variant="outline" size="lg" className="gap-2 bg-transparent">
             <Users className="h-5 w-5" />
-            Watch Party
+            {t("watch.party")}
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-5xl h-[90vh] p-0">
@@ -108,6 +110,7 @@ function RoomSelector({
   isCreating,
   defaultVideoUrl,
 }: RoomSelectorProps) {
+  const { t } = useI18n();
   const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [activeRooms, setActiveRooms] = useState<any[]>([]);
   const [isLoadingRooms, setIsLoadingRooms] = useState(false);
@@ -131,21 +134,21 @@ function RoomSelector({
   return (
     <div className="p-6">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold">Watch Party</DialogTitle>
+        <DialogTitle className="text-2xl font-bold">{t("watch.party")}</DialogTitle>
       </DialogHeader>
 
       <Tabs defaultValue="create" className="mt-6">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="create">Create Room</TabsTrigger>
-          <TabsTrigger value="join">Join Room</TabsTrigger>
+          <TabsTrigger value="create">{t("watch.createRoom")}</TabsTrigger>
+          <TabsTrigger value="join">{t("watch.joinRoom")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="create" className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="videoUrl">Video URL</Label>
+            <Label htmlFor="videoUrl">{t("watch.videoUrl")}</Label>
             <Input
               id="videoUrl"
-              placeholder="Enter video URL"
+              placeholder={t("watch.enterVideoUrl")}
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
             />
@@ -156,16 +159,16 @@ function RoomSelector({
             className="w-full"
             size="lg"
           >
-            {isCreating ? "Creating..." : "Create Watch Room"}
+            {isCreating ? t("watch.creating") : t("watch.createWatchRoom")}
           </Button>
         </TabsContent>
 
         <TabsContent value="join" className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="roomId">Room ID</Label>
+            <Label htmlFor="roomId">{t("watch.roomId")}</Label>
             <Input
               id="roomId"
-              placeholder="Enter room ID"
+              placeholder={t("watch.enterRoomId")}
               value={roomIdInput}
               onChange={(e) => setRoomIdInput(e.target.value)}
             />
@@ -176,21 +179,21 @@ function RoomSelector({
             className="w-full"
             size="lg"
           >
-            Join Room
+            {t("watch.joinRoom")}
           </Button>
 
           {/* Active Rooms List */}
           <div className="mt-6">
-            <h3 className="text-lg font-semibold mb-3">Active Rooms</h3>
+            <h3 className="text-lg font-semibold mb-3">{t("watch.activeRooms")}</h3>
             <ScrollArea className="h-[300px] rounded-md border">
               <div className="p-4 space-y-2">
                 {isLoadingRooms ? (
                   <div className="text-center text-muted-foreground py-8">
-                    Loading rooms...
+                    {t("watch.loadingRooms")}
                   </div>
                 ) : activeRooms.length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
-                    No active rooms
+                    {t("watch.noActiveRooms")}
                   </div>
                 ) : (
                   activeRooms.map((room) => (
@@ -202,14 +205,14 @@ function RoomSelector({
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
                           <div className="font-medium">
-                            Room {room.roomId.slice(0, 8)}
+                            {t("watch.room")} {room.roomId.slice(0, 8)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {room.clients?.length || 0} viewers
+                            {room.clients?.length || 0} {t("watch.viewers")}
                           </div>
                         </div>
                         <Badge variant="secondary">
-                          {room.isPlaying ? "Playing" : "Paused"}
+                          {room.isPlaying ? t("watch.playing") : t("watch.paused")}
                         </Badge>
                       </div>
                     </Card>
@@ -223,5 +226,4 @@ function RoomSelector({
     </div>
   );
 }
-
 

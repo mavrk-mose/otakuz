@@ -9,8 +9,10 @@ import { Icons } from '@/components/icons';
 import { motion } from 'framer-motion';
 import { RecaptchaVerifier } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { useI18n } from '@/components/i18n-provider';
 
 export function AuthForm() {
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
@@ -59,9 +61,9 @@ export function AuthForm() {
           className="space-y-6"
       >
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Sign In</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">{t("auth.title")}</h1>
           <p className="text-sm text-muted-foreground">
-            Choose your preferred sign in method
+            {t("auth.description")}
           </p>
         </div>
 
@@ -77,7 +79,7 @@ export function AuthForm() {
             ) : (
                 <Icons.google className="mr-2 h-4 w-4" />
             )}
-            Sign in with Google
+            {t("auth.google")}
           </Button>
 
           <Button
@@ -91,7 +93,7 @@ export function AuthForm() {
             ) : (
                 <Icons.facebook className="mr-2 h-4 w-4" />
             )}
-            Sign in with Facebook
+            {t("auth.facebook")}
           </Button>
 
           {/*<div className="space-y-2">*/}

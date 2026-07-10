@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { BaseAnime, WatchParty } from '@/types/anime';
 import { Users, Play, Pause } from 'lucide-react';
 import { io } from 'socket.io-client';
+import { useI18n } from '@/components/i18n-provider';
 
 interface WatchPartySectionProps {
   animeId?: string;
@@ -14,6 +15,7 @@ interface WatchPartySectionProps {
 }
 
 export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
+  const { t } = useI18n();
   const [party, setParty] = useState<WatchParty | null>(null);
   const [participants, setParticipants] = useState<string[]>([]);
   const [socket, setSocket] = useState<any>(null);
@@ -75,17 +77,17 @@ export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
       {!party ? (
         <div className="text-center">
           <p className="text-muted-foreground mb-4">
-            Create a watch party to enjoy anime together with friends!
+            {t("watch.createDescription")}
           </p>
           <Button onClick={createParty} className="w-full">
             <Users className="mr-2 h-4 w-4" />
-            Create Watch Party
+            {t("watch.createParty")}
           </Button>
         </div>
       ) : (
         <>
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold">Watch Party</h3>
+            <h3 className="font-semibold">{t("watch.party")}</h3>
             {party.hostId === 'user-1' && ( // Replace with actual user ID check
               <Button
                 variant="outline"
@@ -102,7 +104,7 @@ export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
           </div>
 
           <div className="border rounded-lg p-4">
-            <h4 className="font-medium mb-2">Participants</h4>
+            <h4 className="font-medium mb-2">{t("watch.participants")}</h4>
             <ScrollArea className="h-[200px]">
               {participants.map((participant) => (
                 <div
@@ -117,7 +119,7 @@ export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
                   <span>{participant}</span>
                   {party.hostId === participant && (
                     <span className="text-xs text-muted-foreground ml-auto">
-                      Host
+                      {t("watch.host")}
                     </span>
                   )}
                 </div>
@@ -127,7 +129,7 @@ export function WatchPartySection({ animeId, anime }: WatchPartySectionProps) {
 
           {!participants.includes('user-1') && ( // Replace with actual user ID check
             <Button onClick={joinParty} className="w-full">
-              Join Watch Party
+              {t("watch.joinParty")}
             </Button>
           )}
         </>

@@ -7,6 +7,7 @@ import {urlFor} from "@/lib/sanity";
 import Lottie from "lottie-react";
 import Pochita from "@/public/lottie/pochita.json";
 import {ProductCard} from "@/components/shop/product-card";
+import { useI18n } from "@/components/i18n-provider";
 
 interface ProductGridProps {
     title?: string
@@ -18,6 +19,7 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ title, filters, sort }: ProductGridProps) {
+    const { t } = useI18n();
     const { products, isLoading } = useFetchProducts({ category: "all", title});
 
     const filteredProducts = products?.filter(product => {
@@ -65,7 +67,7 @@ export function ProductGrid({ title, filters, sort }: ProductGridProps) {
         return (
             <div className="flex items-center justify-center py-12">
                 <div className="text-center">
-                    <div className="mb-4 text-lg font-semibold text-muted-foreground">No products found</div>
+                    <div className="mb-4 text-lg font-semibold text-muted-foreground">{t("common.noProducts")}</div>
                     <div className="mx-auto w-48 h-48">
                         <Lottie
                             animationData={Pochita}

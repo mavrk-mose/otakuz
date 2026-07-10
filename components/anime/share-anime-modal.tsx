@@ -11,6 +11,7 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import Link from "next/link";
 import {Button} from "@/components/ui/button";
 import { toast } from 'sonner';
+import { useI18n } from '@/components/i18n-provider';
 
 interface ShareAnimeModalProps {
     isOpen: boolean;
@@ -19,6 +20,7 @@ interface ShareAnimeModalProps {
 }
 
 export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModalProps) {
+    const { t } = useI18n();
     const [selectedRoom, setSelectedRoom] = useState('');
     const {shareAnimeToChat} = useFirebaseChatActions();
     const {user} = useAuth();
@@ -31,44 +33,44 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
         }
     }, [isOpen, refetch]);
 
-    const handleShare = async () => {
+    const handleShare = async (roomId = selectedRoom) => {
         if (!user) {
-            toast("Authentication Required", {
-                description: "Please sign in to share anime."
+            toast(t("anime.authRequired"), {
+                description: t("anime.signInToShare")
             });
             router.push('/auth');
             onClose();
             return;
         }
 
-        if (!selectedRoom) {
-            toast("Error", {
-                description: "Please select a room to share to."
+        if (!roomId) {
+            toast(t("common.error"), {
+                description: t("anime.selectRoom")
             });
             return;
         }
 
         try {
-            await shareAnimeToChat(selectedRoom, {
+            await shareAnimeToChat(roomId, {
                 title: anime.title,
                 image: anime.images.jpg.large_image_url,
                 id: anime.mal_id,
             }, user.uid);
-            toast("Success", {
-                description: "Anime shared to chat successfully!"
+            toast(t("common.success"), {
+                description: t("anime.shareSuccess")
             });
             onClose();
         } catch (error) {
             console.error('Error sharing anime:', error);
-            toast("Error",{
-                description: "Failed to share anime. Please try again."
+            toast(t("common.error"),{
+                description: t("anime.shareFailed")
             });
         }
     };
 
     const handleSelectedRoom = (selectedRoom: string) => {
         setSelectedRoom(selectedRoom);
-        handleShare();
+        void handleShare(selectedRoom);
     }
 
     return (
@@ -77,7 +79,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
                 <div className="grid gap-4 py-4">
                     <div className="grid grid-cols-1 items-center gap-4">
                         <Label htmlFor="room" className="text-right">
-                            Chat Room
+                            {t("anime.chatRoom")}
                         </Label>
                         {user ? (
                             <ScrollArea className="w-full whitespace-nowrap">
@@ -102,7 +104,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
                             </ScrollArea>
                         ) : (
                             <Button asChild>
-                                <Link href="/auth">Sign In</Link>
+                                <Link href="/auth">{t("nav.signIn")}</Link>
                             </Button>
                         )}
                     </div>

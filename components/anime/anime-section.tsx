@@ -10,8 +10,10 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import React from "react";
+import { useI18n } from "@/components/i18n-provider";
 
 export function AnimeSection() {
+  const { t } = useI18n();
   const { data: animeList, isLoading } = useQuery({
     queryKey: ["topAnime"],
     queryFn: () => getTopAnime(),
@@ -34,12 +36,12 @@ export function AnimeSection() {
     <section className="space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold mb-2">Popular Anime</h2>
-          <p className="text-muted-foreground">Top-rated anime series</p>
+          <h2 className="text-3xl font-bold mb-2">{t("home.popularAnime")}</h2>
+          <p className="text-muted-foreground">{t("home.popularAnimeDescription")}</p>
         </div>
         <Button variant="ghost" asChild>
           <Link href="/anime" className="gap-2">
-            View All <ArrowRight className="w-4 h-4" />
+            {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
           </Link>
         </Button>
       </div>
@@ -76,7 +78,7 @@ export function AnimeSection() {
                       <div className="absolute bottom-4 left-4 right-4">
                         <Button className="w-full gap-2" asChild>
                           <Link href={`/watch/${anime.mal_id}`}>
-                            <PlayCircle className="w-4 h-4" /> Watch Trailer
+                            <PlayCircle className="w-4 h-4" /> {t("anime.watchTrailer")}
                           </Link>
                         </Button>
                       </div>

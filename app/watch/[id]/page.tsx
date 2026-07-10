@@ -19,8 +19,10 @@ import VideoTabs from "@/components/watch/video-tabs";
 
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "@/components/i18n-provider";
 
 export default function WatchPage() {
+  const { t } = useI18n();
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
@@ -159,7 +161,7 @@ export default function WatchPage() {
 
           {/* RECOMMENDED ANIME */}
           <div>
-            <h2 className="text-xl font-bold mb-2 ml-4">Explore more</h2>
+            <h2 className="text-xl font-bold mb-2 ml-4">{t("watch.exploreMore")}</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
               {data?.pages.flatMap((page) =>

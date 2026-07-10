@@ -8,7 +8,6 @@ import { Calendar, MapPin, Users, Ticket, Trophy, Phone } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
-import { format } from 'date-fns';
 import useEventDetails from '@/hooks/events/use-event-details';
 import { urlFor } from "@/lib/sanity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -16,12 +15,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import EventDetailsSkeleton from '@/components/skeletons/event-details-skeleton';
 import { Gallery } from '@/components/events/event-gallery';
+import { useI18n } from '@/components/i18n-provider';
 
 interface Props {
     params: Promise<{ id: string }>;
 }
 
 export default function EventDetailPage(props: Props) {
+    const { locale, t } = useI18n();
     const params = use(props.params);
     const { event, isLoading } = useEventDetails(params.id);
 
@@ -62,12 +63,12 @@ export default function EventDetailPage(props: Props) {
                                     <DialogTrigger asChild>
                                         <Badge variant="secondary" className="cursor-pointer">
                                             <Users className="w-4 h-4 mr-1"/>
-                                            {event?.attendees.length} attending
+                                            {event?.attendees.length} {t("events.attending")}
                                         </Badge>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-[425px]">
                                         <DialogHeader>
-                                            <DialogTitle>Event Attendees</DialogTitle>
+                                            <DialogTitle>{t("events.attendees")}</DialogTitle>
                                         </DialogHeader>
                                         <ScrollArea className="h-[300px] pr-4">
                                             <div className="space-y-4">
@@ -98,7 +99,7 @@ export default function EventDetailPage(props: Props) {
 
                         {/* Gaming Tournaments */}
                         <div className="space-y-4">
-                            <h2 className="text-xl md:text-2xl font-bold">Gaming Tournaments</h2>
+                            <h2 className="text-xl md:text-2xl font-bold">{t("events.tournaments")}</h2>
                             <div className="grid sm:grid-cols-2 gap-4">
                                 {event?.tournaments?.map((tournament, index) => (
                                     <Card key={index} className="p-4">
@@ -109,9 +110,9 @@ export default function EventDetailPage(props: Props) {
                                             <div>
                                                 <h3 className="font-semibold mb-2">{tournament.title}</h3>
                                                 <div className="space-y-1 text-sm text-muted-foreground">
-                                                    <p>Prize Pool: {tournament.prize}</p>
-                                                    <p>{tournament.participants} participants</p>
-                                                    <p>{format(new Date(tournament.time), 'PPP')} at {tournament.time}</p>
+                                                    <p>{t("events.prizePool")}: {tournament.prize}</p>
+                                                    <p>{tournament.participants} {t("events.participants")}</p>
+                                                    <p>{new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { dateStyle: "long" }).format(new Date(tournament.time))} {t("events.at")} {tournament.time}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -144,12 +145,12 @@ export default function EventDetailPage(props: Props) {
                                 </div>
 
                                 <div className="pt-4 border-t">
-                                    <p className="text-sm text-muted-foreground mb-1">Ticket Price</p>
+                                    <p className="text-sm text-muted-foreground mb-1">{t("events.ticketPrice")}</p>
                                     <p className="text-2xl font-bold">${event?.ticket}</p>
                                 </div>
                                 <Button className="w-full" size="lg">
                                     <Ticket className="w-4 h-4 mr-2"/>
-                                    Purchase Tickets
+                                    {t("events.purchaseTickets")}
                                 </Button>
                             </div>
                         </Card>
@@ -157,7 +158,7 @@ export default function EventDetailPage(props: Props) {
                         {/* Host Information */}
                         <Card className="p-4 md:p-6">
                             <CardHeader className="px-0 pt-0">
-                                <h3 className="text-lg font-semibold mb-4">Hosted By</h3>
+                                <h3 className="text-lg font-semibold mb-4">{t("events.hostedBy")}</h3>
                                 <div className="space-y-4">
                                     {event?.organizers.map((organizer, index) => (
                                         <div key={index} className="flex items-center gap-3">
@@ -173,7 +174,7 @@ export default function EventDetailPage(props: Props) {
                             <CardFooter className="flex flex-col space-y-4 pt-4 border-t px-0 pb-0">
                                 <div className="w-full">
                                     <div className="text-sm text-muted-foreground mb-2">
-                                        {event?.attendees.length} Going
+                                        {event?.attendees.length} {t("events.going")}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="flex -space-x-2">
@@ -196,21 +197,21 @@ export default function EventDetailPage(props: Props) {
                                         </div>
                                         {event?.attendees && event.attendees.length > 5 && (
                                             <span className="text-sm text-muted-foreground">
-                                                +{event.attendees.length - 5} others
+                                                +{event.attendees.length - 5} {t("events.others")}
                                             </span>
                                         )}
                                     </div>
                                 </div>
                                 <Button className="w-full" size="lg">
                                     <Phone className="w-4 h-4 mr-2"/>
-                                    Contact Host
+                                    {t("events.contactHost")}
                                 </Button>
                             </CardFooter>
                         </Card>
 
                         {/* Event Schedule */}
                         <Card className="p-4 md:p-6">
-                            <h3 className="font-semibold mb-4">Event Schedule</h3>
+                            <h3 className="font-semibold mb-4">{t("events.schedule")}</h3>
                             <ScrollArea className="h-[300px]">
                                 <div className="space-y-4 pr-4">
                                     {event?.activities?.map((activity, index) => (

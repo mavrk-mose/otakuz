@@ -6,18 +6,19 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Event } from "@/types/events";
 import Link from 'next/link';
-import { format } from 'date-fns';
 import { urlFor } from "@/lib/sanity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useRef } from 'react';
+import { useI18n } from '@/components/i18n-provider';
 
 interface TimelineProps {
     events: Event[];
 }
 
 export function Timeline({ events }: TimelineProps) {
+    const { locale, t } = useI18n();
     const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
     const sortedEvents = [...events].sort((a, b) =>
         new Date(b.date).getTime() - new Date(a.date).getTime()
@@ -27,15 +28,15 @@ export function Timeline({ events }: TimelineProps) {
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                 <div>
-                    <h1 className="text-3xl sm:text-4xl font-bold mb-2">Anime Events</h1>
+                    <h1 className="text-3xl sm:text-4xl font-bold mb-2">{t("events.title")}</h1>
                     <p className="text-muted-foreground">
-                        Join local anime events and meet fellow fans
+                        {t("events.description")}
                     </p>
                 </div>
                 <Tabs defaultValue="upcoming">
                     <TabsList className="bg-muted/50">
-                        <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
-                        <TabsTrigger value="past">Past</TabsTrigger>
+                        <TabsTrigger value="upcoming">{t("events.upcoming")}</TabsTrigger>
+                        <TabsTrigger value="past">{t("events.past")}</TabsTrigger>
                     </TabsList>
                 </Tabs>
             </div>
@@ -59,8 +60,12 @@ export function Timeline({ events }: TimelineProps) {
                                 ref={(el) => (dateRefs.current[dateId] = el)}
                                 className="text-sm sticky top-0 pt-2"
                             >
-                                <div className="font-bold">{format(date, 'MMM dd')}</div>
-                                <div className="text-muted-foreground">{format(date, 'EEEE')}</div>
+                                <div className="font-bold">
+                                    {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { month: "short", day: "numeric" }).format(date)}
+                                </div>
+                                <div className="text-muted-foreground">
+                                    {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { weekday: "long" }).format(date)}
+                                </div>
                             </div>
 
                             {/* Timeline Dot */}
@@ -100,7 +105,7 @@ export function Timeline({ events }: TimelineProps) {
                                                     ))}
                                                 </div>
                                                 <span className="text-base text-muted-foreground">
-                                                    By {event.organizers?.map(o => o.name).join(', ')}
+                                                    {t("events.by")} {event.organizers?.map(o => o.name).join(', ')}
                                                 </span>
                                             </div>
 
@@ -137,7 +142,7 @@ export function Timeline({ events }: TimelineProps) {
                                                     )}
                                                 </div>
                                             ) : (
-                                                <span className="text-base text-muted-foreground">No attendees yet</span>
+                                                <span className="text-base text-muted-foreground">{t("events.noAttendees")}</span>
                                             )}
                                         </div>
                                     </div>

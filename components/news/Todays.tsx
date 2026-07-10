@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type NewsStory } from "@/types/news";
+import { useI18n } from "@/components/i18n-provider";
 
 interface StreamCardProps {
     id: string;
@@ -50,17 +51,18 @@ const StreamCard = ({ id, title, author, time, comments, tag, image } : StreamCa
 };
 
 const TodaysStream = ({ stories = [] }: TodaysProps) => {
+    const { locale, t } = useI18n();
     return (
         <div className="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
-            <h2 className="text-lg font-bold text-green-500">Today&apos;s Stream</h2>
+            <h2 className="text-lg font-bold text-green-500">{t("news.todayStream")}</h2>
             <div>
                 {stories.map((story) => (
                     <StreamCard
                         key={story._id}
                         id={story._id}
                         title={story.title}
-                        author={story.authorName || story.author?.name || "Staff"}
-                        time={story.publishedAt ? new Date(story.publishedAt).toLocaleDateString() : undefined}
+                        author={story.authorName || story.author?.name || t("news.staff")}
+                        time={story.publishedAt ? new Date(story.publishedAt).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US") : undefined}
                         comments={story.commentsCount || 0}
                         tag={story.tag || "News"}
                         image={story.imageUrl}

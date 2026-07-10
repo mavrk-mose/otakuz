@@ -9,6 +9,7 @@ import { usePostHog } from 'posthog-js/react';
 import { useState } from 'react';
 import {urlFor} from "@/lib/sanity";
 import { useCart } from '@/store/use-cart';
+import { useI18n } from '@/components/i18n-provider';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface CartDrawerProps {
 }
 
 export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
+  const { t } = useI18n();
   const { items, removeFromCart, updateQuantity } = useCart();
   const [customerInfo, setCustomerInfo] = useState({
     name: '',
@@ -45,14 +47,14 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent className="w-full sm:max-w-lg">
         <SheetHeader>
-          <SheetTitle>Shopping Cart</SheetTitle>
+          <SheetTitle>{t("shop.shoppingCart")}</SheetTitle>
         </SheetHeader>
 
         <div className="flex flex-col h-full">
           <ScrollArea className="flex-1 -mx-6 px-6">
             {items.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                Your cart is empty
+                {t("shop.emptyCart")}
               </div>
             ) : (
               <div className="space-y-4 py-4">
@@ -106,31 +108,31 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             {items.length > 0 && (
               <div className="space-y-4 py-4">
                 <div className="border-t pt-4">
-                  <h3 className="font-medium mb-4">Customer Information</h3>
+                  <h3 className="font-medium mb-4">{t("shop.customerInformation")}</h3>
                   <div className="space-y-4">
                     <input
                       type="text"
-                      placeholder="Name"
+                      placeholder={t("shop.name")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.name}
                       onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
                     />
                     <input
                       type="tel"
-                      placeholder="Phone"
+                      placeholder={t("shop.phone")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.phone}
                       onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
                     />
                     <input
                       type="email"
-                      placeholder="Email"
+                      placeholder={t("shop.email")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.email}
                       onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
                     />
                     <textarea
-                      placeholder="Delivery Address"
+                      placeholder={t("shop.deliveryAddress")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.address}
                       onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
@@ -144,11 +146,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
           {items.length > 0 && (
             <div className="border-t pt-4 mt-4">
               <div className="flex justify-between mb-4">
-                <span className="font-medium">Total</span>
+                <span className="font-medium">{t("shop.total")}</span>
                 <span className="font-bold">${total.toFixed(2)}</span>
               </div>
               <Button className="w-full" onClick={handleCheckout}>
-                Checkout
+                {t("shop.checkout")}
               </Button>
             </div>
           )}

@@ -7,12 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Heart } from 'lucide-react';
 import { Comment } from '@/types/anime';
+import { useI18n } from '@/components/i18n-provider';
 
 interface CommentSectionProps {
   animeId?: string;
 }
 
 export function CommentSection() {
+  const { locale, t } = useI18n();
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
 
@@ -48,14 +50,14 @@ export function CommentSection() {
         <Input
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="Add a comment..."
+          placeholder={t("comments.placeholder")}
           onKeyPress={(e) => e.key === 'Enter' && addComment()}
         />
         <Button 
           onClick={addComment}
           className="mt-2 w-full"
         >
-          Comment
+          {t("comments.submit")}
         </Button>
       </div>
 
@@ -70,7 +72,7 @@ export function CommentSection() {
                 <div className="flex items-baseline gap-2">
                   <span className="font-medium">{comment.username}</span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(comment.timestamp).toLocaleString()}
+                    {new Date(comment.timestamp).toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
                   </span>
                 </div>
                 <p className="mt-1">{comment.content}</p>
