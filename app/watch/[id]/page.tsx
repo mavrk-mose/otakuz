@@ -164,11 +164,11 @@ export default function WatchPage() {
             <h2 className="text-xl font-bold mb-2 ml-4">{t("watch.exploreMore")}</h2>
 
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4">
-              {data?.pages.flatMap((page) =>
-                page.data.flatMap((animeData: any) =>
-                  animeData.entry.map((anime: AnimeEntry) => (
+              {data?.pages.flatMap((page, pageIndex) =>
+                page.data.flatMap((animeData: any, groupIndex: number) =>
+                  animeData.entry.map((anime: AnimeEntry, animeIndex: number) => (
                     <Card
-                      key={`${animeData.content}-${anime.mal_id}`}
+                      key={`${pageIndex}-${groupIndex}-${animeIndex}-${animeData.content}-${anime.mal_id}`}
                       className="cursor-pointer overflow-hidden transition-colors hover:bg-accent"
                       onClick={() => router.push(`/watch/${anime.mal_id}`)}
                     >

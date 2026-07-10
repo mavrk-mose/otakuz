@@ -22,6 +22,24 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
     })
   }, [])
 
+  useEffect(() => {
+    // Vidstack rejects pending YouTube/Vimeo commands during normal teardown.
+    const handleProviderTeardown = (event: PromiseRejectionEvent) => {
+      const reason = event.reason;
+      const message = reason instanceof Error ? reason.message : reason;
+
+      if (message === 'provider destroyed') {
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('unhandledrejection', handleProviderTeardown);
+
+    return () => {
+      window.removeEventListener('unhandledrejection', handleProviderTeardown);
+    };
+  }, []);
+
   usePostHogPageTracking();
 
   return (
