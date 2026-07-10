@@ -45,8 +45,8 @@ export function Search() {
   }
 
   return (
-    <div className="pl-[72px]">
-      <header className="sticky top-0 z-40 border-b bg-background">
+    <div>
+      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="container flex h-16 items-center px-4">
           <div className="flex-1" />
           <div className="flex items-center gap-4">
@@ -59,9 +59,9 @@ export function Search() {
                     animate={{ width: 300, opacity: 1 }}
                     exit={{ width: 40, opacity: 0 }}
                     transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="relative"
+                    className="relative max-w-[calc(100vw-6rem)]"
                   >
-                    <SearchIcon className="absolute left-3 top-1/ 2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
                     <Input
                       ref={inputRef}
                       type="search"
@@ -100,4 +100,3 @@ export function Search() {
     </div>
   )
 }
-

@@ -60,7 +60,7 @@ export default function DiscoverPage() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 lg:p-12">
-      <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-8 md:mb-12">
+      <h1 className="mb-8 text-4xl font-bold text-foreground md:mb-12 md:text-5xl lg:text-6xl">
         Discover Anime
       </h1>
 

@@ -19,8 +19,8 @@ export function SortFilter({ sortBy, onSortChange }: SortFilterProps) {
     ]
 
     return (
-        <Card className="p-4 bg-neutral-900 border-neutral-800">
-            <h2 className="font-semibold mb-4 text-white">Sort By</h2>
+        <Card className="p-4">
+            <h2 className="mb-4 font-semibold">Sort By</h2>
             <RadioGroup
                 value={sortBy}
                 onValueChange={onSortChange}
@@ -28,12 +28,11 @@ export function SortFilter({ sortBy, onSortChange }: SortFilterProps) {
             >
                 {sortOptions.map((option) => (
                     <div key={option.value} className="flex items-center space-x-2">
-                        <RadioGroupItem value={option.value} id={option.value} className="border-neutral-700" />
-                        <Label htmlFor={option.value} className="text-neutral-300">{option.label}</Label>
+                        <RadioGroupItem value={option.value} id={option.value} />
+                        <Label htmlFor={option.value}>{option.label}</Label>
                     </div>
                 ))}
             </RadioGroup>
         </Card>
     )
 }
-

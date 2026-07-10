@@ -47,7 +47,7 @@ export function HeroSection() {
             </div>
           </div>
 
-          <p className="text-lg text-gray-200 line-clamp-3">
+          <p className="line-clamp-3 text-lg text-white/80">
             {anime.synopsis}
           </p>
 

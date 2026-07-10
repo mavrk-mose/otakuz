@@ -59,7 +59,7 @@ export function AuthForm() {
           className="space-y-6"
       >
         <div className="space-y-2 text-center">
-          <h1 className="text-2xl text-black font-semibold tracking-tight">Sign In</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground">Sign In</h1>
           <p className="text-sm text-muted-foreground">
             Choose your preferred sign in method
           </p>
@@ -131,4 +131,3 @@ export function AuthForm() {
       </motion.div>
   );
 }
-

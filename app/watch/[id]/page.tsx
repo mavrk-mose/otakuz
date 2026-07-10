@@ -68,8 +68,8 @@ export default function WatchPage() {
   return (
     <div className="flex h-screen overflow-hidden">
       {/* LEFT SIDEBAR */}
-      <aside className="w-64 flex-shrink-0 bg-[#1F1F23] overflow-hidden flex-col hidden md:flex">
-        <h2 className="text-sm font-semibold p-4 text-[#EFEFF1]">
+      <aside className="hidden w-64 flex-shrink-0 flex-col overflow-hidden border-r bg-sidebar text-sidebar-foreground md:flex">
+        <h2 className="p-4 text-sm font-semibold">
           RECENT ANIME
         </h2>
 
@@ -122,7 +122,7 @@ export default function WatchPage() {
 
           {/* ANIME INFO */}
           {selectedAnime && (
-            <div className="p-4 bg-[#18181B]">
+            <div className="border-y bg-muted/40 p-4">
               <h1 className="text-xl font-bold mb-2">{selectedAnime.title}</h1>
 
               <div className="flex items-center space-x-2">
@@ -133,7 +133,7 @@ export default function WatchPage() {
 
                 <div>
                   <p className="font-medium">{selectedAnime.title}</p>
-                  <p className="text-sm text-[#ADADB8]">
+                  <p className="text-sm text-muted-foreground">
                     <Link
                       href={`/anime/${selectedAnime.mal_id}`}
                       rel="noopener noreferrer"
@@ -167,7 +167,7 @@ export default function WatchPage() {
                   animeData.entry.map((anime: AnimeEntry) => (
                     <Card
                       key={`${animeData.content}-${anime.mal_id}`}
-                      className="bg-[#26262C] overflow-hidden cursor-pointer"
+                      className="cursor-pointer overflow-hidden transition-colors hover:bg-accent"
                       onClick={() => router.push(`/watch/${anime.mal_id}`)}
                     >
                       <div className="relative aspect-video">
@@ -183,7 +183,7 @@ export default function WatchPage() {
                         <h3 className="font-medium text-sm line-clamp-2">
                           {anime.title}
                         </h3>
-                        <p className="text-xs text-[#ADADB8]">
+                        <p className="text-xs text-muted-foreground">
                           MyAnimeList ID: {anime.mal_id}
                         </p>
                       </div>

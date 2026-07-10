@@ -43,9 +43,9 @@ export function CategoryList() {
                             fill
                             className="object-cover transition-transform duration-300 group-hover:scale-110"
                         />
-                        <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
+                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-white drop-shadow-sm">
                             <h3 className="text-xl font-bold mb-1">{category.name}</h3>
-                            <p className="text-sm text-gray-200">{category.count} Products</p>
+                            <p className="text-sm text-white/80">{category.count} Products</p>
                         </div>
                     </motion.div>
                 </Link>
@@ -53,4 +53,3 @@ export function CategoryList() {
         </div>
     )
 }
-

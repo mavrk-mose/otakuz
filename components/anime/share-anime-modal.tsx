@@ -29,7 +29,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
         if (isOpen) {
             refetch();  // Refetch rooms when the modal opens
         }
-    }, [isOpen]);
+    }, [isOpen, refetch]);
 
     const handleShare = async () => {
         if (!user) {
@@ -85,7 +85,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
                                     <div
                                         key={room.id}
                                         onClick={() => handleSelectedRoom(room.id)}
-                                        className="flex flex-row gap-4 mb-4 p-4 border border-gray-700 rounded-lg shadow-lg hover:bg-gray-800"
+                                        className="mb-4 flex cursor-pointer flex-row gap-4 rounded-lg border p-4 shadow-sm transition-colors hover:bg-accent"
                                     >
                                         <Avatar className="h-12 w-12">
                                             <AvatarImage src={`https://avatar.vercel.sh/${room.id}`}/>

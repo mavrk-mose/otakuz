@@ -7,7 +7,7 @@ export default function TitlePage() {
     const params = useParams();
     const slug = params?.slug;
     return (
-        <div className="min-h-screen bg-black text-white pb-4">
+        <div className="min-h-screen bg-background pb-4 text-foreground">
             <div className="py-4 px-6">
                 <ProductGrid title={slug as string}/>
             </div>

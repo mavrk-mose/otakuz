@@ -14,10 +14,10 @@ export default function Auth() {
             />
 
             {/* Overlay (Optional for better contrast) */}
-            <div className="absolute inset-0 bg-black bg-opacity-40"></div>
+            <div className="absolute inset-0 bg-black/45 dark:bg-black/60"></div>
 
             {/* Sign-in Box */}
-            <div className="relative z-10 bg-white border border-gray-300 rounded-lg p-6 shadow-lg max-w-md w-full">
+            <div className="relative z-10 w-full max-w-md rounded-lg border bg-card p-6 text-card-foreground shadow-xl">
                 <AuthForm />
             </div>
         </div>

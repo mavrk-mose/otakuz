@@ -47,11 +47,11 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
                                 id={style.id}
                                 checked={filters.category.includes(style.id)}
                                 onCheckedChange={() => toggleFilter('style', style.id)}
-                                className="border-gray-600"
+                                className="border-input"
                             />
                             <Label
                                 htmlFor={style.id}
-                                className="text-sm text-gray-300"
+                                className="text-sm text-foreground"
                             >
                                 {style.label}
                             </Label>
@@ -69,11 +69,11 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
                                 id={range.id}
                                 checked={filters.price.includes(range.id)}
                                 onCheckedChange={() => toggleFilter('price', range.id)}
-                                className="border-gray-600"
+                                className="border-input"
                             />
                             <Label
                                 htmlFor={range.id}
-                                className="text-sm text-gray-300"
+                                className="text-sm text-foreground"
                             >
                                 {range.label}
                             </Label>
@@ -84,4 +84,3 @@ export function FilterSection({ filters, setFilters }: FilterSectionProps) {
         </div>
     )
 }
-

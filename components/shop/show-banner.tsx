@@ -24,12 +24,11 @@ export function ShowBanner({ title, subtitle, image, color }: ShowBannerProps) {
                     fill
                     className="object-cover"
                 />
-                <div className="absolute bottom-8 left-8 z-20">
+                <div className="absolute bottom-8 left-8 z-20 text-white drop-shadow-sm">
                     <h3 className="text-3xl font-bold mb-2">{title}</h3>
-                    <p className="text-lg text-gray-200">{subtitle}</p>
+                    <p className="text-lg text-white/85">{subtitle}</p>
                 </div>
             </motion.div>
         </Link>
     )
 }
-

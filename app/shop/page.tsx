@@ -42,10 +42,7 @@ export default function ShopPage() {
       <section className="py-4">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between mb-8">
-            <h2 
-              className="text-[4rem] font-bold mb-8 leading-none tracking-tighter text-transparent"
-              style={{ WebkitTextStroke: "2px white" }}
-            >
+            <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
               New Arrivals
             </h2>
             <Button variant="outline" className="mt-4 md:mt-0" onClick={() => setIsCartOpen(true)}>
@@ -62,10 +59,7 @@ export default function ShopPage() {
       {/* Shop By Title */}
       <section className="py-4">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2
-            className="text-[4rem] font-bold mb-8 leading-none tracking-tighter text-transparent"
-            style={{ WebkitTextStroke: "2px white" }}
-          >
+          <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
             Shop By Title
           </h2>
           <TitleBanner />
@@ -86,10 +80,7 @@ export default function ShopPage() {
       {/* Shop By Category */}
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2
-            className="text-[4rem] font-bold mb-8 leading-none tracking-tighter text-transparent"
-            style={{ WebkitTextStroke: "2px white" }}
-          >
+          <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
             Shop By Category
           </h2>
           <CategoryList />
@@ -100,10 +91,7 @@ export default function ShopPage() {
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-7xl">
           <div className="flex items-center justify-between">
-            <h2 
-              className="text-[4rem] font-bold mb-8 leading-none tracking-tighter text-transparent"
-              style={{ WebkitTextStroke: "2px white" }}
-            >
+            <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
               All Products
               </h2>
             <Button variant="ghost" asChild>

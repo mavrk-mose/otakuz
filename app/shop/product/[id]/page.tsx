@@ -28,10 +28,10 @@ export default function ProductPage(props: Props) {
 
   if (isLoading) {
     return (
-        <div className="min-h-screen bg-black">
+        <div className="min-h-screen bg-background">
           <div className="container mx-auto px-4 py-8">
             <div className="animate-pulse">
-              <div className="h-96 bg-neutral-800 rounded-lg" />
+              <div className="h-96 rounded-lg bg-muted" />
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@ export default function ProductPage(props: Props) {
 
   if (!product) {
     return (
-        <div className="min-h-screen bg-black text-white">
+        <div className="min-h-screen bg-background text-foreground">
           <div className="container mx-auto px-4 py-8">
             <div className="text-center">Product not found</div>
           </div>
@@ -49,7 +49,7 @@ export default function ProductPage(props: Props) {
   }
 
   return (
-      <div className="min-h-screen bg-black text-white">
+      <div className="min-h-screen bg-background text-foreground">
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col lg:flex-row gap-8">
             {/* Left side - Scrollable Images */}
@@ -79,7 +79,7 @@ export default function ProductPage(props: Props) {
               <div className="sticky top-8">
                 <div className="space-y-6">
                   <div>
-                    <div className="text-sm text-neutral-400 uppercase mb-2">
+                    <div className="mb-2 text-sm uppercase text-muted-foreground">
                       {product.category}
                     </div>
                     <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
@@ -91,7 +91,7 @@ export default function ProductPage(props: Props) {
                                 className={`h-4 w-4 ${
                                     i < product.rating
                                         ? "text-yellow-400 fill-current"
-                                        : "text-neutral-600"
+                                        : "text-muted-foreground/40"
                                 }`}
                             />
                         ))}
@@ -102,7 +102,7 @@ export default function ProductPage(props: Props) {
                       Tshs. {product.price.toFixed(2)}
                     </span>
                       {product.price && (
-                          <span className="text-lg text-neutral-400 line-through">
+                          <span className="text-lg text-muted-foreground line-through">
                         Tshs. {product.price.toFixed(2)}
                       </span>
                       )}
@@ -117,11 +117,7 @@ export default function ProductPage(props: Props) {
                           <Button
                               key={size}
                               variant={selectedSize === size ? "default" : "outline"}
-                              className={`border-neutral-800 hover:border-white ${
-                                  selectedSize === size
-                                      ? "bg-white text-black"
-                                      : "bg-transparent"
-                              }`}
+                              className="hover:border-foreground"
                               onClick={() => setSelectedSize(size)}
                           >
                             {size}
@@ -141,7 +137,7 @@ export default function ProductPage(props: Props) {
                   </Button>
 
                   {/* Description */}
-                  <div className="border-t border-neutral-800 pt-4">
+                  <div className="border-t pt-4">
                     <button
                         className="flex items-center justify-between w-full text-left"
                         onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
@@ -162,7 +158,7 @@ export default function ProductPage(props: Props) {
                               transition={{ duration: 0.2 }}
                               className="overflow-hidden"
                           >
-                            <div className="py-4 space-y-4 text-neutral-300">
+                            <div className="space-y-4 py-4 text-muted-foreground">
                               <p>{product.description}</p>
                               {/*{product.details && (*/}
                               {/*    <ul className="list-disc list-inside space-y-2">*/}
@@ -184,4 +180,3 @@ export default function ProductPage(props: Props) {
       </div>
   )
 }
-

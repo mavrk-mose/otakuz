@@ -15,10 +15,10 @@ export default function TitleBanner() {
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {[...Array(4)].map((_, i) => (
                     <div key={i} className="animate-pulse">
-                        <div className="aspect-[3/4] bg-neutral-800 rounded-lg mb-4"/>
+                        <div className="mb-4 aspect-[3/4] rounded-lg bg-muted"/>
                         <div className="space-y-2">
-                            <div className="h-4 bg-neutral-800 rounded w-3/4"/>
-                            <div className="h-4 bg-neutral-800 rounded w-1/2"/>
+                            <div className="h-4 w-3/4 rounded bg-muted"/>
+                            <div className="h-4 w-1/2 rounded bg-muted"/>
                         </div>
                     </div>
                 ))}
@@ -48,9 +48,9 @@ export default function TitleBanner() {
                                 fill
                                 className="object-cover transition-transform duration-300 group-hover:scale-110"
                             />
-                            <div className="absolute bottom-4 left-4 z-20">
+                            <div className="absolute bottom-4 left-4 z-20 text-white">
                                 <h3 className="text-2xl font-bold">{show.name}</h3>
-                                <p className="text-sm text-gray-300">Shop Collection</p>
+                                <p className="text-sm text-white/80">Shop Collection</p>
                             </div>
                         </motion.div>
                     </Link>

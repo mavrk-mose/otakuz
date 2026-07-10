@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Image from 'next/image';
 import { Button } from "@/components/ui/button";
@@ -39,23 +39,15 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 
 export default function Navbar() {
-  const { setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   const { user, signOut } = useAuth();
   const pathname = usePathname();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 1024);
-    };
-
-    checkIfMobile();
-
-    window.addEventListener("resize", checkIfMobile);
-    return () => window.removeEventListener("resize", checkIfMobile);
-  }, []);
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === "dark" ? "light" : "dark");
+  };
 
   const handleSignOut = async () => {
     try {
@@ -102,11 +94,11 @@ export default function Navbar() {
           ease: "easeInOut",
         },
       }}
-      className="fixed left-0 top-0 bottom-0 z-50 flex-col items-center gap-2 border-r bg-background p-3 overflow-hidden hidden lg:flex"
+      className="fixed inset-y-0 left-0 z-50 hidden flex-col items-center gap-2 overflow-hidden border-r border-sidebar-border bg-sidebar p-3 text-sidebar-foreground shadow-lg lg:flex"
     >
        <button
         onClick={() => setIsExpanded((prev) => !prev)}
-        className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+        className="flex h-12 w-12 items-center justify-center rounded-xl transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         {isExpanded ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
@@ -115,17 +107,17 @@ export default function Navbar() {
           variants={container}
           initial="hidden"
           animate="show"
-          className="flex flex-col items-center gap-2 w-full"
+          className="flex h-full w-full flex-col items-center gap-2"
         >
           <motion.div variants={item} className="w-full">
             <Link href="/" className="flex justify-center w-full">
-              <div className="w-50 h-50 rounded-2xl bg-transparent flex items-center justify-center text-primary-foreground font-bold text-xl hover:rounded-xl transition-all duration-300">
+              <div className="flex h-14 w-full items-center justify-center overflow-hidden rounded-2xl bg-transparent transition-all duration-300 hover:rounded-xl">
                 <Image
                   src="/assets/logo.png" 
                   alt="Otakuz Logo"
-                  width={100}
-                  height={100}
-                  className="rounded-2xl"
+                  width={44}
+                  height={44}
+                  className="h-11 w-11 rounded-xl object-cover"
                 />
               </div>
             </Link>
@@ -144,7 +136,11 @@ export default function Navbar() {
                       variant="ghost"
                       className={cn(
                         "w-full h-12 rounded-2xl hover:rounded-xl justify-start",
-                        pathname === navItem.href && "bg-accent"
+                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        (navItem.href === "/"
+                          ? pathname === "/"
+                          : pathname === navItem.href || pathname.startsWith(`${navItem.href}/`)) &&
+                          "bg-sidebar-accent text-sidebar-accent-foreground"
                       )}
                     >
                       <navItem.icon className="h-5 w-5 min-w-5" />
@@ -174,9 +170,7 @@ export default function Navbar() {
                 <Button
                   variant="ghost"
                   className="w-full h-12 rounded-2xl hover:rounded-xl transition-all duration-300 justify-start"
-                  onClick={() =>
-                    setTheme((theme) => (theme === "dark" ? "light" : "dark"))
-                  }
+                  onClick={toggleTheme}
                 >
                   <div className="relative h-5 w-5 min-w-5">
                     <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />
@@ -281,7 +275,7 @@ export default function Navbar() {
             <span className="sr-only">Toggle menu</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="p-0 w-[280px]">
+        <SheetContent side="left" className="w-[280px] border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
           <div className="absolute top-0 right-0 hidden">
             <SheetClose />
           </div>
@@ -292,13 +286,13 @@ export default function Navbar() {
                 className="flex items-center gap-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <div className="w-50 h-50 rounded-2xl bg-transparent flex items-center justify-center text-primary-foreground font-bold text-lg">
+                <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-2xl bg-transparent">
                   <Image
                     src="/assets/logo.png" 
                     alt="Otakuz Logo"
-                    width={100}
-                    height={100}
-                    className="rounded-2xl"
+                    width={56}
+                    height={56}
+                    className="h-14 w-14 rounded-2xl object-cover"
                   />
                 </div>
               </Link>
@@ -323,7 +317,11 @@ export default function Navbar() {
                     variant="ghost"
                     className={cn(
                       "w-full justify-start h-12",
-                      pathname === navItem.href && "bg-accent"
+                      "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                      (navItem.href === "/"
+                        ? pathname === "/"
+                        : pathname === navItem.href || pathname.startsWith(`${navItem.href}/`)) &&
+                        "bg-sidebar-accent text-sidebar-accent-foreground"
                     )}
                   >
                     <navItem.icon className="h-5 w-5 mr-3" />
@@ -338,9 +336,7 @@ export default function Navbar() {
             <Button
               variant="ghost"
               className="justify-start h-12"
-              onClick={() =>
-                setTheme((theme) => (theme === "dark" ? "light" : "dark"))
-              }
+              onClick={toggleTheme}
             >
               <div className="relative h-5 w-5 mr-3">
                 <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0 absolute" />

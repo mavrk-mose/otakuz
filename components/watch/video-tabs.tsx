@@ -22,10 +22,10 @@ export default function VideoTabs({
   const { episodes, promo, music_videos } = animeVideos;
 
   return (
-    <div className="p-4 bg-[#18181B]">
+    <div className="border-b bg-muted/40 p-4">
       <Tabs defaultValue="episodes" className="w-full">
         {/* TAB LABELS */}
-        <TabsList className="bg-[#2A2A2F] mb-4">
+        <TabsList className="mb-4 bg-muted">
           {episodes.length > 0 && <TabsTrigger value="episodes">Episodes</TabsTrigger>}
           {promo.length > 0 && <TabsTrigger value="promo">Promos</TabsTrigger>}
           {music_videos.length > 0 && <TabsTrigger value="music">Music Videos</TabsTrigger>}
@@ -39,10 +39,10 @@ export default function VideoTabs({
                 key={ep.mal_id}
                 onClick={() => onVideoSelect(ep.url)}
                 className={cn(
-                  "bg-[#26262C] p-2 cursor-pointer border transition",
+                  "cursor-pointer border bg-card p-2 transition-colors",
                   ep.url === selectedVideoUrl
                     ? "border-primary shadow-md"
-                    : "border-transparent hover:border-[#3A3A40]"
+                    : "border-border hover:bg-accent"
                 )}
               >
                 <div className="relative aspect-video w-full">
@@ -70,10 +70,10 @@ export default function VideoTabs({
                   key={p.title}
                   onClick={() => onVideoSelect(url)}
                   className={cn(
-                    "bg-[#26262C] p-2 cursor-pointer border transition",
+                    "cursor-pointer border bg-card p-2 transition-colors",
                     url === selectedVideoUrl
                       ? "border-primary shadow-md"
-                      : "border-transparent hover:border-[#3A3A40]"
+                      : "border-border hover:bg-accent"
                   )}
                 >
                   <div className="relative aspect-video w-full">
@@ -102,10 +102,10 @@ export default function VideoTabs({
                   key={mv.title}
                   onClick={() => onVideoSelect(url)}
                   className={cn(
-                    "bg-[#26262C] p-2 cursor-pointer border transition",
+                    "cursor-pointer border bg-card p-2 transition-colors",
                     url === selectedVideoUrl
                       ? "border-primary shadow-md"
-                      : "border-transparent hover:border-[#3A3A40]"
+                      : "border-border hover:bg-accent"
                   )}
                 >
                   <div className="relative aspect-video w-full">
