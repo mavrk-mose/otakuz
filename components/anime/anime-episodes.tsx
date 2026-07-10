@@ -2,7 +2,7 @@
 
 import { AnimeEpisode } from "@/types/anime"
 import { useInView } from 'react-intersection-observer'
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo } from "react"
 import AnimeEpisodeCard from "@/components/anime/anime-episode-card"
 import { Loader } from 'lucide-react'
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
@@ -11,18 +11,34 @@ import {Card, CardContent, CardFooter, CardHeader} from "@/components/ui/card";
 import {useAnimeEpisodes} from "@/hooks/anime/use-anime-episodes";
 
 export default function AnimeEpisodes({ id }: { id: string }) {
-    const { data, isLoading, fetchNextPage, hasNextPage } = useAnimeEpisodes(id)
-    const [isLoadingMore, setIsLoadingMore] = useState(false)
+    const {
+        data,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+    } = useAnimeEpisodes(id)
     const { ref: inViewRef, inView } = useInView({
         threshold: 0.1,
     })
 
+    const episodes = useMemo(() => {
+        const episodesById = new Map<number, AnimeEpisode>()
+
+        data?.pages.forEach((page) => {
+            page.data.forEach((episode) => {
+                episodesById.set(episode.mal_id, episode)
+            })
+        })
+
+        return Array.from(episodesById.values())
+    }, [data])
+
     useEffect(() => {
-        if (inView && hasNextPage && !isLoadingMore) {
-            setIsLoadingMore(true)
-            fetchNextPage().finally(() => setIsLoadingMore(false))
+        if (inView && hasNextPage && !isFetchingNextPage) {
+            void fetchNextPage()
         }
-    }, [inView, hasNextPage, fetchNextPage, isLoadingMore])
+    }, [inView, hasNextPage, fetchNextPage, isFetchingNextPage])
 
     if (isLoading) {
         return (
@@ -59,25 +75,18 @@ export default function AnimeEpisodes({ id }: { id: string }) {
     return (
         <ScrollArea className="w-full whitespace-nowrap">
             <div className="flex space-x-4 p-4">
-                {data?.pages.map((page, pageIndex) =>
-                    page?.data.map((episode: AnimeEpisode, episodeIndex: number) => (
-                        <motion.div
-                            key={episode?.mal_id}
-                            className="w-[350px] shrink-0"
-                            whileHover={{ scale: 1.02 }}
-                            transition={{ duration: 0.2 }}
-                            ref={
-                                pageIndex === data.pages.length - 1 &&
-                                episodeIndex === page.data.length - 1
-                                    ? inViewRef
-                                    : null
-                            }
-                        >
-                            <AnimeEpisodeCard episode={episode} />
-                        </motion.div>
-                    ))
-                )}
-                {(isLoadingMore || hasNextPage) && (
+                {episodes.map((episode, episodeIndex) => (
+                    <motion.div
+                        key={episode.mal_id}
+                        className="w-[350px] shrink-0"
+                        whileHover={{ scale: 1.02 }}
+                        transition={{ duration: 0.2 }}
+                        ref={episodeIndex === episodes.length - 1 ? inViewRef : null}
+                    >
+                        <AnimeEpisodeCard episode={episode} />
+                    </motion.div>
+                ))}
+                {(isFetchingNextPage || hasNextPage) && (
                     <div className="flex items-center justify-center w-[350px] shrink-0">
                         <Loader className="animate-spin" />
                     </div>
@@ -87,4 +96,3 @@ export default function AnimeEpisodes({ id }: { id: string }) {
         </ScrollArea>
     )
 }
-

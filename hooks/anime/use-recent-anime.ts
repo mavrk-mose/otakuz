@@ -7,7 +7,9 @@ export function useRecentAnime() {
   const {data, isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
     queryKey: ['animeRecommendations'],
     queryFn: async ({ pageParam = 1 }) => {
-        const response = await fetch(`${API_BASE_URL}/recommendations/anime`);
+        const response = await fetch(
+          `${API_BASE_URL}/recommendations/anime?page=${pageParam}`
+        );
         if (!response.ok) throw new Error('Failed to fetch anime');
         return response.json();
     },

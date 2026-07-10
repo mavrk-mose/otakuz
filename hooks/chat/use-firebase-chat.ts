@@ -3,13 +3,16 @@ import {
     collection,
     deleteDoc,
     doc,
+    getDocs,
     limit,
     onSnapshot,
     orderBy,
     query,
     serverTimestamp,
     setDoc,
+    Timestamp,
     updateDoc,
+    where,
     type DocumentData,
     type QueryDocumentSnapshot,
 } from 'firebase/firestore'
@@ -24,6 +27,11 @@ import { db, storage } from '@/lib/firebase'
 import { useAuth } from '@/hooks/use-auth'
 import { useMessagesStore } from '@/store/use-messages-store'
 import type { Message } from '@/types/message'
+import {
+    deleteCachedMessage,
+    getCachedMessages,
+    putCachedMessages,
+} from '@/lib/chat-cache'
 
 const MAX_MESSAGES = 50
 
@@ -71,6 +79,7 @@ export function useFirebaseChat(roomId: string) {
     const { user } = useAuth()
     const messagesByRoom = useMessagesStore((state) => state.messages)
     const setMessages = useMessagesStore((state) => state.setMessages)
+    const mergeMessages = useMessagesStore((state) => state.mergeMessages)
     const upsertMessage = useMessagesStore((state) => state.upsertMessage)
     const updateMessage = useMessagesStore((state) => state.updateMessage)
     const removeMessage = useMessagesStore((state) => state.removeMessage)
@@ -88,31 +97,93 @@ export function useFirebaseChat(roomId: string) {
             return
         }
 
+        let isActive = true
+        let unsubscribe = () => {}
+        const userId = user.uid
+        const messagesCollection = collection(db, 'chatrooms', roomId, 'messages')
+
         setLoading(true)
         setError(null)
 
-        const messagesQuery = query(
-            collection(db, 'chatrooms', roomId, 'messages'),
-            orderBy('timestamp', 'desc'),
-            limit(MAX_MESSAGES)
-        )
+        const startListener = async () => {
+            let recentMessages: Message[] = []
 
-        const unsubscribe = onSnapshot(
-            messagesQuery,
-            { includeMetadataChanges: true },
-            (snapshot) => {
-                const nextMessages = snapshot.docs.map(snapshotToMessage).reverse()
-                setMessages(roomId, nextMessages)
-                setLoading(false)
-            },
-            (snapshotError) => {
-                setError(snapshotError)
-                setLoading(false)
+            try {
+                recentMessages = await getCachedMessages(userId, roomId)
+            } catch {
+                // IndexedDB is an enhancement. Firestore remains the fallback.
             }
-        )
 
-        return unsubscribe
-    }, [roomId, setMessages, user])
+            if (!isActive) return
+
+            if (recentMessages.length > 0) {
+                setMessages(roomId, recentMessages)
+                setLoading(false)
+            } else {
+                const seedSnapshot = await getDocs(
+                    query(messagesCollection, orderBy('timestamp', 'desc'), limit(MAX_MESSAGES))
+                )
+                recentMessages = seedSnapshot.docs.map(snapshotToMessage).reverse()
+
+                if (!isActive) return
+                setMessages(roomId, recentMessages)
+                await putCachedMessages(userId, roomId, recentMessages).catch(() => undefined)
+            }
+
+            const lastSeenTimestamp = recentMessages.at(-1)?.timestamp || 0
+            const deltaQuery = query(
+                messagesCollection,
+                where('timestamp', '>=', Timestamp.fromMillis(lastSeenTimestamp)),
+                orderBy('timestamp', 'asc')
+            )
+
+            unsubscribe = onSnapshot(
+                deltaQuery,
+                { includeMetadataChanges: true },
+                (snapshot) => {
+                    if (!isActive) return
+
+                    const changedMessages: Message[] = []
+                    snapshot.docChanges().forEach((change) => {
+                        if (change.type === 'removed') {
+                            removeMessage(roomId, change.doc.id)
+                            void deleteCachedMessage(userId, roomId, change.doc.id).catch(
+                                () => undefined
+                            )
+                            return
+                        }
+
+                        changedMessages.push(snapshotToMessage(change.doc))
+                    })
+
+                    if (changedMessages.length > 0) {
+                        mergeMessages(roomId, changedMessages)
+                        void putCachedMessages(userId, roomId, changedMessages).catch(
+                            () => undefined
+                        )
+                    }
+
+                    setLoading(false)
+                },
+                (snapshotError) => {
+                    if (!isActive) return
+                    setError(snapshotError)
+                    setLoading(false)
+                }
+            )
+        }
+
+        void startListener().catch((listenerError) => {
+            if (!isActive) return
+            setError(listenerError as Error)
+            setLoading(false)
+        })
+
+        return () => {
+            isActive = false
+            unsubscribe()
+        }
+    }, [mergeMessages, removeMessage, roomId, setMessages, user])
 
     const sendMessage = useCallback(
         async (content: string) => {
@@ -245,6 +316,14 @@ export function useFirebaseChat(roomId: string) {
                     message: trimmedContent,
                     editedAt: serverTimestamp(),
                 })
+                await putCachedMessages(user.uid, roomId, [
+                    {
+                        ...currentMessage,
+                        message: trimmedContent,
+                        editedAt: Date.now(),
+                        deliveryStatus: 'sent',
+                    },
+                ]).catch(() => undefined)
             } catch (editError) {
                 const normalizedError = editError as Error
                 updateMessage(roomId, messageId, { message: previousContent })
@@ -270,9 +349,13 @@ export function useFirebaseChat(roomId: string) {
 
             try {
                 await deleteDoc(doc(db, 'chatrooms', roomId, 'messages', messageId))
+                await deleteCachedMessage(user.uid, roomId, messageId).catch(() => undefined)
             } catch (deleteError) {
                 const normalizedError = deleteError as Error
                 upsertMessage(roomId, currentMessage)
+                await putCachedMessages(user.uid, roomId, [currentMessage]).catch(
+                    () => undefined
+                )
                 setError(normalizedError)
                 throw normalizedError
             }

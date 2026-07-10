@@ -183,6 +183,7 @@ export type RecentAnime = {
     pagination: {
         last_visible_page: number;
         has_next_page: boolean;
+        current_page: number;
     };
 }
 
@@ -311,6 +312,7 @@ export type AnimeEpisodeResponse = {
     pagination: {
         last_visible_page: number;
         has_next_page: boolean;
+        current_page: number;
     };
 }
 

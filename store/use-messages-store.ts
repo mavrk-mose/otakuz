@@ -5,6 +5,7 @@ interface MessagesState {
     messages: { [roomId: string]: Message[] }
     upsertMessage: (roomId: string, message: Message) => void
     setMessages: (roomId: string, messages: Message[]) => void
+    mergeMessages: (roomId: string, messages: Message[]) => void
     updateMessage: (roomId: string, messageId: string, updates: Partial<Message>) => void
     removeMessage: (roomId: string, messageId: string) => void
     clearMessages: () => void
@@ -43,11 +44,39 @@ export const useMessagesStore = create<MessagesState>((set) => ({
                 (message) =>
                     message.deliveryStatus !== 'sent' && !snapshotIds.has(message.id)
             )
+            const uniqueMessages = new Map<string, Message>()
+
+            ;[...messages, ...localMessages].forEach((message) => {
+                uniqueMessages.set(message.id, message)
+            })
 
             return {
                 messages: {
                     ...state.messages,
-                    [roomId]: [...messages, ...localMessages].sort(byTimestamp),
+                    [roomId]: Array.from(uniqueMessages.values()).sort(byTimestamp),
+                },
+            }
+        }),
+    mergeMessages: (roomId, messages) =>
+        set((state) => {
+            const mergedMessages = new Map<string, Message>()
+
+            ;(state.messages[roomId] || []).forEach((message) => {
+                mergedMessages.set(message.id, message)
+            })
+            messages.forEach((message) => {
+                mergedMessages.set(message.id, {
+                    ...mergedMessages.get(message.id),
+                    ...message,
+                })
+            })
+
+            return {
+                messages: {
+                    ...state.messages,
+                    [roomId]: Array.from(mergedMessages.values())
+                        .sort(byTimestamp)
+                        .slice(-120),
                 },
             }
         }),
