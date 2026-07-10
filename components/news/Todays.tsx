@@ -1,19 +1,30 @@
 "use client"
 
+import Image from "next/image";
+import Link from "next/link";
+import { type NewsStory } from "@/types/news";
+
 interface StreamCardProps {
-    title: string; // Title of the card
-    author: string; // Name of the author
-    time?: string; // Time information (optional)
-    comments: number; // Number of comments
-    tag: string; // Category or tag for the card
-    image?: string; // URL of the image (optional)
+    id: string;
+    title: string;
+    author: string;
+    time?: string;
+    comments: number;
+    tag: string;
+    image?: string;
 }
 
-const StreamCard = ({ title, author, time, comments, tag, image } : StreamCardProps) => {
+interface TodaysProps {
+    stories?: NewsStory[];
+}
+
+const StreamCard = ({ id, title, author, time, comments, tag, image } : StreamCardProps) => {
     return (
-        <div className="flex items-start gap-4 p-4 border-b border-gray-700 hover:bg-gray-800 transition duration-200">
-            {/* Left Section: Tag and Info */}
-            <div className="flex flex-col justify-between">
+        <Link
+            href={`/news/${encodeURIComponent(id)}`}
+            className="flex items-start justify-between gap-4 border-b border-gray-700 p-4 transition duration-200 hover:bg-gray-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+        >
+            <div className="flex min-w-0 flex-col justify-between">
                 <span className="text-sm text-teal-500 uppercase">{tag}</span>
                 <div>
                     <h3 className="text-lg font-semibold text-white">{title}</h3>
@@ -23,63 +34,37 @@ const StreamCard = ({ title, author, time, comments, tag, image } : StreamCardPr
                 </div>
             </div>
 
-            {/* Right Section: Image */}
             {image && (
-                <div className="w-20 h-16">
-                    <img
+                <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded">
+                    <Image
                         src={image}
-                        alt="Article thumbnail"
-                        className="w-full h-full object-cover rounded"
+                        alt={title}
+                        fill
+                        sizes="80px"
+                        className="object-cover"
                     />
                 </div>
             )}
-        </div>
+        </Link>
     );
 };
 
-const TodaysStream = () => {
-    const streamItems = [
-        {
-            title: "Michelle Yeoh’s spy team assembles in Star Trek: Section 31’s official trailer",
-            author: "Wes Davis",
-            time: "12:16 AM GMT+3",
-            comments: 10,
-            tag: "Star Trek",
-            image: "https://via.placeholder.com/80x64", // Replace with actual image URL
-        },
-        {
-            title: "AGI is coming and nobody cares",
-            author: "David Pierce",
-            time: "Dec 6",
-            comments: 28,
-            tag: "Vergecast",
-            image: "https://via.placeholder.com/80x64", // Replace with actual image URL
-        },
-        {
-            title: "X gives Grok a new photorealistic AI image generator",
-            author: "Wes Davis",
-            time: "Dec 7",
-            comments: 5,
-            tag: "Social Media",
-            image: "https://via.placeholder.com/80x64", // Replace with actual image URL
-        },
-        {
-            title:
-                "X helps update Kids Online Safety Act in final push for passage in the Republican-led House",
-            author: "Lauren Feiner",
-            time: "Dec 7",
-            comments: 1,
-            tag: "Tech",
-            image: "https://via.placeholder.com/80x64", // Replace with actual image URL
-        },
-    ];
-
+const TodaysStream = ({ stories = [] }: TodaysProps) => {
     return (
         <div className="bg-gray-900 text-white p-6 rounded-lg space-y-4">
-            <h2 className="text-lg font-bold text-green-500">Today's Stream</h2>
+            <h2 className="text-lg font-bold text-green-500">Today&apos;s Stream</h2>
             <div>
-                {streamItems.map((item, index) => (
-                    <StreamCard key={index} {...item} />
+                {stories.map((story) => (
+                    <StreamCard
+                        key={story._id}
+                        id={story._id}
+                        title={story.title}
+                        author={story.authorName || story.author?.name || "Staff"}
+                        time={story.publishedAt ? new Date(story.publishedAt).toLocaleDateString() : undefined}
+                        comments={story.commentsCount || 0}
+                        tag={story.tag || "News"}
+                        image={story.imageUrl}
+                    />
                 ))}
             </div>
         </div>

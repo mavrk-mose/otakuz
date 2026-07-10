@@ -1,8 +1,11 @@
 export type Event = {
   _id: string;
-  description: string;
-  date: string; // ISO 8601 date format
-  location: {
+  title: string;
+  description?: string;
+  summary?: string;
+  date?: string; // ISO 8601 date format
+  publishedAt?: string;
+  location?: {
     address: string;
     coordinates: {
       _type: "geopoint";
@@ -10,7 +13,7 @@ export type Event = {
     };
     name: string;
   };
-  organizers: {
+  organizers?: {
     _id: string;
     name: string;
     avatar:  {
@@ -21,9 +24,22 @@ export type Event = {
       };
     };
   }[];
-  category: string;
-  tags: string[];
-  attendees: {
+  category?: string;
+  tag?: string;
+  section?: string;
+  panelClassName?: string;
+  textClassName?: string;
+  itemClassName?: string;
+  isFeatured?: boolean;
+  commentsCount?: number;
+  imageUrl?: string;
+  authorName?: string;
+  author?: {
+    _id: string;
+    name: string;
+  };
+  tags?: string[];
+  attendees?: {
     name: string;
     _key: string;
     userId: string;
@@ -36,32 +52,31 @@ export type Event = {
     };
     status: "going" | "maybe" | "not going"; // Limited status values
   }[];
-  title: string;
-  createdBy: {
+  createdBy?: {
     _id: string;
     name: string;
   };
-  time: string; // e.g., "04:00 PM"
-  thumbnailUrl: {
+  time?: string; // e.g., "04:00 PM"
+  thumbnailUrl?: {
     _type: "image";
     asset: {
       _ref: string;
       _type: "reference";
     };
   };
-  tournaments: {
+  tournaments?: {
     _key: string;
     title: string;
     prize: string;
     participants: string;
     time: string;
   }[];
-  activities: {
+  activities?: {
     title: string;
     description: string;
     time: string;
   }[];
-  gallery: {
+  gallery?: {
     _type: "image";
     _key: string;
     asset: {
@@ -69,5 +84,5 @@ export type Event = {
       _type: "reference";
     };
   }[];
-  ticket: string;
+  ticket?: string;
 };

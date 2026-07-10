@@ -1,5 +1,6 @@
 import { createClient, defineQuery } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
+import type { NewsArticle, NewsStory } from '@/types/news';
 
 export const client = createClient({
   projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '',
@@ -32,6 +33,77 @@ export async function getEvents() {
       }
     }
   `));
+}
+
+export const newsStoriesQuery = defineQuery(`
+  *[_type == "event" && defined(section)] | order(publishedAt desc) {
+    _id,
+    title,
+    description,
+    summary,
+    "authorName": coalesce(author->name, "Staff"),
+    publishedAt,
+    commentsCount,
+    tag,
+    tags,
+    section,
+    panelClassName,
+    textClassName,
+    itemClassName,
+    isFeatured,
+    "imageUrl": thumbnailUrl.asset->url
+  }
+`);
+
+export const newsArticleByIdQuery = defineQuery(`
+  *[_type == "event" && defined(section) && _id == $id][0] {
+    _id,
+    title,
+    description,
+    summary,
+    content,
+    imageCaption,
+    publishedAt,
+    commentsCount,
+    tag,
+    tags,
+    section,
+    isFeatured,
+    "imageUrl": thumbnailUrl.asset->url,
+    "authorName": coalesce(author->name, "Staff"),
+    author->{
+      _id,
+      name,
+      bio,
+      role,
+      "imageUrl": image.asset->url
+    },
+    "relatedStories": *[
+      _type == "event" &&
+      defined(section) &&
+      _id != ^._id &&
+      section == ^.section
+    ] | order(publishedAt desc)[0...3] {
+      _id,
+      title,
+      summary,
+      description,
+      publishedAt,
+      tag,
+      section,
+      commentsCount,
+      "imageUrl": thumbnailUrl.asset->url,
+      "authorName": coalesce(author->name, "Staff")
+    }
+  }
+`);
+
+export async function getNewsStories(): Promise<NewsStory[]> {
+  return client.fetch<NewsStory[]>(newsStoriesQuery);
+}
+
+export async function getNewsArticleById(id: string): Promise<NewsArticle | null> {
+  return client.fetch<NewsArticle | null>(newsArticleByIdQuery, { id });
 }
 
 export async function getProducts() {

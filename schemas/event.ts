@@ -1,4 +1,4 @@
-export default {
+const eventSchema = {
     name: 'event',
     title: 'Events',
     type: 'document',
@@ -10,15 +10,49 @@ export default {
         validation: (Rule: any) => Rule.required(),
       },
       {
+        name: 'summary',
+        title: 'Summary',
+        type: 'text',
+      },
+      {
         name: 'description',
         title: 'Description',
         type: 'text',
       },
       {
+        name: 'content',
+        title: 'Article Content',
+        description: 'Rich article body used on the news detail page.',
+        type: 'array',
+        of: [
+          { type: 'block' },
+          {
+            type: 'image',
+            options: { hotspot: true },
+            fields: [
+              {
+                name: 'alt',
+                title: 'Alternative Text',
+                type: 'string',
+              },
+              {
+                name: 'caption',
+                title: 'Caption',
+                type: 'string',
+              },
+            ],
+          },
+        ],
+      },
+      {
         name: 'date',
         title: 'Date',
         type: 'date',
-        validation: (Rule: any) => Rule.required(),
+      },
+      {
+        name: 'publishedAt',
+        title: 'Published At',
+        type: 'datetime',
       },
       {
         name: 'time',
@@ -48,6 +82,11 @@ export default {
         },
       },
       {
+        name: 'imageCaption',
+        title: 'Hero Image Caption',
+        type: 'string',
+      },
+      {
         name: 'category',
         title: 'Category',
         type: 'string',
@@ -60,6 +99,51 @@ export default {
             { title: 'Other', value: 'other' },
           ],
         },
+      },
+      {
+        name: 'section',
+        title: 'Section',
+        type: 'string',
+        options: {
+          list: [
+            { title: 'Featured', value: 'Featured' },
+            { title: 'Anime', value: 'Anime' },
+            { title: 'Manga', value: 'Manga' },
+            { title: 'Movies & TV Shows', value: 'Movies & TV Shows' },
+            { title: 'Games', value: 'Games' },
+          ],
+        },
+      },
+      {
+        name: 'panelClassName',
+        title: 'Panel Class Name',
+        type: 'string',
+      },
+      {
+        name: 'textClassName',
+        title: 'Text Class Name',
+        type: 'string',
+      },
+      {
+        name: 'itemClassName',
+        title: 'Item Class Name',
+        type: 'string',
+      },
+      {
+        name: 'tag',
+        title: 'Tag',
+        type: 'string',
+      },
+      {
+        name: 'commentsCount',
+        title: 'Comments Count',
+        type: 'number',
+        initialValue: 0,
+      },
+      {
+        name: 'isFeatured',
+        title: 'Featured Story',
+        type: 'boolean',
       },
       {
         name: 'tags',
@@ -157,3 +241,5 @@ export default {
       },
     ],
   };
+
+export default eventSchema;
