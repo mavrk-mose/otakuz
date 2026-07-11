@@ -1,6 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useRef, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type CSSProperties,
+  type ReactNode,
+} from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   MediaPlayer,
@@ -20,6 +30,43 @@ interface PlayerLayoutProps {
   children: ReactNode;
 }
 
+interface PlayerSlotContextValue {
+  registerSlot: (element: HTMLDivElement | null) => void;
+}
+
+const PlayerSlotContext = createContext<PlayerSlotContextValue | null>(null);
+
+interface PersistentPlayerSlotProps {
+  children?: ReactNode;
+  className?: string;
+  enabled?: boolean;
+}
+
+export function PersistentPlayerSlot({
+  children,
+  className,
+  enabled = true,
+}: PersistentPlayerSlotProps) {
+  const context = useContext(PlayerSlotContext);
+  const slotRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!context || !enabled) {
+      return;
+    }
+
+    context.registerSlot(slotRef.current);
+
+    return () => context.registerSlot(null);
+  }, [context, enabled]);
+
+  return (
+    <div ref={slotRef} className={className}>
+      {children}
+    </div>
+  );
+}
+
 export function PlayerLayout({ children }: PlayerLayoutProps) {
   const pathname = usePathname();
   const router = useRouter();
@@ -27,8 +74,15 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
   const restoredSourceRef = useRef<string | null>(null);
   const lastProgressUpdateRef = useRef(0);
   const previousPathnameRef = useRef(pathname);
+  const [slotElement, setSlotElement] = useState<HTMLDivElement | null>(null);
+  const [slotRect, setSlotRect] = useState<{
+    top: number;
+    left: number;
+    width: number;
+  } | null>(null);
 
   const videoSrc = usePlayerStore((state) => state.videoSrc);
+  const currentVideoId = usePlayerStore((state) => state.currentVideoId);
   const title = usePlayerStore((state) => state.title);
   const posterUrl = usePlayerStore((state) => state.posterUrl);
   const playerRoute = usePlayerStore((state) => state.playerRoute);
@@ -40,6 +94,68 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
   const minimize = usePlayerStore((state) => state.minimize);
   const maximize = usePlayerStore((state) => state.maximize);
   const close = usePlayerStore((state) => state.close);
+
+  const registerSlot = useCallback((element: HTMLDivElement | null) => {
+    setSlotElement(element);
+  }, []);
+
+  const slotContextValue = useMemo(
+    () => ({ registerSlot }),
+    [registerSlot]
+  );
+
+  useEffect(() => {
+    if (!slotElement) {
+      setSlotRect(null);
+      return;
+    }
+
+    let animationFrame = 0;
+    const updateSlotRect = () => {
+      window.cancelAnimationFrame(animationFrame);
+      animationFrame = window.requestAnimationFrame(() => {
+        const rect = slotElement.getBoundingClientRect();
+        setSlotRect({
+          top: rect.top + window.scrollY,
+          left: rect.left + window.scrollX,
+          width: rect.width,
+        });
+      });
+    };
+
+    updateSlotRect();
+    const resizeObserver = new ResizeObserver(updateSlotRect);
+    resizeObserver.observe(slotElement);
+    window.addEventListener("resize", updateSlotRect);
+    window.addEventListener("scroll", updateSlotRect, true);
+
+    return () => {
+      window.cancelAnimationFrame(animationFrame);
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateSlotRect);
+      window.removeEventListener("scroll", updateSlotRect, true);
+    };
+  }, [slotElement]);
+
+  const playerPath = playerRoute?.split("?")[0];
+  const isAwayFromPlayerRoute = Boolean(playerPath && pathname !== playerPath);
+  const shouldDisplayMinimized = isMinimized || isAwayFromPlayerRoute;
+  const isDocked = Boolean(!shouldDisplayMinimized && slotElement && slotRect);
+  const isChannelPlayerOnChannelRoute = Boolean(
+    pathname === "/channels" && currentVideoId?.startsWith("channel:")
+  );
+  const isWaitingForChannelSlot = Boolean(
+    isChannelPlayerOnChannelRoute && !shouldDisplayMinimized && !isDocked
+  );
+  const dockedStyle: CSSProperties | undefined = isDocked && slotRect
+    ? {
+        position: "absolute",
+        top: slotRect.top,
+        left: slotRect.left,
+        width: slotRect.width,
+        margin: 0,
+      }
+    : undefined;
 
   const attachPlayer = useCallback((player: MediaPlayerInstance | null) => {
     playerRef.current = player;
@@ -54,9 +170,9 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
     previousPathnameRef.current = pathname;
 
     const state = usePlayerStore.getState();
-    const playerPath = state.playerRoute?.split("?")[0];
+    const nextPlayerPath = state.playerRoute?.split("?")[0];
 
-    if (state.isOpen && pathname !== playerPath) {
+    if (state.isOpen && pathname !== nextPlayerPath) {
       state.minimize();
     }
   }, [pathname]);
@@ -96,20 +212,35 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
   };
 
   return (
-    <>
+    <PlayerSlotContext.Provider value={slotContextValue}>
       {isOpen && videoSrc && (
         <section
           className={cn(
             "overflow-hidden border bg-card shadow-2xl transition-[width,transform,border-radius] duration-300",
-            isMinimized
+            shouldDisplayMinimized
               ? "fixed bottom-4 left-4 right-4 z-[80] rounded-xl sm:left-auto sm:w-96"
-              : "relative z-20 mx-auto my-4 w-[calc(100%-2rem)] max-w-5xl rounded-xl"
+              : isDocked
+                ? "z-30 rounded-xl"
+                : isWaitingForChannelSlot
+                  ? "pointer-events-none fixed left-0 top-0 z-[-1] h-px w-px opacity-0"
+                : "relative z-20 mx-auto my-4 w-[calc(100%-2rem)] max-w-5xl rounded-xl"
           )}
-          aria-label={isMinimized ? "Mini video player" : "Video player"}
+          style={dockedStyle}
+          aria-label={shouldDisplayMinimized ? "Mini video player" : "Video player"}
         >
-          {!isMinimized && (
-            <div className="flex h-12 items-center gap-3 border-b bg-card px-4">
-              <p className="min-w-0 flex-1 truncate text-sm font-medium">
+          {!shouldDisplayMinimized && (
+            <div
+              className={cn(
+                "flex items-center gap-3 bg-card",
+                isDocked
+                  ? "absolute right-3 top-3 z-30 rounded-lg border border-white/10 bg-black/75 p-1 text-white shadow-xl backdrop-blur"
+                  : "h-12 border-b px-4"
+              )}
+            >
+              <p className={cn(
+                "min-w-0 flex-1 truncate text-sm font-medium",
+                isDocked && "sr-only"
+              )}>
                 {title}
               </p>
               <button
@@ -158,7 +289,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
               onEnded={() => usePlayerStore.getState().setIsPlaying(false)}
             >
               <MediaProvider />
-              {!isMinimized && (
+              {!shouldDisplayMinimized && (
                 <DefaultVideoLayout
                   icons={defaultLayoutIcons}
                   colorScheme="dark"
@@ -166,7 +297,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
               )}
             </MediaPlayer>
 
-            {isMinimized && (
+            {shouldDisplayMinimized && (
               <>
                 <button
                   type="button"
@@ -227,6 +358,6 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
       )}
 
       {children}
-    </>
+    </PlayerSlotContext.Provider>
   );
 }

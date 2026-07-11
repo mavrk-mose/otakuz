@@ -5,17 +5,22 @@ import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
   Globe2,
+  History,
   Play,
   Radio,
   RefreshCw,
   Search,
+  Trash2,
   Tv2,
   Wifi,
 } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 
 import Image from "next/image";
-import { VideoPlayer } from "@/components/watch/video-player";
+import { PersistentPlayerSlot } from "@/components/watch/player-layout";
 import { cn } from "@/lib/utils";
+import { useChannelHistoryStore } from "@/store/use-channel-history-store";
+import { usePlayerStore } from "@/store/use-player-store";
 import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
 
 const PAGE_SIZE = 36;
@@ -127,22 +132,48 @@ function ChannelSkeleton() {
 }
 
 export function ChannelBrowser() {
+  const searchParams = useSearchParams();
   const { data, error, isLoading, refetch, isFetching } = useQuery({
     queryKey: ["iptv-org", "animation-channels"],
     queryFn: fetchChannels,
     staleTime: 30 * 60 * 1000,
   });
   const [selectedChannel, setSelectedChannel] = useState<IptvChannel | null>(null);
-  const [isWatching, setIsWatching] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [country, setCountry] = useState("all");
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [isHistoryHydrated, setIsHistoryHydrated] = useState(false);
+  const recentlyViewed = useChannelHistoryStore((state) => state.recentlyViewed);
+  const clearRecentlyViewed = useChannelHistoryStore(
+    (state) => state.clearRecentlyViewed
+  );
+  const activePlayerVideoId = usePlayerStore((state) => state.currentVideoId);
+  const playerIsOpen = usePlayerStore((state) => state.isOpen);
+  const playerIsMinimized = usePlayerStore((state) => state.isMinimized);
 
   useEffect(() => {
-    if (!selectedChannel && data?.channels.length) {
+    setIsHistoryHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    if (!data?.channels.length) {
+      return;
+    }
+
+    const channelFromUrl = searchParams.get("channel");
+    const matchingChannel = channelFromUrl
+      ? data.channels.find(
+          (channel: IptvChannel) =>
+            channel.channelId === channelFromUrl || channel.id === channelFromUrl
+        )
+      : null;
+
+    if (matchingChannel) {
+      setSelectedChannel(matchingChannel);
+    } else if (!selectedChannel) {
       setSelectedChannel(data.channels[0]);
     }
-  }, [data, selectedChannel]);
+  }, [data, searchParams, selectedChannel]);
 
   const countries = useMemo(() => {
     const counts = new Map<string, number>();
@@ -172,15 +203,47 @@ export function ChannelBrowser() {
     });
   }, [country, data, searchQuery]);
 
+  const currentRecentlyViewed = useMemo(() => {
+    if (!isHistoryHydrated) {
+      return [];
+    }
+
+    return recentlyViewed.map(
+      (recentChannel) =>
+        data?.channels.find(
+          (channel: IptvChannel) =>
+            channel.channelId === recentChannel.channelId
+        ) || recentChannel
+    );
+  }, [data, isHistoryHydrated, recentlyViewed]);
+
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
   }, [country, searchQuery]);
 
-  const selectChannel = (channel: IptvChannel) => {
+  const playChannel = (channel: IptvChannel) => {
     setSelectedChannel(channel);
-    setIsWatching(true);
+    useChannelHistoryStore.getState().addRecentlyViewed(channel);
+    usePlayerStore.getState().openPlayer({
+      id: `channel:${channel.id}`,
+      src: channel.streamUrl,
+      title: `${channel.name} — Live`,
+      posterUrl: channel.logoUrl || undefined,
+      playerRoute: `/channels?channel=${encodeURIComponent(channel.channelId)}`,
+    });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  const isSelectedChannelPlaying = Boolean(
+    selectedChannel &&
+      playerIsOpen &&
+      activePlayerVideoId === `channel:${selectedChannel.id}`
+  );
+  const isPlayerDocked = Boolean(
+    playerIsOpen &&
+      activePlayerVideoId?.startsWith("channel:") &&
+      !playerIsMinimized
+  );
 
   if (isLoading) {
     return (
@@ -252,11 +315,11 @@ export function ChannelBrowser() {
                 <div className="mt-7 flex flex-wrap gap-3">
                   <button
                     type="button"
-                    onClick={() => setIsWatching(true)}
+                    onClick={() => playChannel(selectedChannel)}
                     className="inline-flex items-center gap-2 rounded bg-white px-6 py-3 text-sm font-bold text-black transition hover:bg-zinc-200"
                   >
                     <Play className="h-5 w-5 fill-current" />
-                    Watch live
+                    {isSelectedChannelPlaying ? "Watching live" : "Watch live"}
                   </button>
                   {selectedChannel.labels.map((label) => (
                     <span key={label} className="inline-flex items-center rounded bg-zinc-700/70 px-4 py-3 text-xs font-semibold text-zinc-200 backdrop-blur">
@@ -267,30 +330,31 @@ export function ChannelBrowser() {
               </div>
 
               <div className="order-1 z-10 lg:order-2">
-                <div className="overflow-hidden rounded-xl border border-white/15 bg-black shadow-2xl shadow-black/70">
-                  {isWatching ? (
-                    <VideoPlayer
-                      videoUrl={selectedChannel.streamUrl}
-                      title={`${selectedChannel.name} — Live`}
-                      posterUrl={selectedChannel.logoUrl || undefined}
-                      mediaId={selectedChannel.id}
-                      autoPlay
-                    />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setIsWatching(true)}
-                      className="group relative block aspect-video w-full overflow-hidden bg-zinc-950"
-                      aria-label={`Play ${selectedChannel.name}`}
-                    >
-                      <ChannelLogo channel={selectedChannel} className="h-full w-full" />
-                      <div className="absolute inset-0 bg-black/15 transition group-hover:bg-black/30" />
-                      <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black shadow-2xl transition group-hover:scale-110">
-                        <Play className="ml-1 h-7 w-7 fill-current" />
+                <PersistentPlayerSlot
+                  enabled={isPlayerDocked}
+                  className="relative aspect-video overflow-hidden rounded-xl border border-white/15 bg-black shadow-2xl shadow-black/70"
+                >
+                  {!isPlayerDocked ? (
+                  <button
+                    type="button"
+                    onClick={() => playChannel(selectedChannel)}
+                    className="group relative block aspect-video w-full overflow-hidden bg-zinc-950"
+                    aria-label={`Play ${selectedChannel.name}`}
+                  >
+                    <ChannelLogo channel={selectedChannel} className="h-full w-full" />
+                    <div className="absolute inset-0 bg-black/15 transition group-hover:bg-black/30" />
+                    {isSelectedChannelPlaying && playerIsMinimized ? (
+                      <span className="absolute left-4 top-4 flex items-center gap-2 rounded bg-black/75 px-3 py-2 text-xs font-semibold text-white backdrop-blur">
+                        <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                        Playing in miniplayer
                       </span>
-                    </button>
-                  )}
-                </div>
+                    ) : null}
+                    <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white text-black shadow-2xl transition group-hover:scale-110">
+                      <Play className="ml-1 h-7 w-7 fill-current" />
+                    </span>
+                  </button>
+                  ) : null}
+                </PersistentPlayerSlot>
               </div>
             </div>
           </>
@@ -298,6 +362,39 @@ export function ChannelBrowser() {
       </section>
 
       <div className="relative z-10 mx-auto -mt-4 max-w-[1600px] px-5 pb-20 sm:px-8 lg:px-12">
+        {currentRecentlyViewed.length ? (
+          <section className="mb-10" aria-labelledby="recently-viewed-heading">
+            <div className="mb-5 flex items-end justify-between gap-4">
+              <div>
+                <p className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-zinc-500">
+                  <History className="h-3.5 w-3.5" /> Continue watching
+                </p>
+                <h2 id="recently-viewed-heading" className="text-2xl font-bold sm:text-3xl">
+                  Recently viewed
+                </h2>
+              </div>
+              <button
+                type="button"
+                onClick={clearRecentlyViewed}
+                className="inline-flex items-center gap-2 rounded px-3 py-2 text-xs font-semibold text-zinc-500 transition hover:bg-white/10 hover:text-white"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Clear
+              </button>
+            </div>
+            <div className="grid auto-cols-[78%] grid-flow-col gap-4 overflow-x-auto px-1 pb-7 pt-1 [scrollbar-width:none] sm:auto-cols-[42%] md:auto-cols-[31%] lg:auto-cols-[24%] xl:auto-cols-[19%] [&::-webkit-scrollbar]:hidden">
+              {currentRecentlyViewed.map((channel) => (
+                <ChannelCard
+                  key={`recent-${channel.channelId}`}
+                  channel={channel}
+                  isSelected={selectedChannel?.channelId === channel.channelId}
+                  onSelect={playChannel}
+                />
+              ))}
+            </div>
+          </section>
+        ) : null}
+
         <section aria-labelledby="live-now-heading">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
@@ -314,7 +411,7 @@ export function ChannelBrowser() {
                 key={`featured-${channel.id}`}
                 channel={channel}
                 isSelected={selectedChannel?.id === channel.id}
-                onSelect={selectChannel}
+                onSelect={playChannel}
               />
             ))}
           </div>
@@ -363,7 +460,7 @@ export function ChannelBrowser() {
                     key={channel.id}
                     channel={channel}
                     isSelected={selectedChannel?.id === channel.id}
-                    onSelect={selectChannel}
+                    onSelect={playChannel}
                   />
                 ))}
               </div>
