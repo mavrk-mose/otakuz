@@ -2,6 +2,8 @@
 export interface Manga {
     mal_id: number;
     title: string;
+    title_japanese: string | null;
+    type: string;
     images: {
         jpg: {
             image_url: string;
@@ -14,11 +16,11 @@ export interface Manga {
             large_image_url: string;
         };
     };
-    synopsis: string;
-    score: number;
-    scored_by: number;
-    chapters: number;
-    volumes: number;
+    synopsis: string | null;
+    score: number | null;
+    scored_by: number | null;
+    chapters: number | null;
+    volumes: number | null;
     status: string;
     genres: {
         mal_id: number;
@@ -30,10 +32,10 @@ export interface Manga {
         type: string;
         name: string;
     }[];
-    rank: number;
-    popularity: number;
-    members: number;
-    favorites: number;
+    rank: number | null;
+    popularity: number | null;
+    members: number | null;
+    favorites: number | null;
 }
 
 export interface MangaResponse {

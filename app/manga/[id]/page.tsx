@@ -4,7 +4,7 @@ import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import {Star, BookOpen, Users} from 'lucide-react';
+import {Star, BookOpen, Users, AlertCircle, RefreshCw} from 'lucide-react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {BookmarkButton} from "@/components/bookmark-button";
 import Image from 'next/image';
@@ -24,7 +24,7 @@ export default function MangaDetailPage(props: Props) {
     const { t } = useI18n();
     const params = use(props.params);
 
-    const {manga, isLoading} = useMangaDetails(params.id);
+    const {manga, isLoading, error, refetch, isFetching} = useMangaDetails(params.id);
     const { mangaGenre, setMangaGenre } = useGenreStore();
     const router = useRouter();
 
@@ -34,13 +34,49 @@ export default function MangaDetailPage(props: Props) {
         );
     }
 
+    if (error || !manga) {
+        const isNotFound = !/^\d+$/.test(params.id) || error?.status === 404;
+
+        return (
+            <div className="container mx-auto flex min-h-[60vh] items-center justify-center px-4 py-8">
+                <Card className="w-full max-w-lg p-8 text-center">
+                    <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground"/>
+                    <h1 className="mt-4 text-2xl font-bold">
+                        {isNotFound ? t("manga.notFound") : t("manga.loadFailed")}
+                    </h1>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                        {isNotFound
+                            ? t("manga.notFoundDescription")
+                            : t("manga.loadFailedDescription")}
+                    </p>
+                    {!isNotFound && (
+                        <Button
+                            type="button"
+                            className="mt-6 gap-2"
+                            onClick={() => refetch()}
+                            disabled={isFetching}
+                        >
+                            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}/>
+                            {t("common.tryAgain")}
+                        </Button>
+                    )}
+                </Card>
+            </div>
+        );
+    }
+
+    const coverImage = manga.images?.jpg?.large_image_url
+        || manga.images?.jpg?.image_url
+        || "/assets/logo.png";
+    const formatNumber = (value: number | null | undefined) => value?.toLocaleString() ?? "—";
+
     return (
         <div className="container mx-auto px-4 py-8">
             <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
                 <div className="space-y-4 lg:sticky lg:top-4 self-start">
                     <Card className="overflow-hidden">
                         <Image
-                            src={manga.images.jpg.large_image_url}
+                            src={coverImage}
                             alt={manga.title}
                             width={300}
                             height={450}
@@ -52,13 +88,13 @@ export default function MangaDetailPage(props: Props) {
                             <BookOpen className="w-4 h-4"/> {t("manga.readNow")}
                         </Button>
                         <Button variant="outline" className="w-full gap-2">
-                            <Users className="w-4 h-4"/> {manga.members.toLocaleString()}
+                            <Users className="w-4 h-4"/> {formatNumber(manga.members)}
                         </Button>
                         <BookmarkButton
                             itemId={manga.mal_id.toString()}
                             type="manga"
                             title={manga.title}
-                            image={manga.images.jpg.large_image_url}
+                            image={coverImage}
                         />
                     </div>
                     <Card className="p-4 space-y-4">
@@ -68,7 +104,7 @@ export default function MangaDetailPage(props: Props) {
                                 <Star className="w-5 h-5 text-yellow-500"/>
                                 <span className="text-lg font-bold">{manga.score}</span>
                                 <span className="text-sm text-muted-foreground">
-                                  ({manga.scored_by.toLocaleString()} {t("anime.users")})
+                                  ({formatNumber(manga.scored_by)} {t("anime.users")})
                                 </span>
                             </div>
                         </div>
@@ -100,7 +136,7 @@ export default function MangaDetailPage(props: Props) {
                             {manga.title_japanese}
                         </h2>
                         <div className="flex flex-wrap gap-2">
-                            {manga.genres.map((genre: any) => (
+                            {manga.genres?.map((genre) => (
                                 <Badge 
                                     key={genre.mal_id} 
                                     variant="secondary"
@@ -132,7 +168,7 @@ export default function MangaDetailPage(props: Props) {
                                     <div>
                                         <h4 className="font-medium mb-2">{t("manga.authors")}</h4>
                                         <div className="space-y-1">
-                                            {manga.authors.map((author: any) => (
+                                            {manga.authors?.map((author) => (
                                                 <p key={author.mal_id} className="text-sm text-muted-foreground">
                                                     {author.name}
                                                 </p>
@@ -144,8 +180,8 @@ export default function MangaDetailPage(props: Props) {
                                         <div className="space-y-1 text-sm text-muted-foreground">
                                             <p>{t("common.ranked")}: #{manga.rank}</p>
                                             <p>{t("common.popularity")}: #{manga.popularity}</p>
-                                            <p>{t("anime.members")}: {manga.members.toLocaleString()}</p>
-                                            <p>{t("anime.favorites")}: {manga.favorites.toLocaleString()}</p>
+                                            <p>{t("anime.members")}: {formatNumber(manga.members)}</p>
+                                            <p>{t("anime.favorites")}: {formatNumber(manga.favorites)}</p>
                                         </div>
                                     </div>
                                 </div>
