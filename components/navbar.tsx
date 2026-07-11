@@ -18,6 +18,7 @@ import {
   Menu,
   X,
   Languages,
+  Radio,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
@@ -64,8 +65,8 @@ export default function Navbar() {
     { href: "/", icon: Home, labelKey: "nav.home" },
     { href: "/news", icon: Newspaper, labelKey: "nav.news" },
     { href: "/anime", icon: Tv2, labelKey: "nav.anime" },
+    { href: "/channels", icon: Radio, labelKey: "nav.channels" },
     { href: "/manga", icon: BookOpen, labelKey: "nav.manga" },
-    // { href: '/calendar', icon: CalendarIcon, label: 'Calendar' },
     { href: "/events", icon: PartyPopper, labelKey: "nav.events" },
     { href: "/shop", icon: ShoppingBag, labelKey: "nav.shop" },
     { href: "/chat", icon: MessageSquare, labelKey: "nav.chat" },
