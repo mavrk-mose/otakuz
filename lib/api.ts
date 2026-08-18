@@ -1,7 +1,7 @@
 import { AnimeResponse, NewsResponse } from '@/types/anime';
 import { MangaResponse } from '@/types/manga';
 
-export const API_BASE_URL = 'https://api.jikan.moe/v4';
+export const API_BASE_URL = '/api/jikan'; // Proxy to avoid CORS issues
 
 // Add rate limiting helper
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
