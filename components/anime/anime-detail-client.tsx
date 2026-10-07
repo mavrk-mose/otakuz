@@ -19,6 +19,7 @@ import ShareAnimeModal from "@/components/anime/share-anime-modal";
 import useAnimeDetails from "@/hooks/anime/use-anime-details";
 import { useGenreStore } from "@/store/use-genre-store";
 import { useI18n } from "@/components/i18n-provider";
+import { AnimeCharacterList } from "@/components/anime/anime-character-list";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
   const { t } = useI18n();
@@ -202,11 +203,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
               </div>
             </TabsContent>
             <TabsContent value="characters">
-              <Card className="p-6">
-                <p className="text-muted-foreground">
-                  {t("anime.characterComingSoon")}
-                </p>
-              </Card>
+              <AnimeCharacterList animeId={id} />
             </TabsContent>
             <TabsContent value="episodes">
               <Card className="mt-8 overflow-x-auto px-4">

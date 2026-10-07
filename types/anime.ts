@@ -170,6 +170,27 @@ export interface AnimeEntry {
     title: string;
 }
 
+export interface AnimeCharacterPerson {
+    mal_id: number;
+    url: string;
+    name: string;
+    images: BaseAnime["images"];
+}
+
+export interface AnimeCharacter {
+    character: AnimeCharacterPerson;
+    role: string;
+    favorites: number;
+    voice_actors: {
+        person: AnimeCharacterPerson;
+        language: string;
+    }[];
+}
+
+export interface AnimeCharactersResponse {
+    data: AnimeCharacter[];
+}
+
 export type RecentAnime = {
     data: {
         mal_id: string;
