@@ -54,7 +54,7 @@ export default function ShareAnimeModal({isOpen, onClose, anime}: ShareAnimeModa
         try {
             await shareAnimeToChat(roomId, {
                 title: anime.title,
-                image: anime.images.jpg.large_image_url,
+                image: anime.images.webp.large_image_url,
                 id: anime.mal_id,
             });
             toast(t("common.success"), {

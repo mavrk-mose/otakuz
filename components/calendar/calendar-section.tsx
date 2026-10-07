@@ -295,7 +295,7 @@ export function CalendarSection() {
                     <div className="relative w-10 h-14 sm:w-12 sm:h-16 rounded-md overflow-hidden flex-shrink-0 bg-muted">
                       <Image
                         src={
-                          anime.images?.jpg?.image_url ||
+                          anime.images?.webp?.small_image_url ||
                           "/placeholder.svg?height=64&width=48"
                         }
                         alt={anime.title}

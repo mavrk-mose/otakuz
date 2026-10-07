@@ -69,7 +69,7 @@ export function AnimeSection() {
                 <Card className="overflow-hidden group">
                   <div className="relative aspect-[2/3]">
                     <Image
-                      src={anime.images.jpg.large_image_url}
+                      src={anime.images.webp.image_url}
                       alt={anime.title}
                       fill
                       className="object-cover transition-transform group-hover:scale-105"

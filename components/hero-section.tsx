@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Info, PlayCircle} from 'lucide-react';
@@ -11,13 +11,7 @@ import { useI18n } from "@/components/i18n-provider";
 export function HeroSection() {
   const { t } = useI18n();
   const { data: anime } = useRandomAnime(); // Default to a popular anime
-  const [background, setBackground] = useState('');
-
-  useEffect(() => {
-    if (anime?.images?.webp?.image_url) {
-      setBackground(anime.images.jpg.large_image_url);
-    }
-  }, [anime]);
+  const background = anime?.images?.webp?.large_image_url ?? '';
 
   if (!anime) return null;
 

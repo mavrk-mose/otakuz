@@ -45,7 +45,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
         <div className="space-y-4 lg:sticky lg:top-4 self-start">
           <Card className="overflow-hidden">
             <Image
-              src={anime.images.jpg.large_image_url}
+              src={anime.images.webp.large_image_url}
               alt={anime.title}
               width={300}
               height={450}
@@ -62,7 +62,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
               itemId={anime.mal_id.toString()}
               type="anime"
               title={anime.title}
-              image={anime.images.jpg.large_image_url}
+              image={anime.images.webp.large_image_url}
             />
           </div>
           <Button

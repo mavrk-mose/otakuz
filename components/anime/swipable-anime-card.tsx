@@ -149,7 +149,7 @@ export function SwipableAnimeCard({
       <Card className="w-full h-full overflow-hidden bg-card shadow-xl select-none">
         <div className="relative w-full h-full">
           <Image
-            src={anime.images.jpg.large_image_url}
+            src={anime.images.webp.large_image_url}
             alt={anime.title}
             fill
             sizes="(max-width: 768px) 100vw, 576px"

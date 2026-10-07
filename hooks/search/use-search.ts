@@ -41,7 +41,7 @@ const useSearch = () => {
         id: anime.mal_id.toString(),
         title: anime.title,
         type: 'anime',
-        image: anime.images.jpg.small_image_url,
+        image: anime.images.webp.small_image_url,
         score: anime.score,
         episodes: anime.episodes
       }));

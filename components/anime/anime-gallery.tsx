@@ -77,7 +77,7 @@ export function AnimeGallery({ id }: { id: string }) {
               <Card className="overflow-hidden cursor-pointer shadow-xl">
                 <div className="relative aspect-[2/3]">
                   <Image
-                    src={picture.jpg.large_image_url || "/placeholder.svg"}
+                    src={picture.webp.image_url || "/placeholder.svg"}
                     alt={`Anime picture ${idx + 1}`}
                     fill
                     className="object-cover rounded-lg"
@@ -102,7 +102,7 @@ export function AnimeGallery({ id }: { id: string }) {
                 <CarouselItem key={index}>
                   <div className="relative aspect-auto w-full h-[80vh] max-h-[80vh]">
                     <Image
-                      src={picture.jpg.large_image_url || "/placeholder.svg"}
+                      src={picture.webp.large_image_url || "/placeholder.svg"}
                       alt={`Anime picture ${index + 1}`}
                       fill
                       className="object-contain"

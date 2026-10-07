@@ -58,7 +58,7 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
               <Card className="overflow-hidden">
                 <div className="relative aspect-[2/3]">
                   <Image
-                    src={rec.entry.images.jpg.large_image_url}
+                    src={rec.entry.images.webp.image_url}
                     alt={rec.entry.title}
                     fill
                     className="object-cover"

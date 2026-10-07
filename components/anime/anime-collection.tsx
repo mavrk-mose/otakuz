@@ -51,7 +51,7 @@ export default function AnimeCollection() {
                         <div className="relative aspect-[2/3]">
                             <Link href={`/anime/${anime.mal_id}`}>
                                 <Image
-                                    src={anime.images.jpg.large_image_url}
+                                    src={anime.images.webp.image_url}
                                     alt={anime.title}
                                     fill
                                     className="object-cover transition-transform group-hover:scale-105"
@@ -75,7 +75,7 @@ export default function AnimeCollection() {
                                     itemId={anime.mal_id.toString()}
                                     type="anime"
                                     title={anime.title}
-                                    image={anime.images.jpg.large_image_url}
+                                    image={anime.images.webp.image_url}
                                 />
                             </div>
                         </div>

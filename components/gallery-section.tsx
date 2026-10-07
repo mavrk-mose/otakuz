@@ -86,7 +86,7 @@ export function GallerySection() {
             >
               <Card className="overflow-hidden w-full h-full">
                 <Image
-                  src={image.jpg.large_image_url}
+                  src={image.webp.image_url}
                   alt="Anime artwork"
                   fill
                   className="object-cover transition-transform group-hover:scale-110"

@@ -25,7 +25,7 @@ const RecentAnime = ({ animeData }: RecentAnimeProps) => (
         <Card className="flex cursor-pointer items-center space-x-2 bg-card p-2 transition-colors hover:bg-sidebar-accent">
           <div className="relative w-16 h-24">
             <Image
-              src={anime.images.jpg.large_image_url}
+              src={anime.images.webp.small_image_url}
               alt={anime.title}
               fill
               className="object-cover rounded"

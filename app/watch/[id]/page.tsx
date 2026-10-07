@@ -174,7 +174,7 @@ export default function WatchPage() {
 
               <div className="flex items-center space-x-2">
                 <Avatar className="w-10 h-10">
-                  <AvatarImage src={selectedAnime.images.jpg.small_image_url} />
+                  <AvatarImage src={selectedAnime.images.webp.small_image_url} />
                   <AvatarFallback>{selectedAnime.title[0]}</AvatarFallback>
                 </Avatar>
 
@@ -219,7 +219,7 @@ export default function WatchPage() {
                     >
                       <div className="relative aspect-video">
                         <Image
-                          src={anime.images.jpg.large_image_url}
+                          src={anime.images.webp.image_url}
                           alt={anime.title}
                           layout="fill"
                           objectFit="cover"
