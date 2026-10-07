@@ -15,12 +15,7 @@ export function AnimeCharacterCard({
     const voiceActor =
         character.voice_actors.find((voice) => voice.language === "Japanese") ??
         character.voice_actors[0];
-    const imageUrl =
-        person.images?.webp?.small_image_url ??
-        person.images?.webp?.image_url ??
-        person.images?.jpg?.small_image_url ??
-        person.images?.jpg?.image_url ??
-        "/assets/logo.png";
+    const imageUrl = person.images?.webp?.image_url ?? "/assets/logo.png";
 
     return (
         <Card className="flex min-w-0 gap-4 overflow-hidden p-3">
