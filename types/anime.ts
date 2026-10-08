@@ -222,6 +222,42 @@ export type PaginatedAnime = {
     };
 };
 
+export type ScheduleAnime = {
+    mal_id: number;
+    title?: string | null;
+    title_english?: string | null;
+    title_japanese?: string | null;
+    episodes?: number | null;
+    images?: {
+        jpg?: {
+            image_url?: string | null;
+            small_image_url?: string | null;
+        } | null;
+        webp?: {
+            image_url?: string | null;
+            small_image_url?: string | null;
+        } | null;
+    } | null;
+    broadcast?: {
+        time?: string | null;
+        timezone?: string | null;
+    } | null;
+};
+
+export type AnimeScheduleResponse = {
+    data: ScheduleAnime[];
+    pagination: {
+        last_visible_page: number;
+        has_next_page: boolean;
+        current_page: number;
+        items: {
+            count: number;
+            total: number;
+            per_page: number;
+        };
+    };
+};
+
 export type AnimeVideos = {
     promo: {
         title: string;

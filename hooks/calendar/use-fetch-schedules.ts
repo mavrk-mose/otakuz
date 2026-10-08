@@ -2,156 +2,136 @@
 
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/lib/api";
-import { AnimeDetails, PaginatedAnime } from "@/types/anime";
+import type { AnimeScheduleResponse, ScheduleAnime } from "@/types/anime";
 import { toZonedTime, fromZonedTime } from 'date-fns-tz';
 import { parse, format } from "date-fns";
 
+export type ScheduleDay =
+  | "monday"
+  | "tuesday"
+  | "wednesday"
+  | "thursday"
+  | "friday"
+  | "saturday"
+  | "sunday";
+
 interface UseAnimeSchedulesOptions {
-  day: string;
-  kids?: boolean;
-  sfw?: boolean;
+  day: ScheduleDay | null;
   limit?: number;
 }
 
-export type GroupedSchedules = Record<string, AnimeDetails[]>;
+export type GroupedSchedules = Record<string, ScheduleAnime[]>;
 
-// Global request queue to manage API calls
-let lastRequestTime = 0;
-const MIN_REQUEST_INTERVAL = 2000; // 2 seconds between requests
+type GroupedSchedulePage = {
+  schedules: GroupedSchedules;
+  pagination: AnimeScheduleResponse["pagination"];
+};
+
+function isAnimeScheduleResponse(data: unknown): data is AnimeScheduleResponse {
+  if (typeof data !== "object" || data === null) return false;
+
+  const response = data as Record<string, unknown>;
+  const pagination = response.pagination;
+  if (!Array.isArray(response.data) || typeof pagination !== "object" || pagination === null) {
+    return false;
+  }
+
+  const page = pagination as Record<string, unknown>;
+  const items = page.items;
+  if (typeof items !== "object" || items === null) return false;
+
+  return (
+    typeof page.last_visible_page === "number" &&
+    typeof page.has_next_page === "boolean" &&
+    typeof page.current_page === "number" &&
+    typeof (items as Record<string, unknown>).count === "number" &&
+    typeof (items as Record<string, unknown>).total === "number" &&
+    typeof (items as Record<string, unknown>).per_page === "number"
+  );
+}
 
 export default function useFetchSchedules({
   day,
-  kids = false,
-  sfw = true,
   limit = 25
 }: UseAnimeSchedulesOptions) {
   return useInfiniteQuery({
-    queryKey: ["animeSchedules", day, kids, sfw, limit],
-    queryFn: async ({ pageParam = 1 }) => {
+    queryKey: ["animeSchedules", day, limit],
+    queryFn: async ({ pageParam = 1, signal }): Promise<GroupedSchedulePage> => {
       if (!day) {
-        return {};
+        throw new Error("A schedule day is required to fetch schedules.");
       }
 
       const params = new URLSearchParams({
-        filter: day,
-        kids: kids.toString(),
-        sfw: sfw.toString(),
         limit: limit.toString(),
         page: pageParam.toString(),
       });
 
-      try {
-        const now = Date.now();
-        const timeToWait = Math.max(
-          0,
-          MIN_REQUEST_INTERVAL - (now - lastRequestTime)
-        );
+      const response = await fetch(
+        `${API_BASE_URL}/schedules/${day}?${params}`,
+        { signal }
+      );
 
-        if (timeToWait > 0) {
-          await new Promise((resolve) => setTimeout(resolve, timeToWait));
-        }
-
-        lastRequestTime = Date.now();
-
-        const response = await fetch(
-          `${API_BASE_URL}/schedules?${params}`,
-          {
-            headers: {
-              // Add cache control headers
-              "Cache-Control": "max-age=3600", // Cache for 1 hour
-            },
-          }
-        );
-
-        // Handle rate limiting response
-        if (response.status === 429) {
-          const retryAfter = response.headers.get("Retry-After") || "5";
-          const waitTime = Number.parseInt(retryAfter, 10) * 1000;
-          console.warn(
-            `Rate limited. Waiting for ${waitTime}ms before retrying.`
-          );
-          await new Promise((resolve) => setTimeout(resolve, waitTime));
-          throw new Error("Rate limited. Retrying after cooldown.");
-        }
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          console.error("API Error:", errorData);
-          throw new Error(
-            errorData.messages
-              ? `API Error: ${JSON.stringify(errorData.messages)}`
-              : `Failed to fetch schedules: ${response.status}`
-          );
-        }
-
-        const data: PaginatedAnime = await response.json();
-
-        const animeByTime: GroupedSchedules = {};
-        const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        const japanTimezone = 'Asia/Tokyo';
-
-        if (data && Array.isArray(data.data)) {
-          data.data.forEach((anime) => {
-            const broadcastTime = anime.broadcast?.time;
-        
-            if (!broadcastTime) {
-              if (!animeByTime['Unknown']) animeByTime['Unknown'] = [];
-              animeByTime['Unknown'].push(anime);
-              return;
-            }
-        
-            const now = new Date();
-            const dateStr = format(now, 'yyyy-MM-dd');
-            const jstDateTimeStr = `${dateStr} ${broadcastTime}`;
-            const parsedJstDate = parse(jstDateTimeStr, 'yyyy-MM-dd HH:mm', new Date());
-        
-            const jstDateInZone = fromZonedTime(parsedJstDate, japanTimezone);
-            const userDateTime = toZonedTime(jstDateInZone, userTimezone);
-        
-            const localTime = format(userDateTime, 'HH:mm');
-        
-            if (!animeByTime[localTime]) animeByTime[localTime] = [];
-            animeByTime[localTime].push({
-              ...anime,
-              broadcast: {
-                ...anime.broadcast,
-                time: localTime,
-              },
-            });
-          });
-        } else {
-          console.error("Unexpected API response format:", data);
-          return {};
-        }
-
-        return animeByTime;
-      } catch (error) {
-        console.error("Error fetching schedules:", error);
-        throw error;
+      if (response.status === 429) {
+        throw new Error("Schedules are temporarily rate limited.");
       }
+      if (!response.ok) {
+        throw new Error(`Failed to fetch schedules: ${response.status}`);
+      }
+
+      const data: unknown = await response.json();
+      if (!isAnimeScheduleResponse(data)) {
+        throw new Error("The schedule response had an unexpected format.");
+      }
+
+      const schedules: GroupedSchedules = {};
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const dateStr = format(new Date(), "yyyy-MM-dd");
+
+      data.data.forEach((anime: ScheduleAnime) => {
+        const broadcastTime = anime.broadcast?.time;
+        if (!broadcastTime || !/^(?:[01]\d|2[0-3]):[0-5]\d$/.test(broadcastTime)) {
+          schedules.Unknown ??= [];
+          schedules.Unknown.push(anime);
+          return;
+        }
+
+        const broadcastDate = parse(
+          `${dateStr} ${broadcastTime}`,
+          "yyyy-MM-dd HH:mm",
+          new Date()
+        );
+        const broadcastTimezone = anime.broadcast?.timezone || "Asia/Tokyo";
+        const localDate = toZonedTime(
+          fromZonedTime(broadcastDate, broadcastTimezone),
+          userTimezone
+        );
+        const localTime = format(localDate, "HH:mm");
+
+        schedules[localTime] ??= [];
+        schedules[localTime].push(anime);
+      });
+
+      return { schedules, pagination: data.pagination };
     },
-    getNextPageParam: (_, pages) => {
-      return pages.length < 3 ? pages.length + 1 : undefined;
+    getNextPageParam: (lastPage) => {
+      return lastPage.pagination.has_next_page
+        ? lastPage.pagination.current_page + 1
+        : undefined;
     },
     initialPageParam: 1,
-    staleTime: 30 * 60 * 1000, 
-    gcTime: 60 * 60 * 1000, // Keep unused data in cache for 1 hour
+    staleTime: 30 * 60 * 1000,
+    gcTime: 60 * 60 * 1000,
     retry: (failureCount, error) => {
-      // Don't retry on 4xx errors except rate limiting (429)
       if (
         error instanceof Error &&
-        error.message.includes("Failed to fetch schedules: 4") &&
-        !error.message.includes("429")
+        /^Failed to fetch schedules: 4\d\d$/.test(error.message)
       ) {
         return false;
       }
-      return failureCount < 3; // Retry up to 3 times for other errors
+      return failureCount < 3;
     },
-    retryDelay: (attemptIndex) => {
-      // Exponential backoff: 2s, 4s, 8s, etc.
-      return Math.min(1000 * 2 ** attemptIndex, 30000);
-    },
-    enabled: !!day, // Only run the query if day is provided
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    enabled: day !== null,
     refetchOnWindowFocus: false,
     refetchOnMount: false,
     refetchOnReconnect: false,
