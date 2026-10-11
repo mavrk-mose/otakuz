@@ -39,6 +39,15 @@ export interface BaseAnime {
     }[];
 }
 
+export interface TopAnime {
+    mal_id: number;
+    title: string;
+    imageUrl: string | null;
+    synopsis: string | null;
+    score: number | null;
+    episodes: number | null;
+}
+
 export type AnimeDetails = {
     mal_id: number;
     url: string;
