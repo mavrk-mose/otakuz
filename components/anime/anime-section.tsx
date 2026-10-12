@@ -33,13 +33,18 @@ export function AnimeSection() {
   };
 
   return (
-    <section className="space-y-8">
-      <div className="flex items-center justify-between">
+    <section className="space-y-6">
+      <div className="flex items-end justify-between gap-4 border-b border-border/80 pb-4">
         <div>
-          <h2 className="text-3xl font-bold mb-2">{t("home.popularAnime")}</h2>
-          <p className="text-muted-foreground">{t("home.popularAnimeDescription")}</p>
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.22em] text-primary/90">
+            Curated picks
+          </p>
+          <h2 className="mb-2 text-3xl font-bold tracking-tight text-foreground">
+            {t("home.popularAnime")}
+          </h2>
+          <p className="text-sm text-muted-foreground">{t("home.popularAnimeDescription")}</p>
         </div>
-        <Button variant="ghost" asChild>
+        <Button variant="outline" asChild className="border-border bg-card/80 text-foreground hover:border-primary/60 hover:text-primary">
           <Link href="/anime" className="gap-2">
             {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
           </Link>
@@ -50,7 +55,7 @@ export function AnimeSection() {
         variants={container}
         initial="hidden"
         animate="show"
-        className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6"
+        className="grid grid-cols-2 gap-5 md:grid-cols-2 lg:grid-cols-4"
       >
         {isLoading || isPaused ? (
           <>
@@ -62,11 +67,11 @@ export function AnimeSection() {
             {Array(8)
               .fill(null)
               .map((_, index) => (
-                <Card key={index} className="animate-pulse">
+                <Card key={index} className="animate-pulse border border-border/70 bg-card/60">
                   <div className="aspect-[2/3] bg-muted" />
-                  <div className="p-4 space-y-2">
-                    <div className="h-4 bg-muted rounded w-3/4" />
-                    <div className="h-4 bg-muted rounded w-1/2" />
+                  <div className="space-y-2 p-4">
+                    <div className="h-4 w-3/4 rounded bg-muted" />
+                    <div className="h-4 w-1/2 rounded bg-muted" />
                   </div>
                 </Card>
               ))}
@@ -74,7 +79,7 @@ export function AnimeSection() {
         ) : isError ? (
           <div className="col-span-full text-center text-muted-foreground" role="alert">
             <p>{t("home.animeLoadError")}</p>
-            <Button variant="ghost" onClick={() => refetch()} className="mt-2">
+            <Button variant="outline" onClick={() => refetch()} className="mt-2 border-border bg-card/80">
               {t("common.tryAgain")}
             </Button>
           </div>
@@ -85,19 +90,19 @@ export function AnimeSection() {
         ) : (
           animeList?.slice(0, 8).map((anime) => (
               <motion.div key={anime.mal_id} variants={item}>
-                <Card className="overflow-hidden group">
+                <Card className="group overflow-hidden border border-border/70 bg-card/75 shadow-[0_18px_45px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_22px_50px_rgba(255,75,58,0.12)]">
                   <div className="relative aspect-[2/3] bg-muted">
                     {anime.imageUrl && (
                       <Image
                         src={anime.imageUrl}
                         alt={anime.title}
                         fill
-                        className="object-cover transition-transform group-hover:scale-105"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute bottom-4 left-4 right-4">
-                        <Button className="w-full gap-2" asChild>
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d10]/90 via-[#0c0d10]/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="absolute inset-x-4 bottom-4">
+                        <Button className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
                           <Link href={`/watch/${anime.mal_id}`}>
                             <PlayCircle className="w-4 h-4" /> {t("anime.watchTrailer")}
                           </Link>
@@ -105,21 +110,21 @@ export function AnimeSection() {
                       </div>
                     </div>
                   </div>
-                  <div className="p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm font-medium">{anime.score ?? "N/A"}</span>
-                      <Badge variant="secondary" className="ml-auto">
+                  <div className="space-y-3 p-4">
+                    <div className="flex items-center gap-2">
+                      <Star className="h-4 w-4 fill-current text-[#f59e0b]" />
+                      <span className="text-sm font-medium text-foreground">{anime.score ?? "N/A"}</span>
+                      <Badge variant="secondary" className="ml-auto border border-secondary/30 bg-secondary/10 text-secondary-foreground">
                         {anime.episodes ?? "?"} EP
                       </Badge>
                     </div>
                     <Link
                       href={`/anime/${anime.mal_id}`}
-                      className="font-semibold hover:text-primary transition-colors line-clamp-1"
+                      className="line-clamp-1 text-base font-semibold text-foreground transition-colors hover:text-primary"
                     >
                       {anime.title}
                     </Link>
-                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                    <p className="line-clamp-2 text-sm text-muted-foreground">
                       {anime.synopsis ?? ""}
                     </p>
                   </div>

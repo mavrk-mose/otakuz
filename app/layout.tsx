@@ -28,7 +28,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className} suppressHydrationWarning>
-                <Providers attribute="class" defaultTheme="system" enableSystem>
+                <Providers attribute="class" defaultTheme="dark" enableSystem>
                     <AuthInitializer />
                      <ReactQueryDevtools initialIsOpen={false} />
                     <Toaster />
