@@ -118,9 +118,8 @@ export function VideoPlayer({
    * Save progress when the user leaves or the component unmounts.
    */
   useEffect(() => {
+    const player = playerRef.current;
     return () => {
-      const player = playerRef.current;
-
       if (
         player &&
         onProgress &&

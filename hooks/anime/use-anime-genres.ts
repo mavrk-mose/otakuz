@@ -1,20 +1,5 @@
-import {getAnimeGenres} from "@/lib/api";
-import {useQuery} from "@tanstack/react-query";
+import { useMediaGenres } from "@/hooks/use-media";
 
-const useAnimeGenres =  () => {
-    const {
-        data: genres,
-        isLoading: isLoadingGenres
-    } = useQuery({
-        queryKey: ['animeGenres'],
-        queryFn: getAnimeGenres,
-        staleTime: Infinity
-    });
-
-    return {
-        genres,
-        isLoadingGenres
-    }
-}
+const useAnimeGenres = () => useMediaGenres('anime');
 
 export default useAnimeGenres;

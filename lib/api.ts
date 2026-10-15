@@ -17,18 +17,35 @@ function getImageUrl(value: unknown): string | null {
     return typeof imageUrl === 'string' && imageUrl.length > 0 ? imageUrl : null;
 }
 
-export async function getAnimeGenres() {
+export type MediaType = 'anime' | 'manga';
+
+export interface GenreItem {
+    mal_id: number;
+    name: string;
+    url?: string;
+    count?: number;
+}
+
+export async function fetchGenres(mediaType: MediaType): Promise<GenreItem[]> {
     try {
-        await delay(1000); // Add delay to respect API rate limits
-        const response = await fetch(`${API_BASE_URL}/genres/anime`);
-        if (!response.ok) throw new Error('Failed to fetch anime genres');
+        await delay(1000);
+        const response = await fetch(`${API_BASE_URL}/genres/${mediaType}`);
+        if (!response.ok) throw new Error(`Failed to fetch ${mediaType} genres`);
 
         const data = await response.json();
-        return data.data;
+        return data.data ?? [];
     } catch (error) {
-        console.error('Error fetching anime genres:', error);
+        console.error(`Error fetching ${mediaType} genres:`, error);
         return [];
     }
+}
+
+export async function getAnimeGenres(): Promise<GenreItem[]> {
+    return fetchGenres('anime');
+}
+
+export async function getMangaGenres(): Promise<GenreItem[]> {
+    return fetchGenres('manga');
 }
 
 export async function getTopAnime(genre?: string) {
@@ -79,20 +96,6 @@ export async function getAnimeByGenre(genreId: string) {
         return data.data;
     } catch (error) {
         console.error('Error fetching anime by genre:', error);
-        return [];
-    }
-}
-
-export async function getMangaGenres() {
-    try {
-        await delay(1000); // Add delay to respect API rate limits
-        const response = await fetch(`${API_BASE_URL}/genres/manga`);
-        if (!response.ok) throw new Error('Failed to fetch anime genres');
-
-        const data = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error('Error fetching anime genres:', error);
         return [];
     }
 }

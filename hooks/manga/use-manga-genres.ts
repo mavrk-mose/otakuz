@@ -1,20 +1,5 @@
-import {getMangaGenres} from "@/lib/api";
-import {useQuery} from "@tanstack/react-query";
+import { useMediaGenres } from "@/hooks/use-media";
 
-const useMangaGenres =  () => {
-    const {
-        data: genres,
-        isLoading: isLoadingGenres
-    } = useQuery({
-        queryKey: ['mangaGenres'],
-        queryFn: getMangaGenres,
-        staleTime: Infinity
-    });
-
-    return {
-        genres,
-        isLoadingGenres
-    }
-}
+const useMangaGenres = () => useMediaGenres('manga');
 
 export default useMangaGenres;

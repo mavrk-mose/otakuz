@@ -1,25 +1,26 @@
 import {NextRequest, NextResponse} from 'next/server';
 
-const JIKAN_BASE = process.env.JIKAN_API_URL;
-
-if (!JIKAN_BASE) {
-    throw new Error('JIKAN_API_URL environment variable is not configured');
-}
-
-const JIKAN_URL = JIKAN_BASE.replace(/\/$/, '');
-
 export async function GET(
     req: NextRequest,
     {params}: { params: Promise<{ path: string[] }> }
 ) {
-    const {path} = await params;
+    const jikanBase = process.env.JIKAN_API_URL;
 
+    if (!jikanBase) {
+        return NextResponse.json(
+            { error: 'JIKAN_API_URL environment variable is not configured' },
+            { status: 500 }
+        );
+    }
+
+    const {path} = await params;
+    const jikanUrl = jikanBase.replace(/\/$/, '');
     const targetPath = path.join('/');
     const search = req.nextUrl.search;
 
-    const targetUrl = `${JIKAN_URL.replace(/\/$/, '')}/${targetPath}${search}`;
+    const targetUrl = `${jikanUrl}/${targetPath}${search}`;
 
-// Simple retry on 429, max 2 retries
+    // Simple retry on 429, max 2 retries
     let attempt = 0;
     let res: Response;
 
