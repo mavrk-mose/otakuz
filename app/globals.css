@@ -5,69 +5,69 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --background: 222 19% 8%;
-    --foreground: 210 40% 98%;
-    --card: 222 18% 12%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 18% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 7 100% 63%;
+    --background: 224 20% 8%; /* #10131b Canvas Base */
+    --foreground: 224 25% 90%; /* #e0e2ed */
+    --card: 223 22% 14%; /* #1c202c Surface Level 2 */
+    --card-foreground: 224 25% 90%;
+    --popover: 222 22% 18%; /* #242938 Surface Level 3 */
+    --popover-foreground: 224 25% 90%;
+    --primary: 239 84% 67%; /* #6366f1 Primary Indigo */
     --primary-foreground: 0 0% 100%;
-    --secondary: 36 95% 56%;
-    --secondary-foreground: 35 100% 12%;
-    --muted: 222 16% 16%;
-    --muted-foreground: 216 13% 67%;
-    --accent: 222 18% 18%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
+    --secondary: 351 90% 60%; /* #f43f5e Neon Crimson */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 222 20% 12%; /* #14171f Surface Level 1 */
+    --muted-foreground: 220 15% 65%; /* #8492a6 */
+    --accent: 222 22% 18%; /* #242938 */
+    --accent-foreground: 224 25% 90%;
+    --destructive: 351 90% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 223 17% 24%;
-    --input: 223 17% 24%;
-    --ring: 7 100% 63%;
-    --chart-1: 7 100% 63%;
-    --chart-2: 36 95% 56%;
-    --chart-3: 220 70% 65%;
-    --chart-4: 155 62% 50%;
+    --border: 222 24% 22%; /* #2b3245 Hairline Dividers */
+    --input: 222 24% 22%;
+    --ring: 239 84% 67%;
+    --chart-1: 239 84% 67%;
+    --chart-2: 351 90% 60%;
+    --chart-3: 38 92% 50%; /* #f59e0b Warm Amber */
+    --chart-4: 160 84% 39%; /* #10b981 Success Emerald */
     --chart-5: 283 68% 66%;
-    --sidebar: 220 18% 12%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-border: 223 17% 24%;
-    --sidebar-accent: 223 18% 18%;
-    --sidebar-accent-foreground: 210 40% 98%;
-    --radius: 0.75rem;
+    --sidebar: 222 20% 10%; /* #14171f */
+    --sidebar-foreground: 224 25% 90%;
+    --sidebar-border: 222 24% 22%;
+    --sidebar-accent: 222 22% 18%;
+    --sidebar-accent-foreground: 224 25% 90%;
+    --radius: 0.5rem; /* 8px rounded corners as specified in design system */
   }
 
   .dark {
     color-scheme: dark;
-    --background: 222 19% 8%;
-    --foreground: 210 40% 98%;
-    --card: 222 18% 12%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 18% 12%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 7 100% 63%;
+    --background: 224 20% 8%;
+    --foreground: 224 25% 90%;
+    --card: 223 22% 14%;
+    --card-foreground: 224 25% 90%;
+    --popover: 222 22% 18%;
+    --popover-foreground: 224 25% 90%;
+    --primary: 239 84% 67%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 36 95% 56%;
-    --secondary-foreground: 35 100% 12%;
-    --muted: 222 16% 16%;
-    --muted-foreground: 216 13% 67%;
-    --accent: 222 18% 18%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 84% 60%;
+    --secondary: 351 90% 60%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 222 20% 12%;
+    --muted-foreground: 220 15% 65%;
+    --accent: 222 22% 18%;
+    --accent-foreground: 224 25% 90%;
+    --destructive: 351 90% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 223 17% 24%;
-    --input: 223 17% 24%;
-    --ring: 7 100% 63%;
-    --chart-1: 7 100% 63%;
-    --chart-2: 36 95% 56%;
-    --chart-3: 220 70% 65%;
-    --chart-4: 155 62% 50%;
+    --border: 222 24% 22%;
+    --input: 222 24% 22%;
+    --ring: 239 84% 67%;
+    --chart-1: 239 84% 67%;
+    --chart-2: 351 90% 60%;
+    --chart-3: 38 92% 50%;
+    --chart-4: 160 84% 39%;
     --chart-5: 283 68% 66%;
-    --sidebar: 220 18% 12%;
-    --sidebar-foreground: 210 40% 98%;
-    --sidebar-border: 223 17% 24%;
-    --sidebar-accent: 223 18% 18%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar: 222 20% 10%;
+    --sidebar-foreground: 224 25% 90%;
+    --sidebar-border: 222 24% 22%;
+    --sidebar-accent: 222 22% 18%;
+    --sidebar-accent-foreground: 224 25% 90%;
   }
 }
 
@@ -84,8 +84,8 @@
   body {
     @apply min-h-screen bg-background text-foreground antialiased;
     background-image:
-      radial-gradient(circle at top, rgba(255, 75, 58, 0.12), transparent 30%),
-      linear-gradient(180deg, rgba(12, 13, 16, 1), rgba(12, 13, 16, 0.96));
+      radial-gradient(circle at top, rgba(99, 102, 241, 0.15), transparent 40%),
+      linear-gradient(180deg, #0e1015, #10131b);
     background-attachment: fixed;
   }
 
