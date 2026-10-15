@@ -1,16 +1,20 @@
 import {NextRequest, NextResponse} from 'next/server';
 
-const DEFAULT_JIKAN_URL = 'https://api.jikan.moe/v4';
-
 export async function GET(
     req: NextRequest,
     {params}: { params: Promise<{ path: string[] }> }
 ) {
+    const jikanBase = process.env.JIKAN_API_URL;
+
+    if (!jikanBase) {
+        return NextResponse.json(
+            { error: 'JIKAN_API_URL environment variable is not configured' },
+            { status: 500 }
+        );
+    }
+
     const {path} = await params;
-
-    const jikanBase = process.env.JIKAN_API_URL || DEFAULT_JIKAN_URL;
     const jikanUrl = jikanBase.replace(/\/$/, '');
-
     const targetPath = path.join('/');
     const search = req.nextUrl.search;
 

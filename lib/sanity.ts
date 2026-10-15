@@ -3,7 +3,7 @@ import imageUrlBuilder from '@sanity/image-url';
 import type { NewsArticle, NewsStory } from '@/types/news';
 
 export const client = createClient({
-  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'dummy_project_id',
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || 'dummy-project-id',
   dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || 'production',
   apiVersion: '2024-12-05',
   useCdn: false, // set to `false` to bypass the edge cache
