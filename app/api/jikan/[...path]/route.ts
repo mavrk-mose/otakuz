@@ -1,12 +1,6 @@
 import {NextRequest, NextResponse} from 'next/server';
 
-const JIKAN_BASE = process.env.JIKAN_API_URL;
-
-if (!JIKAN_BASE) {
-    throw new Error('JIKAN_API_URL environment variable is not configured');
-}
-
-const JIKAN_URL = JIKAN_BASE.replace(/\/$/, '');
+const DEFAULT_JIKAN_URL = 'https://api.jikan.moe/v4';
 
 export async function GET(
     req: NextRequest,
@@ -14,12 +8,15 @@ export async function GET(
 ) {
     const {path} = await params;
 
+    const jikanBase = process.env.JIKAN_API_URL || DEFAULT_JIKAN_URL;
+    const jikanUrl = jikanBase.replace(/\/$/, '');
+
     const targetPath = path.join('/');
     const search = req.nextUrl.search;
 
-    const targetUrl = `${JIKAN_URL.replace(/\/$/, '')}/${targetPath}${search}`;
+    const targetUrl = `${jikanUrl}/${targetPath}${search}`;
 
-// Simple retry on 429, max 2 retries
+    // Simple retry on 429, max 2 retries
     let attempt = 0;
     let res: Response;
 
