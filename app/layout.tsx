@@ -37,7 +37,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
                         <div className="min-h-screen lg:pl-[72px]">
                             <Search />
                             <PlayerLayout>
-                                <main className="p-4">{children}</main>
+                                <main className="p-4 pb-20 lg:pb-4">{children}</main>
                             </PlayerLayout>
                         </div>
                         <BackToTopButton />
