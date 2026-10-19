@@ -47,7 +47,7 @@ export function Search() {
   }
 
   return (
-    <div>
+    <div className="hidden lg:block">
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
         <div className="container flex h-16 items-center px-4">
           <div className="flex-1" />
