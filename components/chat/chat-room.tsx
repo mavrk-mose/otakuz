@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, useCallback, useLayoutEffect } from 'react'
 import { useAuth } from '@/hooks/use-auth'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
@@ -14,6 +14,8 @@ import useRoomDetails from "@/hooks/chat/use-room-details";
 import { createChatNotification } from '@/lib/notifications';
 import { useI18n } from '@/components/i18n-provider';
 
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
 interface ChatRoomProps {
     roomId: string
     title: string
@@ -23,7 +25,10 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
     const { t } = useI18n()
     const [newMessage, setNewMessage] = useState('')
     const { user } = useAuth()
+    const scrollAreaRef = useRef<HTMLDivElement>(null)
     const scrollRef = useRef<HTMLDivElement>(null)
+    const hasInitialScrolledRef = useRef<string | null>(null)
+    const prevMessagesCountRef = useRef(0)
     const typingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
     const {
         messages,
@@ -49,9 +54,68 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
     } = useAudioRecorder();
     const { roomDetails } = useRoomDetails(roomId);
 
+    const scrollToBottom = useCallback((instant = false) => {
+        const viewport = scrollAreaRef.current?.querySelector(
+            '[data-radix-scroll-area-viewport]'
+        ) as HTMLElement | null
+
+        if (instant) {
+            if (viewport) {
+                viewport.scrollTop = viewport.scrollHeight
+            }
+            if (scrollRef.current) {
+                scrollRef.current.scrollIntoView({ behavior: 'instant' })
+            }
+        } else {
+            if (scrollRef.current) {
+                scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+            }
+        }
+    }, [])
+
+    // Jump to the last message before browser paint (no visible scroll animation)
+    useIsomorphicLayoutEffect(() => {
+        if (!roomId) return
+
+        if (hasInitialScrolledRef.current !== roomId && messages.length > 0) {
+            hasInitialScrolledRef.current = roomId
+            prevMessagesCountRef.current = messages.length
+            scrollToBottom(true)
+        }
+    }, [messages.length, roomId, scrollToBottom])
+
+    // Handle initial async arrival and subsequent live messages
     useEffect(() => {
-        scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
-    }, [messages])
+        if (!roomId) return
+
+        // If messages were empty during layout effect and arrived asynchronously
+        if (hasInitialScrolledRef.current !== roomId && messages.length > 0) {
+            hasInitialScrolledRef.current = roomId
+            prevMessagesCountRef.current = messages.length
+            scrollToBottom(true)
+            return
+        }
+
+        // When new messages arrive in the current room
+        if (hasInitialScrolledRef.current === roomId && messages.length > prevMessagesCountRef.current) {
+            const viewport = scrollAreaRef.current?.querySelector(
+                '[data-radix-scroll-area-viewport]'
+            ) as HTMLElement | null
+
+            const isNearBottom = viewport
+                ? viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight < 200
+                : true
+
+            const lastMessage = messages[messages.length - 1]
+            const isMyMessage = lastMessage?.userId === user?.uid
+
+            if (isMyMessage || isNearBottom) {
+                scrollToBottom(false)
+            }
+
+            prevMessagesCountRef.current = messages.length
+        }
+    }, [messages, roomId, scrollToBottom, user?.uid])
 
     useEffect(() => {
         return () => {
@@ -109,7 +173,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                     )}
                 </div>
             )}
-            <ScrollArea className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
+            <ScrollArea ref={scrollAreaRef} className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
                 {messagesLoading && messages.length === 0 && (
                     <div className="space-y-4 p-2 animate-pulse">
                         <div className="flex items-start gap-2.5">
