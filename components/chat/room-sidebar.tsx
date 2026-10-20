@@ -1,13 +1,12 @@
-import {useEffect, useState} from 'react'
+import { useMemo, useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Search, Hash, Plus, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
-import useFilteredRooms from '@/hooks/chat/use-filtered-rooms'
 import { useFirebaseChatActions } from "@/hooks/chat/use-firebase-chat-actions"
-import {Room} from "@/types/room";
-import { useI18n } from "@/components/i18n-provider";
+import type { Room } from "@/types/room"
+import { useI18n } from "@/components/i18n-provider"
 
 interface RoomSidebarProps {
     rooms: Room[]
@@ -16,17 +15,20 @@ interface RoomSidebarProps {
     className?: string
 }
 
-export function RoomSidebar({ selectedRoom, onSelectRoom, className }: RoomSidebarProps) {
+export function RoomSidebar({ rooms, selectedRoom, onSelectRoom, className }: RoomSidebarProps) {
     const { t } = useI18n()
     const [searchQuery, setSearchQuery] = useState('')
     const [newRoomTitle, setNewRoomTitle] = useState('')
     const [isCreatingRoom, setIsCreatingRoom] = useState(false)
-    const { rooms, loading, error, refetch } = useFilteredRooms(searchQuery)
     const { createRoom } = useFirebaseChatActions()
 
-    useEffect(() => {
-        refetch()
-    }, [refetch]);
+    const displayedRooms = useMemo(() => {
+        if (!searchQuery.trim()) return rooms || []
+        const query = searchQuery.toLowerCase()
+        return (rooms || []).filter((room) =>
+            room.title.toLowerCase().includes(query)
+        )
+    }, [rooms, searchQuery])
 
     const handleCreateRoom = async () => {
         if (newRoomTitle.trim()) {
@@ -35,7 +37,6 @@ export function RoomSidebar({ selectedRoom, onSelectRoom, className }: RoomSideb
             setIsCreatingRoom(false)
             if (roomId) {
                 onSelectRoom(roomId)
-                refetch() // Refetch rooms after creating a new one
             }
         }
     }
@@ -82,23 +83,24 @@ export function RoomSidebar({ selectedRoom, onSelectRoom, className }: RoomSideb
                 )}
             </div>
             <ScrollArea className="flex-1">
-                {loading && <div className="p-4">{t("chat.loadingRooms")}</div>}
-                {error && <div className="p-4 text-red-500">Error: {error.message}</div>}
-                {!loading && !error && (
-                    <div className="p-2">
-                        {rooms.map((room: Room) => (
-                            <Button
-                                key={room.id}
-                                variant={selectedRoom === room.id ? "secondary" : "ghost"}
-                                className="w-full justify-start mb-1"
-                                onClick={() => onSelectRoom(room.id)}
-                            >
-                                <Hash className="mr-2 h-4 w-4" />
-                                {room.title}
-                            </Button>
-                        ))}
-                    </div>
-                )}
+                <div className="p-2">
+                    {displayedRooms.map((room: Room) => (
+                        <Button
+                            key={room.id}
+                            variant={selectedRoom === room.id ? "secondary" : "ghost"}
+                            className="w-full justify-start mb-1"
+                            onClick={() => onSelectRoom(room.id)}
+                        >
+                            <Hash className="mr-2 h-4 w-4" />
+                            {room.title}
+                        </Button>
+                    ))}
+                    {displayedRooms.length === 0 && (
+                        <div className="p-4 text-center text-sm text-muted-foreground">
+                            {t("search.noResults")}
+                        </div>
+                    )}
+                </div>
             </ScrollArea>
         </div>
     )

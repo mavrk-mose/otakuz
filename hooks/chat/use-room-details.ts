@@ -21,10 +21,18 @@ function toRoomDetails(data: RoomData): RoomDetails {
     }
 }
 
+const roomDetailsMemoryCache = new Map<string, RoomDetails>()
+
 const useRoomDetails = (roomId: string | null) => {
     const { user } = useAuth()
-    const [roomDetails, setRoomDetails] = useState<RoomDetails | null>(null)
-    const [loading, setLoading] = useState(true)
+    const [roomDetails, setRoomDetails] = useState<RoomDetails | null>(() => {
+        if (!roomId) return null
+        return roomDetailsMemoryCache.get(roomId) || null
+    })
+    const [loading, setLoading] = useState(() => {
+        if (!roomId) return false
+        return !roomDetailsMemoryCache.has(roomId)
+    })
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => {
@@ -38,8 +46,14 @@ const useRoomDetails = (roomId: string | null) => {
         let unsubscribe = () => {}
         const userId = user.uid
 
-        setRoomDetails(null)
-        setLoading(true)
+        // If we already have the room details in memory, keep them and do not flash loading
+        const cachedInMemory = roomDetailsMemoryCache.get(roomId)
+        if (cachedInMemory) {
+            setRoomDetails(cachedInMemory)
+            setLoading(false)
+        } else {
+            setLoading(true)
+        }
         setError(null)
 
         const startRoomListener = async () => {
@@ -48,7 +62,9 @@ const useRoomDetails = (roomId: string | null) => {
                 if (!isActive) return
 
                 if (cachedRoom) {
-                    setRoomDetails(toRoomDetails(cachedRoom))
+                    const parsed = toRoomDetails(cachedRoom)
+                    roomDetailsMemoryCache.set(roomId, parsed)
+                    setRoomDetails(parsed)
                     setLoading(false)
                 }
             } catch {
@@ -63,12 +79,14 @@ const useRoomDetails = (roomId: string | null) => {
                     if (!isActive) return
 
                     if (!snapshot.exists()) {
+                        roomDetailsMemoryCache.delete(roomId)
                         setRoomDetails(null)
                         setLoading(false)
                         return
                     }
 
                     const nextRoomDetails = toRoomDetails(snapshot.data())
+                    roomDetailsMemoryCache.set(roomId, nextRoomDetails)
                     setRoomDetails(nextRoomDetails)
                     setLoading(false)
                     setError(null)

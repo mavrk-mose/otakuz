@@ -111,8 +111,28 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
             )}
             <ScrollArea className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
                 {messagesLoading && messages.length === 0 && (
-                    <div className="py-8 text-center text-sm text-muted-foreground">
-                        {t("common.loading")}
+                    <div className="space-y-4 p-2 animate-pulse">
+                        <div className="flex items-start gap-2.5">
+                            <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
+                            <div className="space-y-1.5 max-w-[70%]">
+                                <div className="h-3 w-20 rounded bg-muted" />
+                                <div className="h-9 w-44 rounded-2xl bg-muted" />
+                            </div>
+                        </div>
+                        <div className="flex items-start justify-end gap-2.5">
+                            <div className="space-y-1.5 items-end flex flex-col max-w-[70%]">
+                                <div className="h-3 w-16 rounded bg-muted" />
+                                <div className="h-9 w-36 rounded-2xl bg-primary/20" />
+                            </div>
+                            <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
+                        </div>
+                        <div className="flex items-start gap-2.5">
+                            <div className="h-8 w-8 rounded-full bg-muted shrink-0" />
+                            <div className="space-y-1.5 max-w-[70%]">
+                                <div className="h-3 w-24 rounded bg-muted" />
+                                <div className="h-12 w-60 rounded-2xl bg-muted" />
+                            </div>
+                        </div>
                     </div>
                 )}
                 <AnimatePresence initial={false}>

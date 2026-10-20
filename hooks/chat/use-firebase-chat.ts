@@ -101,7 +101,10 @@ export function useFirebaseChat(roomId: string) {
     const upsertMessage = useMessagesStore((state) => state.upsertMessage)
     const updateMessage = useMessagesStore((state) => state.updateMessage)
     const removeMessage = useMessagesStore((state) => state.removeMessage)
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(() => {
+        const cached = useMessagesStore.getState().messages[roomId]
+        return !cached || cached.length === 0
+    })
     const [error, setError] = useState<Error | null>(null)
 
     const roomMessages = useMemo(
@@ -120,75 +123,104 @@ export function useFirebaseChat(roomId: string) {
         const userId = user.uid
         const messagesCollection = collection(db, 'chatrooms', roomId, 'messages')
 
-        setLoading(true)
+        // Only indicate loading if there are no cached messages in memory
+        const memoryMessages = useMessagesStore.getState().messages[roomId] || []
+        if (memoryMessages.length === 0) {
+            setLoading(true)
+        } else {
+            setLoading(false)
+        }
         setError(null)
 
         const startListener = async () => {
-            let recentMessages: Message[] = []
+            let messagesInState = useMessagesStore.getState().messages[roomId] || []
 
-            try {
-                recentMessages = await getCachedMessages(userId, roomId)
-            } catch {
-                // IndexedDB is an enhancement. Firestore remains the fallback.
+            // If in-memory store is empty, immediately attempt to read from IndexedDB
+            if (messagesInState.length === 0) {
+                try {
+                    const cachedMessages = await getCachedMessages(userId, roomId)
+                    if (cachedMessages.length > 0 && isActive) {
+                        messagesInState = cachedMessages
+                        setMessages(roomId, cachedMessages)
+                        setLoading(false)
+                    }
+                } catch {
+                    // IndexedDB is an enhancement. Firestore remains the fallback.
+                }
             }
 
             if (!isActive) return
 
-            if (recentMessages.length > 0) {
-                setMessages(roomId, recentMessages)
+            if (messagesInState.length > 0) {
                 setLoading(false)
-            } else {
-                const seedSnapshot = await getDocs(
-                    query(messagesCollection, orderBy('timestamp', 'desc'), limit(MAX_MESSAGES))
+                const lastSeenTimestamp = messagesInState.at(-1)?.timestamp || 0
+                const deltaQuery = query(
+                    messagesCollection,
+                    where('timestamp', '>=', Timestamp.fromMillis(lastSeenTimestamp)),
+                    orderBy('timestamp', 'asc')
                 )
-                recentMessages = seedSnapshot.docs.map(snapshotToMessage).reverse()
 
-                if (!isActive) return
-                setMessages(roomId, recentMessages)
-                await putCachedMessages(userId, roomId, recentMessages).catch(() => undefined)
-            }
+                unsubscribe = onSnapshot(
+                    deltaQuery,
+                    { includeMetadataChanges: true },
+                    (snapshot) => {
+                        if (!isActive) return
 
-            const lastSeenTimestamp = recentMessages.at(-1)?.timestamp || 0
-            const deltaQuery = query(
-                messagesCollection,
-                where('timestamp', '>=', Timestamp.fromMillis(lastSeenTimestamp)),
-                orderBy('timestamp', 'asc')
-            )
+                        const changedMessages: Message[] = []
+                        snapshot.docChanges().forEach((change) => {
+                            if (change.type === 'removed') {
+                                removeMessage(roomId, change.doc.id)
+                                void deleteCachedMessage(userId, roomId, change.doc.id).catch(
+                                    () => undefined
+                                )
+                                return
+                            }
 
-            unsubscribe = onSnapshot(
-                deltaQuery,
-                { includeMetadataChanges: true },
-                (snapshot) => {
-                    if (!isActive) return
+                            changedMessages.push(snapshotToMessage(change.doc))
+                        })
 
-                    const changedMessages: Message[] = []
-                    snapshot.docChanges().forEach((change) => {
-                        if (change.type === 'removed') {
-                            removeMessage(roomId, change.doc.id)
-                            void deleteCachedMessage(userId, roomId, change.doc.id).catch(
+                        if (changedMessages.length > 0) {
+                            mergeMessages(roomId, changedMessages)
+                            void putCachedMessages(userId, roomId, changedMessages).catch(
                                 () => undefined
                             )
-                            return
                         }
 
-                        changedMessages.push(snapshotToMessage(change.doc))
-                    })
-
-                    if (changedMessages.length > 0) {
-                        mergeMessages(roomId, changedMessages)
-                        void putCachedMessages(userId, roomId, changedMessages).catch(
-                            () => undefined
-                        )
+                        setLoading(false)
+                    },
+                    (snapshotError) => {
+                        if (!isActive) return
+                        setError(snapshotError)
+                        setLoading(false)
                     }
+                )
+            } else {
+                // First-time visit to a room with 0 cached messages: listen directly via onSnapshot
+                // without waiting for a separate blocking getDocs call.
+                const initialQuery = query(
+                    messagesCollection,
+                    orderBy('timestamp', 'desc'),
+                    limit(MAX_MESSAGES)
+                )
 
-                    setLoading(false)
-                },
-                (snapshotError) => {
-                    if (!isActive) return
-                    setError(snapshotError)
-                    setLoading(false)
-                }
-            )
+                unsubscribe = onSnapshot(
+                    initialQuery,
+                    { includeMetadataChanges: true },
+                    (snapshot) => {
+                        if (!isActive) return
+
+                        const liveMessages = snapshot.docs.map(snapshotToMessage).reverse()
+                        setMessages(roomId, liveMessages)
+                        setLoading(false)
+                        void putCachedMessages(userId, roomId, liveMessages).catch(() => undefined)
+                    },
+                    (snapshotError) => {
+                        if (!isActive) return
+                        setError(snapshotError)
+                        setLoading(false)
+                    }
+                )
+            }
         }
 
         void startListener().catch((listenerError) => {

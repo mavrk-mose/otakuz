@@ -26,9 +26,19 @@ export default function ChatPage() {
     const { roomDetails } = useRoomDetails(selectedRoom);
     const { joinRoom } = useFirebaseChatActions();
 
-    const handleSelectRoom = async (roomId: string) => {
-        await joinRoom(roomId)
+    const handleSelectRoom = (roomId: string) => {
+        // Switch room immediately (0ms)
         setSelectedRoom(roomId)
+
+        if (user) {
+            const currentRoom = rooms.find((room: Room) => room.id === roomId)
+            const isMember = currentRoom?.members?.includes(user.uid)
+            if (!isMember) {
+                void joinRoom(roomId).catch((err) => {
+                    console.error('Failed to join room in background:', err)
+                })
+            }
+        }
     }
 
     useEffect(() => {
