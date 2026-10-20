@@ -75,6 +75,24 @@ function getMessageType(fileType: string): Message['type'] {
     return 'file'
 }
 
+function getExtensionForMimeType(mimeType: string, defaultType: string = 'file'): string {
+    if (mimeType.startsWith('image/')) {
+        const sub = mimeType.replace('image/', '').split(';')[0];
+        return sub === 'jpeg' ? '.jpg' : `.${sub || 'png'}`;
+    }
+    if (mimeType.startsWith('video/')) {
+        const sub = mimeType.replace('video/', '').split(';')[0];
+        return `.${sub || 'mp4'}`;
+    }
+    if (mimeType.startsWith('audio/')) {
+        if (mimeType.includes('mp4') || mimeType.includes('m4a') || mimeType.includes('aac')) return '.mp4';
+        if (mimeType.includes('ogg')) return '.ogg';
+        if (mimeType.includes('wav')) return '.wav';
+        return '.webm';
+    }
+    return `.${defaultType}`;
+}
+
 export function useFirebaseChat(roomId: string) {
     const { user } = useAuth()
     const messagesByRoom = useMessagesStore((state) => state.messages)
@@ -240,7 +258,10 @@ export function useFirebaseChat(roomId: string) {
             const createdAtClient = Date.now()
             const fileType = suppliedFileType || file.type || 'application/octet-stream'
             const messageType = getMessageType(fileType)
-            const originalName = file instanceof File ? file.name : `${messageType}.webm`
+            const safeType = messageType || 'file'
+            const originalName = file instanceof File
+                ? file.name
+                : `${safeType}${getExtensionForMimeType(fileType, safeType)}`
             const safeFileName = originalName.replace(/[^a-zA-Z0-9._-]/g, '_')
             const localUrl = URL.createObjectURL(file)
             const optimisticMessage: Message = {

@@ -5,7 +5,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Send, Mic, ImageIcon, Video } from 'lucide-react'
+import { Send, Mic, ImageIcon, Video, Loader2, X } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {MessageComponent} from "@/components/chat/message-component";
@@ -38,10 +38,14 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
     const fileInputRef = useRef<HTMLInputElement>(null)
     const {
         isRecording,
+        recordingTime,
         audioPreview,
+        isSending: isSendingAudio,
+        error: recorderError,
         startRecording,
         stopRecording,
         sendAudioMessage,
+        resetRecording,
     } = useAudioRecorder();
     const { roomDetails } = useRoomDetails(roomId);
 
@@ -91,9 +95,18 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
 
     return (
         <div className="flex flex-col h-full">
-            {error && (
-                <div role="alert" className="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive">
-                    {t("chat.liveSyncError")}: {error.message}
+            {(error || recorderError) && (
+                <div role="alert" className="border-b border-destructive/30 bg-destructive/10 px-4 py-2 text-sm text-destructive flex items-center justify-between">
+                    <span>{error ? `${t("chat.liveSyncError")}: ${error.message}` : recorderError}</span>
+                    {recorderError && !error && (
+                        <button
+                            type="button"
+                            onClick={resetRecording}
+                            className="text-xs underline hover:no-underline ml-2"
+                        >
+                            {t("common.close")}
+                        </button>
+                    )}
                 </div>
             )}
             <ScrollArea className="flex-1 p-4 h-[calc(100vh-8rem)] md:h-[calc(100vh-4rem)]">
@@ -161,17 +174,49 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                         <Button
                             type="button"
                             size="icon"
+                            variant={isRecording ? "destructive" : "outline"}
                             onClick={isRecording ? stopRecording : startRecording}
+                            disabled={!user || isSendingAudio}
+                            title={isRecording ? "Stop recording" : "Record audio"}
                         >
-                            <Mic className={`h-4 w-4 ${isRecording ? 'text-red-500' : ''}`} />
+                            <Mic className={`h-4 w-4 ${isRecording ? 'animate-pulse' : ''}`} />
                         </Button>
-                        {audioPreview && (
-                            <>
-                                <audio src={audioPreview} controls className="max-w-[150px]" />
-                                <Button type="button" onClick={() => sendAudioMessage(sendFile, user)}>
-                                    Send Audio
+                        {isRecording && (
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-destructive/10 text-destructive text-xs font-mono">
+                                <span className="h-2 w-2 rounded-full bg-destructive animate-ping" />
+                                <span>{Math.floor(recordingTime / 60)}:{recordingTime % 60 < 10 ? '0' : ''}{recordingTime % 60}</span>
+                            </div>
+                        )}
+                        {audioPreview && !isRecording && (
+                            <div className="flex items-center gap-2 p-1 rounded-lg border bg-muted/40">
+                                <audio src={audioPreview} controls className="h-8 max-w-[180px] sm:max-w-[220px]" />
+                                <Button
+                                    type="button"
+                                    size="sm"
+                                    onClick={() => sendAudioMessage(sendFile, user)}
+                                    disabled={isSendingAudio}
+                                >
+                                    {isSendingAudio ? (
+                                        <>
+                                            <Loader2 className="h-3.5 w-3.5 animate-spin mr-1" />
+                                            {t("chat.sending")}
+                                        </>
+                                    ) : (
+                                        "Send Audio"
+                                    )}
                                 </Button>
-                            </>
+                                <Button
+                                    type="button"
+                                    size="icon"
+                                    variant="ghost"
+                                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                                    onClick={resetRecording}
+                                    disabled={isSendingAudio}
+                                    title="Discard audio"
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
+                            </div>
                         )}
                         <Button type="submit" size="icon" disabled={!user || !newMessage.trim()}>
                             <Send className="h-4 w-4" />
