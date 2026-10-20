@@ -2,7 +2,12 @@ import { useQuery } from "@tanstack/react-query";
 import { getNewsStories } from "@/lib/sanity";
 import { type NewsStory } from "@/types/news";
 
-const useFetchNewsStories = () => {
+interface UseFetchNewsStoriesResult {
+  stories: NewsStory[] | undefined;
+  isLoading: boolean;
+}
+
+const useFetchNewsStories = (): UseFetchNewsStoriesResult => {
   const {
     data: stories,
     isLoading,

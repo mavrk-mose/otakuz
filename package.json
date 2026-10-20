@@ -9,7 +9,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "sanity": "sanity",
+    "sanity:dev": "sanity dev",
+    "sanity:build": "sanity build",
+    "sanity:typegen": "sanity typegen generate"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
