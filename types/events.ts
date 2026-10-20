@@ -1,88 +1,66 @@
-export type Event = {
+import type { SanityCardDisplay, SanityImage } from "./common";
+
+export type EventLocation = {
+  address: string;
+  coordinates: {
+    _type: "geopoint";
+    lat: number;
+  };
+  name: string;
+};
+
+export type EventPerson = {
+  _id: string;
+  name: string;
+  avatar?: SanityImage;
+};
+
+export type EventAttendeeStatus = "going" | "maybe" | "not going";
+
+export type EventAttendee = {
+  name: string;
+  _key: string;
+  userId: string;
+  avatar: SanityImage;
+  status: EventAttendeeStatus;
+};
+
+export type EventTournament = {
+  _key: string;
+  title: string;
+  prize: string;
+  participants: string;
+  time: string;
+};
+
+export type EventActivity = {
+  title: string;
+  description: string;
+  time: string;
+};
+
+export type Event = SanityCardDisplay & {
   _id: string;
   title: string;
   description?: string;
   summary?: string;
   date?: string; // ISO 8601 date format
   publishedAt?: string;
-  location?: {
-    address: string;
-    coordinates: {
-      _type: "geopoint";
-      lat: number;
-    };
-    name: string;
-  };
-  organizers?: {
-    _id: string;
-    name: string;
-    avatar:  {
-      _type: "image";
-      asset: {
-        _ref: string;
-        _type: "reference";
-      };
-    };
-  }[];
+  location?: EventLocation;
+  organizers?: EventPerson[];
   category?: string;
   tag?: string;
-  section?: string;
-  panelClassName?: string;
-  textClassName?: string;
-  itemClassName?: string;
-  isFeatured?: boolean;
   commentsCount?: number;
   imageUrl?: string;
   authorName?: string;
-  author?: {
-    _id: string;
-    name: string;
-  };
+  author?: EventPerson;
   tags?: string[];
-  attendees?: {
-    name: string;
-    _key: string;
-    userId: string;
-    avatar: {
-      _type: "image";
-      asset: {
-        _ref: string;
-        _type: "reference";
-      };
-    };
-    status: "going" | "maybe" | "not going"; // Limited status values
-  }[];
-  createdBy?: {
-    _id: string;
-    name: string;
-  };
+  attendees?: EventAttendee[];
+  createdBy?: EventPerson;
   time?: string; // e.g., "04:00 PM"
-  thumbnailUrl?: {
-    _type: "image";
-    asset: {
-      _ref: string;
-      _type: "reference";
-    };
-  };
-  tournaments?: {
-    _key: string;
-    title: string;
-    prize: string;
-    participants: string;
-    time: string;
-  }[];
-  activities?: {
-    title: string;
-    description: string;
-    time: string;
-  }[];
-  gallery?: {
-    _type: "image";
-    _key: string;
-    asset: {
-      _ref: string;
-      _type: "reference";
-    };
-  }[];
+  thumbnailUrl?: SanityImage;
+  tournaments?: EventTournament[];
+  activities?: EventActivity[];
+  gallery?: SanityImage[];
   ticket?: string;
 };

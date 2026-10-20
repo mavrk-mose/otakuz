@@ -1,47 +1,29 @@
+import type {
+  MalImages,
+  MalNamedResource,
+  Nullable,
+  PaginatedResponse,
+  PaginationBase,
+} from "./common";
 
-export interface Manga {
-    mal_id: number;
-    title: string;
-    title_japanese: string | null;
-    type: string;
-    images: {
-        jpg: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-        webp: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-    };
-    synopsis: string | null;
-    score: number | null;
-    scored_by: number | null;
-    chapters: number | null;
-    volumes: number | null;
-    status: string;
-    genres: {
-        mal_id: number;
-        type: string;
-        name: string;
-    }[];
-    authors: {
-        mal_id: number;
-        type: string;
-        name: string;
-    }[];
-    rank: number | null;
-    popularity: number | null;
-    members: number | null;
-    favorites: number | null;
-}
+export type Manga = {
+  mal_id: number;
+  title: string;
+  title_japanese: Nullable<string>;
+  type: string;
+  images: MalImages;
+  synopsis: Nullable<string>;
+  score: Nullable<number>;
+  scored_by: Nullable<number>;
+  chapters: Nullable<number>;
+  volumes: Nullable<number>;
+  status: string;
+  genres: MalNamedResource[];
+  authors: MalNamedResource[];
+  rank: Nullable<number>;
+  popularity: Nullable<number>;
+  members: Nullable<number>;
+  favorites: Nullable<number>;
+};
 
-export interface MangaResponse {
-    data: Manga[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
-    };
-}
+export type MangaResponse = PaginatedResponse<Manga[], PaginationBase>;

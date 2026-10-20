@@ -1,388 +1,269 @@
-export interface AnimeResponse {
-    data: BaseAnime[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
-        current_page: number;
-    };
-}
+import type {
+  DetailedPagination,
+  MalImageFormat,
+  MalImages,
+  MalNamedResource,
+  Nullable,
+  PaginatedResponse,
+  PaginationBase,
+} from "./common";
 
-export interface BaseAnime {
-    mal_id: number;
-    title: string;
-    images: {
-        jpg: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-        webp: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-    };
-    trailer: {
-        youtube_id: string;
-        url: string;
-        embed_url: string;
-    };
-    synopsis: string;
-    score: number;
-    episodes: number;
-    status: string;
-    rating: string;
-    genres: {
-        mal_id: number;
-        type: string;
-        name: string;
-    }[];
-}
+export type AnimeTrailer = {
+  youtube_id: string;
+  url: string;
+  embed_url: string;
+};
 
-export interface TopAnime {
-    mal_id: number;
-    title: string;
-    imageUrl: string | null;
-    synopsis: string | null;
-    score: number | null;
-    episodes: number | null;
-}
+export type BaseAnime = {
+  mal_id: number;
+  title: string;
+  images: MalImages;
+  trailer: AnimeTrailer;
+  synopsis: string;
+  score: number;
+  episodes: number;
+  status: string;
+  rating: string;
+  genres: MalNamedResource[];
+};
+
+export type AnimeResponse = PaginatedResponse<
+  BaseAnime[],
+  PaginationBase & { current_page: number }
+>;
+
+export type TopAnime = {
+  mal_id: number;
+  title: string;
+  imageUrl: Nullable<string>;
+  synopsis: Nullable<string>;
+  score: Nullable<number>;
+  episodes: Nullable<number>;
+};
+
+export type AnimeTitleItem = {
+  type: string;
+  title: string;
+};
+
+export type AnimeAired = {
+  from: string;
+  to: string;
+  prop: {
+    from: { day: number; month: number; year: number };
+    to: { day: number; month: number; year: number };
+    string: string;
+  };
+};
+
+export type AnimeBroadcast = {
+  day: string;
+  time: string;
+  timezone: string;
+  string: string;
+};
 
 export type AnimeDetails = {
-    mal_id: number;
-    url: string;
-    images: {
-        jpg: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-        webp: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-    };
-    trailer: {
-        youtube_id: string;
-        url: string;
-        embed_url: string;
-    };
-    approved: boolean;
-    titles: {
-        type: string;
-        title: string;
-    }[];
-    title: string;
-    title_english: string;
-    title_japanese: string;
-    title_synonyms: string[];
-    type: string;
-    source: string;
-    episodes: number;
-    status: string;
-    airing: boolean;
-    aired: {
-        from: string;
-        to: string;
-        prop: {
-            from: {
-                day: number;
-                month: number;
-                year: number;
-            };
-            to: {
-                day: number;
-                month: number;
-                year: number;
-            };
-            string: string;
-        };
-    };
-    duration: string;
-    rating: string;
-    score: number;
-    scored_by: number;
-    rank: number;
-    popularity: number;
-    members: number;
-    favorites: number;
-    synopsis: string;
-    background: string;
-    season: string;
-    year: number;
-    broadcast: {
-        day: string;
-        time: string;
-        timezone: string;
-        string: string;
-    };
-    producers: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
-    licensors: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
-    studios: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
-    genres: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
-    explicit_genres: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
-    themes: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
-    demographics: {
-        mal_id: number;
-        type: string;
-        name: string;
-        url: string;
-    }[];
+  mal_id: number;
+  url: string;
+  images: MalImages;
+  trailer: AnimeTrailer;
+  approved: boolean;
+  titles: AnimeTitleItem[];
+  title: string;
+  title_english: string;
+  title_japanese: string;
+  title_synonyms: string[];
+  type: string;
+  source: string;
+  episodes: number;
+  status: string;
+  airing: boolean;
+  aired: AnimeAired;
+  duration: string;
+  rating: string;
+  score: number;
+  scored_by: number;
+  rank: number;
+  popularity: number;
+  members: number;
+  favorites: number;
+  synopsis: string;
+  background: string;
+  season: string;
+  year: number;
+  broadcast: AnimeBroadcast;
+  producers: MalNamedResource[];
+  licensors: MalNamedResource[];
+  studios: MalNamedResource[];
+  genres: MalNamedResource[];
+  explicit_genres: MalNamedResource[];
+  themes: MalNamedResource[];
+  demographics: MalNamedResource[];
 };
 
-export interface AnimeEntry {
-    mal_id: number;
-    url: string;
-    images: {
-        jpg: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-        webp: {
-            image_url: string;
-            small_image_url: string;
-            large_image_url: string;
-        };
-    };
-    title: string;
-}
-
-export interface AnimeCharacterPerson {
-    mal_id: number;
-    url: string;
-    name: string;
-    images: BaseAnime["images"];
-}
-
-export interface AnimeCharacter {
-    character: AnimeCharacterPerson;
-    role: string;
-    favorites: number;
-    voice_actors: {
-        person: AnimeCharacterPerson;
-        language: string;
-    }[];
-}
-
-export interface AnimeCharactersResponse {
-    data: AnimeCharacter[];
-}
-
-export type RecentAnime = {
-    data: {
-        mal_id: string;
-        entry: AnimeEntry[];
-        content: string;
-        user: {
-            url: string;
-            username: string;
-        };
-    }[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
-        current_page: number;
-    };
-}
-
-export type PaginatedAnime = {
-    data: AnimeDetails[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
-        current_page: number;
-        items: {
-            count: number;
-            total: number;
-            per_page: number;
-        };
-    };
+export type AnimeEntry = {
+  mal_id: number;
+  url: string;
+  images: MalImages;
+  title: string;
 };
+
+export type AnimeCharacterPerson = {
+  mal_id: number;
+  url: string;
+  name: string;
+  images: MalImages;
+};
+
+export type AnimeVoiceActor = {
+  person: AnimeCharacterPerson;
+  language: string;
+};
+
+export type AnimeCharacter = {
+  character: AnimeCharacterPerson;
+  role: string;
+  favorites: number;
+  voice_actors: AnimeVoiceActor[];
+};
+
+export type AnimeCharactersResponse = {
+  data: AnimeCharacter[];
+};
+
+export type RecentAnimeItem = {
+  mal_id: string;
+  entry: AnimeEntry[];
+  content: string;
+  user: {
+    url: string;
+    username: string;
+  };
+};
+
+export type RecentAnime = PaginatedResponse<
+  RecentAnimeItem[],
+  PaginationBase & { current_page: number }
+>;
+
+export type PaginatedAnime = PaginatedResponse<
+  AnimeDetails[],
+  DetailedPagination
+>;
 
 export type ScheduleAnime = {
-    mal_id: number;
-    title?: string | null;
-    title_english?: string | null;
-    title_japanese?: string | null;
-    episodes?: number | null;
-    images?: {
-        jpg?: {
-            image_url?: string | null;
-            small_image_url?: string | null;
-        } | null;
-        webp?: {
-            image_url?: string | null;
-            small_image_url?: string | null;
-        } | null;
-    } | null;
-    broadcast?: {
-        time?: string | null;
-        timezone?: string | null;
-    } | null;
+  mal_id: number;
+  title?: Nullable<string>;
+  title_english?: Nullable<string>;
+  title_japanese?: Nullable<string>;
+  episodes?: Nullable<number>;
+  images?: Nullable<{
+    jpg?: Nullable<Partial<MalImageFormat>>;
+    webp?: Nullable<Partial<MalImageFormat>>;
+  }>;
+  broadcast?: Nullable<{
+    time?: Nullable<string>;
+    timezone?: Nullable<string>;
+  }>;
 };
 
-export type AnimeScheduleResponse = {
-    data: ScheduleAnime[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
-        current_page: number;
-        items: {
-            count: number;
-            total: number;
-            per_page: number;
-        };
-    };
+export type AnimeScheduleResponse = PaginatedResponse<
+  ScheduleAnime[],
+  DetailedPagination
+>;
+
+export type TrailerImageSizes = {
+  image_url: Nullable<string>;
+  small_image_url: Nullable<string>;
+  medium_image_url: Nullable<string>;
+  large_image_url: Nullable<string>;
+  maximum_image_url: Nullable<string>;
 };
 
 export type AnimeVideos = {
-    promo: {
-        title: string;
-        trailer: {
-            youtube_id: string;
-            url: string;
-            embed_url: string;
-            images: {
-                image_url: string | null;
-                small_image_url: string | null;
-                medium_image_url: string | null;
-                large_image_url: string | null;
-                maximum_image_url: string | null;
-            };
-        };
-    }[];
-    episodes: {
-        mal_id: number;
-        url: string;
-        title: string;
-        episode: string;
-        images: {
-            jpg: {
-                image_url: string;
-            };
-        };
-    }[];
-    music_videos: {
-        title: string;
-        video: {
-            youtube_id: string;
-            url: string;
-            embed_url: string;
-            images: {
-                image_url: string | null;
-                small_image_url: string | null;
-                medium_image_url: string | null;
-                large_image_url: string | null;
-                maximum_image_url: string | null;
-            };
-        };
-        meta: {
-            title: string;
-            author: string;
-        };
-    }[];
-};
-
-
-export interface Comment {
-    id: string;
-    userId: string;
-    username: string;
-    content: string;
-    timestamp: number;
-    likes: number;
-}
-
-export interface WatchParty {
-    id: string;
-    hostId: string;
-    animeId?: string;
-    title?: string;
-    currentTime: number;
-    isPlaying: boolean;
-    participants: string[];
-}
-
-export interface NewsResponse {
-    data: AnimeNews[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
+  promo: {
+    title: string;
+    trailer: AnimeTrailer & {
+      images: TrailerImageSizes;
     };
-}
-
-export interface AnimeNews {
+  }[];
+  episodes: {
     mal_id: number;
     url: string;
     title: string;
-    date: string;
-    author_username: string;
-    author_url: string;
-    forum_url: string;
+    episode: string;
     images: {
-        jpg: {
-            image_url: string;
-        };
+      jpg: { image_url: string };
     };
-    comments: number;
-    excerpt: string;
-}
+  }[];
+  music_videos: {
+    title: string;
+    video: AnimeTrailer & {
+      images: TrailerImageSizes;
+    };
+    meta: {
+      title: string;
+      author: string;
+    };
+  }[];
+};
+
+export type Comment = {
+  id: string;
+  userId: string;
+  username: string;
+  content: string;
+  timestamp: number;
+  likes: number;
+};
+
+export type WatchParty = {
+  id: string;
+  hostId: string;
+  animeId?: string;
+  title?: string;
+  currentTime: number;
+  isPlaying: boolean;
+  participants: string[];
+};
+
+export type AnimeNews = {
+  mal_id: number;
+  url: string;
+  title: string;
+  date: string;
+  author_username: string;
+  author_url: string;
+  forum_url: string;
+  images: {
+    jpg: { image_url: string };
+  };
+  comments: number;
+  excerpt: string;
+};
+
+export type NewsResponse = PaginatedResponse<AnimeNews[], PaginationBase>;
 
 export type AnimeEpisode = {
-    mal_id: number;
-    url: string;
-    title: string;
-    title_japanese: string;
-    title_romanji: string;
-    aired: string;
-    score: number | null;
-    filler: boolean;
-    recap: boolean;
-    forum_url: string;
+  mal_id: number;
+  url: string;
+  title: string;
+  title_japanese: string;
+  title_romanji: string;
+  aired: string;
+  score: Nullable<number>;
+  filler: boolean;
+  recap: boolean;
+  forum_url: string;
 };
 
-export type AnimeEpisodeResponse = {
-    data: AnimeEpisode[];
-    pagination: {
-        last_visible_page: number;
-        has_next_page: boolean;
-        current_page: number;
-    };
-}
+export type AnimeEpisodeResponse = PaginatedResponse<
+  AnimeEpisode[],
+  PaginationBase & { current_page: number }
+>;
 
-export interface Genre {
-    mal_id: number;
-    name: string;
-}
+export type Genre = {
+  mal_id: number;
+  name: string;
+};

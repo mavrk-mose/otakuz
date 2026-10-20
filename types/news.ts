@@ -1,4 +1,5 @@
 import type { PortableTextBlock } from "next-sanity";
+import type { SanityCardDisplay } from "./common";
 
 export type NewsAuthor = {
   _id?: string;
@@ -8,7 +9,7 @@ export type NewsAuthor = {
   imageUrl?: string;
 };
 
-export type NewsStory = {
+export type NewsStory = SanityCardDisplay & {
   _id: string;
   title: string;
   description?: string;
@@ -17,11 +18,6 @@ export type NewsStory = {
   commentsCount?: number;
   tag?: string;
   tags?: string[];
-  section?: string;
-  panelClassName?: string;
-  textClassName?: string;
-  itemClassName?: string;
-  isFeatured?: boolean;
   imageUrl?: string;
   authorName?: string;
   author?: NewsAuthor;
