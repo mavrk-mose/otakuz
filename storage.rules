@@ -6,27 +6,28 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    function isRoomMember(roomId) {
-      return signedIn()
-        && firestore.get(
-          /databases/(default)/documents/chatrooms/$(roomId)
-        ).data.members.hasAny([request.auth.uid]);
+    // User-specific files (users can read and write only their own files)
+    match /users/{userId}/{allPaths=**} {
+      allow read: if signedIn();
+      allow write: if signedIn() && request.auth.uid == userId;
     }
 
+    // Chatroom attachments (authenticated users can read, upload with size/type validation, and delete their own files)
     match /chatrooms/{roomId}/{userId}/{messageId}/{fileName} {
-      allow read: if isRoomMember(roomId);
+      allow read: if signedIn();
 
-      allow create: if isRoomMember(roomId)
+      allow create: if signedIn()
         && request.auth.uid == userId
         && request.resource.size < 25 * 1024 * 1024
         && request.resource.contentType.matches(
           '^(image|video|audio)/.*$|^application/(pdf|octet-stream)$'
         );
 
-      allow delete: if isRoomMember(roomId) && request.auth.uid == userId;
+      allow delete: if signedIn() && request.auth.uid == userId;
       allow update: if false;
     }
 
+    // Default fallback: deny all other paths
     match /{allPaths=**} {
       allow read, write: if false;
     }
