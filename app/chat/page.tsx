@@ -93,32 +93,6 @@ export default function ChatPage() {
                         ))
                     )}
                 </div>
-
-                {/* Bottom Navigation (visible on mobile) */}
-                <div className="border-t bg-background md:hidden sticky bottom-0 z-50">
-                    <div className="flex justify-around items-center p-4">
-                        <Button variant="ghost" size="icon">
-                            <Globe className="h-6 w-6" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                            <MessageCircle className="h-6 w-6" />
-                        </Button>
-                        <div className="relative -top-6">
-                            <Button
-                                size="icon"
-                                className="h-14 w-14 rounded-full bg-primary hover:bg-primary/90"
-                            >
-                                <Plus className="h-6 w-6" />
-                            </Button>
-                        </div>
-                        <Button variant="ghost" size="icon">
-                            <Phone className="h-6 w-6" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                            <Settings className="h-6 w-6" />
-                        </Button>
-                    </div>
-                </div>
             </div>
         </div>
     )
