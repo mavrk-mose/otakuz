@@ -20,6 +20,7 @@ import useAnimeDetails from "@/hooks/anime/use-anime-details";
 import { useGenreStore } from "@/store/use-genre-store";
 import { useI18n } from "@/components/i18n-provider";
 import { AnimeCharacterList } from "@/components/anime/anime-character-list";
+import { useRecordWatchHistory } from "@/hooks/use-watch-history";
 
 export default function AnimeDetailClient({ id }: { id: string }) {
   const { t } = useI18n();
@@ -27,6 +28,28 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   const router = useRouter();
   const { data: anime, isLoading } = useAnimeDetails(id);
   const { setAnimeGenre } = useGenreStore();
+
+  useRecordWatchHistory(
+    anime
+      ? {
+          itemId: String(anime.mal_id),
+          type: "anime",
+          title: anime.title,
+          subtitle: [
+            anime.type,
+            anime.episodes ? `${anime.episodes} eps` : null,
+            anime.score ? `★ ${anime.score}` : null,
+          ]
+            .filter(Boolean)
+            .join(" • "),
+          image:
+            anime.images?.webp?.large_image_url ||
+            anime.images?.jpg?.large_image_url ||
+            "",
+          href: `/anime/${anime.mal_id}`,
+        }
+      : null
+  );
 
   if (isLoading) {
     return <DetailsSkeleton />;

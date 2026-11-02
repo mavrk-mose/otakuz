@@ -21,6 +21,7 @@ import { PersistentPlayerSlot } from "@/components/watch/player-layout";
 import { cn } from "@/lib/utils";
 import { useChannelHistoryStore } from "@/store/use-channel-history-store";
 import { usePlayerStore } from "@/store/use-player-store";
+import { recordWatchHistory } from "@/lib/watch-history";
 import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
 
 const PAGE_SIZE = 36;
@@ -170,6 +171,20 @@ export function ChannelBrowser() {
 
     if (matchingChannel) {
       setSelectedChannel(matchingChannel);
+      void recordWatchHistory({
+        itemId: matchingChannel.channelId || matchingChannel.id,
+        type: "channel",
+        title: matchingChannel.name,
+        subtitle: [
+          matchingChannel.countryCode || "Global",
+          matchingChannel.quality,
+          "Live TV",
+        ]
+          .filter(Boolean)
+          .join(" • "),
+        image: matchingChannel.logoUrl || "",
+        href: `/channels?channel=${encodeURIComponent(matchingChannel.channelId)}`,
+      });
     } else if (!selectedChannel) {
       setSelectedChannel(data.channels[0]);
     }
@@ -224,6 +239,16 @@ export function ChannelBrowser() {
   const playChannel = (channel: IptvChannel) => {
     setSelectedChannel(channel);
     useChannelHistoryStore.getState().addRecentlyViewed(channel);
+    void recordWatchHistory({
+      itemId: channel.channelId || channel.id,
+      type: "channel",
+      title: channel.name,
+      subtitle: [channel.countryCode || "Global", channel.quality, "Live TV"]
+        .filter(Boolean)
+        .join(" • "),
+      image: channel.logoUrl || "",
+      href: `/channels?channel=${encodeURIComponent(channel.channelId)}`,
+    });
     usePlayerStore.getState().openPlayer({
       id: `channel:${channel.id}`,
       src: channel.streamUrl,

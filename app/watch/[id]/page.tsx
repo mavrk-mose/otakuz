@@ -19,6 +19,7 @@ import VideoTabs from "@/components/watch/video-tabs";
 import Link from "next/link";
 import { useI18n } from "@/components/i18n-provider";
 import { usePlayerStore } from "@/store/use-player-store";
+import { useRecordWatchHistory } from "@/hooks/use-watch-history";
 
 export default function WatchPage() {
   const { t } = useI18n();
@@ -123,6 +124,28 @@ export default function WatchPage() {
       .flatMap((p) => p.data)
       .flatMap((d: any) => d.entry)
       .find((a: AnimeEntry) => String(a.mal_id) === String(currentId)) ?? null;
+
+  useRecordWatchHistory(
+    currentId && (selectedAnime || selectedVideoUrl)
+      ? {
+          itemId: `watch_${currentId}_${selectedVideoUrl || "main"}`,
+          type: "anime",
+          title: selectedAnime?.title
+            ? selectedVideoTitle && selectedVideoTitle !== "Anime video"
+              ? `${selectedAnime.title} — ${selectedVideoTitle}`
+              : selectedAnime.title
+            : selectedVideoTitle,
+          subtitle: "Watched Episode / Video",
+          image:
+            selectedVideoPoster ||
+            selectedAnime?.images?.webp?.image_url ||
+            "",
+          href: selectedVideoUrl
+            ? `/watch/${currentId}?videoUrl=${encodeURIComponent(selectedVideoUrl)}`
+            : `/watch/${currentId}`,
+        }
+      : null
+  );
 
   if (isLoading) return <WatchSkeleton />;
 

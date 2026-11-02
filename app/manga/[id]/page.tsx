@@ -17,6 +17,7 @@ import { useGenreStore } from "@/store/use-genre-store";
 import { useRouter } from "next/navigation"
 import { useI18n } from "@/components/i18n-provider"
 import { ShareContentModal } from "@/components/chat/share-content-modal"
+import { useRecordWatchHistory } from "@/hooks/use-watch-history"
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -30,6 +31,28 @@ export default function MangaDetailPage(props: Props) {
     const {manga, isLoading, error, refetch, isFetching} = useMangaDetails(params.id);
     const { mangaGenre, setMangaGenre } = useGenreStore();
     const router = useRouter();
+
+    useRecordWatchHistory(
+        manga
+            ? {
+                  itemId: String(manga.mal_id),
+                  type: "manga",
+                  title: manga.title,
+                  subtitle: [
+                      manga.type || "Manga",
+                      manga.chapters ? `${manga.chapters} ch` : null,
+                      manga.score ? `★ ${manga.score}` : null,
+                  ]
+                      .filter(Boolean)
+                      .join(" • "),
+                  image:
+                      manga.images?.jpg?.large_image_url ||
+                      manga.images?.jpg?.image_url ||
+                      "",
+                  href: `/manga/${manga.mal_id}`,
+              }
+            : null
+    );
 
     if (isLoading) {
         return (

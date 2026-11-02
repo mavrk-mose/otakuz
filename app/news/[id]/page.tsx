@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Clock3, MessageSquare, Newspaper, Plus } from "lucide-react";
 import { ArticleActions } from "@/components/news/article-actions";
 import { NewsArticleBody } from "@/components/news/news-article-body";
+import { WatchHistoryTracker } from "@/components/profile/watch-history-tracker";
 import { getNewsArticleById, fallbackNewsStories } from "@/lib/sanity";
 import { getAuthorInitials, type NewsArticle, type NewsStory } from "@/types/news";
 
@@ -79,6 +80,14 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
 
   return (
     <article className="-m-4 min-h-screen bg-background text-foreground">
+      <WatchHistoryTracker
+        itemId={article._id}
+        type="news"
+        title={article.title}
+        subtitle={[article.tag || "Editorial", authorName].filter(Boolean).join(" • ")}
+        image={article.imageUrl || ""}
+        href={`/news/${encodeURIComponent(article._id)}`}
+      />
       {/* Top Breadcrumb Navigation Bar */}
       <div className="border-b border-border bg-card/80 px-6 py-3 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between">

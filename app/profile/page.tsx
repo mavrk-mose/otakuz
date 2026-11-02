@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserLists } from "@/components/profile/user-lists";
+import { WatchHistory } from "@/components/profile/watch-history";
 import { UserProfileCard } from "@/components/profile/user-profile-card";
 import { ProfileSettingsModal } from "@/components/profile/profile-settings-modal";
 import { motion } from "framer-motion";
@@ -211,11 +212,7 @@ function ProfileContent() {
               </TabsContent>
 
               <TabsContent value="history">
-                <Card className="p-12 border-border bg-card text-center rounded-2xl">
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.historyComingSoon")}
-                  </p>
-                </Card>
+                <WatchHistory userId={targetUserId} isOwnProfile={isOwnProfile} />
               </TabsContent>
 
               <TabsContent value="reviews">

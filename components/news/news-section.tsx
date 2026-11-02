@@ -7,6 +7,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n-provider";
+import { recordWatchHistory } from "@/lib/watch-history";
 
 export function NewsSection() {
   const { locale, t } = useI18n();
@@ -40,6 +41,21 @@ export function NewsSection() {
   const items = newsList || [];
   const featured = items[0];
   const sideItems = items.slice(1, 4);
+
+  const logExternalNews = (newsItem: any) => {
+    if (!newsItem?.url || !newsItem?.title) return;
+    void recordWatchHistory({
+      itemId: `mal_news_${newsItem.mal_id || newsItem.url}`,
+      type: "news",
+      title: newsItem.title,
+      subtitle: newsItem.author_username
+        ? `Otaku Wire • ${newsItem.author_username}`
+        : "Otaku Wire Dispatch",
+      image: newsItem.images?.jpg?.image_url || "",
+      href: newsItem.url,
+      isExternal: true,
+    });
+  };
 
   return (
     <div className="space-y-6">
@@ -100,7 +116,12 @@ export function NewsSection() {
               </div>
 
               <div className="mt-4 flex flex-col gap-2">
-                <Link href={featured.url} target="_blank" rel="noreferrer">
+                <Link
+                  href={featured.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  onClick={() => logExternalNews(featured)}
+                >
                   <h3 className="text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-rose-500 sm:text-2xl">
                     {featured.title}
                   </h3>
@@ -127,6 +148,7 @@ export function NewsSection() {
                 href={featured.url}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => logExternalNews(featured)}
                 className="flex items-center gap-1 font-mono text-xs font-semibold text-rose-500 hover:underline"
               >
                 <span>Read Dispatch</span>
@@ -148,6 +170,7 @@ export function NewsSection() {
                 href={news.url}
                 target="_blank"
                 rel="noreferrer"
+                onClick={() => logExternalNews(news)}
                 className="group flex flex-1 items-start gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-border/80 hover:bg-muted/30"
               >
                 <div className="flex flex-1 flex-col justify-between self-stretch">
