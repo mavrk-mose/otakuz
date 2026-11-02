@@ -41,16 +41,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/components/i18n-provider";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Input } from "@/components/ui/input";
-import { useAnimeStore } from "@/store/use-anime-store";
 import { useSidebarStore } from "@/store/use-sidebar-store";
-import { SearchDropdown } from "@/components/search-dropdown";
+import { useGlobalSearchStore } from "@/store/use-global-search-store";
 
 const navItems = [
   { href: "/", icon: Home, labelKey: "nav.home" },
@@ -78,8 +75,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { isExpanded, toggleSidebar } = useSidebarStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobileSearchOpen, setIsMobileSearchOpen] = useState(false);
-  const { searchQuery, setSearchQuery } = useAnimeStore();
+  const openSearch = useGlobalSearchStore((state) => state.openSearch);
 
   const toggleTheme = () => {
     setTheme(resolvedTheme === "dark" ? "light" : "dark");
@@ -365,7 +361,7 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => setIsMobileSearchOpen(!isMobileSearchOpen)}
+              onClick={() => openSearch()}
               className="h-9 w-9 rounded-full"
             >
               <SearchIcon className="h-4 w-4" />
@@ -392,40 +388,6 @@ export default function Navbar() {
             )}
           </div>
         </div>
-
-        <AnimatePresence>
-          {isMobileSearchOpen && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: "auto", opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              className="overflow-hidden border-t border-border/40 bg-background/95 px-4 py-2"
-            >
-              <div className="search-container relative">
-                <SearchIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder={t("search.placeholder")}
-                  className="h-9 pl-9 pr-8 text-sm"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  autoFocus
-                />
-                {searchQuery && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2"
-                    onClick={() => setSearchQuery("")}
-                  >
-                    <X className="h-3.5 w-3.5" />
-                  </Button>
-                )}
-                {searchQuery && <SearchDropdown />}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </header>
 
       {/* Mobile Bottom Tabs */}

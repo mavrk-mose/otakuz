@@ -1,106 +1,59 @@
-"use client"
+"use client";
 
-import { useState, useRef, useEffect } from "react"
-import { useAnimeStore } from "@/store/use-anime-store"
-import { useAuth } from "@/hooks/use-auth"
-import { SearchDropdown } from "./search-dropdown"
-import { NotificationBell } from "@/components/notification-bell"
-import { ThemeToggle } from "@/components/theme-toggle"
-import { Input } from "@/components/ui/input"
-import { SearchIcon } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { useI18n } from "@/components/i18n-provider"
+import { useEffect, useState } from "react";
+import { SearchIcon } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
+import { NotificationBell } from "@/components/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { GlobalSearchModal } from "@/components/global-search-modal";
+import { useGlobalSearchStore } from "@/store/use-global-search-store";
 
 export function Search() {
-  const { setSearchQuery, searchQuery } = useAnimeStore()
-  const { user } = useAuth()
-  const { t } = useI18n()
-  const [isExpanded, setIsExpanded] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const { user } = useAuth();
+  const openSearch = useGlobalSearchStore((state) => state.openSearch);
+  const [isMac, setIsMac] = useState(true);
 
   useEffect(() => {
-    if (isExpanded && inputRef.current) {
-      inputRef.current.focus()
+    if (typeof navigator !== "undefined") {
+      setIsMac(/Mac|iPhone|iPad|iPod/i.test(navigator.platform || navigator.userAgent));
     }
-  }, [isExpanded])
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        isExpanded &&
-        inputRef.current &&
-        !inputRef.current.contains(event.target as Node) &&
-        !(event.target as HTMLElement).closest(".search-container")
-      ) {
-        setIsExpanded(false)
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside)
-    }
-  }, [isExpanded])
-
-  const handleSearchClick = () => {
-    setIsExpanded(true)
-  }
+  }, []);
 
   return (
-    <div className="hidden lg:block">
-      <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-        <div className="container flex h-16 items-center px-4">
-          <div className="flex-1" />
-          <div className="flex items-center gap-4">
-            <div className="search-container relative flex items-center">
-              <AnimatePresence initial={false}>
-                {isExpanded ? (
-                  <motion.div
-                    key="expanded"
-                    initial={{ width: 40, opacity: 0.5 }}
-                    animate={{ width: 300, opacity: 1 }}
-                    exit={{ width: 40, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: "easeInOut" }}
-                    className="relative max-w-[calc(100vw-6rem)]"
-                  >
-                    <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                    <Input
-                      ref={inputRef}
-                      type="search"
-                      placeholder={t("search.placeholder")}
-                      className="pl-10 w-full"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Escape") {
-                          setIsExpanded(false)
-                        }
-                      }}
-                    />
-                    {searchQuery && <SearchDropdown />}
-                  </motion.div>
-                ) : (
-                  <motion.div
-                    key="collapsed"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <Button variant="ghost" size="icon" onClick={handleSearchClick} className="rounded-full">
-                      <SearchIcon className="h-5 w-5" />
-                      <span className="sr-only">{t("common.search")}</span>
-                    </Button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+    <>
+      <div className="hidden lg:block">
+        <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+          <div className="container flex h-16 items-center justify-between gap-4 px-4">
+            <div className="flex-1" />
+
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => openSearch()}
+                aria-label="Open global search"
+                className="group flex h-10 w-72 items-center justify-between gap-3 rounded-xl border border-border bg-card px-3.5 text-left text-xs text-muted-foreground shadow-sm transition hover:border-rose-500/40 hover:bg-muted/50 hover:text-foreground xl:w-96"
+              >
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <SearchIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-colors group-hover:text-rose-500" />
+                  <span className="truncate">
+                    Search anime, users, merch, events, channels...
+                  </span>
+                </span>
+
+                <kbd className="inline-flex shrink-0 items-center gap-0.5 rounded-md border border-border bg-background px-1.5 py-0.5 font-mono text-[10px] font-semibold text-muted-foreground">
+                  {isMac ? "⌘K" : "Ctrl K"}
+                </kbd>
+              </button>
+
+              {user && <NotificationBell />}
+              <ThemeToggle />
             </div>
-            {user && <NotificationBell />}
-            <ThemeToggle />
           </div>
-        </div>
-      </header>
-    </div>
-  )
+        </header>
+      </div>
+
+      {/* Mounted globally for both desktop and mobile viewports */}
+      <GlobalSearchModal />
+    </>
+  );
 }
