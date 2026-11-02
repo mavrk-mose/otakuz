@@ -18,11 +18,13 @@ import { CommunityMemberCard } from "@/components/home/community-profiles-sectio
 import { useCommunityUsers } from "@/hooks/use-community-users";
 import type { UserProfileData } from "@/types/user";
 
+const EMPTY_USERS: UserProfileData[] = [];
+
 type SortMode = "active" | "level" | "watched" | "name";
 
 export default function CommunityDirectoryPage() {
   const { data, isLoading } = useCommunityUsers(500);
-  const users: UserProfileData[] = data ?? [];
+  const users = data ?? EMPTY_USERS;
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortMode>("active");
 

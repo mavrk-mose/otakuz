@@ -14,10 +14,7 @@ import { app, auth } from '@/lib/firebase';
 import { useMessagesStore } from '@/store/use-messages-store';
 import { syncUserProfileToFirestore } from '@/lib/user-sync';
 
-let activeSubscribers = 0;
 let firebaseUnsubscribe: (() => void) | null = null;
-let authInitialization: Promise<void> | null = null;
-let resolveInitialSession: (() => void) | null = null;
 let authEventVersion = 0;
 let lastSyncedUid: string | null = null;
 
@@ -27,34 +24,23 @@ export interface IAuth {
     initialized: boolean;
     token: string | null;
     setUser: (user: User | null) => void;
-    setLoading: (loading: boolean) => void;
-    setToken: (token: string | null) => void;
     signIn: (provider: string, credentials?: any) => Promise<User>;
     signOut: () => Promise<void>;
     subscribeAuth: () => () => void;
-    initialize: () => Promise<void>;
 }
 
 function attachFirebaseAuthListener(
     set: (partial: Partial<IAuth>) => void,
     get: () => IAuth
-): Promise<void> {
+): void {
     if (typeof window === 'undefined') {
-        return Promise.resolve();
+        return;
     }
 
     if (!app) {
         set({ user: null, token: null, loading: false, initialized: true });
-        return Promise.resolve();
+        return;
     }
-
-    if (firebaseUnsubscribe && authInitialization) {
-        return authInitialization;
-    }
-
-    authInitialization = new Promise<void>((resolve) => {
-        resolveInitialSession = resolve;
-    });
 
     firebaseUnsubscribe = onIdTokenChanged(auth, async (firebaseUser) => {
         const currentVersion = ++authEventVersion;
@@ -72,10 +58,6 @@ function attachFirebaseAuthListener(
                 loading: false,
                 initialized: true,
             });
-            if (resolveInitialSession) {
-                resolveInitialSession();
-                resolveInitialSession = null;
-            }
             return;
         }
 
@@ -102,15 +84,8 @@ function attachFirebaseAuthListener(
                 loading: false,
                 initialized: true,
             });
-        } finally {
-            if (resolveInitialSession) {
-                resolveInitialSession();
-                resolveInitialSession = null;
-            }
         }
     });
-
-    return authInitialization;
 }
 
 const useAuthStore = create<IAuth>((set, get) => ({
@@ -121,14 +96,6 @@ const useAuthStore = create<IAuth>((set, get) => ({
     setUser: (user) => {
         if (typeof window === 'undefined') return;
         set({ user });
-    },
-    setToken: (token) => {
-        if (typeof window === 'undefined') return;
-        set({ token });
-    },
-    setLoading: (loading) => {
-        if (typeof window === 'undefined') return;
-        set({ loading });
     },
     signIn: async (provider: string, credentials?: any) => {
         if (typeof window === 'undefined' || !app) {
@@ -203,28 +170,14 @@ const useAuthStore = create<IAuth>((set, get) => ({
             return () => {};
         }
 
-        activeSubscribers += 1;
-        void attachFirebaseAuthListener(set, get);
+        attachFirebaseAuthListener(set, get);
 
-        let unsubscribed = false;
         return () => {
-            if (unsubscribed) return;
-            unsubscribed = true;
-            activeSubscribers = Math.max(0, activeSubscribers - 1);
-
-            if (activeSubscribers === 0 && firebaseUnsubscribe) {
-                firebaseUnsubscribe();
-                firebaseUnsubscribe = null;
-                authInitialization = null;
-                if (resolveInitialSession) {
-                    resolveInitialSession();
-                    resolveInitialSession = null;
-                }
-            }
+            firebaseUnsubscribe?.();
+            firebaseUnsubscribe = null;
+            // Ignore token requests still in flight after the provider unmounts.
+            ++authEventVersion;
         };
-    },
-    initialize: async () => {
-        return attachFirebaseAuthListener(set, get);
     },
 }));
 

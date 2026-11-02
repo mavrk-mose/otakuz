@@ -102,7 +102,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
 
           <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
             <span className="uppercase text-rose-500 font-semibold">Otakuz Editorial</span>
-            <span>//</span>
+            <span>{"//"}</span>
             <span>{article.readTime || "12 min read"}</span>
           </div>
         </div>

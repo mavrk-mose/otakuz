@@ -22,7 +22,7 @@ export function Timeline({ events }: TimelineProps) {
     const { locale, t } = useI18n();
     const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
     const sortedEvents = [...events].sort((a, b) =>
-        new Date(b.date).getTime() - new Date(a.date).getTime()
+        new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
     );
 
     return (
@@ -46,6 +46,7 @@ export function Timeline({ events }: TimelineProps) {
                 <div className="absolute left-8 sm:left-24 top-0 bottom-0 w-px bg-border/50" />
 
                 {sortedEvents.map((event, idx) => {
+                    const attendees = event.attendees ?? [];
                     const date = new Date(event.date || Date.now());
                     const dateId = date.toISOString();
                     const showInlineEventAd =
@@ -81,12 +82,12 @@ export function Timeline({ events }: TimelineProps) {
                                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
                                         {/* Event Image */}
                                         <div className="relative w-full sm:w-40 h-40 sm:h-48">
-                                            <Image
+                                            {event.thumbnailUrl && <Image
                                                 src={urlFor(event.thumbnailUrl.asset._ref).url()}
                                                 alt={event.title}
                                                 fill
                                                 className="object-cover rounded-lg"
-                                            />
+                                            />}
                                         </div>
 
                                         <div className="flex-1 space-y-4">
@@ -103,7 +104,7 @@ export function Timeline({ events }: TimelineProps) {
                                                 <div className="flex -space-x-2">
                                                     {event.organizers?.map((organizer, i) => (
                                                         <Avatar key={i} className="border-2 border-background w-8 h-8">
-                                                            <AvatarImage src={urlFor(organizer.avatar.asset._ref).url()} />
+                                                            {organizer.avatar && <AvatarImage src={urlFor(organizer.avatar.asset._ref).url()} />}
                                                             <AvatarFallback>{organizer.name[0]}</AvatarFallback>
                                                         </Avatar>
                                                     ))}
@@ -116,15 +117,15 @@ export function Timeline({ events }: TimelineProps) {
                                             {/* Location */}
                                             <div className="flex items-center gap-2 text-base text-muted-foreground">
                                                 <MapPin className="h-5 w-5" />
-                                                {event.location.name}
+                                                {event.location?.name}
                                             </div>
 
                                             {/* Attendees */}
-                                            {event.attendees.length > 0 ? (
+                                            {attendees.length > 0 ? (
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex -space-x-2">
                                                         <TooltipProvider>
-                                                            {event.attendees?.slice(0, 5).map((attendee, i) => (
+                                                            {attendees.slice(0, 5).map((attendee, i) => (
                                                                 <Tooltip key={i}>
                                                                     <TooltipTrigger>
                                                                         <Avatar className="border-2 border-background w-8 h-8">
@@ -139,9 +140,9 @@ export function Timeline({ events }: TimelineProps) {
                                                             ))}
                                                         </TooltipProvider>
                                                     </div>
-                                                    {event.attendees.length > 5 && (
+                                                    {attendees.length > 5 && (
                                                         <span className="text-base text-muted-foreground">
-                                                            +{event.attendees.length - 5}
+                                                            +{attendees.length - 5}
                                                         </span>
                                                     )}
                                                 </div>

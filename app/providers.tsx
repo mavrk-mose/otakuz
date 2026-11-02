@@ -7,10 +7,14 @@ import { type ThemeProviderProps } from 'next-themes/dist/types';
 import { PostHogProvider } from 'posthog-js/react';
 import posthog from 'posthog-js';
 import { usePostHogPageTracking } from '@/hooks/use-post-hog-tracking';
+import useAuthStore from '@/store/use-auth-store';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { I18nProvider } from '@/components/i18n-provider';
 
 export function Providers({ children, ...props }: ThemeProviderProps) {
   const [queryClient] = useState(() => new QueryClient());
+
+  useEffect(() => useAuthStore.getState().subscribeAuth(), []);
 
   useEffect(() => {
     const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim();
@@ -28,6 +32,7 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
+      {process.env.NODE_ENV === 'development' && <ReactQueryDevtools initialIsOpen={false} />}
       <PostHogProvider client={posthog}>
         <NextThemesProvider {...props}>
           <I18nProvider>

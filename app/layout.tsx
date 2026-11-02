@@ -5,10 +5,8 @@ import type {Metadata} from 'next';
 import {Inter} from 'next/font/google';
 import {Providers} from './providers';
 import Navbar from '@/components/navbar';
-import {AuthInitializer} from "@/components/auth-initializer";
 import { Toaster } from '@/components/ui/sonner';
 import { Search } from '@/components/search';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PlayerLayout } from '@/components/watch/player-layout';
 import { BackToTopButton } from '@/components/back-to-top-button';
 import { LayoutShell } from '@/components/layout-shell';
@@ -40,8 +38,6 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
             <body className={inter.className} suppressHydrationWarning>
                 <AdSenseScript />
                 <Providers attribute="class" defaultTheme="dark" enableSystem>
-                    <AuthInitializer />
-                     <ReactQueryDevtools initialIsOpen={false} />
                     <Toaster />
                     <div className="min-h-screen">
                         <Navbar />

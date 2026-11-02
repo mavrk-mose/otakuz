@@ -62,12 +62,12 @@ export function EventsSection() {
                         <Card className="overflow-hidden group">
                             <Link href={`/events/${event._id}`}>
                                 <div className="relative h-48">
-                                    <Image
+                                    {event.thumbnailUrl && <Image
                                         src={urlFor(event.thumbnailUrl.asset._ref).url()}
                                         alt={event.title}
                                         fill
                                         className="object-cover"
-                                    />
+                                    />}
                                     <div className="absolute top-4 right-4">
                                         <Badge>{event.category}</Badge>
                                     </div>
@@ -87,11 +87,11 @@ export function EventsSection() {
                                         </div>
                                         <div className="flex items-center">
                                             <MapPin className="h-4 w-4 mr-2" />
-                                            {event.location.name}
+                                            {event.location?.name}
                                         </div>
                                         <div className="flex items-center">
                                             <Users className="h-4 w-4 mr-2" />
-                                            {event.attendees.length} {t("events.attending")}
+                                            {event.attendees?.length ?? 0} {t("events.attending")}
                                         </div>
                                     </div>
                                 </div>

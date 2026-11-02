@@ -13,13 +13,7 @@ const nextConfig = {
       dynamic: 30,
     },
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: { unoptimized: true },
-  typescript: {
-    ignoreBuildErrors: true,
-  }
 };
 
 module.exports = nextConfig;

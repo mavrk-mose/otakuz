@@ -47,13 +47,13 @@ export default function EventDetailPage(props: Props) {
                         {/* Hero Image */}
                         <Card className="overflow-hidden w-full">
                             <div className="relative aspect-video w-full">
-                                <Image
-                                    src={urlFor(event?.thumbnailUrl.asset._ref).url()}
+                                {event?.thumbnailUrl && <Image
+                                    src={urlFor(event.thumbnailUrl.asset._ref).url()}
                                     alt={event ? event.title : 'thumbnail'}
                                     fill
                                     className="object-cover"
                                     priority
-                                />
+                                />}
                             </div>
                         </Card>
 
@@ -66,7 +66,7 @@ export default function EventDetailPage(props: Props) {
                                     <DialogTrigger asChild>
                                         <Badge variant="secondary" className="cursor-pointer">
                                             <Users className="w-4 h-4 mr-1"/>
-                                            {event?.attendees.length} {t("events.attending")}
+                                            {(event?.attendees?.length ?? 0)} {t("events.attending")}
                                         </Badge>
                                     </DialogTrigger>
                                     <DialogContent className="sm:max-w-[425px]">
@@ -75,7 +75,7 @@ export default function EventDetailPage(props: Props) {
                                         </DialogHeader>
                                         <ScrollArea className="h-[300px] pr-4">
                                             <div className="space-y-4">
-                                                {event?.attendees.map((attendee: any, i: number) => (
+                                                {event?.attendees?.map((attendee: any, i: number) => (
                                                     <div key={i} className="flex items-center gap-3">
                                                         <Avatar>
                                                             <AvatarImage
@@ -141,8 +141,8 @@ export default function EventDetailPage(props: Props) {
                                     <div className="flex items-center gap-2">
                                         <MapPin className="w-5 h-5 text-muted-foreground shrink-0"/>
                                         <div>
-                                            <p className="font-medium">{event?.location.name}</p>
-                                            <p className="text-sm text-muted-foreground">{event?.location.address}</p>
+                                            <p className="font-medium">{event?.location?.name}</p>
+                                            <p className="text-sm text-muted-foreground">{event?.location?.address}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -181,10 +181,10 @@ export default function EventDetailPage(props: Props) {
                             <CardHeader className="px-0 pt-0">
                                 <h3 className="text-lg font-semibold mb-4">{t("events.hostedBy")}</h3>
                                 <div className="space-y-4">
-                                    {event?.organizers.map((organizer: any, index: number) => (
+                                    {event?.organizers?.map((organizer: any, index: number) => (
                                         <div key={index} className="flex items-center gap-3">
                                             <Avatar>
-                                                <AvatarImage src={organizer.avatar.asset._ref}/>
+                                                {organizer.avatar && <AvatarImage src={urlFor(organizer.avatar.asset._ref).url()}/>}
                                                 <AvatarFallback>{organizer.name[0]}</AvatarFallback>
                                             </Avatar>
                                             <span className="font-medium">{organizer.name}</span>
@@ -195,7 +195,7 @@ export default function EventDetailPage(props: Props) {
                             <CardFooter className="flex flex-col space-y-4 pt-4 border-t px-0 pb-0">
                                 <div className="w-full">
                                     <div className="text-sm text-muted-foreground mb-2">
-                                        {event?.attendees.length} {t("events.going")}
+                                        {(event?.attendees?.length ?? 0)} {t("events.going")}
                                     </div>
                                     <div className="flex items-center gap-2">
                                         <div className="flex -space-x-2">
@@ -262,7 +262,7 @@ export default function EventDetailPage(props: Props) {
                             id: params.id,
                             title: event.title,
                             image: event.thumbnailUrl ? urlFor(event.thumbnailUrl.asset._ref).url() : '',
-                            date: event.date,
+                            date: event.date ?? '',
                             time: event.time,
                             locationName: event.location?.name,
                             ticketPrice: event.ticket ? Number(event.ticket) : undefined,

@@ -240,8 +240,8 @@ export default function MangaDetailPage(props: Props) {
                         id: manga.mal_id,
                         title: manga.title,
                         image: coverImage,
-                        score: manga.score,
-                        chapters: manga.chapters,
+                        score: manga.score ?? undefined,
+                        chapters: manga.chapters ?? undefined,
                         authors: manga.authors?.map((a: any) => a.name) || [],
                     },
                 }}
