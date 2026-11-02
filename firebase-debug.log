@@ -1,0 +1,18 @@
+[debug] [2026-11-02T05:48:19.623Z] ----------------------------------------------------------------------
+[debug] [2026-11-02T05:48:19.627Z] Command:       /opt/homebrew/Cellar/node/26.4.0/bin/node /opt/homebrew/bin/firebase use
+[debug] [2026-11-02T05:48:19.627Z] CLI Version:   15.23.0
+[debug] [2026-11-02T05:48:19.627Z] Platform:      darwin
+[debug] [2026-11-02T05:48:19.627Z] Node Version:  v26.4.0
+[debug] [2026-11-02T05:48:19.627Z] Detected Agent: antigravity
+[debug] [2026-11-02T05:48:19.627Z] Time:          Mon Nov 02 2026 14:48:19 GMT+0900 (Korean Standard Time)
+[debug] [2026-11-02T05:48:19.627Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-11-02T05:48:19.713Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-11-02T05:48:19.713Z] > authorizing via signed-in user (kippemoses25@gmail.com)
+[info] Active Project: prod (otakuz-99ee1)
+[info] 
+[info] Project aliases for /Users/moseskippe/WebstormProjects/otakuz:
+[info] 
+[info] * prod (otakuz-99ee1)
+[info] 
+[info] Run firebase use --add to define a new project alias.

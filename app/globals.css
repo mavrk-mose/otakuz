@@ -4,70 +4,72 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
-    --background: 224 20% 8%; /* #10131b Canvas Base */
-    --foreground: 224 25% 90%; /* #e0e2ed */
-    --card: 223 22% 14%; /* #1c202c Surface Level 2 */
-    --card-foreground: 224 25% 90%;
-    --popover: 222 22% 18%; /* #242938 Surface Level 3 */
-    --popover-foreground: 224 25% 90%;
-    --primary: 239 84% 67%; /* #6366f1 Primary Indigo */
+    color-scheme: light;
+    /* Creamy Light Theme (warm, parchment, milk-cream aesthetic - NOT harsh white) */
+    --background: 38 35% 93%; /* #F5F0E6 Cream canvas */
+    --foreground: 30 10% 16%; /* #282421 Warm sumi ink */
+    --card: 40 38% 97%; /* #FCFAF6 Warm creamy white card */
+    --card-foreground: 30 10% 16%;
+    --popover: 40 38% 97%;
+    --popover-foreground: 30 10% 16%;
+    --primary: 6 85% 56%; /* #EE4D3B Otakuz Coral Flame */
     --primary-foreground: 0 0% 100%;
-    --secondary: 351 90% 60%; /* #f43f5e Neon Crimson */
+    --secondary: 35 90% 52%; /* Warm Amber */
     --secondary-foreground: 0 0% 100%;
-    --muted: 222 20% 12%; /* #14171f Surface Level 1 */
-    --muted-foreground: 220 15% 65%; /* #8492a6 */
-    --accent: 222 22% 18%; /* #242938 */
-    --accent-foreground: 224 25% 90%;
-    --destructive: 351 90% 60%;
+    --muted: 38 24% 87%; /* #ECE4D6 Deeper cream */
+    --muted-foreground: 30 8% 46%; /* #7A726A Warm muted taupe */
+    --accent: 38 30% 90%; /* #F0E9DC Soft warm cream hover */
+    --accent-foreground: 30 10% 16%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 98%;
-    --border: 222 24% 22%; /* #2b3245 Hairline Dividers */
-    --input: 222 24% 22%;
-    --ring: 239 84% 67%;
-    --chart-1: 239 84% 67%;
-    --chart-2: 351 90% 60%;
-    --chart-3: 38 92% 50%; /* #f59e0b Warm Amber */
-    --chart-4: 160 84% 39%; /* #10b981 Success Emerald */
-    --chart-5: 283 68% 66%;
-    --sidebar: 222 20% 10%; /* #14171f */
-    --sidebar-foreground: 224 25% 90%;
-    --sidebar-border: 222 24% 22%;
-    --sidebar-accent: 222 22% 18%;
-    --sidebar-accent-foreground: 224 25% 90%;
-    --radius: 0.5rem; /* 8px rounded corners as specified in design system */
+    --border: 38 20% 82%; /* #DDD5C7 Warm divider */
+    --input: 38 20% 82%;
+    --ring: 6 85% 56%;
+    --chart-1: 6 85% 56%;
+    --chart-2: 35 90% 52%;
+    --chart-3: 160 60% 40%;
+    --chart-4: 220 70% 50%;
+    --chart-5: 280 60% 55%;
+    --sidebar: 38 30% 90%;
+    --sidebar-foreground: 30 10% 16%;
+    --sidebar-border: 38 20% 82%;
+    --sidebar-accent: 38 35% 85%;
+    --sidebar-accent-foreground: 30 10% 16%;
+    --radius: 0.75rem;
   }
 
   .dark {
     color-scheme: dark;
-    --background: 224 20% 8%;
-    --foreground: 224 25% 90%;
-    --card: 223 22% 14%;
-    --card-foreground: 224 25% 90%;
-    --popover: 222 22% 18%;
-    --popover-foreground: 224 25% 90%;
-    --primary: 239 84% 67%;
+    /* Dark Theme (Comfortable Slate Charcoal - NOT pitch black) */
+    --background: 228 12% 11%; /* #17181F Warm slate charcoal */
+    --foreground: 228 15% 93%; /* #EDEDF2 Crisp soft white */
+    --card: 228 12% 15%; /* #20222B Elevated slate card */
+    --card-foreground: 228 15% 93%;
+    --popover: 227 13% 18%; /* #262933 Level 3 surface */
+    --popover-foreground: 228 15% 93%;
+    --primary: 6 92% 63%; /* #FF5543 Signature Coral Flame */
     --primary-foreground: 0 0% 100%;
-    --secondary: 351 90% 60%;
+    --secondary: 35 90% 55%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 222 20% 12%;
-    --muted-foreground: 220 15% 65%;
-    --accent: 222 22% 18%;
-    --accent-foreground: 224 25% 90%;
-    --destructive: 351 90% 60%;
+    --muted: 228 11% 18%; /* #262833 Muted surface */
+    --muted-foreground: 225 12% 65%; /* #9CA2B3 Clear slate-gray */
+    --accent: 227 13% 20%; /* #2C2F3C Hover accent */
+    --accent-foreground: 228 15% 93%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 98%;
-    --border: 222 24% 22%;
-    --input: 222 24% 22%;
-    --ring: 239 84% 67%;
-    --chart-1: 239 84% 67%;
-    --chart-2: 351 90% 60%;
-    --chart-3: 38 92% 50%;
-    --chart-4: 160 84% 39%;
-    --chart-5: 283 68% 66%;
-    --sidebar: 222 20% 10%;
-    --sidebar-foreground: 224 25% 90%;
-    --sidebar-border: 222 24% 22%;
-    --sidebar-accent: 222 22% 18%;
-    --sidebar-accent-foreground: 224 25% 90%;
+    --border: 228 13% 22%; /* #313543 Clean border */
+    --input: 228 13% 22%;
+    --ring: 6 92% 63%;
+    --chart-1: 6 92% 63%;
+    --chart-2: 35 90% 55%;
+    --chart-3: 160 70% 45%;
+    --chart-4: 215 85% 65%;
+    --chart-5: 280 65% 65%;
+    --sidebar: 230 13% 9%; /* #13141A Deep sidebar */
+    --sidebar-foreground: 228 15% 93%;
+    --sidebar-border: 228 13% 20%;
+    --sidebar-accent: 227 13% 16%;
+    --sidebar-accent-foreground: 228 15% 93%;
   }
 }
 
@@ -77,15 +79,25 @@
   }
 
   html {
-    @apply bg-background;
+    @apply bg-background text-foreground;
     scroll-behavior: smooth;
   }
 
   body {
-    @apply min-h-screen bg-background text-foreground antialiased;
+    @apply min-h-screen bg-background text-foreground antialiased transition-colors duration-200;
+  }
+
+  :root:not(.dark) body {
     background-image:
-      radial-gradient(circle at top, rgba(99, 102, 241, 0.15), transparent 40%),
-      linear-gradient(180deg, #0e1015, #10131b);
+      radial-gradient(circle at 50% 0%, rgba(238, 77, 59, 0.04), transparent 50%),
+      radial-gradient(circle at 100% 20%, rgba(217, 119, 6, 0.03), transparent 40%);
+    background-attachment: fixed;
+  }
+
+  .dark body {
+    background-image:
+      radial-gradient(circle at 50% 0%, rgba(255, 85, 67, 0.07), transparent 45%),
+      linear-gradient(180deg, hsl(228 12% 11%), hsl(228 13% 10%));
     background-attachment: fixed;
   }
 
