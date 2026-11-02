@@ -130,6 +130,9 @@ export async function syncUserProfileToFirestore(user: User): Promise<void> {
         boardsCount: stats.boardsCount,
         totalSaved: stats.totalSaved,
       };
+      if (existing.isPublic === undefined) {
+        updates.isPublic = true;
+      }
       if (user.photoURL && !existing.googlePhotoURL) {
         updates.googlePhotoURL = user.photoURL;
       }

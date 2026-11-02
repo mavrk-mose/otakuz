@@ -17,7 +17,7 @@ export function CommunityProfilesSection() {
     queryFn: async () => {
       try {
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("isPublic", "==", true), limit(20));
+        const q = query(usersRef, where("isPublic", "==", true), limit(50));
         const snapshot = await getDocs(q);
 
         const realUsers = snapshot.docs.map((docSnap) => {
@@ -39,6 +39,17 @@ export function CommunityProfilesSection() {
             totalSaved: Number(data.totalSaved || 0),
             preferences: data.preferences,
           } as UserProfileData;
+        });
+
+        // Sort by boards and activity first, keeping active members prominent
+        realUsers.sort((a, b) => {
+          if ((b.boardsCount || 0) !== (a.boardsCount || 0)) {
+            return (b.boardsCount || 0) - (a.boardsCount || 0);
+          }
+          if ((b.level || 1) !== (a.level || 1)) {
+            return (b.level || 1) - (a.level || 1);
+          }
+          return (b.totalSaved || 0) - (a.totalSaved || 0);
         });
 
         return realUsers;
@@ -149,7 +160,7 @@ export function CommunityProfilesSection() {
                         </div>
                       </div>
 
-                      <span className="inline-flex items-center rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[11px] font-bold text-rose-400">
+                      <span className="inline-flex items-center rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[11px] font-bold text-rose-500">
                         Lv. {communityUser.level}
                       </span>
                     </div>
