@@ -20,12 +20,12 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="w-full min-w-0 max-w-full space-y-4">
         <h2 className="text-2xl font-bold">{t("anime.recommendations")}</h2>
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex space-x-4">
+        <ScrollArea className="w-full min-w-0 max-w-full">
+          <div className="flex w-max gap-4 py-1">
             {[...Array(4)].map((_, i) => (
-              <Card key={i} className="w-[300px] shrink-0 animate-pulse">
+              <Card key={i} className="w-[210px] sm:w-[240px] md:w-[260px] shrink-0 animate-pulse">
                 <div className="aspect-[2/3] bg-muted" />
                 <div className="p-4 space-y-2">
                   <div className="h-4 bg-muted rounded w-3/4" />
@@ -45,14 +45,14 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-full min-w-0 max-w-full space-y-4">
       <h2 className="text-2xl font-bold">{t("anime.recommendations")}</h2>
-      <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex space-x-4">
+      <ScrollArea className="w-full min-w-0 max-w-full">
+        <div className="flex w-max gap-4 py-2">
           {recommendations.map((rec: any) => (
             <motion.div
               key={rec.entry.mal_id}
-              className="w-[300px] shrink-0"
+              className="w-[210px] sm:w-[240px] md:w-[260px] shrink-0"
               whileHover={{ scale: 1.02 }}
             >
               <Card className="overflow-hidden">

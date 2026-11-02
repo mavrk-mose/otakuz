@@ -76,11 +76,22 @@
 @layer base {
   * {
     @apply border-border;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
   }
 
   html {
     @apply bg-background text-foreground;
     scroll-behavior: smooth;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
   }
 
   body {
@@ -110,5 +121,18 @@
   .theme-outline-heading {
     color: transparent;
     -webkit-text-stroke: 2px hsl(var(--foreground));
+  }
+
+  .scrollbar-none,
+  .no-scrollbar {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  .scrollbar-none::-webkit-scrollbar,
+  .no-scrollbar::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
   }
 }

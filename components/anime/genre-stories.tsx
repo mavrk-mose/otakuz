@@ -24,24 +24,19 @@ export function GenreStories() {
     if (!animeGenre || isLoadingGenres) return
 
     const activeGenreElement = genreRefs.current.get(animeGenre)
-    if (activeGenreElement && scrollContainerRef.current) {
-      const container = scrollContainerRef.current
-      const containerRect = container.getBoundingClientRect()
-      const elementRect = activeGenreElement.getBoundingClientRect()
-
-      const scrollLeft = elementRect.left + elementRect.width / 2 - containerRect.left - containerRect.width / 2
-
-      container.scrollTo({
-        left: container.scrollLeft + scrollLeft,
+    if (activeGenreElement) {
+      activeGenreElement.scrollIntoView({
         behavior: "smooth",
+        inline: "center",
+        block: "nearest",
       })
     }
   }, [animeGenre, isLoadingGenres])
 
   if (isLoadingGenres) {
     return (
-      <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex space-x-4 p-4">
+      <ScrollArea className="w-full min-w-0 max-w-full">
+        <div className="flex w-max gap-4 px-10 py-4">
           {[...Array(20)].map((_, i) => (
             <div key={i} className="animate-pulse">
               <div className="w-16 h-16 rounded-full bg-muted" />
@@ -56,8 +51,8 @@ export function GenreStories() {
 
   return (
     <>
-      <ScrollArea className="w-full whitespace-nowrap">
-        <div ref={scrollContainerRef} className="flex space-x-4 p-4">
+      <ScrollArea className="w-full min-w-0 max-w-full">
+        <div ref={scrollContainerRef} className="flex w-max gap-4 px-10 py-4">
           {genres?.map((genre: Genre) => {
             const isActive = isEqual(genre.mal_id.toString(), animeGenre)
             return (

@@ -137,7 +137,7 @@ export function CommunityProfilesSection() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden items-center gap-1.5 sm:flex">
+          <div className="flex items-center gap-1.5">
             <Button
               type="button"
               variant="outline"
@@ -210,7 +210,7 @@ export function CommunityProfilesSection() {
       ) : (
         <div
           ref={scrollContainerRef}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 pt-1 [scrollbar-width:thin]"
+          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-3 pt-1 scrollbar-none"
         >
           {previewUsers.map((communityUser, idx) => (
             <motion.div

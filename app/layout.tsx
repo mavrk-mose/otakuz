@@ -48,7 +48,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
                         <LayoutShell>
                             <Search />
                             <PlayerLayout>
-                                <main className="p-4 pb-20 lg:pb-4">{children}</main>
+                                <main className="min-w-0 max-w-full overflow-x-clip p-4 pb-20 lg:pb-4">{children}</main>
                             </PlayerLayout>
                         </LayoutShell>
                         <BackToTopButton />

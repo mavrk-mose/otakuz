@@ -64,9 +64,9 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
-        <div className="space-y-4 lg:sticky lg:top-4 self-start">
+    <div className="container mx-auto max-w-full px-4 py-8">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[340px_minmax(0,1fr)]">
+        <div className="min-w-0 space-y-4 self-start lg:sticky lg:top-4">
           <Card className="overflow-hidden">
             <Image
               src={anime.images.webp.large_image_url}
@@ -129,14 +129,14 @@ export default function AnimeDetailClient({ id }: { id: string }) {
           </Card>
         </div>
 
-        <div className="grid grid-cols-1 space-y-6">
+        <div className="min-w-0 max-w-full space-y-6">
           <div>
-            <h1 className="text-4xl font-bold mb-2">{anime.title}</h1>
-            <h2 className="text-xl text-muted-foreground mb-4">
+            <h1 className="text-3xl sm:text-4xl font-bold mb-2 break-words">{anime.title}</h1>
+            <h2 className="text-lg sm:text-xl text-muted-foreground mb-4 break-words">
               {anime.title_japanese}
             </h2>
             <div className="flex flex-wrap gap-2">
-              {anime.genres.map((genre) => (
+              {anime.genres.map((genre: any) => (
                 <Badge
                   key={genre.mal_id}
                   variant="secondary"
@@ -152,8 +152,8 @@ export default function AnimeDetailClient({ id }: { id: string }) {
             </div>
           </div>
 
-          <Tabs defaultValue="overview">
-            <TabsList>
+          <Tabs defaultValue="overview" className="w-full min-w-0">
+            <TabsList className="max-w-full flex-wrap h-auto gap-1">
               <TabsTrigger value="overview">{t("anime.overview")}</TabsTrigger>
               <TabsTrigger value="characters">{t("anime.characters")}</TabsTrigger>
               <TabsTrigger value="episodes">{t("common.episodes")}</TabsTrigger>
@@ -191,7 +191,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     </div>
                     <div className="flex">
                       <dt className="w-24 text-muted-foreground">{t("anime.studios")}</dt>
-                      <dd>{anime.studios.map((s) => s.name).join(", ")}</dd>
+                      <dd>{anime.studios.map((s: any) => s.name).join(", ")}</dd>
                     </div>
                   </dl>
                 </Card>
@@ -225,21 +225,21 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                 </Card>
               </div>
             </TabsContent>
-            <TabsContent value="characters">
+            <TabsContent value="characters" className="min-w-0 max-w-full">
               <AnimeCharacterList animeId={id} />
             </TabsContent>
-            <TabsContent value="episodes">
-              <Card className="mt-8 overflow-x-auto px-4">
+            <TabsContent value="episodes" className="min-w-0 max-w-full">
+              <Card className="mt-4 min-w-0 max-w-full overflow-hidden p-2 sm:p-4">
                 <AnimeEpisodes id={id} />
               </Card>
             </TabsContent>
-            <TabsContent value="gallery">
-              <div className="mt-8 overflow-x-auto px-4">
+            <TabsContent value="gallery" className="min-w-0 max-w-full">
+              <div className="mt-4 min-w-0 w-full max-w-full">
                 <AnimeGallery id={id} />
               </div>
             </TabsContent>
           </Tabs>
-          <div className="mt-8 overflow-x-auto px-4">
+          <div className="mt-8 min-w-0 w-full max-w-full">
             <AnimeRecommendations animeId={id} />
           </div>
         </div>

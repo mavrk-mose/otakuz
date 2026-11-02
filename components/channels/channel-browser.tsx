@@ -1,9 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
+  ChevronLeft,
+  ChevronRight,
   Globe2,
   History,
   Play,
@@ -189,6 +191,22 @@ export function ChannelBrowser() {
       setSelectedChannel(data.channels[0]);
     }
   }, [data, searchParams, selectedChannel]);
+
+  const recentStripRef = useRef<HTMLDivElement>(null);
+  const liveStripRef = useRef<HTMLDivElement>(null);
+
+  const scrollStrip = (
+    ref: React.RefObject<HTMLDivElement | null>,
+    direction: "left" | "right"
+  ) => {
+    const el = ref.current;
+    if (!el) return;
+    const step = Math.max(280, Math.round(el.clientWidth * 0.72));
+    el.scrollBy({
+      left: direction === "left" ? -step : step,
+      behavior: "smooth",
+    });
+  };
 
   const countries = useMemo(() => {
     const counts = new Map<string, number>();
@@ -398,16 +416,39 @@ export function ChannelBrowser() {
                   Recently viewed
                 </h2>
               </div>
-              <button
-                type="button"
-                onClick={clearRecentlyViewed}
-                className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                Clear
-              </button>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => scrollStrip(recentStripRef, "left")}
+                    aria-label="Scroll recently viewed channels left"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-primary/60 hover:bg-muted hover:text-foreground"
+                  >
+                    <ChevronLeft className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scrollStrip(recentStripRef, "right")}
+                    aria-label="Scroll recently viewed channels right"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-primary/60 hover:bg-muted hover:text-foreground"
+                  >
+                    <ChevronRight className="h-4 w-4" />
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={clearRecentlyViewed}
+                  className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-muted-foreground transition hover:bg-muted hover:text-foreground"
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  Clear
+                </button>
+              </div>
             </div>
-            <div className="grid auto-cols-[78%] grid-flow-col gap-4 overflow-x-auto px-1 pb-7 pt-1 [scrollbar-width:none] sm:auto-cols-[42%] md:auto-cols-[31%] lg:auto-cols-[24%] xl:auto-cols-[19%] [&::-webkit-scrollbar]:hidden">
+            <div
+              ref={recentStripRef}
+              className="grid auto-cols-[78%] grid-flow-col gap-4 overflow-x-auto px-1 pb-7 pt-1 scrollbar-none sm:auto-cols-[42%] md:auto-cols-[31%] lg:auto-cols-[24%] xl:auto-cols-[19%]"
+            >
               {currentRecentlyViewed.map((channel) => (
                 <ChannelCard
                   key={`recent-${channel.channelId}`}
@@ -428,9 +469,32 @@ export function ChannelBrowser() {
               </p>
               <h2 id="live-now-heading" className="text-2xl font-bold sm:text-3xl text-foreground">Live now</h2>
             </div>
-            <span className="text-sm text-muted-foreground">{data.channels.length} channels</span>
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-muted-foreground">{data.channels.length} channels</span>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => scrollStrip(liveStripRef, "left")}
+                  aria-label="Scroll live channels left"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-primary/60 hover:bg-muted hover:text-foreground"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => scrollStrip(liveStripRef, "right")}
+                  aria-label="Scroll live channels right"
+                  className="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground transition hover:border-primary/60 hover:bg-muted hover:text-foreground"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
           </div>
-          <div className="grid auto-cols-[78%] grid-flow-col gap-4 overflow-x-auto px-1 pb-7 pt-1 [scrollbar-width:none] sm:auto-cols-[42%] md:auto-cols-[31%] lg:auto-cols-[24%] xl:auto-cols-[19%] [&::-webkit-scrollbar]:hidden">
+          <div
+            ref={liveStripRef}
+            className="grid auto-cols-[78%] grid-flow-col gap-4 overflow-x-auto px-1 pb-7 pt-1 scrollbar-none sm:auto-cols-[42%] md:auto-cols-[31%] lg:auto-cols-[24%] xl:auto-cols-[19%]"
+          >
             {data.channels.slice(0, 14).map((channel: IptvChannel) => (
               <ChannelCard
                 key={`featured-${channel.id}`}

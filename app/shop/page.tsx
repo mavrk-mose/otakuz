@@ -122,10 +122,7 @@ export default function ShopPage() {
             </Button>
           </div>
 
-          <ScrollArea className="w-full whitespace-nowrap">
-            <ProductList category="all" limit={8} />
-            <ScrollBar orientation="horizontal" />
-          </ScrollArea>
+          <ProductList category="all" limit={8} />
         </div>
       </section>
 

@@ -40,10 +40,10 @@ export default function EventDetailPage(props: Props) {
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-6">
+            <div className="container mx-auto max-w-full px-4 py-6">
                 <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                     {/* Main content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="min-w-0 max-w-full lg:col-span-2 space-y-6">
                         {/* Hero Image */}
                         <Card className="overflow-hidden w-full">
                             <div className="relative aspect-video w-full">
@@ -126,7 +126,7 @@ export default function EventDetailPage(props: Props) {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="space-y-6 lg:sticky lg:top-6">
+                    <div className="min-w-0 space-y-6 self-start lg:sticky lg:top-6">
                         {/* Event Details and Ticket Purchase */}
                         <Card className="p-4 md:p-6">
                             <div className="space-y-4">

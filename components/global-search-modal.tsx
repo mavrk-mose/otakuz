@@ -29,6 +29,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import {
   ALL_SEARCH_CATEGORIES,
@@ -513,7 +514,8 @@ export function GlobalSearchModal() {
         )}
 
         {/* Active Scope Filter Tabs (Cycle with Tab / Shift+Tab) */}
-        <div className="flex items-center gap-1.5 overflow-x-auto border-b border-border px-4 py-2 [scrollbar-width:none]">
+        <ScrollArea controlSize="sm" className="w-full border-b border-border">
+          <div className="flex w-max items-center gap-1.5 px-4 py-2">
           <button
             type="button"
             onClick={() => setFocusedCategory("all")}
@@ -577,10 +579,11 @@ export function GlobalSearchModal() {
               </button>
             );
           })}
-        </div>
+          </div>
+        </ScrollArea>
 
         {/* Scrollable Results / Zero-Query Quick Palette */}
-        <div className="max-h-[62vh] overflow-y-auto p-3">
+        <ScrollArea controlSize="sm" className="max-h-[62vh] p-3">
           {trimmedQuery.length === 0 ? (
             <div className="space-y-4">
               {recentSearches.length > 0 && (
@@ -844,7 +847,7 @@ export function GlobalSearchModal() {
               })}
             </div>
           )}
-        </div>
+        </ScrollArea>
 
         {/* Keyboard Shortcuts Footer */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground">

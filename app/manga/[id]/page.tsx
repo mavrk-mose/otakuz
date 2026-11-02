@@ -97,9 +97,9 @@ export default function MangaDetailPage(props: Props) {
     const formatNumber = (value: number | null | undefined) => value?.toLocaleString() ?? "—";
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="grid lg:grid-cols-[350px_1fr] md:grid-cols-[300px_1fr] sm:grid-cols-1 gap-8">
-                <div className="space-y-4 lg:sticky lg:top-4 self-start">
+        <div className="container mx-auto max-w-full px-4 py-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[340px_minmax(0,1fr)]">
+                <div className="min-w-0 space-y-4 self-start lg:sticky lg:top-4">
                     <Card className="overflow-hidden">
                         <Image
                             src={coverImage}
@@ -162,10 +162,10 @@ export default function MangaDetailPage(props: Props) {
                     </Card>
                 </div>
 
-                <div className="grid grid-col-1 space-y-6">
+                <div className="min-w-0 max-w-full space-y-6">
                     <div>
-                        <h1 className="text-4xl font-bold mb-2">{manga.title}</h1>
-                        <h2 className="text-xl text-muted-foreground mb-4">
+                        <h1 className="text-3xl sm:text-4xl font-bold mb-2 break-words">{manga.title}</h1>
+                        <h2 className="text-lg sm:text-xl text-muted-foreground mb-4 break-words">
                             {manga.title_japanese}
                         </h2>
                         <div className="flex flex-wrap gap-2">
@@ -185,12 +185,12 @@ export default function MangaDetailPage(props: Props) {
                         </div>
                     </div>
 
-                    <Tabs defaultValue="overview">
+                    <Tabs defaultValue="overview" className="w-full min-w-0">
                         <TabsList>
                             <TabsTrigger value="overview">{t("anime.overview")}</TabsTrigger>
                             <TabsTrigger value="gallery">{t("common.gallery")}</TabsTrigger>
                         </TabsList>
-                        <TabsContent value="overview" className="space-y-4 transition-opacity duration-300">
+                        <TabsContent value="overview" className="min-w-0 space-y-4 transition-opacity duration-300">
                             <Card className="p-6">
                                 <h3 className="text-lg font-semibold mb-4">{t("common.synopsis")}</h3>
                                 <p className="leading-relaxed">{manga.synopsis}</p>
@@ -220,13 +220,13 @@ export default function MangaDetailPage(props: Props) {
                                 </div>
                             </Card>
                         </TabsContent>
-                        <TabsContent value="gallery" className="space-y-4 transition-opacity duration-300">
-                            <div className="mt-8 overflow-x-auto px-4">
+                        <TabsContent value="gallery" className="min-w-0 max-w-full space-y-4 transition-opacity duration-300">
+                            <div className="mt-4 min-w-0 w-full max-w-full">
                                 <MangaGallery id={params.id}/>
                             </div>
                         </TabsContent>
                     </Tabs>
-                    <div className="mt-8 overflow-x-auto px-4">
+                    <div className="mt-8 min-w-0 w-full max-w-full">
                         <MangaRecommendations mangaId={params.id}/>
                     </div>
                 </div>

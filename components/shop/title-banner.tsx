@@ -29,17 +29,17 @@ export default function TitleBanner() {
     }
 
     return (
-        <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex space-x-4">
-                {titles?.map((show) => (
+        <ScrollArea className="w-full min-w-0 max-w-full" scrollStep={420}>
+            <div className="flex w-max gap-4 py-2">
+                {titles?.map((show: any) => (
                     <Link
                         key={show.name}
                         href={`/shop/filter/${show.name}`}
-                        className="relative group"
+                        className="relative group shrink-0"
                     >
                         <motion.div
-                            className="w-[300px] h-[450px] relative overflow-hidden rounded-lg"
-                            whileHover={{scale: 1.05}}
+                            className="w-[240px] sm:w-[280px] md:w-[300px] h-[360px] sm:h-[420px] md:h-[450px] relative overflow-hidden rounded-lg"
+                            whileHover={{scale: 1.03}}
                             transition={{duration: 0.2}}
                         >
                             <div

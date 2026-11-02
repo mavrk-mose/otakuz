@@ -21,6 +21,7 @@ import useFetchNewsStories from "@/hooks/news/use-fetch-news";
 import { formatReadsCount, type NewsStory } from "@/types/news";
 import { useI18n } from "@/components/i18n-provider";
 import { GoogleAdUnit } from "@/components/ads/google-ad-unit";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CATEGORIES = [
   "All Stories",
@@ -128,7 +129,8 @@ export default function NewsPage() {
     <div className="-m-4 min-h-screen bg-background text-foreground">
       {/* Top Editorial Category Bar */}
       <div className="sticky top-0 z-30 w-full border-b border-border bg-card/90 backdrop-blur-md shadow-sm">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 overflow-x-auto px-6 py-3 scrollbar-none">
+        <ScrollArea controlSize="sm" className="mx-auto max-w-7xl">
+          <div className="flex w-max min-w-full items-center justify-between gap-6 px-6 py-3">
           <div className="flex shrink-0 items-center gap-4">
             <span className="font-mono text-sm font-bold uppercase tracking-wider text-rose-500">
               Otaku Wire
@@ -163,7 +165,8 @@ export default function NewsPage() {
               Live Wire // Ep. 248 JST
             </span>
           </div>
-        </div>
+          </div>
+        </ScrollArea>
       </div>
 
       <div className="mx-auto flex max-w-7xl flex-col gap-12 px-6 py-8">

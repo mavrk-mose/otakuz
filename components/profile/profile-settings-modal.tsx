@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   User as UserIcon,
   Shield,
@@ -190,7 +191,8 @@ export function ProfileSettingsModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-y-auto bg-card border-border text-card-foreground p-6 rounded-2xl shadow-2xl">
+      <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden bg-card border-border text-card-foreground p-6 rounded-2xl shadow-2xl">
+        <ScrollArea controlSize="sm" className="max-h-[calc(90vh-3rem)]">
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Sliders className="h-5 w-5 text-rose-500" />
@@ -269,28 +271,30 @@ export function ProfileSettingsModal({
                   <p className="text-[11px] text-muted-foreground mb-2 font-medium">
                     Or choose from popular anime characters (Jikan API):
                   </p>
-                  <div className="flex gap-2 overflow-x-auto pb-1">
-                    {apiAvatars.map((hero) => (
-                      <button
-                        key={hero.url}
-                        type="button"
-                        onClick={() => setPhotoURL(hero.url)}
-                        className={`relative rounded-xl overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 ${
-                          photoURL === hero.url
-                            ? "border-rose-500 scale-105"
-                            : "border-transparent opacity-70 hover:opacity-100"
-                        }`}
-                        title={hero.name}
-                      >
-                        <Avatar className="h-10 w-10">
-                          <AvatarImage src={hero.url} alt={hero.name} />
-                          <AvatarFallback className="text-[10px]">
-                            {hero.name[0]}
-                          </AvatarFallback>
-                        </Avatar>
-                      </button>
-                    ))}
-                  </div>
+                  <ScrollArea controlSize="sm" className="w-full">
+                    <div className="flex w-max gap-2 py-1">
+                      {apiAvatars.map((hero) => (
+                        <button
+                          key={hero.url}
+                          type="button"
+                          onClick={() => setPhotoURL(hero.url)}
+                          className={`relative rounded-xl overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 ${
+                            photoURL === hero.url
+                              ? "border-rose-500 scale-105"
+                              : "border-transparent opacity-70 hover:opacity-100"
+                          }`}
+                          title={hero.name}
+                        >
+                          <Avatar className="h-10 w-10">
+                            <AvatarImage src={hero.url} alt={hero.name} />
+                            <AvatarFallback className="text-[10px]">
+                              {hero.name[0]}
+                            </AvatarFallback>
+                          </Avatar>
+                        </button>
+                      ))}
+                    </div>
+                  </ScrollArea>
                 </div>
               )}
             </div>
@@ -560,6 +564,7 @@ export function ProfileSettingsModal({
             {isSaving ? t("common.loading") : t("profile.saveChanges")}
           </Button>
         </DialogFooter>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );

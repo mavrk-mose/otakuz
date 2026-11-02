@@ -42,11 +42,11 @@ export default function AnimeEpisodes({ id }: { id: string }) {
 
     if (isLoading) {
         return (
-            <div className="space-y-4">
-                <ScrollArea className="w-full whitespace-nowrap">
-                    <div className="flex space-x-4 p-4">
+            <div className="w-full min-w-0 max-w-full space-y-4">
+                <ScrollArea className="w-full min-w-0 max-w-full">
+                    <div className="flex w-max gap-4 p-4">
                         {Array(4).fill(null).map((_, index) => (
-                            <div key={`loading-${index}`} className="w-[350px] shrink-0">
+                            <div key={`loading-${index}`} className="w-[270px] sm:w-[320px] shrink-0">
                                 <Card className="w-full h-full flex flex-col animate-pulse">
                                     <CardHeader className="flex-none">
                                         <div className="h-6 bg-muted rounded w-3/4 mb-2" />
@@ -73,12 +73,12 @@ export default function AnimeEpisodes({ id }: { id: string }) {
     }
 
     return (
-        <ScrollArea className="w-full whitespace-nowrap">
-            <div className="flex space-x-4 p-4">
+        <ScrollArea className="w-full min-w-0 max-w-full">
+            <div className="flex w-max gap-4 p-4">
                 {episodes.map((episode, episodeIndex) => (
                     <motion.div
                         key={episode.mal_id}
-                        className="w-[350px] shrink-0"
+                        className="w-[270px] sm:w-[320px] shrink-0"
                         whileHover={{ scale: 1.02 }}
                         transition={{ duration: 0.2 }}
                         ref={episodeIndex === episodes.length - 1 ? inViewRef : null}

@@ -2,7 +2,7 @@ import { Play, Pause, Users, Crown, Wifi, WifiOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { useWatchPartyRoom } from "@/hooks/watch/use-watch-party";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRef, useState, useEffect } from "react";
 import { Label } from "recharts";
 import { Card } from "../ui/card";

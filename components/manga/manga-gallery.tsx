@@ -2,6 +2,7 @@
 
 import { useState, useRef } from "react"
 import Image from "next/image"
+import { Images } from "lucide-react"
 import { Card } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { motion } from "framer-motion"
@@ -14,7 +15,7 @@ import {
   CarouselNext,
   type CarouselApi,
 } from "@/components/ui/carousel"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
 
 export function MangaGallery({ id }: { id: string }) {
   const { data: pictures, isLoading } = useMangaPictures(id)
@@ -24,30 +25,31 @@ export function MangaGallery({ id }: { id: string }) {
 
   if (isLoading) {
     return (
-      <>
-        <ScrollArea className="w-full whitespace-nowrap">
-          <div className="flex gap-4 p-4 py-8">
+      <div className="w-full min-w-0 max-w-full rounded-2xl border border-border/70 bg-card/50 p-2">
+        <ScrollArea className="w-full min-w-0 max-w-full">
+          <div className="flex items-center px-6 py-8 sm:px-8">
             {Array(4)
               .fill(null)
               .map((_, index) => (
                 <div
                   key={`loading-${index}`}
-                  className="w-[150px] sm:w-[180px] md:w-[200px] shrink-0 relative"
+                  className={`relative w-[130px] shrink-0 sm:w-[160px] md:w-[185px] ${
+                    index > 0 ? "-ml-6 sm:-ml-8" : ""
+                  }`}
                   style={{
                     transformOrigin: "center bottom",
                     rotate: `${-5 + (index % 3) * 5}deg`,
-                    marginLeft: index > 0 ? "-40px" : "0",
                   }}
                 >
                   <Card className="overflow-hidden animate-pulse shadow-xl">
-                    <div className="aspect-[2/3] bg-muted rounded-lg" />
+                    <div className="aspect-[2/3] rounded-lg bg-muted" />
                   </Card>
                 </div>
               ))}
           </div>
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
-      </>
+      </div>
     )
   }
 
@@ -60,69 +62,83 @@ export function MangaGallery({ id }: { id: string }) {
     setOpenDialog(true)
   }
 
-  const handleDialogOpenChange = (open: boolean) => {
-    setOpenDialog(open)
-    if (open && carouselRef.current) {
-      carouselRef.current.scrollTo(selectedImageIndex)
-    }
-  }
-
   return (
-    <>
-      <ScrollArea className="w-full whitespace-nowrap">
-        <div className="flex space-x-4 p-4 pl-4 pr-16 py-8">
-          {pictures.map((picture, idx) => (
-            <motion.div
-              key={idx}
-              className="w-[150px] sm:w-[180px] md:w-[200px] shrink-0 relative"
-              style={{
-                transformOrigin: "center bottom",
-                rotate: `${-5 + (idx % 3) * 5}deg`,
-                zIndex: idx,
-                marginLeft: idx > 0 ? "-40px" : "0",
-              }}
-              whileHover={{
-                rotate: "0deg",
-                scale: 1.1,
-                zIndex: 50,
-                transition: { duration: 0.3 },
-              }}
-              onClick={() => handleImageClick(idx)}
-            >
-              <Card className="overflow-hidden cursor-pointer shadow-xl">
-                <div className="relative aspect-[2/3]">
-                  <Image
-                    src={picture.jpg.large_image_url || "/placeholder.svg"}
-                    alt={`Manga picture ${idx + 1}`}
-                    fill
-                    className="object-cover rounded-lg"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority={idx < 4}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/0 to-black/30 pointer-events-none" />
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+    <div className="w-full min-w-0 max-w-full space-y-3">
+      <div className="flex items-center justify-between px-1">
+        <span className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+          <Images className="h-3.5 w-3.5 text-primary" />
+          {pictures.length} Cover & Artwork {pictures.length === 1 ? "Plate" : "Plates"}
+        </span>
+        <span className="text-xs text-muted-foreground">
+          Click any cover to expand
+        </span>
+      </div>
 
-      <Dialog open={openDialog} onOpenChange={handleDialogOpenChange}>
-        <DialogContent className="max-w-4xl w-full p-0">
-          <Carousel className="w-full" setApi={(api) => (carouselRef.current = api)}>
+      <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border-border/70 bg-card/60">
+        <ScrollArea
+          className="w-full min-w-0 max-w-full"
+          scrollStep={360}
+        >
+          <div className="flex w-max items-center px-8 py-9 sm:px-12 sm:py-10">
+            {pictures.map((picture: any, idx: number) => (
+              <motion.div
+                key={idx}
+                className={`relative z-10 w-[130px] shrink-0 hover:!z-20 sm:w-[160px] md:w-[185px] lg:w-[195px] ${
+                  idx > 0 ? "-ml-6 sm:-ml-8" : ""
+                }`}
+                style={{
+                  transformOrigin: "center bottom",
+                  rotate: `${-5 + (idx % 3) * 5}deg`,
+                }}
+                whileHover={{
+                  rotate: "0deg",
+                  scale: 1.08,
+                  transition: { duration: 0.25 },
+                }}
+                onClick={() => handleImageClick(idx)}
+              >
+                <Card className="cursor-pointer overflow-hidden border-border/80 shadow-xl transition-shadow hover:shadow-2xl">
+                  <div className="relative aspect-[2/3]">
+                    <Image
+                      src={picture.jpg.large_image_url || "/placeholder.svg"}
+                      alt={`Manga picture ${idx + 1}`}
+                      fill
+                      className="rounded-lg object-cover"
+                      sizes="(max-width: 640px) 130px, (max-width: 768px) 160px, 195px"
+                      priority={idx < 4}
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/0 to-black/30" />
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </Card>
+
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-4xl rounded-2xl border-border bg-card/95 p-3 sm:p-4 backdrop-blur-xl">
+          <DialogTitle className="sr-only">Manga Gallery Viewer</DialogTitle>
+          <Carousel
+            className="w-full"
+            opts={{ startIndex: selectedImageIndex, loop: true }}
+            setApi={(api) => {
+              carouselRef.current = api
+            }}
+          >
             <CarouselContent>
-              {pictures.map((carouselPicture, index) => (
+              {pictures.map((carouselPicture: any, index: number) => (
                 <CarouselItem key={index}>
                   <div className="p-1">
-                    <Card className="border-0">
-                      <div className="relative aspect-auto w-full h-[80vh] max-h-[80vh]">
+                    <Card className="border-0 bg-transparent shadow-none">
+                      <div className="relative h-[70vh] max-h-[75vh] w-full sm:h-[78vh]">
                         <Image
                           src={carouselPicture.jpg.large_image_url || "/placeholder.svg"}
                           alt={`Manga picture ${index + 1}`}
                           fill
                           className="object-contain"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 75vw, 50vw"
+                          sizes="(max-width: 768px) 95vw, 800px"
                         />
                       </div>
                     </Card>
@@ -130,11 +146,11 @@ export function MangaGallery({ id }: { id: string }) {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-2" />
-            <CarouselNext className="right-2" />
+            <CarouselPrevious className="left-2 bg-card/90 backdrop-blur-md" />
+            <CarouselNext className="right-2 bg-card/90 backdrop-blur-md" />
           </Carousel>
         </DialogContent>
       </Dialog>
-    </>
+    </div>
   )
 }

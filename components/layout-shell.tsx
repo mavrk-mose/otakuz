@@ -14,7 +14,7 @@ export function LayoutShell({ children }: LayoutShellProps) {
   return (
     <div
       className={cn(
-        "min-h-screen min-w-0 transition-[padding-left] duration-300 ease-in-out",
+        "min-h-screen min-w-0 max-w-full overflow-x-clip transition-[padding-left] duration-300 ease-in-out",
         isExpanded ? "lg:pl-[240px]" : "lg:pl-[72px]"
       )}
     >

@@ -28,6 +28,7 @@ import {
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetClose } from "@/components/ui/sheet";
 import {
   DropdownMenu,
@@ -173,41 +174,43 @@ export default function Navbar() {
           )}
 
           {/* Navigation Links */}
-          <nav className="flex min-h-0 flex-1 flex-col gap-1.5 overflow-y-auto overflow-x-hidden">
-            {navItems.map((navItem) => {
-              const isActive =
-                navItem.href === "/"
-                  ? pathname === "/"
-                  : pathname === navItem.href || pathname.startsWith(`${navItem.href}/`);
-              return (
-                <Tooltip key={navItem.href}>
-                  <TooltipTrigger asChild>
-                    <Link href={navItem.href}>
-                      <Button
-                        variant="ghost"
-                        className={cn(
-                          "h-11 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
-                          isExpanded ? "justify-start px-3.5" : "justify-center px-0",
-                          isActive &&
-                            "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
-                        )}
-                      >
-                        <navItem.icon className="h-5 w-5 shrink-0" />
-                        {isExpanded && (
-                          <span className="ml-3 truncate whitespace-nowrap text-sm font-medium">
-                            {t(navItem.labelKey)}
-                          </span>
-                        )}
-                      </Button>
-                    </Link>
-                  </TooltipTrigger>
-                  <TooltipContent side="right" sideOffset={10} hidden={isExpanded}>
-                    {t(navItem.labelKey)}
-                  </TooltipContent>
-                </Tooltip>
-              );
-            })}
-          </nav>
+          <ScrollArea controlSize="sm" className="min-h-0 flex-1">
+            <nav className="flex flex-col gap-1.5">
+              {navItems.map((navItem) => {
+                const isActive =
+                  navItem.href === "/"
+                    ? pathname === "/"
+                    : pathname === navItem.href || pathname.startsWith(`${navItem.href}/`);
+                return (
+                  <Tooltip key={navItem.href}>
+                    <TooltipTrigger asChild>
+                      <Link href={navItem.href}>
+                        <Button
+                          variant="ghost"
+                          className={cn(
+                            "h-11 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
+                            isExpanded ? "justify-start px-3.5" : "justify-center px-0",
+                            isActive &&
+                              "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                          )}
+                        >
+                          <navItem.icon className="h-5 w-5 shrink-0" />
+                          {isExpanded && (
+                            <span className="ml-3 truncate whitespace-nowrap text-sm font-medium">
+                              {t(navItem.labelKey)}
+                            </span>
+                          )}
+                        </Button>
+                      </Link>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={10} hidden={isExpanded}>
+                      {t(navItem.labelKey)}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </nav>
+          </ScrollArea>
 
           {/* Bottom Controls */}
           <div className="mt-auto flex shrink-0 flex-col gap-1.5 border-t border-sidebar-border pt-3">
@@ -473,31 +476,33 @@ export default function Navbar() {
               </Button>
             </div>
 
-            <div className="max-h-[calc(100vh-220px)] space-y-1 overflow-y-auto">
-              {navItems.map((navItem) => (
-                <Link
-                  key={navItem.href}
-                  href={navItem.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <Button
-                    variant="ghost"
-                    className={cn(
-                      "h-11 w-full justify-start",
-                      "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-                      (navItem.href === "/"
-                        ? pathname === "/"
-                        : pathname === navItem.href ||
-                          pathname.startsWith(`${navItem.href}/`)) &&
-                        "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
-                    )}
+            <ScrollArea controlSize="sm" className="max-h-[calc(100vh-220px)]">
+              <div className="space-y-1">
+                {navItems.map((navItem) => (
+                  <Link
+                    key={navItem.href}
+                    href={navItem.href}
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
-                    <navItem.icon className="mr-3 h-5 w-5" />
-                    {t(navItem.labelKey)}
-                  </Button>
-                </Link>
-              ))}
-            </div>
+                    <Button
+                      variant="ghost"
+                      className={cn(
+                        "h-11 w-full justify-start",
+                        "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                        (navItem.href === "/"
+                          ? pathname === "/"
+                          : pathname === navItem.href ||
+                            pathname.startsWith(`${navItem.href}/`)) &&
+                          "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                      )}
+                    >
+                      <navItem.icon className="mr-3 h-5 w-5" />
+                      {t(navItem.labelKey)}
+                    </Button>
+                  </Link>
+                ))}
+              </div>
+            </ScrollArea>
 
             <div className="my-3 h-[1px] bg-border" />
 
