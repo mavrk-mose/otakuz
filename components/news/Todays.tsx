@@ -24,15 +24,15 @@ const StreamCard = ({ id, title, author, time, comments, tag, image }: StreamCar
   return (
     <Link
       href={`/news/${encodeURIComponent(id)}`}
-      className="group flex items-start justify-between gap-4 border-b border-white/5 p-4 transition-colors hover:bg-[#1f1f23] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[#ff5543]"
+      className="group flex items-start justify-between gap-4 border-b border-border/80 p-4 transition-colors hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-rose-500"
     >
       <div className="flex min-w-0 flex-1 flex-col justify-between gap-1.5">
-        <span className="font-mono text-xs uppercase tracking-wider text-[#ff5543]">{tag}</span>
-        <h3 className="line-clamp-2 text-sm font-bold text-white transition-colors group-hover:text-[#ff5543]">
+        <span className="font-mono text-xs uppercase tracking-wider text-rose-500 font-semibold">{tag}</span>
+        <h3 className="line-clamp-2 text-sm font-bold text-foreground transition-colors group-hover:text-rose-500">
           {title}
         </h3>
         <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-          <span className="text-[#ffb95f]">{author}</span>
+          <span className="text-amber-500 dark:text-amber-400 font-medium">{author}</span>
           {time && (
             <>
               <span>•</span>
@@ -41,14 +41,14 @@ const StreamCard = ({ id, title, author, time, comments, tag, image }: StreamCar
           )}
           <span>•</span>
           <span className="flex items-center gap-1">
-            <MessageSquare className="h-3 w-3 text-[#ff5543]" />
+            <MessageSquare className="h-3 w-3 text-rose-500" />
             {comments}
           </span>
         </div>
       </div>
 
       {image && (
-        <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-[#292a2d]">
+        <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-muted">
           <Image
             src={image}
             alt={title}
@@ -65,17 +65,17 @@ const StreamCard = ({ id, title, author, time, comments, tag, image }: StreamCar
 const TodaysStream = ({ stories = [] }: TodaysProps) => {
   const { locale, t } = useI18n();
   return (
-    <div className="space-y-2 rounded-xl border border-white/5 bg-[#1b1b1f] p-5 shadow-sm">
-      <div className="flex items-center justify-between border-b border-white/5 pb-3">
+    <div className="space-y-2 rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="flex items-center justify-between border-b border-border pb-3">
         <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f] animate-pulse" />
-          <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-white">
+          <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+          <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-foreground">
             {t("news.todayStream")}
           </h2>
         </div>
-        <span className="font-mono text-[11px] text-[#ffb95f]">REALTIME</span>
+        <span className="font-mono text-[11px] font-semibold text-amber-500 dark:text-amber-400">REALTIME</span>
       </div>
-      <div className="divide-y divide-white/5">
+      <div className="divide-y divide-border">
         {stories.map((story) => (
           <StreamCard
             key={story._id}

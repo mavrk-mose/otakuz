@@ -46,8 +46,8 @@ const components: PortableTextComponents = {
       </h3>
     ),
     blockquote: ({ children }) => (
-      <div className="relative my-10 overflow-hidden rounded-xl border border-white/5 bg-card/70 p-6 md:p-8">
-        <div className="mb-3 h-1 w-12 rounded-full bg-[#8083ff]" />
+      <div className="relative my-10 overflow-hidden rounded-2xl border border-border bg-card/70 p-6 md:p-8">
+        <div className="mb-3 h-1 w-12 rounded-full bg-indigo-500" />
         <blockquote className="text-2xl font-bold leading-snug tracking-tight text-foreground md:text-3xl">
           {children}
         </blockquote>
@@ -93,7 +93,7 @@ const components: PortableTextComponents = {
 
       return (
         <figure className="my-10">
-          <div className="overflow-hidden rounded-xl border border-white/10 bg-muted">
+          <div className="overflow-hidden rounded-2xl border border-border bg-muted">
             <Image
               src={urlFor(image).width(1400).height(900).fit("crop").url()}
               alt={image.alt || "Article image"}
@@ -148,8 +148,8 @@ export function NewsArticleBody({
             ))}
 
           {/* Verge-Style Editorial Pull Quote Block */}
-          <div className="relative my-8 overflow-hidden rounded-xl border border-white/5 bg-card/60 p-6 md:p-8">
-            <div className="mb-3 h-1 w-12 rounded-full bg-[#8083ff]" />
+          <div className="relative my-8 overflow-hidden rounded-2xl border border-border bg-card/60 p-6 md:p-8">
+            <div className="mb-3 h-1 w-12 rounded-full bg-indigo-500" />
             <blockquote className="text-2xl font-bold leading-tight tracking-tight text-foreground md:text-3xl">
               “The Japanese animation sector is at a new inflection point”
             </blockquote>
@@ -163,10 +163,10 @@ export function NewsArticleBody({
           </p>
 
           {/* Inline Data Visual Card (Verge Infographic Style) */}
-          <div className="my-6 rounded-xl border border-white/10 bg-card p-6 shadow-md">
+          <div className="my-6 rounded-2xl border border-border bg-card p-6 shadow-md">
             <div className="mb-4 flex items-center justify-between">
               <div>
-                <span className="font-mono text-xs uppercase tracking-wider text-[#ffb95f]">
+                <span className="font-mono text-xs uppercase tracking-wider text-amber-500 dark:text-amber-400">
                   Industry Metric
                 </span>
                 <h3 className="text-base font-bold text-foreground">
@@ -182,10 +182,10 @@ export function NewsArticleBody({
               <div>
                 <div className="mb-1.5 flex justify-between font-mono text-xs">
                   <span className="text-foreground">2026 (Hand-Drawn Priority)</span>
-                  <span className="font-semibold text-[#ff5543]">68% Hand / 32% CG</span>
+                  <span className="font-semibold text-rose-500">68% Hand / 32% CG</span>
                 </div>
                 <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div className="h-full bg-[#ff5543]" style={{ width: "68%" }} />
+                  <div className="h-full bg-rose-500" style={{ width: "68%" }} />
                   <div className="h-full bg-muted-foreground/30" style={{ width: "32%" }} />
                 </div>
               </div>
@@ -196,7 +196,7 @@ export function NewsArticleBody({
                   <span className="text-muted-foreground">41% Hand / 59% CG</span>
                 </div>
                 <div className="flex h-2.5 w-full overflow-hidden rounded-full bg-muted">
-                  <div className="h-full bg-[#ff5543]/40" style={{ width: "41%" }} />
+                  <div className="h-full bg-rose-500/40" style={{ width: "41%" }} />
                   <div className="h-full bg-muted-foreground/30" style={{ width: "59%" }} />
                 </div>
               </div>
@@ -212,7 +212,7 @@ export function NewsArticleBody({
       )}
 
       {/* Topic Tracking Box */}
-      <div className="mt-6 rounded-xl border border-white/5 bg-card/60 p-5">
+      <div className="mt-6 rounded-2xl border border-border bg-card/60 p-5">
         <p className="text-sm font-semibold text-foreground">
           Follow topics and authors from this story to personalize your daily Otakuz workspace feed.
         </p>
@@ -226,14 +226,14 @@ export function NewsArticleBody({
                 onClick={() => toggleTopic(topic)}
                 className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-mono text-xs uppercase tracking-wide transition ${
                   isFollowed
-                    ? "border-[#27c93f]/40 bg-[#27c93f]/10 text-[#27c93f]"
-                    : "border-white/10 bg-card hover:border-[#27c93f]/30 hover:bg-muted text-foreground"
+                    ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-500"
+                    : "border-border bg-card hover:border-emerald-500/30 hover:bg-muted text-foreground"
                 }`}
               >
                 {isFollowed ? (
-                  <Check className="h-3 w-3 text-[#27c93f]" />
+                  <Check className="h-3 w-3 text-emerald-500" />
                 ) : (
-                  <Plus className="h-3 w-3 text-[#27c93f]" />
+                  <Plus className="h-3 w-3 text-emerald-500" />
                 )}
                 <span>{topic}</span>
               </button>
@@ -247,9 +247,9 @@ export function NewsArticleBody({
         <button
           type="button"
           onClick={() => toast.info("Opening comments thread...")}
-          className="group flex w-full items-center justify-center gap-2.5 rounded-xl border border-white/10 bg-card py-4 font-bold uppercase tracking-wider text-foreground shadow-sm transition hover:border-[#ff5543]/40 hover:bg-muted"
+          className="group flex w-full items-center justify-center gap-2.5 rounded-2xl border border-border bg-card py-4 font-bold uppercase tracking-wider text-foreground shadow-sm transition hover:border-rose-500/40 hover:bg-muted"
         >
-          <MessageSquare className="h-5 w-5 text-[#ff5543] transition-transform group-hover:scale-110" />
+          <MessageSquare className="h-5 w-5 text-rose-500 transition-transform group-hover:scale-110" />
           <span>{commentsCount} Comments</span>
         </button>
       </div>

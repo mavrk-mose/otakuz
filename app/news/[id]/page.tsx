@@ -78,20 +78,20 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
     : fallbackNewsStories.filter((s) => s._id !== article._id).slice(0, 3);
 
   return (
-    <article className="-m-4 min-h-screen bg-[#121316] text-[#e3e2e6]">
+    <article className="-m-4 min-h-screen bg-background text-foreground">
       {/* Top Breadcrumb Navigation Bar */}
-      <div className="border-b border-white/5 bg-[#0d0e11]/80 px-6 py-3 backdrop-blur-md">
+      <div className="border-b border-border bg-card/80 px-6 py-3 backdrop-blur-md">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between">
           <Link
             href="/news"
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-[#1b1b1f] px-3 py-1.5 font-mono text-xs font-semibold text-white transition hover:bg-[#292a2d]"
+            className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-1.5 font-mono text-xs font-semibold text-foreground transition hover:bg-muted"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
             <span>ALL DISPATCHES</span>
           </Link>
 
           <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <span className="uppercase text-[#ff5543]">Otakuz Editorial</span>
+            <span className="uppercase text-rose-500 font-semibold">Otakuz Editorial</span>
             <span>//</span>
             <span>{article.readTime || "12 min read"}</span>
           </div>
@@ -104,19 +104,19 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {labels.slice(0, 4).map((label, index) => (
             <div key={label} className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 font-mono text-xs font-semibold uppercase tracking-wider text-[#27c93f]">
+              <span className="inline-flex items-center gap-1 font-mono text-xs font-semibold uppercase tracking-wider text-emerald-500">
                 <Plus className="h-3 w-3" />
                 <span>{label}</span>
               </span>
               {index < Math.min(labels.length - 1, 3) && (
-                <span className="font-mono text-xs text-white/30">•</span>
+                <span className="font-mono text-xs text-muted-foreground/40">•</span>
               )}
             </div>
           ))}
         </div>
 
         {/* Editorial Lead Headline */}
-        <h1 className="mb-8 max-w-5xl text-3xl font-bold leading-[1.06] tracking-[-0.035em] text-white sm:text-4xl md:text-5xl lg:text-6xl">
+        <h1 className="mb-8 max-w-5xl text-3xl font-bold leading-[1.06] tracking-[-0.035em] text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
           {article.title}
         </h1>
 
@@ -124,7 +124,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* Media Hero (7 cols) */}
           <div className="flex flex-col gap-2 lg:col-span-7">
-            <div className="group relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-white/5 bg-[#1b1b1f] shadow-2xl">
+            <div className="group relative aspect-[16/10] w-full overflow-hidden rounded-2xl border border-border bg-card shadow-xl">
               {article.imageUrl ? (
                 <Image
                   src={article.imageUrl}
@@ -135,13 +135,13 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center bg-[#1b1b1f] text-muted-foreground">
+                <div className="flex h-full items-center justify-center bg-muted/40 text-muted-foreground">
                   <Newspaper className="h-16 w-16 opacity-50" />
                 </div>
               )}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0d0e11]/80 via-transparent to-transparent" />
-              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded bg-[#0d0e11]/85 px-2.5 py-1 backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 rounded-full bg-[#ff5543]" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-lg bg-black/75 px-2.5 py-1 backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
                 <span className="font-mono text-xs font-semibold uppercase tracking-wider text-white">
                   {article.scoopBadge || "SPECIAL REPORT"}
                 </span>
@@ -156,14 +156,14 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
           {/* Drophead & Social Bar (5 cols) */}
           <div className="flex h-full flex-col justify-between pt-1 lg:col-span-5 lg:pl-4">
             <div>
-              <p className="mb-6 text-xl font-semibold leading-[1.32] tracking-[-0.02em] text-[#e3e2e6] sm:text-2xl">
-                <span className="mr-1.5 font-mono text-2xl font-light text-[#8083ff]">/</span>
+              <p className="mb-6 text-xl font-semibold leading-[1.32] tracking-[-0.02em] text-foreground sm:text-2xl">
+                <span className="mr-1.5 font-mono text-2xl font-light text-rose-500">/</span>
                 {article.leadParagraph || article.summary || article.description}
               </p>
 
               {/* Author Row */}
               <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#292a2d] font-mono text-sm font-bold text-[#ffb95f]">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-muted font-mono text-sm font-bold text-amber-500">
                   {article.author?.imageUrl ? (
                     <Image
                       src={article.author.imageUrl}
@@ -179,8 +179,8 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs text-muted-foreground">by</span>
-                    <span className="inline-flex items-center gap-1 text-sm font-bold text-white">
-                      <Plus className="h-3 w-3 text-[#27c93f]" />
+                    <span className="inline-flex items-center gap-1 text-sm font-bold text-foreground">
+                      <Plus className="h-3 w-3 text-emerald-500" />
                       {authorName}
                     </span>
                   </div>
@@ -201,14 +201,14 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
       </section>
 
       {/* Sticky Article Reading Progress Pill */}
-      <div className="sticky top-0 z-20 w-full border-b border-white/5 bg-[#0d0e11]/90 px-6 py-2.5 backdrop-blur-md shadow-sm">
+      <div className="sticky top-0 z-20 w-full border-b border-border bg-card/90 px-6 py-2.5 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
-            <span className="whitespace-nowrap font-mono text-xs font-semibold uppercase tracking-wider text-[#ff5543]">
+            <span className="whitespace-nowrap font-mono text-xs font-semibold uppercase tracking-wider text-rose-500">
               Now Reading
             </span>
-            <span className="h-3 w-px bg-white/20" />
-            <span className="max-w-2xl truncate text-xs font-medium text-white sm:text-sm">
+            <span className="h-3 w-px bg-border" />
+            <span className="max-w-2xl truncate text-xs font-medium text-foreground sm:text-sm">
               {article.title}
             </span>
           </div>
@@ -216,9 +216,9 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
           <div className="flex items-center gap-3 text-xs">
             <a
               href="#comments"
-              className="flex items-center gap-1 font-mono text-muted-foreground transition hover:text-white"
+              className="flex items-center gap-1 font-mono text-muted-foreground transition hover:text-foreground"
             >
-              <MessageSquare className="h-3.5 w-3.5 text-[#ff5543]" />
+              <MessageSquare className="h-3.5 w-3.5 text-rose-500" />
               <span>{article.commentsCount ?? 18}</span>
             </a>
           </div>
@@ -239,10 +239,10 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             />
 
             {/* Editorial "More in" Link Stack */}
-            <div className="mt-8 border-t border-white/5 pt-8">
+            <div className="mt-8 border-t border-border pt-8">
               <div className="mb-4 flex items-center gap-2">
                 <span className="font-mono text-xs text-muted-foreground">More in:</span>
-                <span className="text-sm font-bold text-[#27c93f]">
+                <span className="text-sm font-bold text-emerald-500">
                   All the latest updates on anime production and studio pipelines
                 </span>
               </div>
@@ -252,20 +252,20 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                   <Link
                     key={story._id}
                     href={`/news/${encodeURIComponent(story._id)}`}
-                    className="group flex flex-col gap-1.5 rounded-xl border border-white/5 bg-[#1b1b1f] p-4 transition hover:border-white/10 hover:bg-[#1f1f23]"
+                    className="group flex flex-col gap-1.5 rounded-2xl border border-border bg-card p-4 transition hover:border-border/80 hover:shadow-md"
                   >
-                    <h3 className="text-sm font-bold text-white transition group-hover:text-[#ff5543]">
+                    <h3 className="text-sm font-bold text-foreground transition group-hover:text-rose-500">
                       {story.title}
                     </h3>
                     <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                      <span className="uppercase text-[#ffb95f]">
+                      <span className="uppercase text-amber-500 font-semibold">
                         {story.authorName || "Otakuz Staff"}
                       </span>
                       <span>•</span>
                       <span>{story.readTime || "5 min read"}</span>
                       <span>•</span>
                       <span className="flex items-center gap-1">
-                        <MessageSquare className="h-3 w-3 text-[#ff5543]" />
+                        <MessageSquare className="h-3 w-3 text-rose-500" />
                         {story.commentsCount ?? 6}
                       </span>
                     </div>
@@ -278,28 +278,28 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
           {/* Right Rail Sidebar (4 cols) */}
           <aside className="flex flex-col gap-8 lg:col-span-4">
             {/* Most Popular Box with Vibrant Typographic Watermark */}
-            <div className="relative overflow-hidden rounded-xl border border-white/5 bg-[#1b1b1f] p-6 shadow-md">
-              {/* Electric Purple Graphic Watermark */}
-              <div className="pointer-events-none absolute -bottom-6 -right-3 select-none font-mono text-[84px] font-black tracking-tighter text-[#8083ff]/15 [writing-mode:vertical-rl]">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-md">
+              {/* Electric Graphic Watermark */}
+              <div className="pointer-events-none absolute -bottom-6 -right-3 select-none font-mono text-[84px] font-black tracking-tighter text-foreground/5 [writing-mode:vertical-rl]">
                 POPULAR
               </div>
 
               <div className="relative z-10 mb-5 flex items-center justify-between">
-                <span className="font-mono text-xs font-bold uppercase tracking-widest text-[#27c93f]">
+                <span className="font-mono text-xs font-bold uppercase tracking-widest text-emerald-500">
                   MOST POPULAR
                 </span>
-                <span className="h-2 w-2 animate-pulse rounded-full bg-[#ff5543]" />
+                <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" />
               </div>
 
               <div className="relative z-10 flex flex-col gap-4">
                 {popularSidebarStories.map((item, index) => {
                   const numberColor =
                     index === 0
-                      ? "text-[#ff5543]"
+                      ? "text-rose-500"
                       : index === 1
-                      ? "text-[#c0c1ff]"
+                      ? "text-primary"
                       : index === 2
-                      ? "text-[#ffb95f]"
+                      ? "text-amber-500"
                       : "text-muted-foreground";
 
                   return (
@@ -311,12 +311,12 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                         <span className={`font-mono text-lg font-bold ${numberColor} w-4 shrink-0`}>
                           {index + 1}
                         </span>
-                        <p className="text-xs font-semibold leading-snug text-white transition-colors group-hover:text-[#ff5543]">
+                        <p className="text-xs font-semibold leading-snug text-foreground transition-colors group-hover:text-rose-500">
                           {item.title}
                         </p>
                       </Link>
                       {index < popularSidebarStories.length - 1 && (
-                        <div className="h-px w-full bg-white/5" />
+                        <div className="h-px w-full bg-border" />
                       )}
                     </div>
                   );
@@ -325,9 +325,9 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             </div>
 
             {/* Newsletter Subscription Box ("The Otakuz Dispatch") */}
-            <div className="rounded-xl border border-white/5 bg-[#1b1b1f] p-6 shadow-md">
+            <div className="rounded-2xl border border-border bg-card p-6 shadow-md">
               <div className="flex flex-col gap-1.5">
-                <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#ff5543]">
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-rose-500">
                   The Otakuz Dispatch
                 </span>
                 <p className="text-xs leading-relaxed text-muted-foreground">
@@ -345,11 +345,11 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                   name="email"
                   placeholder="Enter your email"
                   required
-                  className="w-full rounded-lg border border-white/10 bg-[#0d0e11] px-3.5 py-2 font-mono text-xs text-white placeholder:text-muted-foreground/60 focus:border-[#ff5543] focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-muted/40 px-3.5 py-2 font-mono text-xs text-foreground placeholder:text-muted-foreground focus:border-rose-500 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-[#ff5543] py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition hover:bg-[#ff3b26]"
+                  className="w-full rounded-xl bg-rose-500 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-white transition hover:bg-rose-600 shadow-md shadow-rose-500/20"
                 >
                   SIGN UP
                 </button>

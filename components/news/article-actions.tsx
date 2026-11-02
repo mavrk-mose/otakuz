@@ -51,7 +51,7 @@ export function ArticleActions({ commentsCount, title }: ArticleActionsProps) {
 
   return (
     <div
-      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-muted/40 p-2.5 backdrop-blur-sm"
+      className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card/60 p-2.5 backdrop-blur-sm"
       aria-label="Article actions"
     >
       <div className="flex items-center gap-1.5">
@@ -98,12 +98,12 @@ export function ArticleActions({ commentsCount, title }: ArticleActionsProps) {
 
       <a
         href="#comments"
-        className="group flex items-center gap-2 rounded-full border border-white/5 bg-card px-3.5 py-1 text-xs font-medium transition hover:border-[#ff5543]/40 hover:bg-[#ff5543] hover:text-white"
+        className="group flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1 text-xs font-medium transition hover:border-rose-500/40 hover:bg-rose-500 hover:text-white"
       >
-        <MessageSquare className="h-3.5 w-3.5 text-[#ffb95f] group-hover:text-white" />
-        <span className="font-mono font-bold text-[#ffb95f] group-hover:text-white">{commentsCount}</span>
+        <MessageSquare className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 group-hover:text-white" />
+        <span className="font-mono font-bold text-amber-500 dark:text-amber-400 group-hover:text-white">{commentsCount}</span>
         <span className="text-muted-foreground group-hover:text-white">Comments</span>
-        <span className="font-mono text-[10px] font-semibold uppercase text-[#27c93f] group-hover:text-white">
+        <span className="font-mono text-[10px] font-semibold uppercase text-emerald-500 group-hover:text-white">
           (Live)
         </span>
       </a>

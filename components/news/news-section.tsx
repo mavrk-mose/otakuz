@@ -44,16 +44,16 @@ export function NewsSection() {
   return (
     <div className="space-y-6">
       {/* Editorial Section Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/5 pb-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
         <div className="flex items-center gap-3">
-          <span className="h-3 w-3 rounded-sm bg-[#ff5543]" />
+          <span className="h-3 w-3 rounded-sm bg-rose-500" />
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-mono text-xs font-bold uppercase tracking-wider text-[#ff5543]">
+              <span className="font-mono text-xs font-bold uppercase tracking-wider text-rose-500">
                 Otaku Wire
               </span>
               <span className="font-mono text-xs text-muted-foreground">/</span>
-              <h2 className="text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">
+              <h2 className="text-xl font-bold uppercase tracking-tight text-foreground sm:text-2xl">
                 {t("home.latestNews")}
               </h2>
             </div>
@@ -66,7 +66,7 @@ export function NewsSection() {
         <Button
           variant="outline"
           asChild
-          className="gap-2 border-white/10 bg-[#1b1b1f] font-mono text-xs text-white hover:bg-[#292a2d] hover:text-[#ff5543]"
+          className="gap-2 border-border bg-card font-mono text-xs text-foreground hover:bg-muted hover:text-rose-500"
         >
           <Link href="/news">
             {t("common.viewAll")} <ArrowRight className="h-3.5 w-3.5" />
@@ -78,9 +78,9 @@ export function NewsSection() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* Main Lead Story (7 cols) */}
         {featured && (
-          <article className="group flex flex-col justify-between rounded-xl border border-white/5 bg-[#1b1b1f] p-5 transition-all hover:border-white/10 hover:bg-[#1f1f23] lg:col-span-7">
+          <article className="group flex flex-col justify-between rounded-2xl border border-border bg-card p-5 transition-all hover:border-border/80 hover:bg-muted/30 lg:col-span-7">
             <div>
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-[#292a2d]">
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted">
                 {featured.images?.jpg?.image_url && (
                   <Image
                     src={featured.images.jpg.image_url}
@@ -90,18 +90,18 @@ export function NewsSection() {
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 )}
-                <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded bg-[#0d0e11]/85 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-[#ffb95f] backdrop-blur-md">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#ffb95f]" />
+                <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-lg border border-border/40 bg-card/90 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-amber-500 dark:text-amber-400 backdrop-blur-md">
+                  <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                   <span>{featured.author_username || "Editorial"}</span>
                 </div>
-                <div className="absolute bottom-3 right-3 rounded bg-[#ff5543] px-2.5 py-1 font-mono text-xs font-bold text-white shadow-md">
+                <div className="absolute bottom-3 right-3 rounded-lg bg-rose-500 px-2.5 py-1 font-mono text-xs font-bold text-white shadow-md">
                   SCOOP
                 </div>
               </div>
 
               <div className="mt-4 flex flex-col gap-2">
                 <Link href={featured.url} target="_blank" rel="noreferrer">
-                  <h3 className="text-xl font-bold leading-tight text-white transition-colors group-hover:text-[#ff5543] sm:text-2xl">
+                  <h3 className="text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-rose-500 sm:text-2xl">
                     {featured.title}
                   </h3>
                 </Link>
@@ -111,9 +111,9 @@ export function NewsSection() {
               </div>
             </div>
 
-            <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4">
+            <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
               <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                <span className="text-[#ffb95f]">by {featured.author_username}</span>
+                <span className="text-amber-500 dark:text-amber-400 font-medium">by {featured.author_username}</span>
                 <span>•</span>
                 <span>
                   {new Date(featured.date).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US", {
@@ -127,7 +127,7 @@ export function NewsSection() {
                 href={featured.url}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1 font-mono text-xs font-semibold text-[#ff5543] hover:underline"
+                className="flex items-center gap-1 font-mono text-xs font-semibold text-rose-500 hover:underline"
               >
                 <span>Read Dispatch</span>
                 <ArrowRight className="h-3.5 w-3.5" />
@@ -140,7 +140,7 @@ export function NewsSection() {
         <div className="flex flex-col justify-between gap-4 lg:col-span-5">
           {sideItems.map((news: any, idx: number) => {
             const tagColor =
-              idx === 0 ? "text-[#ff5543]" : idx === 1 ? "text-[#ffb95f]" : "text-[#c0c1ff]";
+              idx === 0 ? "text-rose-500" : idx === 1 ? "text-amber-500 dark:text-amber-400" : "text-indigo-500 dark:text-indigo-400";
 
             return (
               <Link
@@ -148,20 +148,20 @@ export function NewsSection() {
                 href={news.url}
                 target="_blank"
                 rel="noreferrer"
-                className="group flex flex-1 items-start gap-4 rounded-xl border border-white/5 bg-[#1b1b1f] p-4 transition-all hover:border-white/10 hover:bg-[#1f1f23]"
+                className="group flex flex-1 items-start gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-border/80 hover:bg-muted/30"
               >
                 <div className="flex flex-1 flex-col justify-between self-stretch">
                   <div className="flex flex-col gap-1.5">
-                    <span className={`font-mono text-xs uppercase tracking-wider ${tagColor}`}>
+                    <span className={`font-mono text-xs uppercase tracking-wider font-semibold ${tagColor}`}>
                       {news.author_username || "Anime News"}
                     </span>
-                    <h4 className="line-clamp-2 text-sm font-bold leading-snug text-white transition-colors group-hover:text-[#ff5543]">
+                    <h4 className="line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-rose-500">
                       {news.title}
                     </h4>
                   </div>
 
                   <div className="mt-2 flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                    <CalendarDays className="h-3.5 w-3.5 text-[#ffb95f]" />
+                    <CalendarDays className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
                     <span>
                       {new Date(news.date).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US", {
                         month: "short",
@@ -172,7 +172,7 @@ export function NewsSection() {
                 </div>
 
                 {news.images?.jpg?.image_url && (
-                  <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-lg bg-[#292a2d]">
+                  <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl bg-muted">
                     <Image
                       src={news.images.jpg.image_url}
                       alt={news.title}

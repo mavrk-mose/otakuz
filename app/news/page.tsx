@@ -107,7 +107,7 @@ export default function NewsPage() {
 
   if (isLoading && stories.length === 0) {
     return (
-      <div className="-m-4 min-h-screen bg-[#121316] p-6 text-foreground">
+      <div className="-m-4 min-h-screen bg-background p-6 text-foreground">
         <div className="mx-auto max-w-7xl animate-pulse space-y-6">
           <div className="h-12 w-full rounded-lg bg-card/60" />
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -124,12 +124,12 @@ export default function NewsPage() {
   }
 
   return (
-    <div className="-m-4 min-h-screen bg-[#121316] text-[#e3e2e6]">
+    <div className="-m-4 min-h-screen bg-background text-foreground">
       {/* Top Editorial Category Bar */}
-      <div className="sticky top-0 z-30 w-full border-b border-white/5 bg-[#0d0e11]/90 backdrop-blur-md shadow-sm">
+      <div className="sticky top-0 z-30 w-full border-b border-border bg-card/90 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 overflow-x-auto px-6 py-3 scrollbar-none">
           <div className="flex shrink-0 items-center gap-4">
-            <span className="font-mono text-sm font-bold uppercase tracking-wider text-[#ff5543]">
+            <span className="font-mono text-sm font-bold uppercase tracking-wider text-rose-500">
               Otaku Wire
             </span>
             <span className="font-mono text-xs text-muted-foreground/50">/</span>
@@ -142,8 +142,8 @@ export default function NewsPage() {
                     onClick={() => setActiveCategory(cat)}
                     className={`rounded-md px-2.5 py-1 text-xs font-semibold transition ${
                       isActive
-                        ? "bg-[#ff5543] text-white shadow-sm"
-                        : "text-muted-foreground hover:bg-card hover:text-white"
+                        ? "bg-rose-500 text-white shadow-sm"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
                     }`}
                   >
                     {cat}
@@ -155,10 +155,10 @@ export default function NewsPage() {
 
           <div className="flex shrink-0 items-center gap-2">
             <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#ff5543] opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-[#ff5543]" />
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
             </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-[#ffb95f]">
+            <span className="font-mono text-xs uppercase tracking-widest text-amber-500">
               Live Wire // Ep. 248 JST
             </span>
           </div>
@@ -171,24 +171,24 @@ export default function NewsPage() {
           {/* Section Header */}
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-baseline gap-2.5">
-              <h2 className="text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">
+              <h2 className="text-xl font-bold uppercase tracking-tight text-foreground sm:text-2xl">
                 Analog Renaissance
               </h2>
-              <span className="font-mono text-xl font-light text-[#ff5543]">/</span>
+              <span className="font-mono text-xl font-light text-rose-500">/</span>
               <p className="text-sm text-muted-foreground sm:text-base">
                 Why premier Tokyo animation directors are ditching digital tablets for hand-drawn cel workflows
               </p>
             </div>
-            <div className="h-0.5 w-full bg-gradient-to-r from-[#ff5543] via-[#ee9800] to-transparent opacity-80" />
+            <div className="h-0.5 w-full bg-gradient-to-r from-rose-500 via-amber-500 to-transparent opacity-80" />
           </div>
 
           {/* Grid: Lead Story (7 cols) + 3 Stacked Cards (5 cols) */}
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             {/* Big Lead Story */}
             {leadStory && (
-              <article className="group flex flex-col justify-between rounded-xl border border-white/5 bg-[#1b1b1f] p-5 transition-all hover:border-white/10 hover:bg-[#1f1f23] lg:col-span-7">
+              <article className="group flex flex-col justify-between rounded-2xl border border-border bg-card p-5 transition-all hover:border-border/80 hover:shadow-lg lg:col-span-7">
                 <div>
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-lg bg-[#292a2d]">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl bg-muted/40">
                     {leadStory.imageUrl ? (
                       <Image
                         src={leadStory.imageUrl}
@@ -199,20 +199,20 @@ export default function NewsPage() {
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-[#292a2d] text-muted-foreground">
+                      <div className="flex h-full items-center justify-center bg-muted/40 text-muted-foreground">
                         <Newspaper className="h-12 w-12" />
                       </div>
                     )}
 
                     {leadStory.tag && (
-                      <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded bg-[#0d0e11]/85 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-[#ffb95f] backdrop-blur-md">
-                        <span className="h-1.5 w-1.5 rounded-full bg-[#ffb95f]" />
+                      <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-lg border border-border/40 bg-card/90 px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-amber-500 backdrop-blur-md">
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                         {leadStory.tag}
                       </div>
                     )}
 
                     {leadStory.scoopBadge && (
-                      <div className="absolute bottom-3 right-3 rounded bg-[#ff5543] px-2.5 py-1 font-mono text-xs font-bold text-white shadow-md">
+                      <div className="absolute bottom-3 right-3 rounded-lg bg-rose-500 px-2.5 py-1 font-mono text-xs font-bold text-white shadow-md">
                         {leadStory.scoopBadge}
                       </div>
                     )}
@@ -220,7 +220,7 @@ export default function NewsPage() {
 
                   <div className="mt-4 flex flex-col gap-2">
                     <Link href={`/news/${encodeURIComponent(leadStory._id)}`}>
-                      <h1 className="text-2xl font-bold leading-tight text-white transition-colors group-hover:text-[#ff5543] sm:text-3xl">
+                      <h1 className="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-rose-500 sm:text-3xl">
                         {leadStory.title}
                       </h1>
                     </Link>
@@ -230,9 +230,9 @@ export default function NewsPage() {
                   </div>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
+                <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="font-semibold text-[#ffb95f]">
+                    <span className="font-semibold text-amber-500">
                       by {leadStory.authorName || leadStory.author?.name || "Staff"}
                     </span>
                     <span>•</span>
@@ -247,14 +247,14 @@ export default function NewsPage() {
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <span className="flex items-center gap-1.5 rounded-full bg-[#292a2d] px-3 py-1 font-mono text-xs text-muted-foreground">
-                      <MessageSquare className="h-3.5 w-3.5 text-[#ff5543]" />
+                    <span className="flex items-center gap-1.5 rounded-full bg-muted px-3 py-1 font-mono text-xs text-muted-foreground">
+                      <MessageSquare className="h-3.5 w-3.5 text-rose-500" />
                       {leadStory.commentsCount ?? 42}
                     </span>
                     <button
                       type="button"
                       onClick={(e) => handleShare(e, leadStory.title, leadStory._id)}
-                      className="flex h-7 w-7 items-center justify-center rounded-full bg-[#292a2d] text-muted-foreground transition hover:text-white"
+                      className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:text-foreground hover:bg-muted/80"
                       title="Share"
                     >
                       <Share2 className="h-3.5 w-3.5" />
@@ -270,24 +270,24 @@ export default function NewsPage() {
                 <Link
                   key={story._id}
                   href={`/news/${encodeURIComponent(story._id)}`}
-                  className="group flex flex-1 items-start gap-4 rounded-xl border border-white/5 bg-[#1b1b1f] p-4 transition-all hover:border-white/10 hover:bg-[#1f1f23]"
+                  className="group flex flex-1 items-start gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-border/80 hover:shadow-md"
                 >
                   <div className="flex flex-1 flex-col justify-between self-stretch">
                     <div className="flex flex-col gap-1.5">
                       <span
-                        className={`font-mono text-xs uppercase tracking-wider ${
-                          idx === 0 ? "text-[#ff5543]" : idx === 1 ? "text-[#ffb95f]" : "text-[#c0c1ff]"
+                        className={`font-mono text-xs uppercase tracking-wider font-semibold ${
+                          idx === 0 ? "text-rose-500" : idx === 1 ? "text-amber-500" : "text-primary"
                         }`}
                       >
                         {story.tag || "Production Desk"}
                       </span>
-                      <h3 className="line-clamp-2 text-sm font-bold leading-snug text-white transition-colors group-hover:text-[#ff5543]">
+                      <h3 className="line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-rose-500">
                         {story.title}
                       </h3>
                     </div>
 
                     <div className="mt-3 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="text-[#ffb95f]">
+                      <span className="text-amber-500 font-medium">
                         {story.authorName || story.author?.name || "Otakuz Staff"}
                       </span>
                       <span>•</span>
@@ -296,7 +296,7 @@ export default function NewsPage() {
                   </div>
 
                   {story.imageUrl && (
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-[#292a2d]">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted/40">
                       <Image
                         src={story.imageUrl}
                         alt={story.title}
@@ -314,16 +314,16 @@ export default function NewsPage() {
 
         {/* SECTION 2: MOST POPULAR LEADERBOARD + MEDIA/PODCAST FEATURE */}
         <section className="flex flex-col gap-4 pt-4">
-          <div className="flex items-center justify-between border-b border-white/5 pb-3">
+          <div className="flex items-center justify-between border-b border-border pb-3">
             <div className="flex items-center gap-2.5">
-              <span className="h-3 w-3 rounded-sm bg-[#ff5543]" />
-              <h2 className="text-lg font-bold uppercase tracking-tight text-white sm:text-xl">
+              <span className="h-3 w-3 rounded-sm bg-rose-500" />
+              <h2 className="text-lg font-bold uppercase tracking-tight text-foreground sm:text-xl">
                 Most Popular Dispatches
               </h2>
             </div>
             <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
               <span>REALTIME TRACKER</span>
-              <TrendingUp className="h-3.5 w-3.5 text-[#ffb95f]" />
+              <TrendingUp className="h-3.5 w-3.5 text-amber-500" />
             </div>
           </div>
 
@@ -336,21 +336,21 @@ export default function NewsPage() {
                   <Link
                     key={item._id}
                     href={`/news/${encodeURIComponent(item._id)}`}
-                    className="group flex items-start gap-4 rounded-xl border border-white/5 bg-[#1b1b1f] p-4 transition-all hover:border-white/10 hover:bg-[#1f1f23]"
+                    className="group flex items-start gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-border/80 hover:shadow-md"
                   >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#292a2d] font-mono text-base font-bold text-white transition-colors group-hover:bg-[#ff5543] group-hover:text-white">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-muted font-mono text-base font-bold text-foreground transition-colors group-hover:bg-rose-500 group-hover:text-white">
                       {rankFormatted}
                     </div>
                     <div className="flex min-w-0 flex-1 flex-col gap-1">
-                      <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-white transition-colors group-hover:text-[#ff5543]">
+                      <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-rose-500">
                         {item.title}
                       </h3>
                       <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
-                        <span className="text-[#ffb95f]">{item.authorName || item.author?.name || "Staff"}</span>
+                        <span className="text-amber-500 font-medium">{item.authorName || item.author?.name || "Staff"}</span>
                         <span>•</span>
                         <span>{formatReadsCount(item.readsCount)}</span>
                         <span>•</span>
-                        <span className="text-[#ff5543]">{item.commentsCount ?? 18} comments</span>
+                        <span className="text-rose-500 font-medium">{item.commentsCount ?? 18} comments</span>
                       </div>
                     </div>
                   </Link>
@@ -360,9 +360,9 @@ export default function NewsPage() {
 
             {/* Special Podcast/Video Player Card (5 cols) */}
             <div className="lg:col-span-5">
-              <div className="group flex h-full flex-col justify-between rounded-xl border border-white/5 bg-[#1b1b1f] p-5 transition-all hover:border-white/10 hover:bg-[#1f1f23]">
+              <div className="group flex h-full flex-col justify-between rounded-2xl border border-border bg-card p-5 transition-all hover:border-border/80 hover:shadow-lg">
                 <div>
-                  <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-[#0d0e11]">
+                  <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-black">
                     {podcastStory?.imageUrl ? (
                       <Image
                         src={podcastStory.imageUrl}
@@ -372,7 +372,7 @@ export default function NewsPage() {
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-[#0d0e11] text-muted-foreground">
+                      <div className="flex h-full items-center justify-center bg-muted/40 text-muted-foreground">
                         <Radio className="h-12 w-12" />
                       </div>
                     )}
@@ -380,22 +380,22 @@ export default function NewsPage() {
                       <button
                         type="button"
                         onClick={() => toast.success("Starting OtakuCast audio stream...")}
-                        className="flex h-14 w-14 items-center justify-center rounded-full bg-[#ff5543] text-white shadow-xl transition-transform hover:scale-110"
+                        className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-500 text-white shadow-xl transition-transform hover:scale-110"
                         aria-label="Play podcast"
                       >
                         <Play className="ml-0.5 h-6 w-6 fill-current" />
                       </button>
                     </div>
 
-                    <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded bg-[#0d0e11]/85 px-2.5 py-1 font-mono text-[11px] text-white backdrop-blur-sm">
-                      <span className="h-2 w-2 animate-pulse rounded-full bg-[#ff5543]" />
+                    <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1.5 rounded-lg bg-card/90 px-2.5 py-1 font-mono text-[11px] text-foreground border border-border/40 backdrop-blur-sm">
+                      <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" />
                       <span>{podcastStory?.podcast?.episodeNumber || "PODCAST // EP 114"}</span>
                     </div>
                   </div>
 
                   <div className="mt-4 flex flex-col gap-1.5">
                     <div className="flex items-center gap-2 font-mono text-xs">
-                      <span className="uppercase tracking-wider text-[#ffb95f]">
+                      <span className="uppercase tracking-wider text-amber-500 font-semibold">
                         {podcastStory?.authorName || "OtakuCast Studio"}
                       </span>
                       <span>•</span>
@@ -404,7 +404,7 @@ export default function NewsPage() {
                       </span>
                     </div>
                     <Link href={`/news/${encodeURIComponent(podcastStory?._id || "")}`}>
-                      <h3 className="text-base font-bold leading-snug text-white transition-colors group-hover:text-[#ff5543]">
+                      <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-rose-500">
                         {podcastStory?.title}
                       </h3>
                     </Link>
@@ -414,8 +414,8 @@ export default function NewsPage() {
                   </div>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t border-white/5 pt-4">
-                  <div className="flex items-center gap-4 text-xs font-semibold text-[#ff5543]">
+                <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
+                  <div className="flex items-center gap-4 text-xs font-semibold text-rose-500">
                     <button
                       type="button"
                       onClick={() => toast.success("Playing audio...")}
@@ -445,7 +445,7 @@ export default function NewsPage() {
                   <button
                     type="button"
                     onClick={() => toast.success("Added to queue")}
-                    className="text-muted-foreground transition hover:text-white"
+                    className="text-muted-foreground transition hover:text-foreground"
                     title="Add to Queue"
                   >
                     <ListPlus className="h-4 w-4" />
@@ -460,23 +460,23 @@ export default function NewsPage() {
         <section className="flex flex-col gap-4 pt-4">
           <div className="flex flex-col gap-1.5">
             <div className="flex flex-wrap items-baseline gap-2.5">
-              <h2 className="text-xl font-bold uppercase tracking-tight text-white sm:text-2xl">
+              <h2 className="text-xl font-bold uppercase tracking-tight text-foreground sm:text-2xl">
                 The Anomaly Files
               </h2>
-              <span className="font-mono text-xl font-light text-[#ff5543]">/</span>
+              <span className="font-mono text-xl font-light text-rose-500">/</span>
               <p className="text-sm text-muted-foreground sm:text-base">
                 Investigating the shadowy economics behind offshore keyframe sweatshops
               </p>
             </div>
-            <div className="h-0.5 w-full bg-gradient-to-r from-[#ffb95f] via-[#ff5543] to-transparent opacity-80" />
+            <div className="h-0.5 w-full bg-gradient-to-r from-amber-500 via-rose-500 to-transparent opacity-80" />
           </div>
 
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
             {/* Big Dossier Feature Tile (6 cols) */}
             {anomalyStories[0] && (
-              <article className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-white/5 bg-[#1b1b1f] p-5 transition-all hover:border-white/10 hover:bg-[#1f1f23] lg:col-span-6">
+              <article className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-border bg-card p-5 transition-all hover:border-border/80 hover:shadow-lg lg:col-span-6">
                 <div>
-                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg bg-[#292a2d]">
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-muted/40">
                     {anomalyStories[0].imageUrl ? (
                       <Image
                         src={anomalyStories[0].imageUrl}
@@ -486,16 +486,16 @@ export default function NewsPage() {
                         className="object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     ) : (
-                      <div className="flex h-full items-center justify-center bg-[#292a2d] text-muted-foreground">
+                      <div className="flex h-full items-center justify-center bg-muted/40 text-muted-foreground">
                         <Newspaper className="h-12 w-12" />
                       </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0d0e11] via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
                     <div className="absolute bottom-4 left-4 right-4">
-                      <span className="rounded bg-[#ff5543] px-2 py-0.5 font-mono text-xs font-semibold uppercase text-white">
+                      <span className="rounded-lg bg-rose-500 px-2 py-0.5 font-mono text-xs font-semibold uppercase text-white shadow">
                         Special Report
                       </span>
-                      <h3 className="mt-2 text-xl font-bold leading-tight text-white transition-colors group-hover:text-[#ff5543] sm:text-2xl">
+                      <h3 className="mt-2 text-xl font-bold leading-tight text-foreground transition-colors group-hover:text-rose-500 sm:text-2xl">
                         {anomalyStories[0].title}
                       </h3>
                     </div>
@@ -506,13 +506,13 @@ export default function NewsPage() {
                   </p>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between border-t border-white/5 pt-4">
-                  <span className="text-xs font-semibold text-[#ffb95f]">
+                <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
+                  <span className="text-xs font-semibold text-amber-500">
                     by {anomalyStories[0].authorName || "Makoto Shinkawa"}
                   </span>
                   <Link
                     href={`/news/${encodeURIComponent(anomalyStories[0]._id)}`}
-                    className="flex items-center gap-1.5 font-mono text-xs font-semibold text-[#ff5543] transition hover:underline"
+                    className="flex items-center gap-1.5 font-mono text-xs font-semibold text-rose-500 transition hover:underline"
                   >
                     <span>Read 12-min Dossier</span>
                     <ArrowRight className="h-3.5 w-3.5" />
@@ -527,21 +527,21 @@ export default function NewsPage() {
                 <Link
                   key={story._id}
                   href={`/news/${encodeURIComponent(story._id)}`}
-                  className="group flex items-center gap-4 rounded-xl border border-white/5 bg-[#1b1b1f] p-4 transition-all hover:border-white/10 hover:bg-[#1f1f23]"
+                  className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 transition-all hover:border-border/80 hover:shadow-md"
                 >
                   <div className="flex flex-1 flex-col gap-1.5">
                     <span
-                      className={`font-mono text-xs uppercase ${
-                        i === 0 ? "text-[#ff5543]" : i === 1 ? "text-[#ffb95f]" : "text-[#c0c1ff]"
+                      className={`font-mono text-xs uppercase font-semibold ${
+                        i === 0 ? "text-rose-500" : i === 1 ? "text-amber-500" : "text-primary"
                       }`}
                     >
                       {story.scoopBadge || story.tag || "Production Leak"}
                     </span>
-                    <h3 className="line-clamp-2 text-sm font-bold leading-snug text-white transition-colors group-hover:text-[#ff5543]">
+                    <h3 className="line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-rose-500">
                       {story.title}
                     </h3>
                     <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-                      <span className="text-[#ffb95f]">
+                      <span className="text-amber-500 font-medium">
                         {story.authorName || story.author?.name || "Staff"}
                       </span>
                       <span>•</span>
@@ -550,7 +550,7 @@ export default function NewsPage() {
                   </div>
 
                   {story.imageUrl && (
-                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-lg bg-[#292a2d]">
+                    <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-xl bg-muted/40">
                       <Image
                         src={story.imageUrl}
                         alt={story.title}
