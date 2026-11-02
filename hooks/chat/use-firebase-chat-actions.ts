@@ -31,6 +31,10 @@ export type ShareContentPayload =
     | { type: 'event'; data: EventShareData }
     | { type: 'profile'; data: ProfileShareData }
 
+function sanitizeForFirestore<T>(data: T): T {
+    return JSON.parse(JSON.stringify(data, (_, v) => (v === undefined ? null : v)));
+}
+
 export function useFirebaseChatActions() {
     const createRoom = useCallback(async (title: string) => {
         const user = requireUser()
@@ -148,24 +152,6 @@ export function useFirebaseChatActions() {
         []
     )
 
-    const shareContentToChat = useCallback(
-        async (roomId: string, payload: ShareContentPayload) => {
-            switch (payload.type) {
-                case 'anime':
-                    return shareAnimeToChat(roomId, payload.data)
-                case 'manga':
-                    return shareMangaToChat(roomId, payload.data)
-                case 'product':
-                    return shareProductToChat(roomId, payload.data)
-                case 'event':
-                    return shareEventToChat(roomId, payload.data)
-                case 'profile':
-                    return shareProfileToChat(roomId, payload.data)
-            }
-        },
-        [shareAnimeToChat, shareMangaToChat, shareProductToChat, shareEventToChat, shareProfileToChat]
-    )
-
     const joinRoom = useCallback(async (roomId: string) => {
         const user = requireUser()
         const roomRef = doc(db, 'chatrooms', roomId)
@@ -184,6 +170,31 @@ export function useFirebaseChatActions() {
             })
         })
     }, [])
+
+    const shareContentToChat = useCallback(
+        async (roomId: string, payload: ShareContentPayload) => {
+            try {
+                await joinRoom(roomId)
+            } catch (err) {
+                // If user is already a member or transaction finishes
+            }
+
+            const cleanData = sanitizeForFirestore(payload.data)
+            switch (payload.type) {
+                case 'anime':
+                    return shareAnimeToChat(roomId, cleanData as AnimeShareData)
+                case 'manga':
+                    return shareMangaToChat(roomId, cleanData as MangaShareData)
+                case 'product':
+                    return shareProductToChat(roomId, cleanData as ProductShareData)
+                case 'event':
+                    return shareEventToChat(roomId, cleanData as EventShareData)
+                case 'profile':
+                    return shareProfileToChat(roomId, cleanData as ProfileShareData)
+            }
+        },
+        [joinRoom, shareAnimeToChat, shareMangaToChat, shareProductToChat, shareEventToChat, shareProfileToChat]
+    )
 
     const getRooms = useCallback(async (): Promise<Room[]> => {
         requireUser()

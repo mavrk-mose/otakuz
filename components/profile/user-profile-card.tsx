@@ -30,11 +30,11 @@ export function UserProfileCard({
   isOwnProfile = true,
   onUpdateProfile,
   onResetGoogleAvatar,
-  watchedCount = 42,
-  readingCount = 18,
-  totalExp = "1,450",
-  level = 24,
-  rank = "S-Rank Pioneer",
+  watchedCount = 0,
+  readingCount = 0,
+  totalExp = 0,
+  level = 1,
+  rank = "Novice Explorer",
 }: UserProfileCardProps) {
   const { t } = useI18n();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -42,17 +42,17 @@ export function UserProfileCard({
 
   // Derived values from Firestore profile or fallback to Firebase Auth user
   const effectiveDisplayName =
-    profile?.displayName || user?.displayName || user?.email?.split("@")[0] || "Ren";
+    profile?.displayName || user?.displayName || user?.email?.split("@")[0] || "Otaku Member";
   const effectiveUsername =
     profile?.username ||
-    `@${user?.email?.split("@")[0] || "otaku_user"}`;
+    `@${user?.email?.split("@")[0] || "user"}`;
   const effectivePhotoURL =
     profile?.photoURL || user?.photoURL || undefined;
   const effectiveLevel = profile?.level || level;
   const effectiveRank = profile?.rank || rank;
   const effectiveWatchedCount = profile?.watchedCount ?? watchedCount;
   const effectiveReadingCount = profile?.readingCount ?? readingCount;
-  const effectiveTotalExp = profile?.totalExp || totalExp;
+  const effectiveTotalExp = profile?.totalExp ?? totalExp;
   const effectiveBio = profile?.bio;
   const effectiveIsPublic =
     profile?.isPublic !== undefined ? profile.isPublic : true;
@@ -197,7 +197,7 @@ export function UserProfileCard({
             userId: profile?.uid || user?.uid || "",
             displayName: effectiveDisplayName,
             username: effectiveUsername,
-            photoURL: effectivePhotoURL,
+            photoURL: effectivePhotoURL || "",
             level: effectiveLevel,
             rank: effectiveRank,
             watchedCount: effectiveWatchedCount,

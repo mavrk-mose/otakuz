@@ -21,6 +21,8 @@ export interface UserProfileData {
   totalExp: string | number;
   watchedCount: number;
   readingCount: number;
+  boardsCount?: number;
+  totalSaved?: number;
   preferences: UserPreferences;
   createdAt?: any;
   updatedAt?: any;

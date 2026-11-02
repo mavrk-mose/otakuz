@@ -25,6 +25,7 @@ function ProfileContent() {
 
   const {
     profile,
+    stats,
     loading: profileLoading,
     updateProfileData,
     resetToGoogleAvatar,
@@ -95,6 +96,11 @@ function ProfileContent() {
               user={user}
               profile={profile}
               isOwnProfile={isOwnProfile}
+              watchedCount={stats?.watchedCount ?? 0}
+              readingCount={stats?.readingCount ?? 0}
+              totalExp={stats?.totalExp ?? 0}
+              level={stats?.level ?? 1}
+              rank={stats?.rank || profile?.rank || "Novice Explorer"}
               onUpdateProfile={updateProfileData}
               onResetGoogleAvatar={resetToGoogleAvatar}
             />
@@ -127,6 +133,18 @@ function ProfileContent() {
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
+                  <span className="text-zinc-400 text-xs">Saved Boards</span>
+                  <span className="font-semibold text-xs text-zinc-200">
+                    {stats?.boardsCount ?? 0}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
+                  <span className="text-zinc-400 text-xs">Saved Titles</span>
+                  <span className="font-semibold text-xs text-zinc-200">
+                    {stats?.totalSaved ?? 0}
+                  </span>
+                </div>
+                <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
                   <span className="text-zinc-400 text-xs">Profile Visibility</span>
                   <span className="font-semibold text-xs text-zinc-200">
                     {profile?.isPublic !== false ? "Public Community" : "Private (Secret)"}
@@ -135,7 +153,7 @@ function ProfileContent() {
                 <div className="flex justify-between py-1.5">
                   <span className="text-zinc-400 text-xs">Pioneer Status</span>
                   <span className="font-semibold text-xs text-amber-400">
-                    {profile?.rank || "S-Rank Pioneer"}
+                    {stats?.rank || profile?.rank || "Novice Explorer"}
                   </span>
                 </div>
               </div>

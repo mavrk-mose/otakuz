@@ -41,25 +41,6 @@ interface ProfileSettingsModalProps {
   onResetGoogleAvatar: () => Promise<void>;
 }
 
-const PRESET_AVATARS = [
-  {
-    name: "Cyber Punk",
-    url: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=200&auto=format&fit=crop&q=80",
-  },
-  {
-    name: "Neon Hunter",
-    url: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=200&auto=format&fit=crop&q=80",
-  },
-  {
-    name: "Mecha Pilot",
-    url: "https://images.unsplash.com/photo-1563089145-599997674d42?w=200&auto=format&fit=crop&q=80",
-  },
-  {
-    name: "Ronin Blade",
-    url: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=200&auto=format&fit=crop&q=80",
-  },
-];
-
 export function ProfileSettingsModal({
   isOpen,
   onClose,
@@ -68,6 +49,33 @@ export function ProfileSettingsModal({
   onResetGoogleAvatar,
 }: ProfileSettingsModalProps) {
   const { t, locale, setLocale } = useI18n();
+
+  // Dynamic avatars fetched from API
+  const [apiAvatars, setApiAvatars] = useState<{ name: string; url: string }[]>([]);
+  const [loadingAvatars, setLoadingAvatars] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setLoadingAvatars(true);
+      fetch("/api/jikan/top/characters?limit=6")
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && Array.isArray(data.data)) {
+            const mapped = data.data
+              .map((c: any) => ({
+                name: c.name || "Hero",
+                url: c.images?.webp?.image_url || c.images?.jpg?.image_url || "",
+              }))
+              .filter((c: any) => Boolean(c.url));
+            setApiAvatars(mapped);
+          }
+        })
+        .catch((err) => {
+          console.warn("Could not fetch character avatars from API:", err);
+        })
+        .finally(() => setLoadingAvatars(false));
+    }
+  }, [isOpen]);
 
   // Form states
   const [displayName, setDisplayName] = useState("");
@@ -251,31 +259,36 @@ export function ProfileSettingsModal({
                 </div>
               </div>
 
-              {/* Preset Avatars */}
-              <div>
-                <p className="text-[11px] text-zinc-400 mb-2 font-medium">
-                  Or pick a preset anime hero:
-                </p>
-                <div className="flex gap-2">
-                  {PRESET_AVATARS.map((preset) => (
-                    <button
-                      key={preset.name}
-                      type="button"
-                      onClick={() => setPhotoURL(preset.url)}
-                      className={`relative rounded-xl overflow-hidden border-2 transition-all p-0.5 ${
-                        photoURL === preset.url
-                          ? "border-rose-500 scale-105"
-                          : "border-transparent opacity-70 hover:opacity-100"
-                      }`}
-                      title={preset.name}
-                    >
-                      <Avatar className="h-10 w-10">
-                        <AvatarImage src={preset.url} alt={preset.name} />
-                      </Avatar>
-                    </button>
-                  ))}
+              {/* API Avatars */}
+              {apiAvatars.length > 0 && (
+                <div>
+                  <p className="text-[11px] text-zinc-400 mb-2 font-medium">
+                    Or choose from popular anime characters (Jikan API):
+                  </p>
+                  <div className="flex gap-2 overflow-x-auto pb-1">
+                    {apiAvatars.map((hero) => (
+                      <button
+                        key={hero.url}
+                        type="button"
+                        onClick={() => setPhotoURL(hero.url)}
+                        className={`relative rounded-xl overflow-hidden border-2 transition-all p-0.5 flex-shrink-0 ${
+                          photoURL === hero.url
+                            ? "border-rose-500 scale-105"
+                            : "border-transparent opacity-70 hover:opacity-100"
+                        }`}
+                        title={hero.name}
+                      >
+                        <Avatar className="h-10 w-10">
+                          <AvatarImage src={hero.url} alt={hero.name} />
+                          <AvatarFallback className="text-[10px]">
+                            {hero.name[0]}
+                          </AvatarFallback>
+                        </Avatar>
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Display Name & Username */}

@@ -9,6 +9,7 @@ import {
     signOut as firebaseSignOut
 } from 'firebase/auth';
 import { useMessagesStore } from '@/store/use-messages-store';
+import { syncUserProfileToFirestore } from '@/lib/user-sync';
 
 let authInitialization: Promise<void> | null = null;
 
@@ -55,6 +56,7 @@ const useAuthStore = create<IAuth>((set, get) => ({
             if ('user' in result) {
                 const token = await result.user.getIdToken();
                 set({ user: result.user, token, loading: false });
+                syncUserProfileToFirestore(result.user).catch(console.warn);
                 return result.user;
             } else {
                 throw new Error('Sign-in failed');
@@ -91,6 +93,7 @@ const useAuthStore = create<IAuth>((set, get) => ({
                     if (user) {
                         const token = await user.getIdToken();
                         set({ user, token, loading: false });
+                        syncUserProfileToFirestore(user).catch(console.warn);
                     } else {
                         set({ user: null, token: null, loading: false });
                     }

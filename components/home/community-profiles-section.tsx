@@ -6,102 +6,10 @@ import { collection, query, where, getDocs, limit } from "firebase/firestore";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Users, Compass, ArrowRight, Zap, Bookmark, Layers } from "lucide-react";
+import { Users, ArrowRight, Zap, Layers, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { UserProfileData } from "@/types/user";
-
-// Vibrant fallback community profiles to display alongside any logged-in users
-const FALLBACK_PROFILES: UserProfileData[] = [
-  {
-    uid: "pioneer_ren",
-    email: "ren@otakuz.io",
-    displayName: "Ren Kisaragi",
-    username: "@ren_kisaragi",
-    photoURL: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=150&auto=format&fit=crop&q=80",
-    bio: "Curator of dark fantasy & psychological anime. 100+ boards pinned.",
-    isPublic: true,
-    level: 32,
-    rank: "Grandmaster Otaku",
-    totalExp: "2,840",
-    watchedCount: 84,
-    readingCount: 36,
-    preferences: {
-      language: "en",
-      soundEffects: true,
-      autoplayTrailers: true,
-      adultFilter: false,
-      defaultBoardPublic: true,
-      emailNotifications: true,
-    },
-  },
-  {
-    uid: "pioneer_aoi",
-    email: "aoi@otakuz.io",
-    displayName: "Aoi Shinomiya",
-    username: "@aoi_shino",
-    photoURL: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=150&auto=format&fit=crop&q=80",
-    bio: "Slice of life connoisseur & shojo enthusiast. Follow my chill boards!",
-    isPublic: true,
-    level: 28,
-    rank: "S-Rank Pioneer",
-    totalExp: "2,120",
-    watchedCount: 65,
-    readingCount: 29,
-    preferences: {
-      language: "ja",
-      soundEffects: true,
-      autoplayTrailers: true,
-      adultFilter: false,
-      defaultBoardPublic: true,
-      emailNotifications: true,
-    },
-  },
-  {
-    uid: "pioneer_kenji",
-    email: "kenji@otakuz.io",
-    displayName: "Kenji Sato",
-    username: "@kenji_sato",
-    photoURL: "https://images.unsplash.com/photo-1563089145-599997674d42?w=150&auto=format&fit=crop&q=80",
-    bio: "Mecha, cyberpunk, and classic 90s anime archive curator.",
-    isPublic: true,
-    level: 25,
-    rank: "S-Rank Pioneer",
-    totalExp: "1,750",
-    watchedCount: 52,
-    readingCount: 22,
-    preferences: {
-      language: "en",
-      soundEffects: true,
-      autoplayTrailers: true,
-      adultFilter: false,
-      defaultBoardPublic: true,
-      emailNotifications: true,
-    },
-  },
-  {
-    uid: "pioneer_miku",
-    email: "miku@otakuz.io",
-    displayName: "Miku Tachibana",
-    username: "@miku_t",
-    photoURL: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?w=150&auto=format&fit=crop&q=80",
-    bio: "Seasonal watcher & tournament predictor. Always tracking new releases.",
-    isPublic: true,
-    level: 22,
-    rank: "A-Rank Strategist",
-    totalExp: "1,390",
-    watchedCount: 40,
-    readingCount: 15,
-    preferences: {
-      language: "en",
-      soundEffects: true,
-      autoplayTrailers: true,
-      adultFilter: false,
-      defaultBoardPublic: true,
-      emailNotifications: true,
-    },
-  },
-];
 
 export function CommunityProfilesSection() {
   const { data: users = [], isLoading } = useQuery<UserProfileData[]>({
@@ -109,21 +17,34 @@ export function CommunityProfilesSection() {
     queryFn: async () => {
       try {
         const usersRef = collection(db, "users");
-        const q = query(usersRef, where("isPublic", "==", true), limit(12));
+        const q = query(usersRef, where("isPublic", "==", true), limit(20));
         const snapshot = await getDocs(q);
 
-        const firestoreUsers = snapshot.docs.map((docSnap) => ({
-          uid: docSnap.id,
-          ...docSnap.data(),
-        })) as UserProfileData[];
+        const realUsers = snapshot.docs.map((docSnap) => {
+          const data = docSnap.data();
+          return {
+            uid: docSnap.id,
+            displayName: data.displayName || data.email?.split("@")[0] || "Otaku Member",
+            username: data.username || `@user_${docSnap.id.slice(0, 5)}`,
+            photoURL: data.photoURL || data.googlePhotoURL || "",
+            googlePhotoURL: data.googlePhotoURL || null,
+            bio: data.bio || "",
+            isPublic: data.isPublic !== undefined ? data.isPublic : true,
+            level: Number(data.level || 1),
+            rank: data.rank || "Novice Explorer",
+            totalExp: Number(data.totalExp || 0),
+            watchedCount: Number(data.watchedCount || 0),
+            readingCount: Number(data.readingCount || 0),
+            boardsCount: Number(data.boardsCount || 0),
+            totalSaved: Number(data.totalSaved || 0),
+            preferences: data.preferences,
+          } as UserProfileData;
+        });
 
-        // Merge real users from Firestore with community members to ensure a lively showcase
-        const userIds = new Set(firestoreUsers.map((u) => u.uid));
-        const extraFallbacks = FALLBACK_PROFILES.filter((fb) => !userIds.has(fb.uid));
-        return [...firestoreUsers, ...extraFallbacks];
+        return realUsers;
       } catch (err) {
-        console.warn("Could not query community users, using active fallbacks:", err);
-        return FALLBACK_PROFILES;
+        console.warn("Could not query community users from Firebase:", err);
+        return [];
       }
     },
   });
@@ -178,6 +99,23 @@ export function CommunityProfilesSection() {
             />
           ))}
         </div>
+      ) : users.length === 0 ? (
+        <Card className="p-12 text-center border-dashed border-zinc-800 bg-[#18181b]/60 rounded-2xl">
+          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 mb-4 border border-rose-500/20">
+            <Sparkles className="h-7 w-7" />
+          </div>
+          <h3 className="text-lg font-bold text-white mb-1">
+            Be the First to Join the Otakuz Community!
+          </h3>
+          <p className="text-sm text-zinc-400 max-w-md mx-auto mb-6">
+            No public profiles are shared yet. Sign in, create saved boards, and make your profile public to be featured here!
+          </p>
+          <Link href="/profile">
+            <Button className="bg-rose-500 hover:bg-rose-600 text-white font-medium">
+              Go to My Profile
+            </Button>
+          </Link>
+        </Card>
       ) : (
         <motion.div
           variants={container}
@@ -212,7 +150,7 @@ export function CommunityProfilesSection() {
                       </div>
 
                       <span className="inline-flex items-center rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[11px] font-bold text-rose-400">
-                        Lv. {communityUser.level || 24}
+                        Lv. {communityUser.level}
                       </span>
                     </div>
 
@@ -222,19 +160,19 @@ export function CommunityProfilesSection() {
                         {communityUser.displayName}
                       </h3>
                       <p className="text-xs text-zinc-400 truncate">
-                        {communityUser.username || `@user_${communityUser.uid.slice(0, 5)}`}
+                        {communityUser.username}
                       </p>
                       <p className="text-[11px] font-medium text-amber-400/90 pt-0.5">
-                        {communityUser.rank || "S-Rank Pioneer"}
+                        {communityUser.rank}
                       </p>
                     </div>
 
                     {/* Bio snippet */}
-                    {communityUser.bio && (
+                    {communityUser.bio ? (
                       <p className="text-xs text-zinc-400/90 line-clamp-2 mt-2 leading-relaxed">
                         {communityUser.bio}
                       </p>
-                    )}
+                    ) : null}
                   </div>
 
                   {/* Bottom Stats & CTA */}
@@ -242,14 +180,14 @@ export function CommunityProfilesSection() {
                     <div className="flex items-center gap-3 text-[11px] text-zinc-400">
                       <span>
                         <strong className="text-white">
-                          {communityUser.watchedCount || 42}
+                          {communityUser.watchedCount}
                         </strong>{" "}
                         Watched
                       </span>
                       <span>·</span>
                       <span>
                         <strong className="text-white">
-                          {communityUser.readingCount || 18}
+                          {communityUser.readingCount}
                         </strong>{" "}
                         Reading
                       </span>
@@ -257,7 +195,7 @@ export function CommunityProfilesSection() {
 
                     <div className="flex items-center gap-1 text-xs font-semibold text-rose-400 group-hover:translate-x-0.5 transition-transform">
                       <Layers className="h-3.5 w-3.5" />
-                      <span>Boards</span>
+                      <span>{communityUser.boardsCount ?? 0} Boards</span>
                     </div>
                   </div>
                 </Card>

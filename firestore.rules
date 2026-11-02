@@ -63,9 +63,10 @@ service cloud.firestore {
       match /messages/{messageId} {
         // Room members need to read one another's messages for group chat.
         // Only the authenticated author can create or mutate their messages.
-        allow read: if isRoomMember(roomId);
+        allow read: if isRoomMember(roomId) || isRoomOwner(roomId);
 
-        allow create: if isRoomMember(roomId)
+        allow create: if signedIn()
+          && (isRoomMember(roomId) || isRoomOwner(roomId))
           && request.resource.data.keys().hasOnly([
             'userId', 'username', 'message', 'type', 'timestamp',
             'createdAtClient', 'fileUrl', 'fileType',
@@ -100,11 +101,11 @@ service cloud.firestore {
       }
 
       match /typing/{userId} {
-        allow read: if isRoomMember(roomId);
-        allow create, update: if isRoomMember(roomId)
+        allow read: if isRoomMember(roomId) || isRoomOwner(roomId);
+        allow create, update: if (isRoomMember(roomId) || isRoomOwner(roomId))
           && request.auth.uid == userId
           && request.resource.data.userId == request.auth.uid;
-        allow delete: if isRoomMember(roomId) && request.auth.uid == userId;
+        allow delete: if (isRoomMember(roomId) || isRoomOwner(roomId)) && request.auth.uid == userId;
       }
 
       match /invites/{inviteId} {
@@ -118,21 +119,23 @@ service cloud.firestore {
     match /users/{userId} {
       // Public user profiles can be viewed by anyone when isPublic is true,
       // while users can always view and manage their own profiles.
-      allow read: if resource.data.isPublic == true
+      allow get: if (signedIn() && request.auth.uid == userId)
+        || (resource != null && resource.data.isPublic == true);
+      allow list: if resource.data.isPublic == true
         || (signedIn() && request.auth.uid == userId);
       allow write: if signedIn() && request.auth.uid == userId;
 
       match /lists/{listId} {
         // Public boards (lists) can be viewed by anyone,
         // while private boards are restricted to the owner.
-        allow read: if resource.data.public == true
-          || (signedIn() && request.auth.uid == userId);
+        allow read: if (signedIn() && request.auth.uid == userId)
+          || (resource != null && resource.data.public == true);
         allow write: if signedIn() && request.auth.uid == userId;
 
         match /items/{itemId} {
           // Items inherit visibility from the parent board (list).
-          allow read: if get(/databases/$(database)/documents/users/$(userId)/lists/$(listId)).data.public == true
-            || (signedIn() && request.auth.uid == userId);
+          allow read: if (signedIn() && request.auth.uid == userId)
+            || (get(/databases/$(database)/documents/users/$(userId)/lists/$(listId)).data.public == true);
           allow write: if signedIn() && request.auth.uid == userId;
         }
       }

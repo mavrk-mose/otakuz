@@ -13,15 +13,11 @@ import {
 import { updateProfile as firebaseUpdateProfile } from "firebase/auth";
 import useAuthStore from "@/store/use-auth-store";
 import { UserProfileData, UserPreferences } from "@/types/user";
-
-const DEFAULT_PREFERENCES: UserPreferences = {
-  language: "en",
-  soundEffects: true,
-  autoplayTrailers: true,
-  adultFilter: false,
-  defaultBoardPublic: true,
-  emailNotifications: true,
-};
+import {
+  calculateUserStats,
+  DEFAULT_PREFERENCES,
+  getRankForLevel,
+} from "@/lib/user-sync";
 
 export function useUserProfile(targetUserId?: string) {
   const { user: currentUser, setUser: setCurrentAuthUser } = useAuthStore();
@@ -29,8 +25,29 @@ export function useUserProfile(targetUserId?: string) {
   const isOwnProfile = !!currentUser && currentUser.uid === effectiveUserId;
 
   const [profile, setProfile] = useState<UserProfileData | null>(null);
+  const [stats, setStats] = useState({
+    boardsCount: 0,
+    watchedCount: 0,
+    readingCount: 0,
+    totalSaved: 0,
+    totalExp: 0,
+    level: 1,
+    rank: "Novice Explorer",
+  });
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Compute real stats from Firebase for effective user
+  const refreshStats = useCallback(async () => {
+    if (!effectiveUserId) return;
+    try {
+      const realStats = await calculateUserStats(effectiveUserId, isOwnProfile);
+      setStats(realStats);
+      return realStats;
+    } catch (e) {
+      console.warn("Failed to refresh stats from database:", e);
+    }
+  }, [effectiveUserId, isOwnProfile]);
 
   useEffect(() => {
     if (!effectiveUserId) {
@@ -42,33 +59,40 @@ export function useUserProfile(targetUserId?: string) {
     setLoading(true);
     const userDocRef = doc(db, "users", effectiveUserId);
 
-    // If viewing own profile, ensure doc exists and is synced with Google Auth
+    // Initial sync and calculation
     const syncAndListen = async () => {
       try {
+        const currentStats = await calculateUserStats(effectiveUserId, isOwnProfile);
+        setStats(currentStats);
+
         if (isOwnProfile && currentUser) {
           const docSnap = await getDoc(userDocRef);
           if (!docSnap.exists()) {
-            // Initial document creation: Take user's Google photo as default
+            const displayName =
+              currentUser.displayName ||
+              currentUser.email?.split("@")[0] ||
+              "Otaku Member";
+            const username = `@${(
+              currentUser.email?.split("@")[0] ||
+              "user_" + currentUser.uid.slice(0, 5)
+            ).toLowerCase()}`;
+
             const initialData: UserProfileData = {
               uid: currentUser.uid,
               email: currentUser.email || null,
-              displayName:
-                currentUser.displayName ||
-                currentUser.email?.split("@")[0] ||
-                "Ren",
-              username: `@${(
-                currentUser.email?.split("@")[0] ||
-                "otaku_" + currentUser.uid.slice(0, 5)
-              ).toLowerCase()}`,
+              displayName,
+              username,
               photoURL: currentUser.photoURL || "",
               googlePhotoURL: currentUser.photoURL || null,
-              bio: "Passionate anime explorer & manga enthusiast.",
+              bio: "",
               isPublic: true,
-              level: 24,
-              rank: "S-Rank Pioneer",
-              totalExp: "1,450",
-              watchedCount: 42,
-              readingCount: 18,
+              level: currentStats.level,
+              rank: currentStats.rank,
+              totalExp: currentStats.totalExp,
+              watchedCount: currentStats.watchedCount,
+              readingCount: currentStats.readingCount,
+              boardsCount: currentStats.boardsCount,
+              totalSaved: currentStats.totalSaved,
               preferences: DEFAULT_PREFERENCES,
               createdAt: serverTimestamp(),
               updatedAt: serverTimestamp(),
@@ -76,10 +100,16 @@ export function useUserProfile(targetUserId?: string) {
             };
             await setDoc(userDocRef, initialData);
           } else {
-            // Already exists - update last login and ensure googlePhotoURL is recorded
             const existing = docSnap.data() as UserProfileData;
             const updates: Record<string, any> = {
               lastLoginAt: serverTimestamp(),
+              level: currentStats.level,
+              rank: currentStats.rank,
+              totalExp: currentStats.totalExp,
+              watchedCount: currentStats.watchedCount,
+              readingCount: currentStats.readingCount,
+              boardsCount: currentStats.boardsCount,
+              totalSaved: currentStats.totalSaved,
             };
             if (currentUser.photoURL && !existing.googlePhotoURL) {
               updates.googlePhotoURL = currentUser.photoURL;
@@ -87,13 +117,11 @@ export function useUserProfile(targetUserId?: string) {
             if (!existing.photoURL && currentUser.photoURL) {
               updates.photoURL = currentUser.photoURL;
             }
-            if (Object.keys(updates).length > 0) {
-              await updateDoc(userDocRef, updates);
-            }
+            await updateDoc(userDocRef, updates);
           }
         }
       } catch (err: any) {
-        console.warn("User profile sync warning:", err);
+        console.warn("User profile sync error:", err);
       }
     };
 
@@ -106,13 +134,25 @@ export function useUserProfile(targetUserId?: string) {
         if (docSnap.exists()) {
           const data = docSnap.data() as UserProfileData;
           setProfile(data);
+          if (data.level && data.rank) {
+            setStats((prev) => ({
+              ...prev,
+              level: data.level,
+              rank: data.rank,
+              totalExp: Number(data.totalExp || 0),
+              watchedCount: data.watchedCount ?? prev.watchedCount,
+              readingCount: data.readingCount ?? prev.readingCount,
+              boardsCount: data.boardsCount ?? prev.boardsCount,
+              totalSaved: data.totalSaved ?? prev.totalSaved,
+            }));
+          }
         } else {
           setProfile(null);
         }
         setLoading(false);
       },
       (err) => {
-        console.error("Profile onSnapshot error:", err);
+        console.warn("Profile onSnapshot notice:", err.message);
         setError(err.message);
         setLoading(false);
       }
@@ -152,8 +192,10 @@ export function useUserProfile(targetUserId?: string) {
         });
         setCurrentAuthUser({ ...auth.currentUser });
       }
+
+      await refreshStats();
     },
-    [effectiveUserId, isOwnProfile, setCurrentAuthUser]
+    [effectiveUserId, isOwnProfile, setCurrentAuthUser, refreshStats]
   );
 
   const resetToGoogleAvatar = useCallback(async () => {
@@ -191,9 +233,11 @@ export function useUserProfile(targetUserId?: string) {
 
   return {
     profile,
+    stats,
     loading,
     error,
     isOwnProfile,
+    refreshStats,
     updateProfileData,
     resetToGoogleAvatar,
     toggleProfileVisibility,
