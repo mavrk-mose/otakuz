@@ -64,6 +64,10 @@ function snapshotToMessage(snapshot: QueryDocumentSnapshot<DocumentData>): Messa
         fileUrl: data.fileUrl,
         fileType: data.fileType,
         animeData: data.animeData,
+        mangaData: data.mangaData,
+        productData: data.productData,
+        eventData: data.eventData,
+        profileData: data.profileData,
         deliveryStatus: snapshot.metadata.hasPendingWrites ? 'sending' : 'sent',
     }
 }

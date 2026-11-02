@@ -23,3 +23,4 @@ export {
 export * from "./news";
 export * from "./room";
 export * from "./shop";
+export * from "./user";

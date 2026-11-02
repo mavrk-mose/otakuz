@@ -1,9 +1,10 @@
 "use client"
 
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Star, ShoppingCart } from 'lucide-react';
+import { Star, ShoppingCart, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -11,6 +12,7 @@ import { Product } from "@/types/shop";
 import { urlFor } from "@/lib/sanity";
 import { useCart } from '@/store/use-cart';
 import { useI18n } from '@/components/i18n-provider';
+import { ShareContentModal } from '@/components/chat/share-content-modal';
 
 interface ProductCardProps {
   product: Product;
@@ -19,6 +21,7 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
   const { t } = useI18n();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   return (
       <motion.div
@@ -68,17 +71,46 @@ export function ProductCard({ product }: ProductCardProps) {
             </p>
             <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 sm:justify-between mt-auto">
               <span className="text-base sm:text-lg font-bold">Tshs.{product.price}</span>
-              <Button
-                  size="sm"
-                  onClick={() => addToCart(product)}
-                  className="w-full sm:w-auto text-xs sm:text-sm py-1.5 sm:py-2"
-              >
-                <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                {t("shop.addToCart")}
-              </Button>
+              <div className="flex items-center gap-1.5">
+                <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => setIsShareModalOpen(true)}
+                    className="p-2 h-8 w-8 text-muted-foreground hover:text-foreground"
+                    title="Share to chat"
+                >
+                  <Share2 className="h-3.5 w-3.5" />
+                </Button>
+                <Button
+                    size="sm"
+                    onClick={() => addToCart(product)}
+                    className="w-full sm:w-auto text-xs sm:text-sm py-1.5 sm:py-2"
+                >
+                  <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
+                  {t("shop.addToCart")}
+                </Button>
+              </div>
             </div>
           </div>
         </Card>
+
+        <ShareContentModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            payload={{
+                type: 'product',
+                data: {
+                    id: product._id,
+                    name: product.name,
+                    image: product.image?.[0] ? urlFor(product.image[0].asset._ref).url() : '',
+                    price: product.price,
+                    category: product.category,
+                    rating: product.rating,
+                    stock: product.stock,
+                    description: product.description,
+                },
+            }}
+        />
       </motion.div>
   );
 }

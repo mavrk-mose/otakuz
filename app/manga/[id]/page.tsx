@@ -1,10 +1,11 @@
 "use client"
 
+import { useState } from "react";
 import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import {Star, BookOpen, Users, AlertCircle, RefreshCw} from 'lucide-react';
+import {Star, BookOpen, Users, AlertCircle, RefreshCw, Share2} from 'lucide-react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {BookmarkButton} from "@/components/bookmark-button";
 import Image from 'next/image';
@@ -15,6 +16,7 @@ import useMangaDetails from "@/hooks/manga/use-manga-details";
 import { useGenreStore } from "@/store/use-genre-store";
 import { useRouter } from "next/navigation"
 import { useI18n } from "@/components/i18n-provider"
+import { ShareContentModal } from "@/components/chat/share-content-modal"
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -23,6 +25,7 @@ interface Props {
 export default function MangaDetailPage(props: Props) {
     const { t } = useI18n();
     const params = use(props.params);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const {manga, isLoading, error, refetch, isFetching} = useMangaDetails(params.id);
     const { mangaGenre, setMangaGenre } = useGenreStore();
@@ -96,6 +99,13 @@ export default function MangaDetailPage(props: Props) {
                             title={manga.title}
                             image={coverImage}
                         />
+                        <Button
+                            variant="secondary"
+                            className="w-full gap-2"
+                            onClick={() => setIsShareModalOpen(true)}
+                        >
+                            <Share2 className="w-4 h-4" /> {t("anime.shareChat") || "Share to Chat"}
+                        </Button>
                     </div>
                     <Card className="p-4 space-y-4">
                         <div>
@@ -136,7 +146,7 @@ export default function MangaDetailPage(props: Props) {
                             {manga.title_japanese}
                         </h2>
                         <div className="flex flex-wrap gap-2">
-                            {manga.genres?.map((genre) => (
+                            {manga.genres?.map((genre: any) => (
                                 <Badge 
                                     key={genre.mal_id} 
                                     variant="secondary"
@@ -168,7 +178,7 @@ export default function MangaDetailPage(props: Props) {
                                     <div>
                                         <h4 className="font-medium mb-2">{t("manga.authors")}</h4>
                                         <div className="space-y-1">
-                                            {manga.authors?.map((author) => (
+                                            {manga.authors?.map((author: any) => (
                                                 <p key={author.mal_id} className="text-sm text-muted-foreground">
                                                     {author.name}
                                                 </p>
@@ -198,6 +208,21 @@ export default function MangaDetailPage(props: Props) {
                     </div>
                 </div>
             </div>
+            <ShareContentModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                payload={{
+                    type: 'manga',
+                    data: {
+                        id: manga.mal_id,
+                        title: manga.title,
+                        image: coverImage,
+                        score: manga.score,
+                        chapters: manga.chapters,
+                        authors: manga.authors?.map((a: any) => a.name) || [],
+                    },
+                }}
+            />
         </div>
     );
 }

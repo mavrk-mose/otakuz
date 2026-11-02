@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import { HeroSection } from '@/components/hero-section';
 import { AnimeSection } from '@/components/anime/anime-section';
 import { MangaSection } from '@/components/manga/manga-section';
+import { CommunityProfilesSection } from '@/components/home/community-profiles-section';
 import { NewsSection } from '@/components/news/news-section';
 import { EventsSection } from '@/components/events/events-section';
 import { CalendarSection } from '@/components/calendar/calendar-section';
@@ -19,6 +20,10 @@ export default function Home() {
 
                 <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
                     <MangaSection />
+                </Suspense>
+
+                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                    <CommunityProfilesSection />
                 </Suspense>
 
                 <Suspense fallback={<div><I18nText message="common.loading" /></div>}>

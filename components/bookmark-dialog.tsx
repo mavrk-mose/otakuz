@@ -5,12 +5,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, Check } from 'lucide-react';
+import { Plus, Check, Globe, Lock } from 'lucide-react';
 import { useBookmarks } from '@/hooks/use-bookmarks';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import {toast} from "sonner";
 import { useI18n } from "@/components/i18n-provider";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 interface Props {
     isOpen: boolean;
@@ -29,6 +31,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
     const [showNewListInput, setShowNewListInput] = useState(false);
     const [newListName, setNewListName] = useState('');
+    const [newListPublic, setNewListPublic] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
 
     const sortedLists = [...lists].sort(
@@ -39,11 +42,11 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
         if (!newListName.trim()) return;
 
         try {
-            const newList = await createList(newListName);
+            const newList = await createList(newListName.trim(), 'custom', newListPublic);
             setNewListName('');
             setShowNewListInput(false);
             setSelectedListId(newList.id);
-            toast.success("List created!");
+            toast.success(newListPublic ? "Public board created!" : "Secret board created!");
         } catch (error) {
             console.error('Error creating list:', error);
             toast.error("Failed creating list");
@@ -91,19 +94,35 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                 </div>
 
                 {showNewListInput ? (
-                    <div className="flex gap-2">
-                        <Input
-                            placeholder={t("bookmark.listName")}
-                            value={newListName}
-                            onChange={(e) => setNewListName(e.target.value)}
-                            onKeyPress={(e) => e.key === 'Enter' && handleCreateList()}
-                        />
-                        <Button onClick={handleCreateList}>{t("common.create")}</Button>
+                    <div className="space-y-3 p-3 rounded-xl border border-zinc-800 bg-zinc-900/60">
+                        <div className="flex gap-2">
+                            <Input
+                                placeholder={t("bookmark.listName")}
+                                value={newListName}
+                                onChange={(e) => setNewListName(e.target.value)}
+                                onKeyPress={(e) => e.key === 'Enter' && handleCreateList()}
+                                className="bg-zinc-900 border-zinc-700"
+                            />
+                            <Button onClick={handleCreateList} className="bg-rose-500 hover:bg-rose-600 text-white">
+                                {t("common.create")}
+                            </Button>
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-zinc-400">
+                            <span className="flex items-center gap-1.5 font-medium">
+                                {newListPublic ? <Globe className="h-3.5 w-3.5 text-emerald-400" /> : <Lock className="h-3.5 w-3.5 text-amber-400" />}
+                                {newListPublic ? "Public Board" : "Secret Board"}
+                            </span>
+                            <Switch
+                                checked={newListPublic}
+                                onCheckedChange={setNewListPublic}
+                                className="data-[state=checked]:bg-emerald-500"
+                            />
+                        </div>
                     </div>
                 ) : (
                     <Button
                         variant="outline"
-                        className="w-full"
+                        className="w-full border-dashed border-zinc-700"
                         onClick={() => setShowNewListInput(true)}
                     >
                         <Plus className="mr-2 h-4 w-4" />
@@ -111,7 +130,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                     </Button>
                 )}
 
-                <ScrollArea className="h-[300px] pr-4">
+                <ScrollArea className="h-[280px] pr-4">
                     <AnimatePresence>
                         {sortedLists.length === 0 ? (
                             <motion.div
@@ -134,7 +153,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                                 }}
                                 className="space-y-2"
                             >
-                                {lists.map((list) => (
+                                {sortedLists.map((list) => (
                                     <motion.div
                                         key={list.id}
                                         variants={{
@@ -144,14 +163,21 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                                     >
                                         <Button
                                             variant="outline"
-                                            className={`w-full justify-between ${
-                                                selectedListId === list.id ? 'border-primary' : ''
+                                            className={`w-full justify-between h-auto py-2.5 px-3 border-zinc-800 bg-zinc-900/40 hover:bg-zinc-800 ${
+                                                selectedListId === list.id ? 'border-rose-500 bg-rose-500/10' : ''
                                             }`}
                                             onClick={() => setSelectedListId(list.id)}
                                         >
-                                            <span>{list.name}</span>
+                                            <div className="flex items-center gap-2">
+                                                {list.public !== false ? (
+                                                    <Globe className="h-3.5 w-3.5 text-emerald-400" />
+                                                ) : (
+                                                    <Lock className="h-3.5 w-3.5 text-amber-400" />
+                                                )}
+                                                <span className="font-medium text-white">{list.name}</span>
+                                            </div>
                                             {selectedListId === list.id && (
-                                                <Check className="h-4 w-4 text-primary" />
+                                                <Check className="h-4 w-4 text-rose-500" />
                                             )}
                                         </Button>
                                     </motion.div>

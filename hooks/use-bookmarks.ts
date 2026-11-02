@@ -40,61 +40,96 @@ export interface BookmarkedItem {
   title: string;
   image: string;
   addedAt: Date;
+  addedBy?: string;
 }
 
 const ITEMS_PER_PAGE = 12;
 
-export function useBookmarks() {
+export function useBookmarks(targetUserId?: string) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const effectiveUserId = targetUserId || user?.uid;
+  const isOwner = !!user && user.uid === effectiveUserId;
 
   const { data: lists = [], isLoading: listsLoading } = useQuery({
-    queryKey: ['lists', user?.uid],
+    queryKey: ['lists', effectiveUserId, isOwner],
     queryFn: async () => {
-      if (!user) return [];
+      if (!effectiveUserId) return [];
       
-      const q = query(
-        collection(db, 'users', user.uid, 'lists'),
-        orderBy('createdAt', 'desc')
-      );
-      
-      const snapshot = await getDocs(q);
+      let snapshot;
+      try {
+        if (isOwner) {
+          const q = query(
+            collection(db, 'users', effectiveUserId, 'lists'),
+            orderBy('createdAt', 'desc')
+          );
+          snapshot = await getDocs(q);
+        } else {
+          const q = query(
+            collection(db, 'users', effectiveUserId, 'lists'),
+            where('public', '==', true)
+          );
+          snapshot = await getDocs(q);
+        }
+      } catch (err) {
+        console.warn('Failed to query lists with sort/filter, falling back:', err);
+        const q = collection(db, 'users', effectiveUserId, 'lists');
+        snapshot = await getDocs(q);
+      }
+
       const listsWithPreview = await Promise.all(
         snapshot.docs.map(async (docSnap) => {
-          const list = { id: docSnap.id, ...docSnap.data() } as BookmarkList;
+          const rawData = docSnap.data();
+          const list = {
+            id: docSnap.id,
+            ...rawData,
+            public: rawData.public !== undefined ? rawData.public : true,
+          } as BookmarkList;
+
+          // If viewing another user's profile and list is private, skip it
+          if (!isOwner && list.public === false) {
+            return null;
+          }
     
-          const itemsRef = collection(db, 'users', user.uid, 'lists', list.id, 'items');
-          const itemSnapshot = await getDocs(query(
-            itemsRef, 
-            orderBy('addedAt', 'desc'), 
-            limit(1)
-          ));
-    
-          const items = itemSnapshot.docs.map((doc) => ({
-            id: doc.id,
-            ...doc.data(),
-          })) as BookmarkedItem[];
-    
-          return {
-            ...list,
-            items,
-          };
+          try {
+            const itemsRef = collection(db, 'users', effectiveUserId, 'lists', list.id, 'items');
+            const itemSnapshot = await getDocs(query(
+              itemsRef, 
+              orderBy('addedAt', 'desc'), 
+              limit(4)
+            ));
+      
+            const items = itemSnapshot.docs.map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            })) as BookmarkedItem[];
+      
+            return {
+              ...list,
+              items,
+            };
+          } catch (e) {
+            return {
+              ...list,
+              items: [],
+            };
+          }
         })
       );
     
-      return listsWithPreview;
+      return listsWithPreview.filter(Boolean) as BookmarkList[];
     },
-    enabled: !!user
+    enabled: !!effectiveUserId
   });
 
   const useListItems = (listId: string) => {
     return useInfiniteQuery({
-      queryKey: ['listItems', listId],
+      queryKey: ['listItems', effectiveUserId, listId],
       queryFn: async ({ pageParam }: { pageParam?: DocumentSnapshot | null }) => {
-        if (!user) return { items: [], lastDoc: null };
+        if (!effectiveUserId) return { items: [], lastDoc: null };
   
         const q = query(
-          collection(db, 'users', user.uid, 'lists', listId, 'items'),
+          collection(db, 'users', effectiveUserId, 'lists', listId, 'items'),
           orderBy('addedAt', 'desc'),
           limit(ITEMS_PER_PAGE),
           ...(pageParam ? [startAfter(pageParam)] : [])
@@ -113,7 +148,7 @@ export function useBookmarks() {
       },
       getNextPageParam: (lastPage) => lastPage.lastDoc,
       initialPageParam: null, 
-      enabled: !!user && !!listId,
+      enabled: !!effectiveUserId && !!listId,
     });
   };
 
@@ -142,54 +177,64 @@ export function useBookmarks() {
       await setDoc(bookmarkRef, {
         ...item,
         addedAt: serverTimestamp(),
-        addedBy: user.uid
+        addedBy: user.uid,
       });
 
       await updateDoc(listRef, {
-        updatedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
-  
 
       return { listId, item };
     },
     onSuccess: ({ listId }) => {
-      queryClient.invalidateQueries({ queryKey: ['listItems', listId] });
+      queryClient.invalidateQueries({ queryKey: ['listItems', user?.uid, listId] });
       queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+      if (effectiveUserId && effectiveUserId !== user?.uid) {
+        queryClient.invalidateQueries({ queryKey: ['lists', effectiveUserId] });
+      }
     },
   });
 
   const removeFromList = useMutation({
-    mutationFn: async ({ listId, itemId }: { listId: string; itemId: string }) => {
+    mutationFn: async ({
+      listId,
+      itemId
+    }: {
+      listId: string;
+      itemId: string;
+    }) => {
       if (!user) throw new Error('User not authenticated');
 
-      const bookmarkRef = doc(
-        db,
-        'users',
-        user.uid,
-        'lists',
-        listId,
-        'items',
-        itemId
+      await deleteDoc(
+        doc(db, 'users', user.uid, 'lists', listId, 'items', itemId)
       );
 
       const listRef = doc(db, 'users', user.uid, 'lists', listId);
-
-      await deleteDoc(bookmarkRef);
-
       await updateDoc(listRef, {
-        updatedAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
       });
 
       return { listId, itemId };
     },
     onSuccess: ({ listId }) => {
-      queryClient.invalidateQueries({ queryKey: ['listItems', listId] });
+      queryClient.invalidateQueries({ queryKey: ['listItems', user?.uid, listId] });
       queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+      if (effectiveUserId && effectiveUserId !== user?.uid) {
+        queryClient.invalidateQueries({ queryKey: ['lists', effectiveUserId] });
+      }
     },
   });
 
   const createList = useMutation({
-    mutationFn: async ({ name, type = 'custom' }: { name: string; type?: ListType }) => {
+    mutationFn: async ({
+      name,
+      type = 'custom',
+      isPublic = true,
+    }: {
+      name: string;
+      type?: ListType;
+      isPublic?: boolean;
+    }) => {
       if (!user) throw new Error('User not authenticated');
 
       const listRef = doc(collection(db, 'users', user.uid, 'lists'));
@@ -201,11 +246,15 @@ export function useBookmarks() {
         createdAt: new Date(),
         updatedAt: new Date(),
         collaborative: false,
-        public: false,
+        public: isPublic,
         collaborators: []
       };
 
-      await setDoc(listRef, newList);
+      await setDoc(listRef, {
+        ...newList,
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+      });
       return newList;
     },
     onSuccess: () => {
@@ -239,7 +288,6 @@ export function useBookmarks() {
         );
         
         const querySnapshot = await getDocs(itemsQuery);
-        
         return !querySnapshot.empty;
       },
       enabled: !!user && !!itemId,
@@ -258,21 +306,26 @@ export function useBookmarks() {
       
       return { listId, settings };
     },
-    onSuccess: () => {
+    onSuccess: ({ listId }) => {
       queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+      queryClient.invalidateQueries({ queryKey: ['listItems', user?.uid, listId] });
+      if (effectiveUserId && effectiveUserId !== user?.uid) {
+        queryClient.invalidateQueries({ queryKey: ['lists', effectiveUserId] });
+      }
     },
   });
 
   return {
     lists,
     listsLoading,
+    isOwner,
     useListItems,
     addToList: (listId: string, item: Omit<BookmarkedItem, 'addedAt'>) =>
       addToList.mutateAsync({ listId, item }),
     removeFromList: (listId: string, itemId: string) =>
       removeFromList.mutateAsync({ listId, itemId }),
-    createList: (name: string, type?: ListType) =>
-      createList.mutateAsync({ name, type }),
+    createList: (name: string, type?: ListType, isPublic: boolean = true) =>
+      createList.mutateAsync({ name, type, isPublic }),
     deleteList: (listId: string) => deleteList.mutateAsync(listId),
     isBookmarked: useIsItemBookmarked,
     updateListSettings: (listId: string, settings: Partial<BookmarkList>) =>

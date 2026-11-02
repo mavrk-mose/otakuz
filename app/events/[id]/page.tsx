@@ -4,7 +4,7 @@ import { use, useState } from 'react';
 import { Card, CardFooter, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users, Ticket, Trophy, Phone } from 'lucide-react';
+import { Calendar, MapPin, Users, Ticket, Trophy, Phone, Share2 } from 'lucide-react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
@@ -16,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import EventDetailsSkeleton from '@/components/skeletons/event-details-skeleton';
 import { Gallery } from '@/components/events/event-gallery';
 import { useI18n } from '@/components/i18n-provider';
+import { ShareContentModal } from '@/components/chat/share-content-modal';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -25,6 +26,7 @@ export default function EventDetailPage(props: Props) {
     const { locale, t } = useI18n();
     const params = use(props.params);
     const { event, isLoading } = useEventDetails(params.id);
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const item = {
         hidden: { opacity: 0, scale: 0.8 },
@@ -72,7 +74,7 @@ export default function EventDetailPage(props: Props) {
                                         </DialogHeader>
                                         <ScrollArea className="h-[300px] pr-4">
                                             <div className="space-y-4">
-                                                {event?.attendees.map((attendee, i) => (
+                                                {event?.attendees.map((attendee: any, i: number) => (
                                                     <div key={i} className="flex items-center gap-3">
                                                         <Avatar>
                                                             <AvatarImage
@@ -101,7 +103,7 @@ export default function EventDetailPage(props: Props) {
                         <div className="space-y-4">
                             <h2 className="text-xl md:text-2xl font-bold">{t("events.tournaments")}</h2>
                             <div className="grid sm:grid-cols-2 gap-4">
-                                {event?.tournaments?.map((tournament, index) => (
+                                {event?.tournaments?.map((tournament: any, index: number) => (
                                     <Card key={index} className="p-4">
                                         <div className="flex items-start gap-4">
                                             <div className="p-3 bg-primary/10 rounded-lg shrink-0">
@@ -152,6 +154,15 @@ export default function EventDetailPage(props: Props) {
                                     <Ticket className="w-4 h-4 mr-2"/>
                                     {t("events.purchaseTickets")}
                                 </Button>
+                                <Button
+                                    variant="outline"
+                                    className="w-full gap-2 border-border/60 hover:bg-muted"
+                                    size="lg"
+                                    onClick={() => setIsShareModalOpen(true)}
+                                >
+                                    <Share2 className="w-4 h-4 mr-2"/>
+                                    {t("anime.shareChat") || "Share to Chat"}
+                                </Button>
                             </div>
                         </Card>
 
@@ -160,7 +171,7 @@ export default function EventDetailPage(props: Props) {
                             <CardHeader className="px-0 pt-0">
                                 <h3 className="text-lg font-semibold mb-4">{t("events.hostedBy")}</h3>
                                 <div className="space-y-4">
-                                    {event?.organizers.map((organizer, index) => (
+                                    {event?.organizers.map((organizer: any, index: number) => (
                                         <div key={index} className="flex items-center gap-3">
                                             <Avatar>
                                                 <AvatarImage src={organizer.avatar.asset._ref}/>
@@ -179,7 +190,7 @@ export default function EventDetailPage(props: Props) {
                                     <div className="flex items-center gap-2">
                                         <div className="flex -space-x-2">
                                             <TooltipProvider>
-                                                {event?.attendees?.slice(0, 5).map((attendee, i) => (
+                                                {event?.attendees?.slice(0, 5).map((attendee: any, i: number) => (
                                                     <Tooltip key={i}>
                                                         <TooltipTrigger>
                                                             <Avatar className="border-2 border-background w-8 h-8">
@@ -214,7 +225,7 @@ export default function EventDetailPage(props: Props) {
                             <h3 className="font-semibold mb-4">{t("events.schedule")}</h3>
                             <ScrollArea className="h-[300px]">
                                 <div className="space-y-4 pr-4">
-                                    {event?.activities?.map((activity, index) => (
+                                    {event?.activities?.map((activity: any, index: number) => (
                                         <div key={index} className="flex gap-4">
                                             <div className="w-20 text-sm text-muted-foreground shrink-0">
                                                 {activity?.time}
@@ -231,6 +242,26 @@ export default function EventDetailPage(props: Props) {
                     </div>
                 </div>
             </div>
+            {event && (
+                <ShareContentModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                    payload={{
+                        type: 'event',
+                        data: {
+                            id: params.id,
+                            title: event.title,
+                            image: event.thumbnailUrl ? urlFor(event.thumbnailUrl.asset._ref).url() : '',
+                            date: event.date,
+                            time: event.time,
+                            locationName: event.location?.name,
+                            ticketPrice: event.ticket ? Number(event.ticket) : undefined,
+                            category: event.category,
+                            attendeesCount: event.attendees?.length || 0,
+                        },
+                    }}
+                />
+            )}
         </div>
     );
 }

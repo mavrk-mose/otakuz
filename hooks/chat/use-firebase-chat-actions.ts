@@ -10,12 +10,26 @@ import {
 } from 'firebase/firestore'
 import { auth, db } from '@/lib/firebase'
 import type { Room, RoomDetails } from '@/types/room'
+import type {
+    AnimeShareData,
+    MangaShareData,
+    ProductShareData,
+    EventShareData,
+    ProfileShareData,
+} from '@/types/message'
 
 function requireUser() {
     const user = auth.currentUser
     if (!user) throw new Error('You must be signed in to use chat.')
     return user
 }
+
+export type ShareContentPayload =
+    | { type: 'anime'; data: AnimeShareData }
+    | { type: 'manga'; data: MangaShareData }
+    | { type: 'product'; data: ProductShareData }
+    | { type: 'event'; data: EventShareData }
+    | { type: 'profile'; data: ProfileShareData }
 
 export function useFirebaseChatActions() {
     const createRoom = useCallback(async (title: string) => {
@@ -45,10 +59,7 @@ export function useFirebaseChatActions() {
     }, [])
 
     const shareAnimeToChat = useCallback(
-        async (
-            roomId: string,
-            animeData: { title: string; image: string; id: number }
-        ) => {
+        async (roomId: string, animeData: AnimeShareData) => {
             const user = requireUser()
             const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
             await setDoc(messageRef, {
@@ -63,6 +74,96 @@ export function useFirebaseChatActions() {
             return messageRef.id
         },
         []
+    )
+
+    const shareMangaToChat = useCallback(
+        async (roomId: string, mangaData: MangaShareData) => {
+            const user = requireUser()
+            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            await setDoc(messageRef, {
+                type: 'manga_share',
+                mangaData,
+                message: '',
+                userId: user.uid,
+                username: user.displayName || user.email || 'Anonymous',
+                timestamp: serverTimestamp(),
+                createdAtClient: Date.now(),
+            })
+            return messageRef.id
+        },
+        []
+    )
+
+    const shareProductToChat = useCallback(
+        async (roomId: string, productData: ProductShareData) => {
+            const user = requireUser()
+            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            await setDoc(messageRef, {
+                type: 'product_share',
+                productData,
+                message: '',
+                userId: user.uid,
+                username: user.displayName || user.email || 'Anonymous',
+                timestamp: serverTimestamp(),
+                createdAtClient: Date.now(),
+            })
+            return messageRef.id
+        },
+        []
+    )
+
+    const shareEventToChat = useCallback(
+        async (roomId: string, eventData: EventShareData) => {
+            const user = requireUser()
+            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            await setDoc(messageRef, {
+                type: 'event_share',
+                eventData,
+                message: '',
+                userId: user.uid,
+                username: user.displayName || user.email || 'Anonymous',
+                timestamp: serverTimestamp(),
+                createdAtClient: Date.now(),
+            })
+            return messageRef.id
+        },
+        []
+    )
+
+    const shareProfileToChat = useCallback(
+        async (roomId: string, profileData: ProfileShareData) => {
+            const user = requireUser()
+            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            await setDoc(messageRef, {
+                type: 'profile_share',
+                profileData,
+                message: '',
+                userId: user.uid,
+                username: user.displayName || user.email || 'Anonymous',
+                timestamp: serverTimestamp(),
+                createdAtClient: Date.now(),
+            })
+            return messageRef.id
+        },
+        []
+    )
+
+    const shareContentToChat = useCallback(
+        async (roomId: string, payload: ShareContentPayload) => {
+            switch (payload.type) {
+                case 'anime':
+                    return shareAnimeToChat(roomId, payload.data)
+                case 'manga':
+                    return shareMangaToChat(roomId, payload.data)
+                case 'product':
+                    return shareProductToChat(roomId, payload.data)
+                case 'event':
+                    return shareEventToChat(roomId, payload.data)
+                case 'profile':
+                    return shareProfileToChat(roomId, payload.data)
+            }
+        },
+        [shareAnimeToChat, shareMangaToChat, shareProductToChat, shareEventToChat, shareProfileToChat]
     )
 
     const joinRoom = useCallback(async (roomId: string) => {
@@ -118,6 +219,11 @@ export function useFirebaseChatActions() {
         createRoom,
         inviteUser,
         shareAnimeToChat,
+        shareMangaToChat,
+        shareProductToChat,
+        shareEventToChat,
+        shareProfileToChat,
+        shareContentToChat,
         getRooms,
         joinRoom,
         getRoomDetails,

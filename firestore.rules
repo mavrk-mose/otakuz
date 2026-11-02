@@ -68,7 +68,8 @@ service cloud.firestore {
         allow create: if isRoomMember(roomId)
           && request.resource.data.keys().hasOnly([
             'userId', 'username', 'message', 'type', 'timestamp',
-            'createdAtClient', 'fileUrl', 'fileType', 'animeData'
+            'createdAtClient', 'fileUrl', 'fileType',
+            'animeData', 'mangaData', 'productData', 'eventData', 'profileData'
           ])
           && request.resource.data.keys().hasAll([
             'userId', 'username', 'message', 'type', 'timestamp', 'createdAtClient'
@@ -80,7 +81,8 @@ service cloud.firestore {
           && request.resource.data.message is string
           && request.resource.data.message.size() <= 4000
           && request.resource.data.type in [
-            'text', 'image', 'video', 'audio', 'file', 'anime_share'
+            'text', 'image', 'video', 'audio', 'file',
+            'anime_share', 'manga_share', 'product_share', 'event_share', 'profile_share'
           ]
           && request.resource.data.timestamp == request.time
           && request.resource.data.createdAtClient is int;
@@ -113,8 +115,32 @@ service cloud.firestore {
       }
     }
 
-    match /users/{userId}/{document=**} {
-      allow read, write: if signedIn() && request.auth.uid == userId;
+    match /users/{userId} {
+      // Public user profiles can be viewed by anyone when isPublic is true,
+      // while users can always view and manage their own profiles.
+      allow read: if resource.data.isPublic == true
+        || (signedIn() && request.auth.uid == userId);
+      allow write: if signedIn() && request.auth.uid == userId;
+
+      match /lists/{listId} {
+        // Public boards (lists) can be viewed by anyone,
+        // while private boards are restricted to the owner.
+        allow read: if resource.data.public == true
+          || (signedIn() && request.auth.uid == userId);
+        allow write: if signedIn() && request.auth.uid == userId;
+
+        match /items/{itemId} {
+          // Items inherit visibility from the parent board (list).
+          allow read: if get(/databases/$(database)/documents/users/$(userId)/lists/$(listId)).data.public == true
+            || (signedIn() && request.auth.uid == userId);
+          allow write: if signedIn() && request.auth.uid == userId;
+        }
+      }
+
+      // Catch-all for any other user subcollections/documents (must remain strictly private).
+      match /{document=**} {
+        allow read, write: if signedIn() && request.auth.uid == userId;
+      }
     }
 
     // Supports the existing collection-group bookmark lookup without exposing

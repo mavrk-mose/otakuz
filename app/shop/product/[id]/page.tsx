@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronDown, ChevronUp, Star } from 'lucide-react'
+import { ChevronDown, ChevronUp, Star, Share2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Image from 'next/image'
 import { use } from 'react'
@@ -12,6 +12,7 @@ import useFetchProduct from "@/hooks/shop/use-fetch-product"
 import {urlFor} from "@/lib/sanity";
 import { useCart } from '@/store/use-cart'
 import { useI18n } from '@/components/i18n-provider'
+import { ShareContentModal } from '@/components/chat/share-content-modal'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -25,6 +26,7 @@ export default function ProductPage(props: Props) {
   const [selectedSize, setSelectedSize] = useState<string>("")
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(true)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false)
 
   const sizes = ["SM", "M", "L", "XL", "2XL", "3XL"]
 
@@ -58,7 +60,7 @@ export default function ProductPage(props: Props) {
             <div className="lg:w-2/3">
               <ScrollArea className="h-full">
                 <div className="space-y-4">
-                  {product.image.map((img, index) =>
+                  {product.image.map((img: any, index: number) =>
                       img ? (
                           <Card key={index} className="overflow-hidden bg-transparent border-0">
                             <div className="relative aspect-square">
@@ -138,6 +140,16 @@ export default function ProductPage(props: Props) {
                     {t("shop.addToCart")}
                   </Button>
 
+                  {/* Share to Chat */}
+                  <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full gap-2 border-border/60 hover:bg-muted"
+                      onClick={() => setIsShareModalOpen(true)}
+                  >
+                    <Share2 className="w-4 h-4" /> {t("anime.shareChat") || "Share to Chat"}
+                  </Button>
+
                   {/* Description */}
                   <div className="border-t pt-4">
                     <button
@@ -179,6 +191,23 @@ export default function ProductPage(props: Props) {
             </div>
           </div>
         </div>
+        <ShareContentModal
+            isOpen={isShareModalOpen}
+            onClose={() => setIsShareModalOpen(false)}
+            payload={{
+                type: 'product',
+                data: {
+                    id: params.id,
+                    name: product.name,
+                    image: product.image?.[0] ? urlFor(product.image[0].asset._ref).url() : '',
+                    price: product.price,
+                    category: product.category,
+                    rating: product.rating,
+                    stock: product.stock,
+                    description: product.description,
+                },
+            }}
+        />
       </div>
   )
 }

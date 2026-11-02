@@ -8,7 +8,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 interface SharedContentProps {
-  type: 'manga' | 'event' | 'product' | 'article' | 'list';
+  type: 'manga' | 'event' | 'product' | 'article' | 'list' | 'profile';
   data: {
     id: string;
     title: string;
@@ -51,11 +51,13 @@ export function SharedContent({ type, data }: SharedContentProps) {
       case 'event':
         return `/events/${data.id}`;
       case 'product':
-        return `/shop/products/${data.id}`;
+        return `/shop/product/${data.id}`;
       case 'article':
         return `/news/${data.id}`;
       case 'list':
         return `/profile/${data.id}/lists`;
+      case 'profile':
+        return `/profile?userId=${data.id}`;
     }
   };
 

@@ -1,13 +1,15 @@
 "use client"
 
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Users, Ticket } from 'lucide-react';
+import { Calendar, MapPin, Users, Ticket, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useI18n } from '@/components/i18n-provider';
+import { ShareContentModal } from '@/components/chat/share-content-modal';
 
 interface EventCardProps {
   event: {
@@ -28,6 +30,7 @@ interface EventCardProps {
 
 export function EventCard({ event }: EventCardProps) {
   const { locale, t } = useI18n();
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   return (
     <motion.div
       whileHover={{ y: -5 }}
@@ -66,20 +69,52 @@ export function EventCard({ event }: EventCardProps) {
             <MapPin className="w-4 h-4" />
             {event.location.name}
           </div>
-          {event.price && (
-            <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-2">
+            {event.price ? (
               <div>
-                <p className="text-sm text-muted-foreground">{t("events.startingFrom")}</p>
-                <p className="text-lg font-bold">${event.price}</p>
+                <p className="text-xs text-muted-foreground">{t("events.startingFrom")}</p>
+                <p className="text-base font-bold">${event.price}</p>
               </div>
-              <Button>
-                <Ticket className="w-4 h-4 mr-2" />
-                {t("events.purchaseTickets")}
+            ) : <div />}
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setIsShareModalOpen(true)}
+                className="h-9 w-9 p-0"
+                title="Share to chat"
+              >
+                <Share2 className="h-4 w-4" />
+              </Button>
+              <Button size="sm" asChild>
+                <Link href={`/events/${event.id}`}>
+                  <Ticket className="w-4 h-4 mr-1.5" />
+                  {t("events.purchaseTickets")}
+                </Link>
               </Button>
             </div>
-          )}
+          </div>
         </div>
       </Card>
+
+      <ShareContentModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        payload={{
+          type: 'event',
+          data: {
+            id: event.id,
+            title: event.title,
+            image: event.thumbnailUrl,
+            date: event.date,
+            time: event.time,
+            locationName: event.location.name,
+            ticketPrice: event.price,
+            category: event.category,
+            attendeesCount: event.attendees.length,
+          },
+        }}
+      />
     </motion.div>
   );
 }
