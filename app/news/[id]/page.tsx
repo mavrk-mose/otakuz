@@ -6,6 +6,7 @@ import { ArrowLeft, Clock3, MessageSquare, Newspaper, Plus } from "lucide-react"
 import { ArticleActions } from "@/components/news/article-actions";
 import { NewsArticleBody } from "@/components/news/news-article-body";
 import { WatchHistoryTracker } from "@/components/profile/watch-history-tracker";
+import { GoogleAdUnit } from "@/components/ads/google-ad-unit";
 import { getNewsArticleById, fallbackNewsStories } from "@/lib/sanity";
 import { getAuthorInitials, type NewsArticle, type NewsStory } from "@/types/news";
 
@@ -247,6 +248,15 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
               commentsCount={article.commentsCount ?? 18}
             />
 
+            {/* In-Article AdSense Banner */}
+            <GoogleAdUnit
+              context="news"
+              variant="leaderboard"
+              adFormat="fluid"
+              seedOffset={1}
+              adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_ARTICLE}
+            />
+
             {/* Editorial "More in" Link Stack */}
             <div className="mt-8 border-t border-border pt-8">
               <div className="mb-4 flex items-center gap-2">
@@ -332,6 +342,15 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                 })}
               </div>
             </div>
+
+            {/* Right-Rail Skyscraper / Rectangle AdSense Unit */}
+            <GoogleAdUnit
+              context="news"
+              variant="sidebar"
+              adFormat="rectangle"
+              seedOffset={3}
+              adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_SIDEBAR}
+            />
 
             {/* Newsletter Subscription Box ("The Otakuz Dispatch") */}
             <div className="rounded-2xl border border-border bg-card p-6 shadow-md">

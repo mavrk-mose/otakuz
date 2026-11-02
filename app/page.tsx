@@ -7,6 +7,7 @@ import { NewsSection } from '@/components/news/news-section';
 import { EventsSection } from '@/components/events/events-section';
 import { CalendarSection } from '@/components/calendar/calendar-section';
 import { I18nText } from '@/components/i18n-text';
+import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
 
 export default function Home() {
     return (
@@ -17,6 +18,12 @@ export default function Home() {
                 <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
                     <AnimeSection />
                 </Suspense>
+
+                <GoogleAdUnit
+                    context="home"
+                    variant="spotlight"
+                    adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_HERO}
+                />
 
                 <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
                     <MangaSection />
@@ -29,6 +36,14 @@ export default function Home() {
                 <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
                     <NewsSection />
                 </Suspense>
+
+                <GoogleAdUnit
+                    context="home"
+                    variant="in-feed-grid"
+                    adFormat="fluid"
+                    seedOffset={2}
+                    adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_FEED}
+                />
 
                 <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
                     <CalendarSection />

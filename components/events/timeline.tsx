@@ -10,8 +10,9 @@ import { urlFor } from "@/lib/sanity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useRef } from 'react';
+import { Fragment, useRef } from 'react';
 import { useI18n } from '@/components/i18n-provider';
+import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
 
 interface TimelineProps {
     events: Event[];
@@ -44,13 +45,16 @@ export function Timeline({ events }: TimelineProps) {
             <div className="relative space-y-8">
                 <div className="absolute left-8 sm:left-24 top-0 bottom-0 w-px bg-border/50" />
 
-                {sortedEvents.map((event) => {
-                    const date = new Date(event.date);
+                {sortedEvents.map((event, idx) => {
+                    const date = new Date(event.date || Date.now());
                     const dateId = date.toISOString();
+                    const showInlineEventAd =
+                        (idx + 1) % 2 === 0 ||
+                        (sortedEvents.length === 1 && idx === 0);
 
                     return (
+                        <Fragment key={event._id}>
                         <motion.div
-                            key={event._id}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-4 sm:gap-8 relative"
@@ -149,6 +153,23 @@ export function Timeline({ events }: TimelineProps) {
                                 </Link>
                             </Card>
                         </motion.div>
+
+                        {showInlineEventAd && (
+                            <div className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-4 sm:gap-8 relative">
+                                <div className="pt-3 font-mono text-[10px] font-bold uppercase tracking-wider text-rose-500">
+                                    Partner
+                                </div>
+                                <div className="absolute left-8 sm:left-24 top-4 w-2 h-2 rounded-full bg-rose-500 ring-4 ring-background -translate-x-1/2" />
+                                <GoogleAdUnit
+                                    context="events"
+                                    variant="timeline"
+                                    adFormat="fluid"
+                                    seedOffset={idx + 1}
+                                    adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_EVENTS_TIMELINE}
+                                />
+                            </div>
+                        )}
+                        </Fragment>
                     );
                 })}
             </div>

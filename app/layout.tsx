@@ -12,8 +12,10 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PlayerLayout } from '@/components/watch/player-layout';
 import { BackToTopButton } from '@/components/back-to-top-button';
 import { LayoutShell } from '@/components/layout-shell';
+import { AdSenseScript } from '@/components/ads/adsense-script';
 
 const inter = Inter({subsets: ['latin']});
+const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim();
 
 export const metadata: Metadata = {
     title: 'Otakuz - Your Anime Community',
@@ -23,12 +25,20 @@ export const metadata: Metadata = {
         shortcut: '/assets/logo.png',
         apple: '/assets/logo.png',
     },
+    ...(adsenseClientId && adsenseClientId.startsWith('ca-pub-')
+        ? {
+              other: {
+                  'google-adsense-account': adsenseClientId,
+              },
+          }
+        : {}),
 };
 
 export default function RootLayout({children,}: { children: React.ReactNode; }) {
     return (
         <html lang="en" suppressHydrationWarning>
             <body className={inter.className} suppressHydrationWarning>
+                <AdSenseScript />
                 <Providers attribute="class" defaultTheme="dark" enableSystem>
                     <AuthInitializer />
                      <ReactQueryDevtools initialIsOpen={false} />

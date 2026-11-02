@@ -17,6 +17,7 @@ import EventDetailsSkeleton from '@/components/skeletons/event-details-skeleton'
 import { Gallery } from '@/components/events/event-gallery';
 import { useI18n } from '@/components/i18n-provider';
 import { ShareContentModal } from '@/components/chat/share-content-modal';
+import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
 
 interface Props {
     params: Promise<{ id: string }>;
@@ -165,6 +166,15 @@ export default function EventDetailPage(props: Props) {
                                 </Button>
                             </div>
                         </Card>
+
+                        {/* Event Partner / Google AdSense Sidebar Unit */}
+                        <GoogleAdUnit
+                            context="events"
+                            variant="sidebar"
+                            adFormat="rectangle"
+                            seedOffset={1}
+                            adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_EVENTS_SIDEBAR}
+                        />
 
                         {/* Host Information */}
                         <Card className="p-4 md:p-6">

@@ -13,6 +13,7 @@ import { useCart } from "@/store/use-cart";
 import { useState } from "react";
 import { CartDrawer } from "@/components/shop/cart-drawer";
 import { useI18n } from "@/components/i18n-provider";
+import { GoogleAdUnit } from "@/components/ads/google-ad-unit";
 
 //TODO: fetch from sanity
 const featuredBanners = [
@@ -54,6 +55,14 @@ export default function ShopPage() {
           </div>
           
           <ProductList category={selectedCategory} limit={4} />
+
+          <div className="mt-10">
+            <GoogleAdUnit
+              context="shop"
+              variant="spotlight"
+              adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SHOP_TOP}
+            />
+          </div>
         </div>
 
       </section>
@@ -86,6 +95,16 @@ export default function ShopPage() {
             {t("shop.shopByCategory")}
           </h2>
           <CategoryList />
+
+          <div className="mt-12">
+            <GoogleAdUnit
+              context="shop"
+              variant="in-feed-grid"
+              adFormat="fluid"
+              seedOffset={3}
+              adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SHOP_FEED}
+            />
+          </div>
         </div>
       </section>
 

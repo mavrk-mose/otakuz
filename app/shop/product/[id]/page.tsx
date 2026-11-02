@@ -13,6 +13,7 @@ import {urlFor} from "@/lib/sanity";
 import { useCart } from '@/store/use-cart'
 import { useI18n } from '@/components/i18n-provider'
 import { ShareContentModal } from '@/components/chat/share-content-modal'
+import { GoogleAdUnit } from '@/components/ads/google-ad-unit'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -185,6 +186,17 @@ export default function ProductPage(props: Props) {
                           </motion.div>
                       )}
                     </AnimatePresence>
+                  </div>
+
+                  {/* Contextual Geek / Gaming / Energy AdSense Unit */}
+                  <div className="pt-2">
+                    <GoogleAdUnit
+                      context="shop"
+                      variant="sidebar"
+                      adFormat="rectangle"
+                      seedOffset={1}
+                      adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_SHOP_SIDEBAR}
+                    />
                   </div>
                 </div>
               </div>

@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import useFetchNewsStories from "@/hooks/news/use-fetch-news";
 import { formatReadsCount, type NewsStory } from "@/types/news";
 import { useI18n } from "@/components/i18n-provider";
+import { GoogleAdUnit } from "@/components/ads/google-ad-unit";
 
 const CATEGORIES = [
   "All Stories",
@@ -312,6 +313,14 @@ export default function NewsPage() {
           </div>
         </section>
 
+        {/* EDITORIAL LEADERBOARD AD SLOT */}
+        <GoogleAdUnit
+          context="news"
+          variant="leaderboard"
+          adFormat="horizontal"
+          adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_TOP}
+        />
+
         {/* SECTION 2: MOST POPULAR LEADERBOARD + MEDIA/PODCAST FEATURE */}
         <section className="flex flex-col gap-4 pt-4">
           <div className="flex items-center justify-between border-b border-border pb-3">
@@ -455,6 +464,15 @@ export default function NewsPage() {
             </div>
           </div>
         </section>
+
+        {/* EDITORIAL MULTIPLEX AD GRID */}
+        <GoogleAdUnit
+          context="news"
+          variant="in-feed-grid"
+          adFormat="fluid"
+          seedOffset={2}
+          adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_NEWS_FEED}
+        />
 
         {/* SECTION 3: THE ANOMALY FILES / INVESTIGATIVE DOSSIERS */}
         <section className="flex flex-col gap-4 pt-4">
