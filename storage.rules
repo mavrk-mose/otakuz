@@ -27,6 +27,16 @@ service firebase.storage {
       allow update: if false;
     }
 
+    // Seller shop logos, banners, and merch product images (publicly readable, owner-writable with image validation)
+    match /shops/{userId}/{allPaths=**} {
+      allow read: if true;
+      allow create, update: if signedIn()
+        && request.auth.uid == userId
+        && request.resource.size < 10 * 1024 * 1024
+        && request.resource.contentType.matches('^image/.*$');
+      allow delete: if signedIn() && request.auth.uid == userId;
+    }
+
     // Default fallback: deny all other paths
     match /{allPaths=**} {
       allow read, write: if false;

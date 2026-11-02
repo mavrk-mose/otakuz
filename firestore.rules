@@ -1,9 +1,133 @@
 rules_version = '2';
 
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// This security rules file assumes the following data structures for the
+// multi-vendor marketplace & Stripe Connect collections (while preserving
+// all existing chatrooms, users, bookmarks, and notifications rules):
+//
+// Collection: shops
+// Document ID: {shopId} (MUST equal owner's request.auth.uid)
+// Fields:
+//   - ownerId: string (required, immutable, == shopId) - Owner Firebase UID
+//   - shopName: string (required, 2..80 chars) - Public storefront display name
+//   - slug: string (required, 2..80 chars) - Unique URL-safe storefront slug
+//   - currency: string (required, in ['USD', 'TZS', 'JPY', 'EUR', 'GBP'])
+//   - status: string (required, in ['active', 'draft', 'paused'])
+//   - tagline: string (optional, 0..300 chars)
+//   - description: string (optional, 0..5000 chars)
+//   - logoUrl: string (optional, 0..2048 chars)
+//   - bannerUrl: string (optional, 0..2048 chars)
+//   - contactEmail: string (optional, 0..320 chars) - Public storefront contact
+//   - country: string (optional, 0..100 chars)
+//   - stripeAccountId: string | null (optional, <= 128 chars) - Public acct_ ID
+//   - stripeOnboardingComplete: bool (optional)
+//   - stripeChargesEnabled: bool (optional)
+//   - stripePayoutsEnabled: bool (optional)
+//   - stripeDetailsSubmitted: bool (optional)
+//   - acceptedPaymentMethods: list (optional, <= 10 items)
+//   - payoutSchedule: string (optional, in ['daily', 'weekly', 'monthly', 'manual'])
+//   - shippingPolicy: map (optional, <= 10 keys)
+//   - createdAt: timestamp | string | number (optional, immutable once set)
+//   - updatedAt: timestamp | string | number (optional)
+//
+// Collection: shopProducts
+// Document ID: {productId}
+// Fields:
+//   - ownerId: string (required, immutable, == request.auth.uid)
+//   - shopId: string (required, immutable, == request.auth.uid)
+//   - name: string (required, 2..140 chars)
+//   - price: number (required, > 0, <= 1000000000)
+//   - stock: number (required, >= 0, <= 1000000)
+//   - currency: string (required, in ['USD', 'TZS', 'JPY', 'EUR', 'GBP'])
+//   - isPublished: bool (required)
+//   - description: string (optional, 0..5000 chars)
+//   - category: string (optional, 0..100 chars)
+//   - animeTitle: string (optional, 0..200 chars)
+//   - shopName: string (optional, 0..120 chars)
+//   - shopSlug: string (optional, 0..120 chars)
+//   - source: string (optional, in ['sanity', 'community'])
+//   - imageUrls: list (optional, <= 15 items)
+//   - sizes: list | null (optional, <= 20 items)
+//   - variants: list | null (optional, <= 30 items)
+//   - stripeAccountId: string | null (optional, <= 128 chars)
+//   - stripeChargesEnabled: bool (optional)
+//   - acceptedPaymentMethods: list (optional, <= 10 items)
+//   - rating: number (optional, 0..5)
+//   - createdAt: timestamp | string | number (optional, immutable once set)
+//   - updatedAt: timestamp | string | number (optional)
+//
+// Collection: shopOrders (Immutable audit log; contains buyer shipping PII)
+// Document ID: {orderId}
+// Fields:
+//   - buyerId: string (required, immutable, == request.auth.uid on create)
+//   - sellerIds: list (required, immutable, <= 25 items) - Seller UIDs in order
+//   - total: number (required, immutable, >= 0, <= 1000000000)
+//   - currency: string (required, immutable, in ['USD', 'TZS', 'JPY', 'EUR', 'GBP'])
+//   - paymentStatus: string (required, in ['pending', 'paid', 'failed', 'refunded'])
+//   - fulfillmentStatus: string (optional, in ['processing', 'shipped', 'delivered', 'cancelled'])
+//   - trackingNumber: string | null (optional, <= 120 chars)
+//   - items: list (optional, immutable, <= 100 items)
+//   - subtotal: number (optional, immutable, >= 0)
+//   - shippingAmount: number (optional, >= 0)
+//   - platformFeeAmount: number (optional, immutable, >= 0)
+//   - sellerNetAmount: number (optional, immutable, >= 0)
+//   - buyerEmail: string (optional, <= 320 chars)
+//   - customerInfo: map (optional, <= 10 keys)
+//   - stripeSessionId: string | null (optional, <= 255 chars)
+//   - stripePaymentIntentId: string | null (optional, <= 255 chars)
+//   - createdAt: timestamp | string | number (optional, immutable once set)
+//   - updatedAt: timestamp | string | number (optional)
+//
+// ===============================================================
+
 service cloud.firestore {
   match /databases/{database}/documents {
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
     function signedIn() {
       return request.auth != null;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function hasRequiredFields(data, fields) {
+      return data.keys().hasAll(fields);
+    }
+
+    function isValidCurrency(currency) {
+      return currency in ['USD', 'TZS', 'JPY', 'EUR', 'GBP'];
+    }
+
+    function isOptionalBoundedString(data, field, maxLen) {
+      return !(field in data)
+        || data[field] == null
+        || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isOptionalBoundedList(data, field, maxSize) {
+      return !(field in data)
+        || data[field] == null
+        || (data[field] is list && data[field].size() <= maxSize);
+    }
+
+    function isOptionalBool(data, field) {
+      return !(field in data) || data[field] is bool;
+    }
+
+    function isCreatedAtUnchanged() {
+      return !('createdAt' in resource.data)
+        || request.resource.data.createdAt == resource.data.createdAt;
     }
 
     function room(roomId) {
@@ -13,6 +137,144 @@ service cloud.firestore {
     function isRoomOwner(roomId) {
       return signedIn() && room(roomId).data.createdBy == request.auth.uid;
     }
+
+    // ===============================================================
+    // Domain Validators (Called in BOTH create and update)
+    // ===============================================================
+
+    function isValidShop(data) {
+      return hasRequiredFields(data, ['ownerId', 'shopName', 'slug', 'currency', 'status'])
+        && data.keys().size() <= 30
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.shopName is string
+        && data.shopName.size() >= 2
+        && data.shopName.size() <= 80
+        && data.slug is string
+        && data.slug.size() >= 2
+        && data.slug.size() <= 80
+        && isValidCurrency(data.currency)
+        && data.status in ['active', 'draft', 'paused']
+        && isOptionalBoundedString(data, 'tagline', 300)
+        && isOptionalBoundedString(data, 'description', 5000)
+        && isOptionalBoundedString(data, 'logoUrl', 2048)
+        && isOptionalBoundedString(data, 'bannerUrl', 2048)
+        && isOptionalBoundedString(data, 'contactEmail', 320)
+        && isOptionalBoundedString(data, 'country', 100)
+        && isOptionalBoundedString(data, 'stripeAccountId', 128)
+        && isOptionalBool(data, 'stripeOnboardingComplete')
+        && isOptionalBool(data, 'stripeChargesEnabled')
+        && isOptionalBool(data, 'stripePayoutsEnabled')
+        && isOptionalBool(data, 'stripeDetailsSubmitted')
+        && isOptionalBoundedList(data, 'acceptedPaymentMethods', 10)
+        && (!('payoutSchedule' in data) || data.payoutSchedule in ['daily', 'weekly', 'monthly', 'manual'])
+        && (!('shippingPolicy' in data) || (data.shippingPolicy is map && data.shippingPolicy.size() <= 10));
+    }
+
+    function isValidShopProduct(data) {
+      return hasRequiredFields(data, ['ownerId', 'shopId', 'name', 'price', 'stock', 'currency', 'isPublished'])
+        && data.keys().size() <= 35
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.shopId is string
+        && data.shopId.size() >= 1
+        && data.shopId.size() <= 128
+        && data.name is string
+        && data.name.size() >= 2
+        && data.name.size() <= 140
+        && data.price is number
+        && data.price > 0
+        && data.price <= 1000000000
+        && data.stock is number
+        && data.stock >= 0
+        && data.stock <= 1000000
+        && isValidCurrency(data.currency)
+        && data.isPublished is bool
+        && isOptionalBoundedString(data, 'description', 5000)
+        && isOptionalBoundedString(data, 'category', 100)
+        && isOptionalBoundedString(data, 'animeTitle', 200)
+        && isOptionalBoundedString(data, 'shopName', 120)
+        && isOptionalBoundedString(data, 'shopSlug', 120)
+        && isOptionalBoundedString(data, 'stripeAccountId', 128)
+        && isOptionalBool(data, 'stripeChargesEnabled')
+        && (!('source' in data) || data.source in ['sanity', 'community'])
+        && (!('rating' in data) || (data.rating is number && data.rating >= 0 && data.rating <= 5))
+        && isOptionalBoundedList(data, 'imageUrls', 15)
+        && isOptionalBoundedList(data, 'image', 15)
+        && isOptionalBoundedList(data, 'sizes', 20)
+        && isOptionalBoundedList(data, 'variants', 30)
+        && isOptionalBoundedList(data, 'acceptedPaymentMethods', 10);
+    }
+
+    function isValidShopOrder(data) {
+      return hasRequiredFields(data, ['buyerId', 'sellerIds', 'total', 'currency', 'paymentStatus'])
+        && data.keys().size() <= 30
+        && data.buyerId is string
+        && data.buyerId.size() >= 1
+        && data.buyerId.size() <= 128
+        && data.sellerIds is list
+        && data.sellerIds.size() <= 25
+        && data.total is number
+        && data.total >= 0
+        && data.total <= 1000000000
+        && isValidCurrency(data.currency)
+        && data.paymentStatus in ['pending', 'paid', 'failed', 'refunded']
+        && (!('fulfillmentStatus' in data) || data.fulfillmentStatus in ['processing', 'shipped', 'delivered', 'cancelled'])
+        && isOptionalBoundedString(data, 'trackingNumber', 120)
+        && isOptionalBoundedString(data, 'buyerEmail', 320)
+        && isOptionalBoundedString(data, 'stripeSessionId', 255)
+        && isOptionalBoundedString(data, 'stripePaymentIntentId', 255)
+        && isOptionalBoundedList(data, 'items', 100)
+        && (!('subtotal' in data) || (data.subtotal is number && data.subtotal >= 0))
+        && (!('shippingAmount' in data) || (data.shippingAmount is number && data.shippingAmount >= 0))
+        && (!('platformFeeAmount' in data) || (data.platformFeeAmount is number && data.platformFeeAmount >= 0))
+        && (!('sellerNetAmount' in data) || (data.sellerNetAmount is number && data.sellerNetAmount >= 0))
+        && (!('customerInfo' in data) || (data.customerInfo is map && data.customerInfo.size() <= 10));
+    }
+
+    function isValidBuyerOrderUpdate() {
+      return signedIn()
+        && resource.data.buyerId == request.auth.uid
+        && request.resource.data.buyerId == resource.data.buyerId
+        && request.resource.data.sellerIds == resource.data.sellerIds
+        && request.resource.data.total == resource.data.total
+        && request.resource.data.currency == resource.data.currency
+        && !request.resource.data.diff(resource.data).affectedKeys().hasAny([
+          'buyerId',
+          'sellerIds',
+          'total',
+          'currency',
+          'items',
+          'subtotal',
+          'platformFeeAmount',
+          'sellerNetAmount'
+        ])
+        && isCreatedAtUnchanged()
+        && isValidShopOrder(request.resource.data);
+    }
+
+    function isValidSellerOrderUpdate() {
+      return signedIn()
+        && request.auth.uid in resource.data.sellerIds
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'fulfillmentStatus',
+          'trackingNumber',
+          'updatedAt'
+        ])
+        && request.resource.data.fulfillmentStatus in [
+          'processing',
+          'shipped',
+          'delivered',
+          'cancelled'
+        ]
+        && isValidShopOrder(request.resource.data);
+    }
+
+    // ===============================================================
+    // Existing Application Rules (Preserved)
+    // ===============================================================
 
     match /chatrooms/{roomId} {
       allow get, list: if signedIn();
@@ -90,6 +352,91 @@ service cloud.firestore {
         && resource.data.userId == request.auth.uid;
     }
 
+    // ===============================================================
+    // Multi-Vendor Marketplace & Stripe Connect Rules
+    // ===============================================================
+
+    match /shops/{shopId} {
+      // Active storefronts are publicly browsable (and missing shop IDs return
+      // clean nulls on get); draft/paused shops are restricted to their owner.
+      allow get: if resource == null
+        || resource.data.status == 'active'
+        || isOwner(shopId);
+
+      // Visitors can list active shops; signed-in users can also query slugs
+      // across draft/paused shops during shop onboarding uniqueness checks.
+      allow list: if resource.data.status == 'active' || signedIn();
+
+      allow create: if isOwner(shopId)
+        && request.resource.data.ownerId == request.auth.uid
+        && isValidShop(request.resource.data);
+
+      allow update: if isOwner(shopId)
+        && request.resource.data.ownerId == resource.data.ownerId
+        && isCreatedAtUnchanged()
+        && isValidShop(request.resource.data);
+
+      allow delete: if isOwner(shopId);
+    }
+
+    match /shopProducts/{productId} {
+      // Published products are publicly browsable (and non-existent IDs return
+      // clean 404s on get); unpublished drafts are restricted to the seller.
+      allow get: if resource == null
+        || resource.data.isPublished == true
+        || (signedIn() && (
+          resource.data.ownerId == request.auth.uid
+          || resource.data.shopId == request.auth.uid
+        ));
+
+      allow list: if resource.data.isPublished == true
+        || (signedIn() && (
+          resource.data.ownerId == request.auth.uid
+          || resource.data.shopId == request.auth.uid
+        ));
+
+      allow create: if signedIn()
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.shopId == request.auth.uid
+        && isValidShopProduct(request.resource.data);
+
+      allow update: if signedIn()
+        && resource.data.ownerId == request.auth.uid
+        && request.resource.data.ownerId == resource.data.ownerId
+        && request.resource.data.shopId == resource.data.shopId
+        && isCreatedAtUnchanged()
+        && isValidShopProduct(request.resource.data);
+
+      allow delete: if signedIn()
+        && resource.data.ownerId == request.auth.uid;
+    }
+
+    match /shopOrders/{orderId} {
+      // Orders contain buyer shipping PII and are strictly limited to the buyer
+      // and sellers included in resource.data.sellerIds.
+      allow get: if signedIn() && (
+        resource == null
+        || resource.data.buyerId == request.auth.uid
+        || request.auth.uid in resource.data.sellerIds
+      );
+
+      allow list: if signedIn() && (
+        resource.data.buyerId == request.auth.uid
+        || request.auth.uid in resource.data.sellerIds
+      );
+
+      allow create: if signedIn()
+        && request.resource.data.buyerId == request.auth.uid
+        && request.resource.data.paymentStatus in ['pending', 'paid']
+        && isValidShopOrder(request.resource.data);
+
+      allow update: if isValidBuyerOrderUpdate() || isValidSellerOrderUpdate();
+
+      // Order records are immutable audit logs.
+      allow delete: if false;
+    }
+
+    // Default deny fallback
     match /{document=**} {
       allow read, write: if false;
     }

@@ -5,7 +5,9 @@ import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { collection, getDocs } from "firebase/firestore";
 import { API_BASE_URL } from "@/lib/api";
 import { db } from "@/lib/firebase";
-import { getEvents, getProducts, urlFor } from "@/lib/sanity";
+import { getEvents, urlFor } from "@/lib/sanity";
+import { fetchUnifiedMarketplaceProducts } from "@/hooks/shop/use-fetch-products";
+import { formatShopPrice, resolveProductImage } from "@/lib/shop-utils";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchPublicCommunityUsers } from "@/hooks/use-community-users";
 import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
@@ -212,19 +214,18 @@ export function useGlobalSearch({
         },
       },
 
-      // 4. Merch / Shop Products (Sanity catalog + instant select filter)
+      // 4. Merch / Shop Products (Unified Community Seller Merch + Official Sanity Catalog)
       {
         queryKey: ["globalSearch", "merchCatalog"] as const,
         queryFn: async () => {
           try {
-            const products = await getProducts();
-            return Array.isArray(products) ? products : [];
+            return await fetchUnifiedMarketplaceProducts();
           } catch {
             return [];
           }
         },
         enabled: isCategoryWanted("merch"),
-        staleTime: 5 * 60_000,
+        staleTime: 30_000,
         select: (products: any[]): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           return products
@@ -232,7 +233,11 @@ export function useGlobalSearch({
               const score = Math.max(
                 rankMatchScore(String(p.name || ""), normalizedQuery),
                 rankMatchScore(String(p.category || ""), normalizedQuery),
-                rankMatchScore(String(p.title?.name || ""), normalizedQuery),
+                rankMatchScore(String(p.shopName || ""), normalizedQuery),
+                rankMatchScore(
+                  String(p.title?.name || p.animeTitle || ""),
+                  normalizedQuery
+                ),
                 String(p.description || "").toLowerCase().includes(normalizedQuery)
                   ? 25
                   : 0
@@ -246,9 +251,15 @@ export function useGlobalSearch({
               id: `merch-${p._id}`,
               category: "merch" as const,
               title: p.name || "Merchandise",
-              subtitle: [p.category, p.title?.name].filter(Boolean).join(" • ") || "Shop Item",
-              badge: p.price != null ? `Tshs.${Number(p.price).toLocaleString()}` : undefined,
-              image: safeSanityImageUrl(p.image?.[0]),
+              subtitle:
+                [p.shopName, p.category, p.title?.name || p.animeTitle]
+                  .filter(Boolean)
+                  .join(" • ") || "Shop Item",
+              badge:
+                p.price != null
+                  ? formatShopPrice(Number(p.price), p.currency || "USD")
+                  : undefined,
+              image: resolveProductImage(p, 0),
               href: `/shop/product/${p._id}`,
             }));
         },
