@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../use-auth";
 import { registerForEvent } from "@/lib/sanity";
-import { toast } from "../use-toast";
+import { toast } from "sonner";
 import { Event } from "@/types/events";
 
 const useRegisterEvent = () => {
@@ -14,17 +14,13 @@ const useRegisterEvent = () => {
         setIsRegistering(true);
         try {
             await registerForEvent(event._id, user.uid, user.displayName || 'Anonymous', user.photoURL || '');
-            // await mutate();
-            toast({
-                title: "Registration Successful",
+            toast.success("Registration Successful", {
                 description: "You have successfully registered for this event.",
             });
         } catch (error) {
             console.error('Error registering for event:', error);
-            toast({
-                title: "Registration Failed",
+            toast.error("Registration Failed", {
                 description: "There was an error registering for the event. Please try again.",
-                variant: "destructive",
             });
         } finally {
             setIsRegistering(false);

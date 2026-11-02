@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import { db } from './firebase';
+import { app, db } from './firebase';
 import {
   collection,
   addDoc,
   doc,
+  setDoc,
   updateDoc,
   serverTimestamp,
   deleteDoc,
@@ -24,7 +25,30 @@ export interface NotificationData {
   metadata?: Record<string, any>;
 }
 
+export async function saveUserPushToken(userId: string, token: string) {
+  if (!app || !userId || !token) return;
+  try {
+    const tokenKey = token.slice(-32).replace(/[^a-zA-Z0-9_-]/g, '_');
+    const tokenRef = doc(db, 'users', userId, 'pushTokens', tokenKey);
+    await setDoc(
+      tokenRef,
+      {
+        token,
+        userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'web',
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true }
+    );
+  } catch (error) {
+    console.error('[WebNotifications] Failed to persist push token to Firestore:', error);
+    throw error;
+  }
+}
+
 export async function createNotification(data: NotificationData) {
+  if (!app) {
+    throw new Error('Firestore is not configured (NEXT_PUBLIC_FIREBASE_* missing).');
+  }
   try {
     const notificationRef = await addDoc(collection(db, 'notifications'), {
       ...data,
@@ -33,7 +57,7 @@ export async function createNotification(data: NotificationData) {
     });
     return notificationRef.id;
   } catch (error) {
-    console.error('Error creating notification:', error);
+    console.error('[Notifications] Error creating notification:', error);
     throw error;
   }
 }
@@ -46,7 +70,7 @@ export async function markAsRead(notificationId: string) {
       readAt: serverTimestamp(),
     });
   } catch (error) {
-    console.error('Error marking notification as read:', error);
+    console.error('[Notifications] Error marking notification as read:', error);
     throw error;
   }
 }
@@ -58,18 +82,18 @@ export async function markAllAsRead(userId: string) {
       where('userId', '==', userId),
       where('read', '==', false)
     );
-    
+
     const snapshot = await getDocs(q);
-    const updates = snapshot.docs.map(doc => 
-      updateDoc(doc.ref, {
+    const updates = snapshot.docs.map((docSnap) =>
+      updateDoc(docSnap.ref, {
         read: true,
         readAt: serverTimestamp(),
       })
     );
-    
+
     await Promise.all(updates);
   } catch (error) {
-    console.error('Error marking all notifications as read:', error);
+    console.error('[Notifications] Error marking all notifications as read:', error);
     throw error;
   }
 }
@@ -78,12 +102,17 @@ export async function deleteNotification(notificationId: string) {
   try {
     await deleteDoc(doc(db, 'notifications', notificationId));
   } catch (error) {
-    console.error('Error deleting notification:', error);
+    console.error('[Notifications] Error deleting notification:', error);
     throw error;
   }
 }
 
-export function createChatNotification(userId: string, roomName: string, roomId: string, message: string) {
+export function createChatNotification(
+  userId: string,
+  roomName: string,
+  roomId: string,
+  message: string
+) {
   return createNotification({
     userId,
     type: 'chat',
@@ -103,13 +132,17 @@ export function createEventNotification(userId: string, eventTitle: string, even
   });
 }
 
-export function createProductNotification(userId: string, productName: string, productId: string) {
+export function createProductNotification(
+  userId: string,
+  productName: string,
+  productId: string
+) {
   return createNotification({
     userId,
     type: 'product',
     title: 'New Product',
     message: `New product available: ${productName}`,
-    link: `/shop/products/${productId}`,
+    link: `/shop/product/${productId}`,
   });
 }
 

@@ -111,12 +111,6 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
   maximize: () => set({ isMinimized: false }),
 
   close: () => {
-    const player = get().player;
-
-    if (player && !player.paused) {
-      void player.pause().catch(() => undefined);
-    }
-
     set({
       currentVideoId: null,
       videoSrc: null,
@@ -127,6 +121,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentPlaybackTime: 0,
       isOpen: false,
       isPlaying: false,
+      player: null,
     });
   },
 }));

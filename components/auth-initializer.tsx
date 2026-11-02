@@ -1,14 +1,15 @@
-import { cookies } from 'next/headers';
+'use client';
+
+import { useEffect } from 'react';
 import useAuthStore from '@/store/use-auth-store';
 
-export async function AuthInitializer() {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('auth_token');
+export function AuthInitializer() {
+  useEffect(() => {
+    const unsubscribe = useAuthStore.getState().subscribeAuth();
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
-    if (token) {
-        //TODO: verify the token on the server-side here For now, we'll just set it in the store
-        useAuthStore.getState().setToken(token.value);
-    }
-
-    return null;
+  return null;
 }

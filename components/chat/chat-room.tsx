@@ -138,7 +138,9 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
 
             roomDetails?.members.forEach((member: string) => {
                 if (member !== user.uid) {
-                    void createChatNotification(member, title, roomId, content)
+                    void createChatNotification(member, title, roomId, content).catch((err) => {
+                        console.error('[ChatRoom] Failed to deliver chat notification:', err)
+                    })
                 }
             })
         } catch {

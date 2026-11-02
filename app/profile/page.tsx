@@ -17,7 +17,7 @@ import { useI18n } from "@/components/i18n-provider";
 
 function ProfileContent() {
   const { t } = useI18n();
-  const { user, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryUserId = searchParams.get("userId");
@@ -35,11 +35,12 @@ function ProfileContent() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
-    if (!user && !queryUserId) {
-      router.push("/auth");
+    if (!authLoading && !user && !queryUserId) {
+      router.replace("/auth");
     }
-  }, [user, queryUserId, router]);
+  }, [authLoading, user, queryUserId, router]);
 
+  if (authLoading && !queryUserId) return null;
   if (!user && !queryUserId) return null;
 
   // If viewing someone else's profile and it is private
