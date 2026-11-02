@@ -5,6 +5,7 @@ import { useAnimeStore } from "@/store/use-anime-store"
 import { useAuth } from "@/hooks/use-auth"
 import { SearchDropdown } from "./search-dropdown"
 import { NotificationBell } from "@/components/notification-bell"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Input } from "@/components/ui/input"
 import { SearchIcon } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
@@ -96,6 +97,7 @@ export function Search() {
               </AnimatePresence>
             </div>
             {user && <NotificationBell />}
+            <ThemeToggle />
           </div>
         </div>
       </header>

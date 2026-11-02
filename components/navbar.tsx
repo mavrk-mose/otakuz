@@ -45,6 +45,7 @@ import { cn } from "@/lib/utils";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/components/i18n-provider";
 import { NotificationBell } from "@/components/notification-bell";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { Input } from "@/components/ui/input";
 import { useAnimeStore } from "@/store/use-anime-store";
 import { SearchDropdown } from "@/components/search-dropdown";
@@ -87,8 +88,8 @@ export default function Navbar() {
     { href: "/", icon: Home, labelKey: "nav.home" },
     { href: "/anime", icon: CirclePlay, labelKey: "nav.anime" },
     { href: "/manga", icon: BookOpen, labelKey: "nav.manga" },
-    { href: "/chat", icon: MessageSquare, labelKey: "nav.rooms" },
-    { href: "#menu", icon: LayoutGrid, labelKey: "nav.menu", isMenu: true },
+    { href: "/chat", icon: MessageSquare, labelKey: "nav.chat" },
+    { href: "#menu", icon: LayoutGrid, labelKey: "nav.toggleMenu", isMenu: true },
   ] as const;
 
   const container = {
@@ -344,6 +345,8 @@ export default function Navbar() {
 
           {user && <NotificationBell />}
 
+          <ThemeToggle className="h-8 w-8" />
+
           {user ? (
             <Link href="/profile">
               <Avatar className="h-8 w-8 border border-primary/20">
@@ -398,7 +401,7 @@ export default function Navbar() {
   );
 
   const MobileBottomTabs = () => (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-[#121215]/95 backdrop-blur-md border-t border-border/40 py-1 px-2">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 lg:hidden bg-card/95 backdrop-blur-md border-t border-border/60 py-1 px-2 shadow-lg">
       <div className="flex items-center justify-around h-14">
         {bottomTabs.map((tab) => {
           if ('isMenu' in tab && tab.isMenu) {

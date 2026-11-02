@@ -69,11 +69,11 @@ export function CommunityProfilesSection() {
           <p className="mb-1 text-xs font-semibold uppercase tracking-[0.22em] text-rose-500">
             Community Otakus
           </p>
-          <h2 className="text-2xl font-black tracking-tight text-white md:text-3xl flex items-center gap-2">
+          <h2 className="text-2xl font-black tracking-tight text-foreground md:text-3xl flex items-center gap-2">
             <Users className="h-6 w-6 text-rose-500" />
             <span>Community Profiles & Saved Boards</span>
           </h2>
-          <p className="text-xs sm:text-sm text-zinc-400 mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
             Discover fellow members, browse their public profiles, and explore their Pinterest-style saved collections.
           </p>
         </div>
@@ -82,7 +82,7 @@ export function CommunityProfilesSection() {
           <Button
             variant="ghost"
             size="sm"
-            className="text-xs text-zinc-300 hover:text-white hover:bg-zinc-800 hidden sm:flex items-center gap-1"
+            className="text-xs text-muted-foreground hover:text-foreground hover:bg-muted hidden sm:flex items-center gap-1"
           >
             <span>My Profile</span>
             <ArrowRight className="h-3.5 w-3.5" />
@@ -95,19 +95,19 @@ export function CommunityProfilesSection() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="h-56 rounded-2xl bg-zinc-900/60 animate-pulse border border-zinc-800"
+              className="h-56 rounded-2xl bg-muted/40 animate-pulse border border-border"
             />
           ))}
         </div>
       ) : users.length === 0 ? (
-        <Card className="p-12 text-center border-dashed border-zinc-800 bg-[#18181b]/60 rounded-2xl">
+        <Card className="p-12 text-center border-dashed border-border bg-card/60 rounded-2xl">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 mb-4 border border-rose-500/20">
             <Sparkles className="h-7 w-7" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-1">
+          <h3 className="text-lg font-bold text-foreground mb-1">
             Be the First to Join the Otakuz Community!
           </h3>
-          <p className="text-sm text-zinc-400 max-w-md mx-auto mb-6">
+          <p className="text-sm text-muted-foreground max-w-md mx-auto mb-6">
             No public profiles are shared yet. Sign in, create saved boards, and make your profile public to be featured here!
           </p>
           <Link href="/profile">
@@ -126,7 +126,7 @@ export function CommunityProfilesSection() {
           {users.map((communityUser: UserProfileData) => (
             <motion.div key={communityUser.uid} variants={item}>
               <Link href={`/profile?userId=${communityUser.uid}`} className="block h-full">
-                <Card className="group relative h-full flex flex-col justify-between p-5 bg-[#18181b] border-zinc-800/80 hover:border-rose-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/5 rounded-2xl overflow-hidden">
+                <Card className="group relative h-full flex flex-col justify-between p-5 bg-card border-border hover:border-rose-500/50 transition-all duration-300 hover:shadow-xl hover:shadow-rose-500/5 rounded-2xl overflow-hidden">
                   {/* Glow accent on hover */}
                   <div className="absolute top-0 right-0 -mr-8 -mt-8 h-24 w-24 rounded-full bg-rose-500/10 blur-xl group-hover:bg-rose-500/20 transition-all pointer-events-none" />
 
@@ -134,7 +134,7 @@ export function CommunityProfilesSection() {
                     {/* User Avatar + Level Row */}
                     <div className="flex items-start justify-between gap-3 mb-3">
                       <div className="relative">
-                        <Avatar className="h-14 w-14 border-2 border-zinc-700 group-hover:border-rose-500 transition-colors shadow-md">
+                        <Avatar className="h-14 w-14 border-2 border-border group-hover:border-rose-500 transition-colors shadow-md">
                           <AvatarImage
                             src={communityUser.photoURL || undefined}
                             alt={communityUser.displayName}
@@ -144,7 +144,7 @@ export function CommunityProfilesSection() {
                             {communityUser.displayName[0]?.toUpperCase() || "O"}
                           </AvatarFallback>
                         </Avatar>
-                        <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-white shadow-md border-2 border-[#18181b]">
+                        <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-white shadow-md border-2 border-card">
                           <Zap className="h-2.5 w-2.5 fill-current" />
                         </div>
                       </div>
@@ -156,44 +156,44 @@ export function CommunityProfilesSection() {
 
                     {/* Identity */}
                     <div className="space-y-0.5">
-                      <h3 className="font-bold text-white text-base group-hover:text-rose-400 transition-colors truncate">
+                      <h3 className="font-bold text-foreground text-base group-hover:text-rose-500 transition-colors truncate">
                         {communityUser.displayName}
                       </h3>
-                      <p className="text-xs text-zinc-400 truncate">
+                      <p className="text-xs text-muted-foreground truncate">
                         {communityUser.username}
                       </p>
-                      <p className="text-[11px] font-medium text-amber-400/90 pt-0.5">
+                      <p className="text-[11px] font-medium text-amber-500/90 pt-0.5">
                         {communityUser.rank}
                       </p>
                     </div>
 
                     {/* Bio snippet */}
                     {communityUser.bio ? (
-                      <p className="text-xs text-zinc-400/90 line-clamp-2 mt-2 leading-relaxed">
+                      <p className="text-xs text-muted-foreground line-clamp-2 mt-2 leading-relaxed">
                         {communityUser.bio}
                       </p>
                     ) : null}
                   </div>
 
                   {/* Bottom Stats & CTA */}
-                  <div className="mt-4 pt-3 border-t border-zinc-800/80 flex items-center justify-between">
-                    <div className="flex items-center gap-3 text-[11px] text-zinc-400">
+                  <div className="mt-4 pt-3 border-t border-border flex items-center justify-between">
+                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
                       <span>
-                        <strong className="text-white">
+                        <strong className="text-foreground">
                           {communityUser.watchedCount}
                         </strong>{" "}
                         Watched
                       </span>
                       <span>·</span>
                       <span>
-                        <strong className="text-white">
+                        <strong className="text-foreground">
                           {communityUser.readingCount}
                         </strong>{" "}
                         Reading
                       </span>
                     </div>
 
-                    <div className="flex items-center gap-1 text-xs font-semibold text-rose-400 group-hover:translate-x-0.5 transition-transform">
+                    <div className="flex items-center gap-1 text-xs font-semibold text-rose-500 group-hover:translate-x-0.5 transition-transform">
                       <Layers className="h-3.5 w-3.5" />
                       <span>{communityUser.boardsCount ?? 0} Boards</span>
                     </div>

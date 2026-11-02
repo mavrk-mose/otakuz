@@ -119,9 +119,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       {/* Header bar with Board Counter and Create Board button */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
+          <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
             <span>Saved Boards</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-300 font-medium">
+            <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
               {sortedLists.length}
             </span>
           </h2>
@@ -149,16 +149,16 @@ export function UserLists({ userId, onShare }: UserListsProps) {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="h-64 rounded-2xl bg-zinc-900/60 animate-pulse border border-zinc-800/60"
+              className="h-64 rounded-2xl bg-muted/40 animate-pulse border border-border"
             />
           ))}
         </div>
       ) : sortedLists.length === 0 ? (
-        <Card className="p-12 text-center border-dashed border-zinc-800 bg-zinc-900/30">
+        <Card className="p-12 text-center border-dashed border-border bg-card/40">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 mb-4 border border-rose-500/20">
             <Sparkles className="h-7 w-7" />
           </div>
-          <h3 className="text-lg font-bold text-white mb-1">
+          <h3 className="text-lg font-bold text-foreground mb-1">
             {isOwner ? "No boards created yet" : "No public boards available"}
           </h3>
           <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
@@ -211,17 +211,17 @@ export function UserLists({ userId, onShare }: UserListsProps) {
 
       {/* Create Board Modal */}
       <Dialog open={createBoardOpen} onOpenChange={setCreateBoardOpen}>
-        <DialogContent className="sm:max-w-md bg-[#18181b] border-zinc-800 text-white">
+        <DialogContent className="sm:max-w-md bg-card border-border text-card-foreground">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Create Saved Board</DialogTitle>
-            <DialogDescription className="text-zinc-400 text-xs">
+            <DialogDescription className="text-muted-foreground text-xs">
               Pin anime and manga titles into themed collections like Pinterest.
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-2">
             <div className="space-y-2">
-              <Label htmlFor="board-name" className="text-xs font-semibold text-zinc-300">
+              <Label htmlFor="board-name" className="text-xs font-semibold text-foreground">
                 Board Name
               </Label>
               <Input
@@ -230,23 +230,23 @@ export function UserLists({ userId, onShare }: UserListsProps) {
                 value={newBoardName}
                 onChange={(e) => setNewBoardName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreateBoard()}
-                className="bg-zinc-900 border-zinc-700 text-white placeholder:text-zinc-500"
+                className="bg-card border-border text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
-            <div className="flex items-center justify-between p-3 rounded-xl border border-zinc-800 bg-zinc-900/60">
+            <div className="flex items-center justify-between p-3 rounded-xl border border-border bg-muted/40">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   {newBoardPublic ? (
-                    <Globe className="h-4 w-4 text-emerald-400" />
+                    <Globe className="h-4 w-4 text-emerald-500" />
                   ) : (
-                    <Lock className="h-4 w-4 text-amber-400" />
+                    <Lock className="h-4 w-4 text-amber-500" />
                   )}
-                  <Label className="text-sm font-semibold text-white">
+                  <Label className="text-sm font-semibold text-foreground">
                     {newBoardPublic ? "Public Board" : "Secret Board"}
                   </Label>
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   {newBoardPublic
                     ? "Anyone can discover and view this board on your profile."
                     : "Only you can see this board. Hidden from other users."}
@@ -264,7 +264,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
             <Button
               variant="outline"
               onClick={() => setCreateBoardOpen(false)}
-              className="border-zinc-700 hover:bg-zinc-800 text-zinc-300"
+              className="border-border hover:bg-muted text-foreground"
             >
               {t("common.cancel")}
             </Button>
@@ -281,10 +281,10 @@ export function UserLists({ userId, onShare }: UserListsProps) {
 
       {/* Delete Board Confirmation */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-        <DialogContent className="bg-[#18181b] border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-card-foreground">
           <DialogHeader>
             <DialogTitle>{t("bookmark.deleteList")}</DialogTitle>
-            <DialogDescription className="text-zinc-400">
+            <DialogDescription className="text-muted-foreground">
               Are you sure you want to delete &ldquo;{selectedList?.name}&rdquo;? All saved items inside this board will be removed.
             </DialogDescription>
           </DialogHeader>
@@ -292,7 +292,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
             <Button
               variant="outline"
               onClick={() => setDeleteConfirmOpen(false)}
-              className="border-zinc-700 text-zinc-300 hover:bg-zinc-800"
+              className="border-border text-foreground hover:bg-muted"
             >
               {t("common.cancel")}
             </Button>
@@ -305,27 +305,27 @@ export function UserLists({ userId, onShare }: UserListsProps) {
 
       {/* Board Settings & Privacy Modal */}
       <Dialog open={listSettingsOpen} onOpenChange={setListSettingsOpen}>
-        <DialogContent className="bg-[#18181b] border-zinc-800 text-white">
+        <DialogContent className="bg-card border-border text-card-foreground">
           <DialogHeader>
             <DialogTitle>Board Privacy & Settings</DialogTitle>
-            <DialogDescription className="text-zinc-400 text-xs">
+            <DialogDescription className="text-muted-foreground text-xs">
               Manage visibility and collaborative options for &ldquo;{selectedList?.name}&rdquo;.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
-            <div className="flex items-center justify-between p-3.5 rounded-xl border border-zinc-800 bg-zinc-900/60">
+            <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-muted/40">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
                   {selectedList?.public ? (
-                    <Globe className="h-4 w-4 text-emerald-400" />
+                    <Globe className="h-4 w-4 text-emerald-500" />
                   ) : (
-                    <Lock className="h-4 w-4 text-amber-400" />
+                    <Lock className="h-4 w-4 text-amber-500" />
                   )}
-                  <Label className="text-sm font-semibold text-white">
+                  <Label className="text-sm font-semibold text-foreground">
                     {selectedList?.public ? "Public Board" : "Secret Board (Private)"}
                   </Label>
                 </div>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   {selectedList?.public
                     ? "Visible to other otakus visiting your profile."
                     : "Locked. Only you can view this board."}
@@ -338,12 +338,12 @@ export function UserLists({ userId, onShare }: UserListsProps) {
               />
             </div>
 
-            <div className="flex items-center justify-between p-3.5 rounded-xl border border-zinc-800 bg-zinc-900/60">
+            <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-muted/40">
               <div className="space-y-0.5">
-                <Label className="text-sm font-semibold text-white">
+                <Label className="text-sm font-semibold text-foreground">
                   Collaborative Board
                 </Label>
-                <p className="text-xs text-zinc-400">
+                <p className="text-xs text-muted-foreground">
                   Allow other community members to pin items to this board.
                 </p>
               </div>
@@ -359,7 +359,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
           <DialogFooter>
             <Button
               onClick={() => setListSettingsOpen(false)}
-              className="bg-zinc-800 hover:bg-zinc-700 text-white"
+              className="bg-muted hover:bg-muted/80 text-foreground border border-border"
             >
               Done
             </Button>
@@ -424,24 +424,24 @@ function ListCard({
         exit={{ opacity: 0 }}
         className="col-span-full"
       >
-        <Card className="p-6 bg-[#161619] border-zinc-800/80 shadow-2xl">
-          <div className="flex items-center justify-between mb-6 border-b border-zinc-800/80 pb-4">
+        <Card className="p-6 bg-card border-border shadow-2xl">
+          <div className="flex items-center justify-between mb-6 border-b border-border pb-4">
             <div className="flex items-center gap-3">
-              <h2 className="text-2xl font-black text-white">{list.name}</h2>
+              <h2 className="text-2xl font-black text-foreground">{list.name}</h2>
               <div className="flex items-center gap-1.5">
                 {list.public ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                     <Globe className="h-3 w-3" />
                     Public Board
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
                     <Lock className="h-3 w-3" />
                     Secret Board
                   </span>
                 )}
                 {list.collaborative && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-400 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-500 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">
                     <Users className="h-3 w-3" />
                     Collaborative
                   </span>
@@ -452,14 +452,14 @@ function ListCard({
               variant="outline"
               size="sm"
               onClick={onExpand}
-              className="border-zinc-700 bg-zinc-800/80 hover:bg-zinc-700 text-zinc-200"
+              className="border-border bg-muted/80 hover:bg-muted text-foreground"
             >
               {t("common.close")}
             </Button>
           </div>
 
           {allItems.length === 0 ? (
-            <div className="py-12 text-center text-zinc-400">
+            <div className="py-12 text-center text-muted-foreground">
               <p>No items added to this board yet.</p>
             </div>
           ) : (
@@ -532,14 +532,14 @@ function ListCard({
       exit={{ opacity: 0, y: -20 }}
       layout
     >
-      <Card className="group relative p-4 bg-[#161619] border-zinc-800/80 hover:border-zinc-700 transition-all hover:shadow-xl rounded-2xl overflow-hidden">
+      <Card className="group relative p-4 bg-card border-border hover:border-border/80 transition-all hover:shadow-xl rounded-2xl overflow-hidden">
         {/* Top Header */}
         <div className="flex items-center justify-between mb-3.5">
           <div className="flex items-center gap-2 min-w-0">
-            <h3 className="font-bold text-white text-base truncate">{list.name}</h3>
+            <h3 className="font-bold text-foreground text-base truncate">{list.name}</h3>
             {list.public ? (
               <span
-                className="flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full flex-shrink-0"
+                className="flex items-center gap-1 text-[10px] font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full flex-shrink-0"
                 title="Public Board"
               >
                 <Globe className="h-2.5 w-2.5" />
@@ -547,7 +547,7 @@ function ListCard({
               </span>
             ) : (
               <span
-                className="flex items-center gap-1 text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full flex-shrink-0"
+                className="flex items-center gap-1 text-[10px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full flex-shrink-0"
                 title="Secret Board"
               >
                 <Lock className="h-2.5 w-2.5" />
@@ -572,7 +572,7 @@ function ListCard({
                     },
                   })
                 }
-                className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full"
+                className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
                 title="Share board"
               >
                 <Share2 className="h-3.5 w-3.5" />
@@ -585,7 +585,7 @@ function ListCard({
                   variant="ghost"
                   size="icon"
                   onClick={() => onSettings(list)}
-                  className="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-full"
+                  className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
                   title="Board privacy & settings"
                 >
                   <Lock className="h-3.5 w-3.5" />
@@ -595,7 +595,7 @@ function ListCard({
                     variant="ghost"
                     size="icon"
                     onClick={() => onDelete(list)}
-                    className="h-8 w-8 text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 rounded-full"
+                    className="h-8 w-8 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-full"
                     title="Delete board"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
@@ -609,13 +609,13 @@ function ListCard({
         {/* Pinterest-style Multi-Image Grid Preview */}
         <div
           onClick={onExpand}
-          className="grid grid-cols-3 gap-1.5 mb-3.5 cursor-pointer rounded-xl overflow-hidden bg-zinc-900/50 p-1 border border-zinc-800/40 group-hover:border-zinc-700/60 transition-colors"
+          className="grid grid-cols-3 gap-1.5 mb-3.5 cursor-pointer rounded-xl overflow-hidden bg-muted/40 p-1 border border-border/60 group-hover:border-border transition-colors"
         >
           {previewItems.length > 0 ? (
             previewItems.map((preview, index) => (
               <div
                 key={preview.id}
-                className="relative aspect-square rounded-lg overflow-hidden bg-zinc-800"
+                className="relative aspect-square rounded-lg overflow-hidden bg-muted"
               >
                 <Image
                   src={preview.image}
@@ -631,7 +631,7 @@ function ListCard({
               </div>
             ))
           ) : (
-            <div className="col-span-3 py-10 flex flex-col items-center justify-center text-zinc-600 gap-1">
+            <div className="col-span-3 py-10 flex flex-col items-center justify-center text-muted-foreground/60 gap-1">
               <Sparkles className="h-5 w-5 opacity-40" />
               <span className="text-xs">Empty board</span>
             </div>
@@ -641,7 +641,7 @@ function ListCard({
         <Button
           variant="outline"
           size="sm"
-          className="w-full border-zinc-800 bg-zinc-900/80 hover:bg-zinc-800 hover:text-white text-xs font-semibold text-zinc-300 h-9 rounded-xl"
+          className="w-full border-border bg-card hover:bg-muted hover:text-foreground text-xs font-semibold text-foreground h-9 rounded-xl"
           onClick={onExpand}
         >
           Explore Board ({allItems.length} items)

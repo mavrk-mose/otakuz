@@ -58,7 +58,7 @@ export function UserProfileCard({
     profile?.isPublic !== undefined ? profile.isPublic : true;
 
   return (
-    <Card className="relative overflow-hidden bg-[#18181b] border-zinc-800/80 p-6 shadow-2xl text-card-foreground rounded-2xl">
+    <Card className="relative overflow-hidden bg-card border-border p-6 shadow-2xl text-card-foreground rounded-2xl">
       {/* Top Header Row */}
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
@@ -75,7 +75,7 @@ export function UserProfileCard({
               </AvatarFallback>
             </Avatar>
             <div
-              className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-white shadow-md border-2 border-[#18181b]"
+              className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-white shadow-md border-2 border-card"
               title="Verified Explorer"
             >
               <Zap className="h-3 w-3 fill-current" />
@@ -85,32 +85,32 @@ export function UserProfileCard({
           {/* User Details */}
           <div className="space-y-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-xl font-black tracking-tight text-white">
+              <h2 className="text-xl font-black tracking-tight text-foreground">
                 {effectiveDisplayName}
               </h2>
-              <span className="inline-flex items-center rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-xs font-bold text-rose-400">
+              <span className="inline-flex items-center rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-xs font-bold text-rose-500">
                 {t("profile.level")} {effectiveLevel}
               </span>
             </div>
 
-            <p className="text-xs font-semibold text-zinc-400">
+            <p className="text-xs font-semibold text-muted-foreground">
               {effectiveUsername}
             </p>
 
             <div className="flex items-center gap-2 pt-0.5">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-400">
-                <span className="h-2 w-2 rounded-full bg-amber-400 animate-pulse" />
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-500">
+                <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
                 <span>{effectiveRank}</span>
               </div>
 
               {/* Public / Private Badge */}
               {effectiveIsPublic ? (
-                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                   <Globe className="h-2.5 w-2.5" />
                   Public
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
                   <Lock className="h-2.5 w-2.5" />
                   Private
                 </span>
@@ -125,7 +125,7 @@ export function UserProfileCard({
             variant="ghost"
             size="icon"
             onClick={() => setIsShareModalOpen(true)}
-            className="h-9 w-9 rounded-full bg-zinc-800/90 hover:bg-zinc-700 text-zinc-300 transition-colors"
+            className="h-9 w-9 rounded-full bg-muted/80 hover:bg-muted text-foreground transition-colors border border-border"
             title="Share profile to chat"
           >
             <Share2 className="h-4 w-4" />
@@ -137,7 +137,7 @@ export function UserProfileCard({
               variant="ghost"
               size="icon"
               onClick={() => setIsSettingsOpen(true)}
-              className="h-9 w-9 rounded-full bg-zinc-800/90 hover:bg-zinc-700 text-zinc-300 transition-colors"
+              className="h-9 w-9 rounded-full bg-muted/80 hover:bg-muted text-foreground transition-colors border border-border"
               title="Profile & platform settings"
             >
               <Settings className="h-4 w-4" />
@@ -149,28 +149,28 @@ export function UserProfileCard({
 
       {/* Bio (if present) */}
       {effectiveBio && (
-        <div className="mt-4 text-xs text-zinc-300 bg-zinc-900/60 p-3 rounded-xl border border-zinc-800/60 leading-relaxed">
+        <div className="mt-4 text-xs text-foreground/90 bg-muted/50 p-3 rounded-xl border border-border leading-relaxed">
           {effectiveBio}
         </div>
       )}
 
       {/* Stats Container */}
-      <div className="mt-5 grid grid-cols-3 gap-2 rounded-xl border border-zinc-800/80 bg-zinc-900/90 p-4 text-center">
+      <div className="mt-5 grid grid-cols-3 gap-2 rounded-xl border border-border bg-muted/30 p-4 text-center">
         <div className="space-y-1">
-          <p className="text-xl font-black text-white">{effectiveWatchedCount}</p>
-          <p className="text-[11px] font-medium text-zinc-400">
+          <p className="text-xl font-black text-foreground">{effectiveWatchedCount}</p>
+          <p className="text-[11px] font-medium text-muted-foreground">
             {t("profile.watched")}
           </p>
         </div>
-        <div className="space-y-1 border-x border-zinc-800 px-2">
-          <p className="text-xl font-black text-white">{effectiveReadingCount}</p>
-          <p className="text-[11px] font-medium text-zinc-400">
+        <div className="space-y-1 border-x border-border px-2">
+          <p className="text-xl font-black text-foreground">{effectiveReadingCount}</p>
+          <p className="text-[11px] font-medium text-muted-foreground">
             {t("profile.reading")}
           </p>
         </div>
         <div className="space-y-1">
-          <p className="text-xl font-black text-white">{effectiveTotalExp}</p>
-          <p className="text-[11px] font-medium text-zinc-400">
+          <p className="text-xl font-black text-foreground">{effectiveTotalExp}</p>
+          <p className="text-[11px] font-medium text-muted-foreground">
             {t("profile.totalExp")}
           </p>
         </div>

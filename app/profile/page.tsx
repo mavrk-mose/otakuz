@@ -45,12 +45,12 @@ function ProfileContent() {
   if (!profileLoading && !isOwnProfile && profile && profile.isPublic === false) {
     return (
       <div className="container mx-auto px-4 py-20 max-w-lg text-center space-y-6">
-        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-zinc-900 border border-zinc-800 text-amber-400 shadow-2xl">
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-muted border border-border text-amber-500 shadow-2xl">
           <Lock className="h-10 w-10" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-white">This Profile is Private</h1>
-          <p className="text-sm text-zinc-400 leading-relaxed">
+          <h1 className="text-2xl font-black text-foreground">This Profile is Private</h1>
+          <p className="text-sm text-muted-foreground leading-relaxed">
             {profile.displayName || "This otaku"} has chosen to keep their profile identity and saved boards private.
           </p>
         </div>
@@ -74,12 +74,12 @@ function ProfileContent() {
             variant="ghost"
             size="sm"
             onClick={() => router.back()}
-            className="text-zinc-400 hover:text-white hover:bg-zinc-800/80 gap-1.5"
+            className="text-muted-foreground hover:text-foreground hover:bg-muted gap-1.5"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
           </Button>
-          <span className="text-xs text-zinc-500">
+          <span className="text-xs text-muted-foreground">
             Viewing {profile?.displayName || "Member"}&rsquo;s Otakuz Profile
           </span>
         </div>
@@ -105,19 +105,19 @@ function ProfileContent() {
               onResetGoogleAvatar={resetToGoogleAvatar}
             />
 
-            <Card className="p-6 bg-[#18181b] border-zinc-800/80 shadow-xl rounded-2xl text-card-foreground">
-              <h3 className="font-bold mb-4 text-xs text-zinc-400 uppercase tracking-wider flex items-center justify-between">
+            <Card className="p-6 bg-card border-border shadow-xl rounded-2xl text-card-foreground">
+              <h3 className="font-bold mb-4 text-xs text-muted-foreground uppercase tracking-wider flex items-center justify-between">
                 <span>Account Overview</span>
                 {profile?.isPublic !== undefined && (
-                  <span className="flex items-center gap-1 font-semibold normal-case text-[11px] text-zinc-400">
+                  <span className="flex items-center gap-1 font-semibold normal-case text-[11px] text-muted-foreground">
                     {profile.isPublic ? (
                       <>
-                        <Globe className="h-3 w-3 text-emerald-400" />
+                        <Globe className="h-3 w-3 text-emerald-500" />
                         Public
                       </>
                     ) : (
                       <>
-                        <Lock className="h-3 w-3 text-amber-400" />
+                        <Lock className="h-3 w-3 text-amber-500" />
                         Private
                       </>
                     )}
@@ -126,33 +126,33 @@ function ProfileContent() {
               </h3>
 
               <div className="space-y-3 text-sm">
-                <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
-                  <span className="text-zinc-400 text-xs">Joined Otakuz</span>
-                  <span className="font-semibold text-xs text-zinc-200">
+                <div className="flex justify-between py-1.5 border-b border-border">
+                  <span className="text-muted-foreground text-xs">Joined Otakuz</span>
+                  <span className="font-semibold text-xs text-foreground">
                     {user?.metadata.creationTime?.split("T")[0] || "2024"}
                   </span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
-                  <span className="text-zinc-400 text-xs">Saved Boards</span>
-                  <span className="font-semibold text-xs text-zinc-200">
+                <div className="flex justify-between py-1.5 border-b border-border">
+                  <span className="text-muted-foreground text-xs">Saved Boards</span>
+                  <span className="font-semibold text-xs text-foreground">
                     {stats?.boardsCount ?? 0}
                   </span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
-                  <span className="text-zinc-400 text-xs">Saved Titles</span>
-                  <span className="font-semibold text-xs text-zinc-200">
+                <div className="flex justify-between py-1.5 border-b border-border">
+                  <span className="text-muted-foreground text-xs">Saved Titles</span>
+                  <span className="font-semibold text-xs text-foreground">
                     {stats?.totalSaved ?? 0}
                   </span>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-zinc-800/80">
-                  <span className="text-zinc-400 text-xs">Profile Visibility</span>
-                  <span className="font-semibold text-xs text-zinc-200">
+                <div className="flex justify-between py-1.5 border-b border-border">
+                  <span className="text-muted-foreground text-xs">Profile Visibility</span>
+                  <span className="font-semibold text-xs text-foreground">
                     {profile?.isPublic !== false ? "Public Community" : "Private (Secret)"}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-zinc-400 text-xs">Pioneer Status</span>
-                  <span className="font-semibold text-xs text-amber-400">
+                  <span className="text-muted-foreground text-xs">Pioneer Status</span>
+                  <span className="font-semibold text-xs text-amber-500">
                     {stats?.rank || profile?.rank || "Novice Explorer"}
                   </span>
                 </div>
@@ -163,16 +163,16 @@ function ProfileContent() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-zinc-700 bg-zinc-800/60 hover:bg-zinc-700 text-zinc-200"
+                    className="flex-1 border-border bg-card hover:bg-muted text-foreground"
                     onClick={() => setIsSettingsOpen(true)}
                   >
-                    <Settings className="h-4 w-4 mr-2 text-rose-400" />
+                    <Settings className="h-4 w-4 mr-2 text-rose-500" />
                     {t("profile.settings")}
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
-                    className="flex-1 border-zinc-700 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10"
+                    className="flex-1 border-border text-rose-500 hover:text-rose-600 hover:bg-rose-500/10"
                     onClick={signOut}
                   >
                     <LogOut className="h-4 w-4 mr-2" />
@@ -185,22 +185,22 @@ function ProfileContent() {
 
           <div>
             <Tabs defaultValue="lists" className="w-full">
-              <TabsList className="mb-6 bg-zinc-900 border border-zinc-800 p-1 rounded-xl">
+              <TabsList className="mb-6 bg-muted/60 border border-border p-1 rounded-xl">
                 <TabsTrigger
                   value="lists"
-                  className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white font-medium"
+                  className="data-[state=active]:bg-card data-[state=active]:text-foreground font-medium"
                 >
                   {isOwnProfile ? t("profile.myLists") : "Saved Boards"}
                 </TabsTrigger>
                 <TabsTrigger
                   value="history"
-                  className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white font-medium"
+                  className="data-[state=active]:bg-card data-[state=active]:text-foreground font-medium"
                 >
                   {t("profile.watchHistory")}
                 </TabsTrigger>
                 <TabsTrigger
                   value="reviews"
-                  className="data-[state=active]:bg-zinc-800 data-[state=active]:text-white font-medium"
+                  className="data-[state=active]:bg-card data-[state=active]:text-foreground font-medium"
                 >
                   {t("profile.reviews")}
                 </TabsTrigger>
@@ -211,16 +211,16 @@ function ProfileContent() {
               </TabsContent>
 
               <TabsContent value="history">
-                <Card className="p-12 border-zinc-800 bg-[#18181b] text-center rounded-2xl">
-                  <p className="text-zinc-400 text-sm">
+                <Card className="p-12 border-border bg-card text-center rounded-2xl">
+                  <p className="text-muted-foreground text-sm">
                     {t("profile.historyComingSoon")}
                   </p>
                 </Card>
               </TabsContent>
 
               <TabsContent value="reviews">
-                <Card className="p-12 border-zinc-800 bg-[#18181b] text-center rounded-2xl">
-                  <p className="text-zinc-400 text-sm">
+                <Card className="p-12 border-border bg-card text-center rounded-2xl">
+                  <p className="text-muted-foreground text-sm">
                     {t("profile.reviewsComingSoon")}
                   </p>
                 </Card>
