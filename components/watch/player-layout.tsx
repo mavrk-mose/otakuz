@@ -25,6 +25,7 @@ import { Maximize2, Minimize2, Pause, Play, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { usePlayerStore } from "@/store/use-player-store";
+import { useSidebarStore } from "@/store/use-sidebar-store";
 
 interface PlayerLayoutProps {
   children: ReactNode;
@@ -94,6 +95,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
   const minimize = usePlayerStore((state) => state.minimize);
   const maximize = usePlayerStore((state) => state.maximize);
   const close = usePlayerStore((state) => state.close);
+  const isSidebarExpanded = useSidebarStore((state) => state.isExpanded);
 
   const registerSlot = useCallback((element: HTMLDivElement | null) => {
     setSlotElement(element);
@@ -136,6 +138,30 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
       window.removeEventListener("scroll", updateSlotRect, true);
     };
   }, [slotElement]);
+
+  useEffect(() => {
+    if (!slotElement) {
+      return;
+    }
+
+    let rafId = 0;
+    const startTime = performance.now();
+    const syncDuringTransition = (now: number) => {
+      const rect = slotElement.getBoundingClientRect();
+      setSlotRect({
+        top: rect.top + window.scrollY,
+        left: rect.left + window.scrollX,
+        width: rect.width,
+      });
+
+      if (now - startTime < 350) {
+        rafId = window.requestAnimationFrame(syncDuringTransition);
+      }
+    };
+
+    rafId = window.requestAnimationFrame(syncDuringTransition);
+    return () => window.cancelAnimationFrame(rafId);
+  }, [isSidebarExpanded, slotElement]);
 
   const playerPath = playerRoute?.split("?")[0];
   const isAwayFromPlayerRoute = Boolean(playerPath && pathname !== playerPath);
@@ -220,7 +246,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
             shouldDisplayMinimized
               ? "fixed bottom-4 left-4 right-4 z-[80] rounded-xl sm:left-auto sm:w-96"
               : isDocked
-                ? "z-30 rounded-xl"
+                ? "z-30 rounded-xl transition-none"
                 : isWaitingForChannelSlot
                   ? "pointer-events-none fixed left-0 top-0 z-[-1] h-px w-px opacity-0"
                 : "relative z-20 mx-auto my-4 w-[calc(100%-2rem)] max-w-5xl rounded-xl"

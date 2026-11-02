@@ -11,6 +11,7 @@ import { Search } from '@/components/search';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { PlayerLayout } from '@/components/watch/player-layout';
 import { BackToTopButton } from '@/components/back-to-top-button';
+import { LayoutShell } from '@/components/layout-shell';
 
 const inter = Inter({subsets: ['latin']});
 
@@ -34,12 +35,12 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
                     <Toaster />
                     <div className="min-h-screen">
                         <Navbar />
-                        <div className="min-h-screen lg:pl-[72px]">
+                        <LayoutShell>
                             <Search />
                             <PlayerLayout>
                                 <main className="p-4 pb-20 lg:pb-4">{children}</main>
                             </PlayerLayout>
-                        </div>
+                        </LayoutShell>
                         <BackToTopButton />
                     </div>
                 </Providers>
