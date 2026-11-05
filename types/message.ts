@@ -66,7 +66,11 @@ export type ProfileShareData = {
   totalExp?: string | number;
 };
 
+export type MessageReply = { id: string; userId: string; username: string; preview: string };
+
 export type Message = {
+  photoURL?: string;
+  replyTo?: MessageReply;
   id: string;
   userId: string;
   username: string;
@@ -89,4 +93,6 @@ export type MessageProps = {
   currentUserId: string | undefined;
   onEdit: (messageId: string, content: string) => Promise<void>;
   onDelete: (messageId: string) => Promise<void>;
+  onReply?: (message: Message) => void;
+  sender?: { displayName?: string; photoURL?: string };
 };

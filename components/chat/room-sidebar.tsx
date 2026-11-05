@@ -1,3 +1,4 @@
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useMemo, useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
@@ -91,8 +92,8 @@ export function RoomSidebar({ rooms, selectedRoom, onSelectRoom, className }: Ro
                             className="w-full justify-start mb-1"
                             onClick={() => onSelectRoom(room.id)}
                         >
-                            <Hash className="mr-2 h-4 w-4" />
-                            {room.title}
+                            <Avatar className="mr-2 h-7 w-7 shrink-0"><AvatarImage src={room.photoURL} /><AvatarFallback><Hash className="h-4 w-4" /></AvatarFallback></Avatar>
+                            <span className="truncate">{room.title}</span>
                         </Button>
                     ))}
                     {displayedRooms.length === 0 && (

@@ -12,6 +12,9 @@ import {MessageComponent} from "@/components/chat/message-component";
 import useAudioRecorder from "@/hooks/chat/use-audio-recorder";
 import useRoomDetails from "@/hooks/chat/use-room-details";
 import { createChatNotification } from '@/lib/notifications';
+import type { Message, MessageReply } from '@/types/message';
+import { messagePreview } from '@/lib/message-preview';
+import { useChatProfiles } from '@/hooks/chat/use-chat-profiles';
 import { useI18n } from '@/components/i18n-provider';
 
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
@@ -24,6 +27,8 @@ interface ChatRoomProps {
 export default function ChatRoom({ roomId, title }: ChatRoomProps) {
     const { t } = useI18n()
     const [newMessage, setNewMessage] = useState('')
+    const [replyTo, setReplyTo] = useState<MessageReply | undefined>()
+    const inputRef = useRef<HTMLInputElement>(null)
     const { user } = useAuth()
     const scrollAreaRef = useRef<HTMLDivElement>(null)
     const scrollRef = useRef<HTMLDivElement>(null)
@@ -53,6 +58,13 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         resetRecording,
     } = useAudioRecorder();
     const { roomDetails } = useRoomDetails(roomId);
+    const profiles = useChatProfiles([...(roomDetails?.members || []), ...messages.map(message => message.userId)], roomId);
+    useEffect(() => { setReplyTo(undefined); setNewMessage(''); }, [roomId]);
+    const handleReply = (message: Message) => {
+        setReplyTo({ id: message.id, userId: message.userId, username: profiles[message.userId]?.displayName || message.username, preview: messagePreview(message) });
+        inputRef.current?.focus();
+    };
+
 
     const scrollToBottom = useCallback((instant = false) => {
         const viewport = scrollAreaRef.current?.querySelector(
@@ -130,11 +142,13 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         const content = newMessage.trim()
         if (!user || !content) return
 
+        const selectedReply = replyTo
         setNewMessage('')
+        setReplyTo(undefined)
         void setTyping(false)
 
         try {
-            await sendMessage(content)
+            await sendMessage(content, selectedReply)
 
             roomDetails?.members.forEach((member: string) => {
                 if (member !== user.uid) {
@@ -145,6 +159,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
             })
         } catch {
             setNewMessage((current) => current || content)
+            setReplyTo(current => current || selectedReply)
         }
     }
 
@@ -152,7 +167,8 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
         const file = e.target.files?.[0]
         if (file && user) {
             try {
-                await sendFile(file)
+                await sendFile(file, undefined, replyTo)
+                setReplyTo(undefined)
             } finally {
                 e.target.value = ''
             }
@@ -209,14 +225,21 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                             currentUserId={user?.uid}
                             onEdit={editMessage}
                             onDelete={deleteMessage}
+                            onReply={handleReply}
+                            sender={profiles[message.userId]}
                         />
                     ))}
                     <div ref={scrollRef}></div>
                 </AnimatePresence>
             </ScrollArea>
-            <div className="border-t p-4 sticky bottom-0 z-50">
+            <div className="border-t bg-background p-4 sticky bottom-0 z-10">
+                {replyTo && <div className="mb-3 flex items-center justify-between gap-3 rounded-md border-l-4 border-primary bg-muted p-3 text-sm">
+                    <div className="min-w-0"><p className="font-semibold">Replying to {replyTo.username}</p><p className="truncate text-muted-foreground">{replyTo.preview}</p></div>
+                    <Button type="button" variant="ghost" size="icon" aria-label="Cancel reply" onClick={() => setReplyTo(undefined)}><X className="h-4 w-4" /></Button>
+                </div>}
                 <form onSubmit={handleSendMessage} className="flex flex-wrap gap-2 items-center">
                     <Input
+                        ref={inputRef}
                         value={newMessage}
                         onChange={(e) => {
                             setNewMessage(e.target.value)
@@ -279,7 +302,7 @@ export default function ChatRoom({ roomId, title }: ChatRoomProps) {
                                 <Button
                                     type="button"
                                     size="sm"
-                                    onClick={() => sendAudioMessage(sendFile, user)}
+                                    onClick={() => sendAudioMessage(async (file, type) => { await sendFile(file, type, replyTo); setReplyTo(undefined); }, user)}
                                     disabled={isSendingAudio}
                                 >
                                     {isSendingAudio ? (

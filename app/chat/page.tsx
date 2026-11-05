@@ -77,8 +77,8 @@ export default function ChatPage() {
                 <div className="flex-1 overflow-auto">
                     {selectedRoom && window.innerWidth >= 768 ? (
                             <>
-                                <RoomHeader roomId={selectedRoom} roomDetails={roomDetails}/>
-                                <ChatRoom roomId={selectedRoom} title={rooms.find((room: Room) => room.id === selectedRoom)?.title || ''} />
+                                <RoomHeader roomId={selectedRoom} roomDetails={roomDetails} onLeave={() => setSelectedRoom(null)}/>
+                                {roomDetails?.members.includes(user.uid) ? <ChatRoom key={selectedRoom} roomId={selectedRoom} title={roomDetails.title} /> : <p role="status" className="p-4">Joining conversation…</p>}
                             </>
                     ) : (
                         rooms.map((room: Room) => (
@@ -88,7 +88,7 @@ export default function ChatPage() {
                                 className="flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors md:hidden"
                             >
                                 <Avatar className="h-12 w-12">
-                                    <AvatarImage src={`https://avatar.vercel.sh/${room.id}`} />
+                                    <AvatarImage src={room.photoURL || `https://avatar.vercel.sh/${room.id}`} />
                                     <AvatarFallback>{room.title[0]}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1 min-w-0">

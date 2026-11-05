@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
   DialogContent,
@@ -34,6 +34,8 @@ import {
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { UserProfileData, UserPreferences } from "@/types/user";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, storage } from "@/lib/firebase";
 import { toast } from "sonner";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -98,6 +100,8 @@ export function ProfileSettingsModal({
   const [emailNotifications, setEmailNotifications] = useState(true);
 
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const photoInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (profile) {
@@ -250,6 +254,19 @@ export function ProfileSettingsModal({
                     onChange={(e) => setPhotoURL(e.target.value)}
                     className="bg-card border-border text-foreground text-xs h-9"
                   />
+                  <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" aria-label="Upload profile image" onChange={async event => {
+                    const file = event.target.files?.[0]; event.target.value = '';
+                    const uid = auth.currentUser?.uid;
+                    if (!file || !uid || uid !== profile?.uid) return;
+                    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error('Choose a JPG, PNG, WebP, or GIF under 5 MB.'); return; }
+                    setUploadingPhoto(true);
+                    try {
+                      const imageRef = ref(storage, `users/${uid}/avatars/${crypto.randomUUID()}`);
+                      await uploadBytes(imageRef, file, { contentType: file.type });
+                      setPhotoURL(await getDownloadURL(imageRef));
+                    } catch { toast.error('Unable to upload profile image.'); } finally { setUploadingPhoto(false); }
+                  }} />
+                  <Button type="button" size="sm" variant="outline" disabled={uploadingPhoto || isSaving} onClick={() => photoInput.current?.click()}>{uploadingPhoto ? 'Uploading…' : 'Upload photo'}</Button>
                   {profile?.googlePhotoURL && (
                     <Button
                       type="button"
@@ -558,7 +575,7 @@ export function ProfileSettingsModal({
           <Button
             type="button"
             onClick={handleSave}
-            disabled={isSaving}
+            disabled={isSaving || uploadingPhoto}
             className="bg-rose-500 hover:bg-rose-600 text-white font-medium"
           >
             {isSaving ? t("common.loading") : t("profile.saveChanges")}

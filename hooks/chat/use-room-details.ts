@@ -1,3 +1,4 @@
+import { roomCollection } from "@/lib/chat-room-path"
 import { useCallback, useEffect, useState } from 'react'
 import { doc, getDoc, onSnapshot } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
@@ -6,6 +7,8 @@ import { getCachedRoom, putCachedRoom } from '@/lib/chat-cache'
 import type { RoomDetails } from '@/types/room'
 
 type RoomData = {
+    photoURL?: unknown
+    participantIds?: unknown
     title?: unknown
     createdBy?: unknown
     memberCount?: unknown
@@ -14,6 +17,8 @@ type RoomData = {
 
 function toRoomDetails(data: RoomData): RoomDetails {
     return {
+        photoURL: typeof data.photoURL === "string" ? data.photoURL : undefined,
+        participantIds: Array.isArray(data.participantIds) ? data.participantIds as string[] : undefined,
         title: typeof data.title === 'string' ? data.title : 'Untitled room',
         createdBy: typeof data.createdBy === 'string' ? data.createdBy : undefined,
         memberCount: typeof data.memberCount === 'number' ? data.memberCount : 0,
@@ -25,13 +30,14 @@ const roomDetailsMemoryCache = new Map<string, RoomDetails>()
 
 const useRoomDetails = (roomId: string | null) => {
     const { user } = useAuth()
+    const cacheKey = `${user?.uid || ""}:${roomId || ""}`
     const [roomDetails, setRoomDetails] = useState<RoomDetails | null>(() => {
         if (!roomId) return null
-        return roomDetailsMemoryCache.get(roomId) || null
+        return roomDetailsMemoryCache.get(cacheKey) || null
     })
     const [loading, setLoading] = useState(() => {
         if (!roomId) return false
-        return !roomDetailsMemoryCache.has(roomId)
+        return !roomDetailsMemoryCache.has(cacheKey)
     })
     const [error, setError] = useState<Error | null>(null)
 
@@ -47,11 +53,12 @@ const useRoomDetails = (roomId: string | null) => {
         const userId = user.uid
 
         // If we already have the room details in memory, keep them and do not flash loading
-        const cachedInMemory = roomDetailsMemoryCache.get(roomId)
+        const cachedInMemory = roomDetailsMemoryCache.get(cacheKey)
         if (cachedInMemory) {
             setRoomDetails(cachedInMemory)
             setLoading(false)
         } else {
+            setRoomDetails(null)
             setLoading(true)
         }
         setError(null)
@@ -63,7 +70,7 @@ const useRoomDetails = (roomId: string | null) => {
 
                 if (cachedRoom) {
                     const parsed = toRoomDetails(cachedRoom)
-                    roomDetailsMemoryCache.set(roomId, parsed)
+                    roomDetailsMemoryCache.set(cacheKey, parsed)
                     setRoomDetails(parsed)
                     setLoading(false)
                 }
@@ -74,19 +81,19 @@ const useRoomDetails = (roomId: string | null) => {
             if (!isActive) return
 
             unsubscribe = onSnapshot(
-                doc(db, 'chatrooms', roomId),
+                doc(db, roomCollection(roomId), roomId),
                 (snapshot) => {
                     if (!isActive) return
 
                     if (!snapshot.exists()) {
-                        roomDetailsMemoryCache.delete(roomId)
+                        roomDetailsMemoryCache.delete(cacheKey)
                         setRoomDetails(null)
                         setLoading(false)
                         return
                     }
 
                     const nextRoomDetails = toRoomDetails(snapshot.data())
-                    roomDetailsMemoryCache.set(roomId, nextRoomDetails)
+                    roomDetailsMemoryCache.set(cacheKey, nextRoomDetails)
                     setRoomDetails(nextRoomDetails)
                     setLoading(false)
                     setError(null)
@@ -110,11 +117,11 @@ const useRoomDetails = (roomId: string | null) => {
             isActive = false
             unsubscribe()
         }
-    }, [roomId, user])
+    }, [cacheKey, roomId, user])
 
     const refetch = useCallback(async () => {
         if (!roomId || !user) return null
-        const snapshot = await getDoc(doc(db, 'chatrooms', roomId))
+        const snapshot = await getDoc(doc(db, roomCollection(roomId), roomId))
         if (!snapshot.exists()) {
             setRoomDetails(null)
             return null

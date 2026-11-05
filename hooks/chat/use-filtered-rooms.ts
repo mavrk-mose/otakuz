@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { collection, getDocs, onSnapshot } from 'firebase/firestore'
+import { collection, getDocs, onSnapshot, query, where } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { useAuth } from '@/hooks/use-auth'
 import { getCachedRooms, replaceCachedRooms } from '@/lib/chat-cache'
@@ -12,6 +12,8 @@ function snapshotToRooms(
         const data = roomSnapshot.data()
         return {
             id: roomSnapshot.id,
+            photoURL: typeof data.photoURL === "string" ? data.photoURL : undefined,
+            participantIds: Array.isArray(data.participantIds) ? data.participantIds as string[] : undefined,
             title: typeof data.title === 'string' ? data.title : 'Untitled room',
             createdBy: typeof data.createdBy === 'string' ? data.createdBy : undefined,
             memberCount: typeof data.memberCount === 'number' ? data.memberCount : 0,
@@ -56,15 +58,26 @@ const useFilteredRooms = (searchQuery: string | null) => {
 
             if (!isActive) return
 
-            unsubscribe = onSnapshot(
+            let publicRooms: Room[] = []
+            let directRooms: Room[] = []
+            const publish = () => {
+                if (!isActive) return
+                const liveRooms = [...directRooms, ...publicRooms]
+                setRooms(liveRooms)
+                setLoading(false)
+                void replaceCachedRooms(userId, liveRooms).catch(() => undefined)
+            }
+            const stopDirect = onSnapshot(query(collection(db, 'directChats'), where('members', 'array-contains', userId)), snapshot => {
+                directRooms = snapshotToRooms(snapshot.docs)
+                publish()
+            }, snapshotError => { if (isActive) setError(snapshotError) })
+            const stopPublic = onSnapshot(
                 collection(db, 'chatrooms'),
                 (snapshot) => {
                     if (!isActive) return
-                    const liveRooms = snapshotToRooms(snapshot.docs)
-                    setRooms(liveRooms)
-                    setLoading(false)
+                    publicRooms = snapshotToRooms(snapshot.docs)
                     setError(null)
-                    void replaceCachedRooms(userId, liveRooms).catch(() => undefined)
+                    publish()
                 },
                 (snapshotError) => {
                     if (!isActive) return
@@ -72,6 +85,7 @@ const useFilteredRooms = (searchQuery: string | null) => {
                     setLoading(false)
                 }
             )
+            unsubscribe = () => { stopPublic(); stopDirect() }
         }
 
         void startRoomListener().catch((listenerError) => {
@@ -88,8 +102,8 @@ const useFilteredRooms = (searchQuery: string | null) => {
 
     const refetch = useCallback(async () => {
         if (!user) return
-        const snapshot = await getDocs(collection(db, 'chatrooms'))
-        const liveRooms = snapshotToRooms(snapshot.docs)
+        const [snapshot, direct] = await Promise.all([getDocs(collection(db, 'chatrooms')), getDocs(query(collection(db, 'directChats'), where('members', 'array-contains', user.uid)))])
+        const liveRooms = [...snapshotToRooms(direct.docs), ...snapshotToRooms(snapshot.docs)]
         setRooms(liveRooms)
         await replaceCachedRooms(user.uid, liveRooms).catch(() => undefined)
     }, [user])

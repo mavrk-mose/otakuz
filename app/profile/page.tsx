@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { UserLists } from "@/components/profile/user-lists";
 import { WatchHistory } from "@/components/profile/watch-history";
+import { DirectMessageButton } from "@/components/chat/direct-message-button";
 import { UserProfileCard } from "@/components/profile/user-profile-card";
 import { ProfileSettingsModal } from "@/components/profile/profile-settings-modal";
 import { motion } from "framer-motion";
@@ -52,6 +53,7 @@ function ProfileContent() {
         </div>
         <div className="space-y-2">
           <h1 className="text-2xl font-black text-foreground">This Profile is Private</h1>
+          {targetUserId && <DirectMessageButton userId={targetUserId} displayName={profile.displayName || "Member"} />}
           <p className="text-sm text-muted-foreground leading-relaxed">
             {profile.displayName || "This otaku"} has chosen to keep their profile identity and saved boards private.
           </p>
@@ -71,7 +73,7 @@ function ProfileContent() {
     <div className="container mx-auto px-4 py-6 space-y-8">
       {/* If viewing another user's profile, show back button */}
       {!isOwnProfile && (
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
@@ -84,6 +86,7 @@ function ProfileContent() {
           <span className="text-xs text-muted-foreground">
             Viewing {profile?.displayName || "Member"}&rsquo;s Otakuz Profile
           </span>
+          {targetUserId && <DirectMessageButton userId={targetUserId} displayName={profile?.displayName || "Member"} />}
         </div>
       )}
 
@@ -95,7 +98,7 @@ function ProfileContent() {
         <div className="grid lg:grid-cols-[380px_1fr] gap-8 items-start">
           <div className="space-y-6">
             <UserProfileCard
-              user={user}
+              user={isOwnProfile ? user : null}
               profile={profile}
               isOwnProfile={isOwnProfile}
               watchedCount={stats?.watchedCount ?? 0}

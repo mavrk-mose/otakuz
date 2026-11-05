@@ -9,7 +9,6 @@ import { useAuth } from "@/hooks/use-auth"
 import useRoomDetails from "@/hooks/chat/use-room-details"
 import RoomHeader from "@/components/chat/room-header"
 import { useRouter } from 'next/navigation'
-import { useMessagesStore } from '@/store/use-messages-store'
 import Lottie from "lottie-react"
 import WavingGirl from "@/public/lottie/Animation - 1734031068177.json"
 
@@ -23,7 +22,7 @@ export default function Room(props: Props) {
     const { joinRoom } = useFirebaseChatActions()
     const router = useRouter()
 
-    const { roomDetails, loading, refetch } = useRoomDetails(params.roomId)
+    const { roomDetails, loading, error, refetch } = useRoomDetails(params.roomId)
 
     useEffect(() => {
         if (!authLoading && !user) router.replace('/auth')
@@ -46,10 +45,10 @@ export default function Room(props: Props) {
 
     if (!user) return null
 
-    const hasCachedMessages = (useMessagesStore.getState().messages[params.roomId] || []).length > 0
-    const isUserInRoom = roomDetails
-        ? roomDetails.members.includes(user.uid)
-        : hasCachedMessages || loading
+    if (!loading && (error || !roomDetails)) return <div role="alert" className="space-y-4 p-6"><p>This conversation is unavailable or you do not have access.</p><Button onClick={() => router.replace('/chat')}>Back to rooms</Button></div>
+
+    if (loading && !roomDetails) return <p role="status" className="p-4">Loading room…</p>
+    const isUserInRoom = Boolean(roomDetails?.members.includes(user.uid))
 
     return (
         <div className="flex flex-col h-screen bg-background">
@@ -59,7 +58,7 @@ export default function Room(props: Props) {
             ) : (
                 <div className="flex-1 flex flex-col items-center justify-center p-4">
                     <Avatar className="h-24 w-24 mb-6">
-                        <AvatarImage src={`https://avatar.vercel.sh/${params.roomId}`} />
+                        <AvatarImage src={roomDetails?.photoURL || `https://avatar.vercel.sh/${params.roomId}`} />
                         <AvatarFallback>{roomDetails ? roomDetails.title[0] : ''}</AvatarFallback>
                     </Avatar>
                     <h2 className="text-2xl font-bold mb-2">{roomDetails ? roomDetails.title : ''}</h2>

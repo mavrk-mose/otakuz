@@ -1,3 +1,4 @@
+import { roomCollection } from "@/lib/chat-room-path"
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
     collection,
@@ -26,7 +27,7 @@ import {
 import { db, storage } from '@/lib/firebase'
 import { useAuth } from '@/hooks/use-auth'
 import { useMessagesStore } from '@/store/use-messages-store'
-import type { Message } from '@/types/message'
+import type { Message, MessageReply } from '@/types/message'
 import {
     deleteCachedMessage,
     getCachedMessages,
@@ -57,6 +58,8 @@ function snapshotToMessage(snapshot: QueryDocumentSnapshot<DocumentData>): Messa
         id: snapshot.id,
         userId: data.userId || '',
         username: data.username || 'Anonymous',
+        photoURL: data.photoURL,
+        replyTo: data.replyTo || undefined,
         message: data.message || '',
         timestamp: timestampToMillis(data.timestamp, createdAtClient),
         editedAt: timestampToMillis(data.editedAt, 0) || undefined,
@@ -125,7 +128,7 @@ export function useFirebaseChat(roomId: string) {
         let isActive = true
         let unsubscribe = () => {}
         const userId = user.uid
-        const messagesCollection = collection(db, 'chatrooms', roomId, 'messages')
+        const messagesCollection = collection(db, roomCollection(roomId), roomId, 'messages')
 
         // Only indicate loading if there are no cached messages in memory
         const memoryMessages = useMessagesStore.getState().messages[roomId] || []
@@ -240,18 +243,20 @@ export function useFirebaseChat(roomId: string) {
     }, [mergeMessages, removeMessage, roomId, setMessages, user])
 
     const sendMessage = useCallback(
-        async (content: string) => {
+        async (content: string, replyTo?: MessageReply) => {
             const trimmedContent = content.trim()
             if (!roomId || !user || !trimmedContent) {
                 throw new Error('You must be signed in to send a message.')
             }
 
-            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            const messageRef = doc(collection(db, roomCollection(roomId), roomId, 'messages'))
             const createdAtClient = Date.now()
             const optimisticMessage: Message = {
                 id: messageRef.id,
                 userId: user.uid,
-                username: user.displayName || user.email || 'Anonymous',
+                username: user.displayName || 'Anonymous',
+                photoURL: user.photoURL || '',
+                ...(replyTo ? { replyTo } : {}),
                 message: trimmedContent,
                 timestamp: createdAtClient,
                 type: 'text',
@@ -265,6 +270,8 @@ export function useFirebaseChat(roomId: string) {
                 await setDoc(messageRef, {
                     userId: optimisticMessage.userId,
                     username: optimisticMessage.username,
+                    photoURL: optimisticMessage.photoURL || "",
+                    ...(replyTo ? { replyTo } : {}),
                     message: trimmedContent,
                     type: 'text',
                     timestamp: serverTimestamp(),
@@ -285,12 +292,12 @@ export function useFirebaseChat(roomId: string) {
     )
 
     const sendFile = useCallback(
-        async (file: File | Blob, suppliedFileType?: string) => {
+        async (file: File | Blob, suppliedFileType?: string, replyTo?: MessageReply) => {
             if (!roomId || !user) {
                 throw new Error('You must be signed in to send a file.')
             }
 
-            const messageRef = doc(collection(db, 'chatrooms', roomId, 'messages'))
+            const messageRef = doc(collection(db, roomCollection(roomId), roomId, 'messages'))
             const createdAtClient = Date.now()
             const fileType = suppliedFileType || file.type || 'application/octet-stream'
             const messageType = getMessageType(fileType)
@@ -303,7 +310,9 @@ export function useFirebaseChat(roomId: string) {
             const optimisticMessage: Message = {
                 id: messageRef.id,
                 userId: user.uid,
-                username: user.displayName || user.email || 'Anonymous',
+                username: user.displayName || 'Anonymous',
+                photoURL: user.photoURL || '',
+                ...(replyTo ? { replyTo } : {}),
                 message: '',
                 timestamp: createdAtClient,
                 type: messageType,
@@ -319,7 +328,7 @@ export function useFirebaseChat(roomId: string) {
             try {
                 uploadedFileRef = ref(
                     storage,
-                    `chatrooms/${roomId}/${user.uid}/${messageRef.id}/${safeFileName}`
+                    `${roomCollection(roomId)}/${roomId}/${user.uid}/${messageRef.id}/${safeFileName}`
                 )
                 await uploadBytes(uploadedFileRef, file, { contentType: fileType })
                 const downloadURL = await getDownloadURL(uploadedFileRef)
@@ -328,6 +337,8 @@ export function useFirebaseChat(roomId: string) {
                 await setDoc(messageRef, {
                     userId: optimisticMessage.userId,
                     username: optimisticMessage.username,
+                    photoURL: optimisticMessage.photoURL || "",
+                    ...(replyTo ? { replyTo } : {}),
                     message: '',
                     type: messageType,
                     fileUrl: downloadURL,
@@ -369,7 +380,7 @@ export function useFirebaseChat(roomId: string) {
             updateMessage(roomId, messageId, { message: trimmedContent })
 
             try {
-                await updateDoc(doc(db, 'chatrooms', roomId, 'messages', messageId), {
+                await updateDoc(doc(db, roomCollection(roomId), roomId, 'messages', messageId), {
                     message: trimmedContent,
                     editedAt: serverTimestamp(),
                 })
@@ -405,7 +416,7 @@ export function useFirebaseChat(roomId: string) {
             removeMessage(roomId, messageId)
 
             try {
-                await deleteDoc(doc(db, 'chatrooms', roomId, 'messages', messageId))
+                await deleteDoc(doc(db, roomCollection(roomId), roomId, 'messages', messageId))
                 await deleteCachedMessage(user.uid, roomId, messageId).catch(() => undefined)
             } catch (deleteError) {
                 const normalizedError = deleteError as Error
@@ -426,10 +437,10 @@ export function useFirebaseChat(roomId: string) {
 
             try {
                 await setDoc(
-                    doc(db, 'chatrooms', roomId, 'typing', user.uid),
+                    doc(db, roomCollection(roomId), roomId, 'typing', user.uid),
                     {
                         userId: user.uid,
-                        username: user.displayName || user.email || 'Anonymous',
+                        username: user.displayName || 'Anonymous',
                         isTyping,
                         timestamp: serverTimestamp(),
                     },

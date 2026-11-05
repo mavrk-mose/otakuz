@@ -31,7 +31,7 @@ import Link from 'next/link'
 import { MessageProps } from "@/types/message"
 import { useI18n } from '@/components/i18n-provider'
 
-export function MessageComponent({ message, currentUserId, onEdit, onDelete }: MessageProps) {
+export function MessageComponent({ message, currentUserId, onEdit, onDelete, onReply, sender }: MessageProps) {
   const { locale, t } = useI18n()
   const [isEditing, setIsEditing] = useState(false)
   const [editedMessage, setEditedMessage] = useState(message.message)
@@ -48,7 +48,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
   }
 
   const handleReply = async () => {
-    console.log('Reply to message:', message.id)
+    onReply?.(message)
   }
 
   const isCurrentUser = message.userId === currentUserId
@@ -70,15 +70,15 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
             width={320}
             height={320}
             unoptimized
-            className="h-auto max-w-xs rounded-lg object-contain"
+            className="h-auto max-w-full rounded-lg object-contain"
           />
         ) : null
 
       case 'video':
-        return <video src={message.fileUrl} controls className="max-w-xs rounded-lg" />
+        return <video src={message.fileUrl} controls className="max-w-full rounded-lg" />
 
       case 'audio':
-        return <audio src={message.fileUrl} controls className="max-w-xs" />
+        return <audio src={message.fileUrl} controls className="max-w-full" />
 
       case 'anime_share': {
         const data = message.animeData
@@ -348,12 +348,13 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
       }
 
       default:
-        return <p className="text-sm">{message.message}</p>
+        return <p className="whitespace-pre-wrap break-words text-sm">{message.message}</p>
     }
   }
 
   return (
     <motion.div
+      id={`message-${message.id}`}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
@@ -361,12 +362,15 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
         isCurrentUser ? 'flex-row-reverse' : ''
       }`}
     >
-      <Avatar>
-        <AvatarFallback>{message.username[0] || 'A'}</AvatarFallback>
-      </Avatar>
-      <div className={`flex flex-col ${isCurrentUser ? 'items-end' : 'items-start'}`}>
+      <Link href={`/profile?userId=${encodeURIComponent(message.userId)}`} aria-label={`View ${sender?.displayName || message.username}'s profile`} className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring">
+        <Avatar>
+          <AvatarImage src={sender?.photoURL || message.photoURL} alt={sender?.displayName || message.username} className="object-cover" />
+          <AvatarFallback>{(sender?.displayName || message.username)[0] || 'A'}</AvatarFallback>
+        </Avatar>
+      </Link>
+      <div className={`flex min-w-0 max-w-[calc(100%-3.25rem)] flex-col ${isCurrentUser ? 'items-end' : 'items-start'}`}>
         <div className="flex items-baseline gap-2 mb-1">
-          <span className="text-sm font-medium">{message.username}</span>
+          <Link href={`/profile?userId=${encodeURIComponent(message.userId)}`} className="text-sm font-medium hover:underline">{sender?.displayName || message.username}</Link>
           <span className="text-xs text-muted-foreground">
             {new Date(message.timestamp).toLocaleTimeString(locale === "ja" ? "ja-JP" : "en-US")}
             {message.editedAt ? ` · ${t("chat.edited")}` : ''}
@@ -388,6 +392,10 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
             {message.deliveryStatus === 'error' ? t("chat.sendFailed") : t("chat.sending")}
           </div>
         )}
+        {message.replyTo && <button type="button" className="mb-1 max-w-full rounded-md border-l-4 border-primary bg-muted p-2 text-left text-sm" onClick={() => document.getElementById(`message-${message.replyTo?.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' })}>
+          <span className="block font-semibold">{message.replyTo.username}</span>
+          <span className="block max-w-[260px] truncate text-muted-foreground">{message.replyTo.preview}</span>
+        </button>}
         <div
           className={`rounded-lg ${
             isShareType
@@ -411,7 +419,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
         </div>
         <Popover>
           <PopoverTrigger asChild>
-            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 transition-opacity">
+            <Button size="sm" variant="ghost" aria-label="Message actions" className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100 transition-opacity">
               <MoreVertical className="h-4 w-4" />
             </Button>
           </PopoverTrigger>
@@ -427,7 +435,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete }: M
                   <Trash2 className="h-4 w-4 mr-2" /> {t("common.delete")}
                 </Button>
               )}
-              <Button size="sm" variant="ghost" onClick={handleReply}>
+              <Button size="sm" variant="ghost" onClick={handleReply} disabled={!onReply || !currentUserId || message.deliveryStatus === 'error'}>
                 <Reply className="h-4 w-4 mr-2" /> {t("chat.reply")}
               </Button>
             </div>
