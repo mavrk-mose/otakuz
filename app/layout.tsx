@@ -1,7 +1,7 @@
 import '@vidstack/react/player/styles/default/theme.css';
 import '@vidstack/react/player/styles/default/layouts/video.css';
 import './globals.css';
-import type {Metadata} from 'next';
+import type {Metadata, Viewport} from 'next';
 import {Inter} from 'next/font/google';
 import {Providers} from './providers';
 import Navbar from '@/components/navbar';
@@ -11,6 +11,7 @@ import { PlayerLayout } from '@/components/watch/player-layout';
 import { BackToTopButton } from '@/components/back-to-top-button';
 import { LayoutShell } from '@/components/layout-shell';
 import { AdSenseScript } from '@/components/ads/adsense-script';
+import { PwaInstall } from '@/components/pwa-install';
 
 const inter = Inter({subsets: ['latin']});
 const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim();
@@ -18,10 +19,12 @@ const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim();
 export const metadata: Metadata = {
     title: 'Otakuz - Your Anime Community',
     description: 'Discover, track, and watch your favorite anime series',
+    applicationName: 'Otakuz',
+    appleWebApp: { capable: true, title: 'Otakuz', statusBarStyle: 'default' },
     icons: {
         icon: '/assets/logo.png',
         shortcut: '/assets/logo.png',
-        apple: '/assets/logo.png',
+        apple: '/icons/icon-180.png',
     },
     ...(adsenseClientId && adsenseClientId.startsWith('ca-pub-')
         ? {
@@ -32,6 +35,8 @@ export const metadata: Metadata = {
         : {}),
 };
 
+export const viewport: Viewport = { themeColor: '#17181f' };
+
 export default function RootLayout({children,}: { children: React.ReactNode; }) {
     return (
         <html lang="en" suppressHydrationWarning>
@@ -39,6 +44,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
                 <AdSenseScript />
                 <Providers attribute="class" defaultTheme="dark" enableSystem>
                     <Toaster />
+                    <PwaInstall />
                     <div className="min-h-screen">
                         <Navbar />
                         <LayoutShell>
