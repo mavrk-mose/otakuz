@@ -12,9 +12,10 @@ import { BackToTopButton } from '@/components/back-to-top-button';
 import { LayoutShell } from '@/components/layout-shell';
 import { AdSenseScript } from '@/components/ads/adsense-script';
 import { PwaInstall } from '@/components/pwa-install';
+import { ADSENSE_CLIENT_ID } from '@/lib/adsense-config';
 
 const inter = Inter({subsets: ['latin']});
-const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim();
+const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || ADSENSE_CLIENT_ID;
 
 export const metadata: Metadata = {
     title: 'Otakuz - Your Anime Community',
@@ -40,8 +41,10 @@ export const viewport: Viewport = { themeColor: '#17181f' };
 export default function RootLayout({children,}: { children: React.ReactNode; }) {
     return (
         <html lang="en" suppressHydrationWarning>
-            <body className={inter.className} suppressHydrationWarning>
+            <head>
                 <AdSenseScript />
+            </head>
+            <body className={inter.className} suppressHydrationWarning>
                 <Providers attribute="class" defaultTheme="dark" enableSystem>
                     <Toaster />
                     <PwaInstall />

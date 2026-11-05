@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { ADSENSE_CLIENT_ID, ADSENSE_GENERAL_SLOT, resolveAdSenseSlot, resolveAdSenseFormat } from "@/lib/adsense-config";
 import {
   getCampaignsForContext,
   type AdContextCategory,
@@ -41,7 +42,7 @@ export type AdPlacementVariant =
   | "timeline";
 
 interface GoogleAdUnitProps {
-  /** Google AdSense data-ad-slot ID (falls back to env or auto responsive) */
+  /** Google AdSense data-ad-slot ID (falls back to the configured default slot) */
   adSlot?: string;
   /** AdSense format when live AdSense fills */
   adFormat?: "auto" | "fluid" | "rectangle" | "horizontal" | "vertical";
@@ -100,11 +101,9 @@ export function GoogleAdUnit({
   seedOffset = 0,
   className,
 }: GoogleAdUnitProps) {
-  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || "";
-  const resolvedSlot =
-    adSlot ||
-    process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT?.trim() ||
-    "";
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || ADSENSE_CLIENT_ID;
+  const resolvedSlot = resolveAdSenseSlot(adSlot, process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT) || ADSENSE_GENERAL_SLOT;
+  const resolvedFormat = resolveAdSenseFormat(adFormat, adLayoutKey);
 
   const hasLiveAdSenseConfig =
     clientId.startsWith("ca-pub-") && resolvedSlot.length > 0;
@@ -149,7 +148,7 @@ export function GoogleAdUnit({
 
   // Initialize real Google AdSense unit when configured
   useEffect(() => {
-    if (!hasLiveAdSenseConfig || !insRef.current || pushedRef.current) {
+    if (!hasLiveAdSenseConfig || !insRef.current) {
       return;
     }
 
@@ -169,23 +168,16 @@ export function GoogleAdUnit({
     });
 
     try {
-      pushedRef.current = true;
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
+      if (!pushedRef.current && !el.hasAttribute("data-adsbygoogle-status")) {
+        pushedRef.current = true;
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
     } catch {
       setAdSenseStatus("unfilled");
     }
 
-    // Fallback timeout if adblocker blocks adsbygoogle.js
-    const fallbackTimeout = window.setTimeout(() => {
-      const status = el.getAttribute("data-ad-status");
-      if (status !== "filled") {
-        setAdSenseStatus("unfilled");
-      }
-    }, 3500);
-
     return () => {
       observer.disconnect();
-      window.clearTimeout(fallbackTimeout);
     };
   }, [hasLiveAdSenseConfig]);
 
@@ -209,9 +201,9 @@ export function GoogleAdUnit({
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      {/* Official Google AdSense Slot Container (visible when configured & not unfilled) */}
-      {hasLiveAdSenseConfig && adSenseStatus !== "unfilled" && (
-        <div className="mb-3 overflow-hidden rounded-2xl border border-border/80 bg-card p-3">
+      {/* Google retains ownership of the mounted slot, including late callbacks. */}
+      {hasLiveAdSenseConfig && (
+        <div hidden={adSenseStatus === "unfilled"} className="mb-3 overflow-hidden rounded-2xl border border-border/80 bg-card p-3">
           <div className="mb-1.5 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             <span>Sponsored • Google AdSense</span>
             <span>Ad</span>
@@ -222,7 +214,7 @@ export function GoogleAdUnit({
             style={{ display: "block" }}
             data-ad-client={clientId}
             data-ad-slot={resolvedSlot}
-            data-ad-format={adFormat}
+            data-ad-format={resolvedFormat}
             {...(adLayoutKey ? { "data-ad-layout-key": adLayoutKey } : {})}
             data-full-width-responsive="true"
           />

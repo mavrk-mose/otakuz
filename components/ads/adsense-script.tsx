@@ -1,17 +1,16 @@
-import Script from "next/script";
+import { ADSENSE_CLIENT_ID } from '@/lib/adsense-config';
 
 export function AdSenseScript() {
-  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim();
+  const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || ADSENSE_CLIENT_ID;
 
   if (!clientId || !clientId.startsWith("ca-pub-")) {
     return null;
   }
 
   return (
-    <Script
+    <script
       id="google-adsense-sdk"
       async
-      strategy="afterInteractive"
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(
         clientId
       )}`}
