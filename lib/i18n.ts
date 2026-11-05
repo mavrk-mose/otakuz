@@ -1,5 +1,8 @@
 export const messages = {
   en: {
+    "common.pageNavigation": "Page navigation",
+    "common.goBack": "Go back",
+    "common.goForward": "Go forward",
     "common.loading": "Loading...",
     "common.search": "Search",
     "common.viewAll": "View All",
@@ -288,6 +291,9 @@ export const messages = {
     "comments.submit": "Comment",
   },
   ja: {
+    "common.pageNavigation": "ページ移動",
+    "common.goBack": "戻る",
+    "common.goForward": "進む",
     "common.loading": "読み込み中...",
     "common.search": "検索",
     "common.viewAll": "すべて見る",

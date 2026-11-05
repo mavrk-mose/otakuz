@@ -13,7 +13,7 @@ export function ShopCart({ children }: { children?: ReactNode }) {
   const { totalItems } = useCart();
   return (
     <>
-      <div className={`sticky top-14 lg:top-0 z-40 mx-auto flex max-w-7xl items-center justify-between gap-3 px-2 py-2 sm:px-4 ${children ? "bg-background/95 backdrop-blur" : "pointer-events-none justify-end"}`}>
+      <div className={`sticky top-14 lg:top-16 z-30 mx-auto flex max-w-7xl items-center justify-between gap-3 px-2 py-2 sm:px-4 ${children ? "bg-background/95 backdrop-blur" : "pointer-events-none justify-end"}`}>
         {children && <div className="min-w-0 flex-1">{children}</div>}
         <Button
           data-shop-cart

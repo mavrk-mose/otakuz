@@ -128,7 +128,7 @@ export default function NewsPage() {
   return (
     <div className="-m-4 min-h-screen bg-background text-foreground">
       {/* Top Editorial Category Bar */}
-      <div className="sticky top-0 z-30 w-full border-b border-border bg-card/90 backdrop-blur-md shadow-sm">
+      <div className="sticky top-14 lg:top-16 z-30 w-full border-b border-border bg-card/90 backdrop-blur-md shadow-sm">
         <ScrollArea controlSize="sm" className="mx-auto max-w-7xl">
           <div className="flex w-max min-w-full items-center justify-between gap-6 px-6 py-3">
           <div className="flex shrink-0 items-center gap-4">

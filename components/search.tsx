@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SearchIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, SearchIcon } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { useSidebarStore } from "@/store/use-sidebar-store";
+import { useI18n } from "@/components/i18n-provider";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/use-auth";
 import { NotificationBell } from "@/components/notification-bell";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -10,6 +15,11 @@ import { useGlobalSearchStore } from "@/store/use-global-search-store";
 
 export function Search() {
   const { user } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const isExpanded = useSidebarStore(state => state.isExpanded);
+  const { t } = useI18n();
+  const fixedHeader = pathname === "/" || ["/anime", "/manga", "/news", "/events", "/shop"].some(path => pathname === path || pathname.startsWith(`${path}/`));
   const openSearch = useGlobalSearchStore((state) => state.openSearch);
   const [isMac, setIsMac] = useState(true);
 
@@ -21,10 +31,21 @@ export function Search() {
 
   return (
     <>
-      <div className="hidden lg:block">
-        <header className="sticky top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      <div className={cn("hidden lg:block", fixedHeader && "h-16")}>
+        <header className={cn(
+          "top-0 z-40 border-b border-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80",
+          fixedHeader ? "fixed right-0 transition-[left] duration-300 ease-in-out" : "sticky",
+          fixedHeader && (isExpanded ? "left-[240px]" : "left-[72px]")
+        )}>
           <div className="container flex h-16 items-center justify-between gap-4 px-4">
-            <div className="flex-1" />
+            <nav aria-label={t("common.pageNavigation")} className="flex shrink-0 items-center gap-1">
+              <Button type="button" variant="ghost" size="icon" aria-label={t("common.goBack")} title={t("common.goBack")} onClick={() => router.back()}>
+                <ArrowLeft className="h-5 w-5" aria-hidden="true" />
+              </Button>
+              <Button type="button" variant="ghost" size="icon" aria-label={t("common.goForward")} title={t("common.goForward")} onClick={() => router.forward()}>
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              </Button>
+            </nav>
 
             <div className="flex items-center gap-3">
               <button

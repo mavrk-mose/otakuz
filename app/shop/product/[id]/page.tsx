@@ -81,7 +81,7 @@ export default function ProductPage(props: Props) {
 
             {/* Right side - Sticky Product Info */}
             <div className="lg:w-1/3">
-              <div className="sticky top-8">
+              <div className="sticky top-20 lg:top-24">
                 <div className="space-y-6">
                   <div>
                     <div className="mb-2 text-sm uppercase text-muted-foreground">

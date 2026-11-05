@@ -116,8 +116,9 @@ function ProductCatalog() {
           </h1>
         </div>
       </ShopCart>
-      <div className="mx-auto max-w-7xl px-2 pt-3 sm:px-4 sm:pt-4">
-        <nav aria-label={t("common.categories")} className="mb-4 flex flex-wrap gap-2 sm:mb-5">
+      <div className="mx-auto max-w-7xl px-2 pt-2 sm:px-4">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <nav aria-label={t("common.categories")} className="flex min-w-0 flex-wrap gap-2">
           <Button variant={category === null ? "default" : "outline"} aria-pressed={category === null} onClick={() => updateFilter("category", "")}>
             {t("shop.allProducts")}
           </Button>
@@ -128,7 +129,7 @@ function ProductCatalog() {
             </Button>
           ))}
         </nav>
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex max-w-full flex-wrap items-center gap-3">
               <p role="status" className="text-sm text-muted-foreground">{isLoading ? t("common.loading") : t("shop.resultCount", { count: filteredProducts.length })}</p>
               <label className="flex max-w-full flex-wrap items-center gap-2 text-sm">
                 {t("common.sortBy")}
@@ -140,6 +141,7 @@ function ProductCatalog() {
                 </select>
               </label>
             </div>
+        </div>
         <div className="grid min-w-0 items-start gap-4 sm:gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
           <aside className="min-w-0 rounded-lg border bg-card p-4">
               <h2 className="hidden items-center gap-2 font-semibold lg:flex"><SlidersHorizontal className="h-4 w-4" />{t("shop.filters")}</h2>

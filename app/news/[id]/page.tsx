@@ -211,7 +211,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
       </section>
 
       {/* Sticky Article Reading Progress Pill */}
-      <div className="sticky top-0 z-20 w-full border-b border-border bg-card/90 px-6 py-2.5 backdrop-blur-md shadow-sm">
+      <div className="sticky top-14 lg:top-16 z-20 w-full border-b border-border bg-card/90 px-6 py-2.5 backdrop-blur-md shadow-sm">
         <div className="mx-auto flex max-w-[1400px] items-center justify-between">
           <div className="flex items-center gap-3 overflow-hidden">
             <span className="whitespace-nowrap font-mono text-xs font-semibold uppercase tracking-wider text-rose-500">
