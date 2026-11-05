@@ -45,13 +45,13 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
-      <SheetContent className="w-full sm:max-w-lg">
+      <SheetContent className="flex w-full flex-col sm:max-w-lg">
         <SheetHeader>
           <SheetTitle>{t("shop.shoppingCart")}</SheetTitle>
         </SheetHeader>
 
-        <div className="flex flex-col h-full">
-          <ScrollArea className="flex-1 -mx-6 px-6">
+        <div className="flex min-h-0 flex-1 flex-col">
+          <ScrollArea className="min-h-0 flex-1 -mx-6 px-6">
             {items.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 {t("shop.emptyCart")}
@@ -60,7 +60,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <div className="space-y-4 py-4">
                 {items.map((item) => (
                   <div key={item._id} className="flex gap-4">
-                    <div className="relative w-20 h-20">
+                    <div className="relative w-16 h-16 shrink-0 sm:w-20 sm:h-20">
                       <Image
                         src={urlFor(item?.image[0].asset?._ref).url()}
                         alt={item.name}
@@ -68,12 +68,12 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         className="object-cover rounded"
                       />
                     </div>
-                    <div className="flex-1">
-                      <h3 className="font-medium">{item.name}</h3>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="break-words font-medium">{item.name}</h3>
                       <p className="text-sm text-muted-foreground">
                         Tshs. {item.price.toFixed(2)}
                       </p>
-                      <div className="flex items-center gap-2 mt-2">
+                      <div className="flex flex-wrap items-center gap-2 mt-2">
                         <Button
                           variant="outline"
                           size="icon"

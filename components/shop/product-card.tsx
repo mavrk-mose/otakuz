@@ -10,6 +10,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Product } from "@/types/shop";
 import { urlFor } from "@/lib/sanity";
+import { animateToCart } from '@/lib/animate-to-cart';
 import { useCart } from '@/store/use-cart';
 import { useI18n } from '@/components/i18n-provider';
 import { ShareContentModal } from '@/components/chat/share-content-modal';
@@ -27,7 +28,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <motion.div
           whileHover={{ y: -5 }}
           transition={{ duration: 0.2 }}
-          className="h-full"
+          className="h-full min-w-0"
       >
         <Card className="overflow-hidden h-full flex flex-col">
           <Link href={`/shop/product/${product._id}`}>
@@ -50,12 +51,12 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </Link>
           <div className="p-3 sm:p-4 flex flex-col flex-grow">
-            <div className="flex items-center gap-1 sm:gap-2 mb-1.5 sm:mb-2">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-1.5 sm:mb-2">
               <Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 fill-current" />
               <span className="text-xs sm:text-sm font-medium">{product.rating}</span>
               <Badge
                   variant="secondary"
-                  className="ml-auto text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1"
+                  className="ml-auto max-w-full break-words whitespace-normal text-xs sm:text-sm px-1.5 py-0.5 sm:px-2 sm:py-1"
               >
                 {product.category}
               </Badge>
@@ -69,25 +70,30 @@ export function ProductCard({ product }: ProductCardProps) {
             <p className="text-xs sm:text-sm text-muted-foreground mt-1 mb-3 sm:mb-4 line-clamp-2 flex-grow">
               {product.description}
             </p>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 sm:justify-between mt-auto">
-              <span className="text-base sm:text-lg font-bold">Tshs.{product.price}</span>
-              <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center justify-between gap-2 mt-auto">
+              <span className="min-w-0 break-all text-base sm:text-lg font-bold">Tshs.{product.price}</span>
+              <div className="flex shrink-0 items-center gap-1.5">
                 <Button
-                    size="sm"
+                    size="icon"
                     variant="outline"
                     onClick={() => setIsShareModalOpen(true)}
-                    className="p-2 h-8 w-8 text-muted-foreground hover:text-foreground"
+                    className="h-11 w-11 shrink-0 text-muted-foreground hover:text-foreground"
+                    aria-label="Share to chat"
                     title="Share to chat"
                 >
                   <Share2 className="h-3.5 w-3.5" />
                 </Button>
                 <Button
-                    size="sm"
-                    onClick={() => addToCart(product)}
-                    className="w-full sm:w-auto text-xs sm:text-sm py-1.5 sm:py-2"
+                    size="icon"
+                    onClick={(event) => {
+                      addToCart(product);
+                      animateToCart(event.currentTarget);
+                    }}
+                    className="h-11 w-11 shrink-0"
+                    aria-label={`${t("shop.addToCart")}: ${product.name}`}
+                    title={t("shop.addToCart")}
                 >
-                  <ShoppingCart className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-                  {t("shop.addToCart")}
+                  <ShoppingCart className="h-5 w-5" aria-hidden="true" />
                 </Button>
               </div>
             </div>

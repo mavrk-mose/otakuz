@@ -13,7 +13,7 @@ export function ShowBanner({ title, subtitle, image, color }: ShowBannerProps) {
     return (
         <Link href={`/shop/${title.toLowerCase().replace(' ', '-')}`}>
             <motion.div
-                className="relative h-[300px] rounded-lg overflow-hidden cursor-pointer"
+                className="relative h-[240px] sm:h-[300px] rounded-lg overflow-hidden cursor-pointer"
                 whileHover={{ scale: 1.02 }}
                 transition={{ duration: 0.2 }}
             >
@@ -24,8 +24,8 @@ export function ShowBanner({ title, subtitle, image, color }: ShowBannerProps) {
                     fill
                     className="object-cover"
                 />
-                <div className="absolute bottom-8 left-8 z-20 text-white drop-shadow-sm">
-                    <h3 className="text-3xl font-bold mb-2">{title}</h3>
+                <div className="absolute bottom-5 left-5 right-5 sm:bottom-8 sm:left-8 sm:right-8 z-20 text-white drop-shadow-sm">
+                    <h3 className="break-words text-2xl sm:text-3xl font-bold mb-2">{title}</h3>
                     <p className="text-lg text-white/85">{subtitle}</p>
                 </div>
             </motion.div>

@@ -1,6 +1,5 @@
 "use client";
 
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { ProductList } from "@/components/shop/product-list";
 import { CategoryList } from "@/components/shop/category-list";
@@ -35,26 +34,31 @@ const featuredBanners = [
 
 export default function ShopPage() {
   const { t } = useI18n();
-    const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('popular');
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { totalItems } = useCart(); 
 
   return (
-    <div className="min-h-screen pb-4">
+    <div className="min-h-screen min-w-0 pb-4">
+      <div className="sticky top-[4.5rem] lg:top-4 z-40 flex justify-end px-4 pointer-events-none mx-auto max-w-7xl">
+        <Button
+          data-shop-cart
+          variant="outline"
+          className="pointer-events-auto h-11 shrink-0 gap-2 bg-background shadow-sm"
+          onClick={() => setIsCartOpen(true)}
+          aria-label={`${t("shop.cart")} (${totalItems})`}
+        >
+          <ShoppingCart className="h-5 w-5" aria-hidden="true" />
+          <span className="hidden sm:inline">{t("shop.cart")}</span>
+          <span aria-live="polite" aria-atomic="true">({totalItems})</span>
+        </Button>
+      </div>
       <section className="py-4">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
-              {t("shop.newArrivals")}
-            </h2>
-            <Button variant="outline" className="mt-4 md:mt-0" onClick={() => setIsCartOpen(true)}>
-              <ShoppingCart className="h-4 w-4" />
-              {t("shop.cart")} ({totalItems})
-            </Button>
-          </div>
-          
-          <ProductList category={selectedCategory} limit={4} />
+          <h2 className="theme-outline-heading mb-8 break-words text-3xl font-bold leading-none tracking-tighter sm:text-6xl">
+            {t("shop.newArrivals")}
+          </h2>
+
+          <ProductList category="all" limit={4} />
 
           <div className="mt-10">
             <GoogleAdUnit
@@ -70,7 +74,7 @@ export default function ShopPage() {
       {/* Shop By Title */}
       <section className="py-4">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
+          <h2 className="theme-outline-heading mb-8 break-words text-3xl font-bold leading-none tracking-tighter sm:text-6xl">
             {t("shop.shopByTitle")}
           </h2>
           <TitleBanner />
@@ -91,7 +95,7 @@ export default function ShopPage() {
       {/* Shop By Category */}
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-7xl">
-          <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
+          <h2 className="theme-outline-heading mb-8 break-words text-3xl font-bold leading-none tracking-tighter sm:text-6xl">
             {t("shop.shopByCategory")}
           </h2>
           <CategoryList />
@@ -111,8 +115,8 @@ export default function ShopPage() {
       {/* All Products */}
       <section className="py-12">
         <div className="container mx-auto px-4 max-w-7xl">
-          <div className="flex items-center justify-between">
-            <h2 className="theme-outline-heading mb-8 text-4xl font-bold leading-none tracking-tighter sm:text-6xl">
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+            <h2 className="theme-outline-heading min-w-0 break-words text-3xl font-bold leading-none tracking-tighter sm:text-6xl">
               {t("shop.allProducts")}
               </h2>
             <Button variant="ghost" asChild>

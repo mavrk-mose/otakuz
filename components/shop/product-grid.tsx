@@ -49,7 +49,7 @@ export function ProductGrid({ title, filters, sort }: ProductGridProps) {
 
     if (isLoading) {
         return (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {[...Array(4)].map((_, i) => (
                     <div key={i} className="animate-pulse">
                         <div className="mb-4 aspect-[3/4] rounded-lg bg-muted"/>
@@ -80,7 +80,7 @@ export function ProductGrid({ title, filters, sort }: ProductGridProps) {
     }
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
             {sortedProducts.map((product) => (
                 <ProductCard product={product} key={product._id}/>
             ))}
