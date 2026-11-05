@@ -1,9 +1,13 @@
 "use client";
 
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useFetchTitles from "@/hooks/shop/use-fetch-titles";
 import Link from "next/link";
+import Image from "next/image";
+import { urlFor } from "@/lib/sanity";
+import { Slider } from "@/components/ui/slider";
+import { ProductCardSkeleton } from "@/components/shop/product-card-skeleton";
 import { ArrowLeft, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,7 +36,9 @@ function ProductCatalog() {
   const { t } = useI18n();
   const { products = [], isLoading, isError, refetch } = useFetchProducts({ category: "all" });
   const params = useSearchParams();
-  const { titles = [] } = useFetchTitles();
+  const { titles = [], isLoading: titlesLoading } = useFetchTitles();
+  const [showAllAnime, setShowAllAnime] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const category = params.get("category") || null;
   const anime = params.get("anime") || "";
   const search = params.get("q") || "";
@@ -66,12 +72,30 @@ function ProductCatalog() {
     ...products.map(product => product.title?.name).filter(Boolean),
     ...(anime ? [anime] : []),
   ])).sort();
+  const prices = products.map(product => product.price).filter(Number.isFinite);
+  const lowestPrice = prices.length ? Math.min(...prices) : 0;
+  const highestPrice = prices.length ? Math.max(...prices) : 0;
+  const clampPrice = (price: number) => Math.min(highestPrice, Math.max(lowestPrice, price));
+  const priceRange = [
+    clampPrice(minPrice === "" ? lowestPrice : Number(minPrice)),
+    clampPrice(maxPrice === "" ? highestPrice : Number(maxPrice)),
+  ].sort((a, b) => a - b);
+  const updatePriceRange = ([min, max]: number[]) => {
+    const next = new URLSearchParams(window.location.search);
+    if (min === lowestPrice) next.delete("minPrice");
+    else next.set("minPrice", String(min));
+    if (max === highestPrice) next.delete("maxPrice");
+    else next.set("maxPrice", String(max));
+    window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
+  };
+  const animePreviews = animeOptions.slice(0, 4);
+  if (anime && !animePreviews.includes(anime)) animePreviews.push(anime);
+  const visibleAnime = showAllAnime ? animeOptions : animePreviews;
   const filteredProducts = products.filter(product =>
     (category === null || normalize(product.category) === normalize(category)) &&
     (!anime || normalize(product.title?.name || "") === normalize(anime)) &&
     product.name.toLowerCase().includes(search.trim().toLowerCase()) &&
-    (minPrice === "" || product.price >= Number(minPrice)) &&
-    (maxPrice === "" || product.price <= Number(maxPrice)) &&
+    product.price >= priceRange[0] && product.price <= priceRange[1] &&
     (!inStock || product.stock > 0)
   ).sort((a, b) => {
     if (sort === "price-low") return a.price - b.price;
@@ -82,63 +106,29 @@ function ProductCatalog() {
 
   return (
     <div className="min-h-screen min-w-0 pb-8">
-      <ShopCart />
-      <div className="mx-auto max-w-7xl px-2 py-4 sm:px-4">
-        <Button asChild variant="ghost" className="mb-4 gap-2">
-          <Link href="/shop"><ArrowLeft className="h-4 w-4" />{t("nav.shop")}</Link>
-        </Button>
-        <h1 className="theme-outline-heading mb-6 break-words text-3xl font-bold leading-none tracking-tighter sm:text-6xl">
-          {t("shop.allProducts")}
-        </h1>
-        <nav aria-label={t("common.categories")} className="mb-8 flex flex-wrap gap-2">
+      <ShopCart>
+        <div className="flex min-w-0 flex-wrap items-center gap-x-4 gap-y-1">
+          <Button asChild variant="ghost" className="h-10 shrink-0 gap-2 px-2">
+            <Link href="/shop"><ArrowLeft className="h-4 w-4" /><span>{t("nav.shop")}</span></Link>
+          </Button>
+          <h1 className="theme-outline-heading min-w-0 break-words text-2xl font-bold leading-tight tracking-tighter sm:text-4xl">
+            {t("shop.allProducts")}
+          </h1>
+        </div>
+      </ShopCart>
+      <div className="mx-auto max-w-7xl px-2 pt-3 sm:px-4 sm:pt-4">
+        <nav aria-label={t("common.categories")} className="mb-4 flex flex-wrap gap-2 sm:mb-5">
           <Button variant={category === null ? "default" : "outline"} aria-pressed={category === null} onClick={() => updateFilter("category", "")}>
             {t("shop.allProducts")}
           </Button>
+          {isLoading && Array.from({ length: 3 }, (_, index) => <div key={`category-${index}`} aria-hidden="true" className="h-11 w-24 animate-pulse rounded-md bg-muted motion-reduce:animate-none" />)}
           {categories.map(value => (
             <Button key={value} className="h-auto min-h-11 max-w-full whitespace-normal break-words" variant={category !== null && normalize(category) === normalize(value) ? "default" : "outline"} aria-pressed={category !== null && normalize(category) === normalize(value)} onClick={() => updateFilter("category", value)}>
               {categoryLabels[value] ? t(categoryLabels[value]) : value}
             </Button>
           ))}
         </nav>
-        <div className="grid min-w-0 items-start gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
-          <aside className="min-w-0 rounded-lg border bg-card p-4">
-            <details open>
-              <summary className="flex cursor-pointer items-center gap-2 font-semibold">
-                <SlidersHorizontal className="h-4 w-4" />{t("shop.filters")}
-              </summary>
-              <div className="mt-5 space-y-5">
-                <div className="space-y-2">
-                  <label htmlFor="product-search" className="text-sm font-medium">{t("shop.searchProducts")}</label>
-                  <Input id="product-search" type="search" value={search} onChange={event => updateFilter("q", event.target.value, true)} />
-                </div>
-                <div className="space-y-2">
-                  <label htmlFor="anime-filter" className="text-sm font-medium">{t("nav.anime")}</label>
-                  <select id="anime-filter" value={anime} onChange={event => updateFilter("anime", event.target.value)} className="min-h-11 w-full min-w-0 rounded-md border bg-background px-3 py-2 text-sm">
-                    <option value="">{t("shop.allAnime")}</option>
-                    {animeOptions.map(value => <option key={value} value={value}>{value}</option>)}
-                  </select>
-                </div>
-                <fieldset className="space-y-3">
-                  <legend className="mb-2 font-medium">{t("shop.priceRange")}</legend>
-                  <label className="block space-y-2 text-sm" htmlFor="min-price">
-                    <span>{t("shop.minPrice")}</span>
-                    <Input id="min-price" type="number" min="0" value={minPrice} onChange={event => updateFilter("minPrice", event.target.value, true)} />
-                  </label>
-                  <label className="block space-y-2 text-sm" htmlFor="max-price">
-                    <span>{t("shop.maxPrice")}</span>
-                    <Input id="max-price" type="number" min="0" value={maxPrice} onChange={event => updateFilter("maxPrice", event.target.value, true)} />
-                  </label>
-                </fieldset>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={inStock} onChange={event => updateFilter("inStock", event.target.checked ? "true" : "")} className="h-4 w-4 accent-primary" />
-                  {t("shop.inStock")}
-                </label>
-                <Button variant="outline" className="w-full" onClick={resetFilters}>{t("shop.clearFilters")}</Button>
-              </div>
-            </details>
-          </aside>
-          <section aria-label={t("shop.products")} className="min-w-0" aria-busy={isLoading}>
-            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p role="status" className="text-sm text-muted-foreground">{isLoading ? t("common.loading") : t("shop.resultCount", { count: filteredProducts.length })}</p>
               <label className="flex max-w-full flex-wrap items-center gap-2 text-sm">
                 {t("common.sortBy")}
@@ -150,6 +140,63 @@ function ProductCatalog() {
                 </select>
               </label>
             </div>
+        <div className="grid min-w-0 items-start gap-4 sm:gap-6 lg:grid-cols-[240px_minmax(0,1fr)]">
+          <aside className="min-w-0 rounded-lg border bg-card p-4">
+              <h2 className="hidden items-center gap-2 font-semibold lg:flex"><SlidersHorizontal className="h-4 w-4" />{t("shop.filters")}</h2>
+              <button type="button" className="flex min-h-11 w-full items-center justify-between gap-2 text-left font-semibold lg:hidden" aria-expanded={filtersOpen} aria-controls="catalog-filters" onClick={() => setFiltersOpen(open => !open)}>
+                <span className="flex items-center gap-2"><SlidersHorizontal className="h-4 w-4" />{t("shop.filters")}</span>
+                <span aria-hidden="true">{filtersOpen ? "−" : "+"}</span>
+              </button>
+              <div id="catalog-filters" className={`${filtersOpen ? "block" : "hidden"} mt-4 space-y-5 lg:block`}>
+                <div className="space-y-2">
+                  <label htmlFor="product-search" className="text-sm font-medium">{t("shop.searchProducts")}</label>
+                  <Input id="product-search" type="search" value={search} onChange={event => updateFilter("q", event.target.value, true)} />
+                </div>
+                <fieldset className="space-y-3">
+                  <legend className="mb-2 text-sm font-medium">{t("nav.anime")}</legend>
+                  <Button variant={!anime ? "default" : "outline"} className="w-full" aria-pressed={!anime} onClick={() => updateFilter("anime", "")}>{t("shop.allAnime")}</Button>
+                  {titlesLoading && !animeOptions.length ? (
+                    <div className="grid grid-cols-2 gap-2" aria-hidden="true">
+                      {Array.from({ length: 4 }, (_, index) => <div key={index} className="flex animate-pulse flex-col items-center gap-2 rounded-md border p-2 motion-reduce:animate-none"><div className="h-12 w-12 rounded-full bg-muted" /><div className="h-8 w-full rounded bg-muted" /></div>)}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2" id="anime-options">
+                      {visibleAnime.map(value => {
+                        const title = titles.find(title => normalize(title.name) === normalize(value)) || products.find(product => normalize(product.title?.name || "") === normalize(value))?.title;
+                        const imageRef = title?.image?.asset?._ref;
+                        const selected = normalize(anime) === normalize(value);
+                        return (
+                          <button key={value} type="button" aria-pressed={selected} onClick={() => updateFilter("anime", selected ? "" : value)} className={`flex min-w-0 flex-col items-center gap-2 rounded-md border p-2 text-center text-xs transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${selected ? "border-primary bg-primary/10 text-foreground" : "border-border hover:bg-accent"}`}>
+                            <span className="relative flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-muted font-semibold" aria-hidden="true">
+                              {imageRef ? <Image src={urlFor(imageRef).width(96).height(96).url()} alt="" fill sizes="48px" className="object-cover" /> : value.slice(0, 2).toUpperCase()}
+                            </span>
+                            <span className="min-h-8 break-words">{value}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                  {animeOptions.length > 4 && <Button variant="ghost" className="w-full" aria-expanded={showAllAnime} aria-controls="anime-options" onClick={() => setShowAllAnime(value => !value)}>{t(showAllAnime ? "shop.showLess" : "shop.showAllAnime")}</Button>}
+                </fieldset>
+                <fieldset className="space-y-3">
+                  <legend className="mb-2 font-medium">{t("shop.priceRange")}</legend>
+                  {isLoading ? <div aria-hidden="true" className="h-12 animate-pulse rounded bg-muted motion-reduce:animate-none" /> : <>
+                    <Slider min={lowestPrice} max={highestPrice > lowestPrice ? highestPrice : lowestPrice + 1} step={0.01} value={priceRange} onValueChange={updatePriceRange} disabled={!prices.length || lowestPrice === highestPrice} thumbLabels={[t("shop.minPrice"), t("shop.maxPrice")]} className="py-3" />
+                    <div className="flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
+                      <span>Tshs. {priceRange[0].toLocaleString()}</span>
+                      <span>Tshs. {priceRange[1].toLocaleString()}</span>
+                    </div>
+                  </>}
+                </fieldset>
+                <label className="flex items-center gap-2 text-sm">
+                  <input type="checkbox" checked={inStock} onChange={event => updateFilter("inStock", event.target.checked ? "true" : "")} className="h-4 w-4 accent-primary" />
+                  {t("shop.inStock")}
+                </label>
+                <Button variant="outline" className="w-full" onClick={resetFilters}>{t("shop.clearFilters")}</Button>
+              </div>
+          </aside>
+          <section aria-label={t("shop.products")} className="min-w-0" aria-busy={isLoading}>
+
             {isError ? (
               <div role="alert" className="space-y-4 rounded-lg border p-6 text-center">
                 <p>{t("shop.loadError")}</p>
@@ -157,7 +204,7 @@ function ProductCatalog() {
               </div>
             ) : isLoading ? (
               <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 xl:grid-cols-3">
-                {Array.from({ length: 6 }, (_, i) => <div key={i} className="aspect-[3/4] animate-pulse rounded-lg bg-muted" />)}
+                {Array.from({ length: 6 }, (_, i) => <ProductCardSkeleton key={i} />)}
               </div>
             ) : filteredProducts.length ? (
               <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 xl:grid-cols-3">

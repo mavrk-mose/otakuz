@@ -66,7 +66,7 @@ export function MangaRecommendations({ mangaId }: RecommendationsProps) {
               className="group w-[210px] sm:w-[240px] md:w-[260px] shrink-0"
               whileHover={{ scale: 1.02 }}
             >
-              <Card className="overflow-hidden">
+              <Card className="media-card-surface overflow-hidden">
                 <div className="relative aspect-[2/3]">
                   <Image
                     src={rec.entry.images.jpg.large_image_url}

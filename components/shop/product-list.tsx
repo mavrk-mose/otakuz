@@ -1,5 +1,7 @@
 "use client"
 
+import { ProductCardSkeleton } from "@/components/shop/product-card-skeleton";
+
 import { ProductCard } from './product-card'
 import useFetchProducts from "@/hooks/shop/use-fetch-products"
 import Lottie from "lottie-react"
@@ -19,13 +21,7 @@ export function ProductList({ category = "all", limit }: ProductListProps) {
         return (
             <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
                 {[...Array(limit || 8)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                        <div className="mb-4 aspect-[3/4] rounded-lg bg-muted" />
-                        <div className="space-y-2">
-                            <div className="h-4 w-3/4 rounded bg-muted" />
-                            <div className="h-4 w-1/2 rounded bg-muted" />
-                        </div>
-                    </div>
+                    <ProductCardSkeleton key={i} />
                 ))}
             </div>
         )

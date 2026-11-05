@@ -52,7 +52,7 @@ export function MediaCard({ item, type, showBookmark = false }: MediaCardProps) 
 
     return (
         <motion.div variants={animationItem}>
-            <Card className="overflow-hidden group border border-[#2b3245] bg-[#1c202c] hover:border-[#3f4865] transition-all duration-300 rounded-lg shadow-sm hover:shadow-md">
+            <Card className="media-card-surface overflow-hidden group rounded-lg">
                 <div className="relative aspect-[2/3]">
                     <Link href={detailUrl}>
                         <Image
@@ -62,9 +62,9 @@ export function MediaCard({ item, type, showBookmark = false }: MediaCardProps) 
                             className="object-cover transition-transform duration-300 group-hover:scale-105"
                         />
                     </Link>
-                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-t from-[#0e1015]/90 via-[#0e1015]/20 to-transparent">
+                    <div className="absolute inset-0 opacity-0 group-hover:opacity-100 group-focus-within:opacity-100 transition-opacity bg-gradient-to-t from-[#0e1015]/90 via-[#0e1015]/20 to-transparent">
                         <div className="absolute bottom-4 left-4 right-4">
-                            <Button className="w-full gap-2 bg-[#6366f1] hover:bg-[#4f46e5] text-white text-xs font-medium h-9 rounded-md shadow-sm" asChild>
+                            <Button className="w-full gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-medium h-9 rounded-md shadow-sm" asChild>
                                 <Link href={actionUrl}>
                                     <ActionIcon className="h-4 w-4" />
                                     {actionText}
@@ -85,21 +85,21 @@ export function MediaCard({ item, type, showBookmark = false }: MediaCardProps) 
                 </div>
                 <div className="p-3.5">
                     <div className="flex items-center gap-2 mb-1.5">
-                        <div className="flex items-center gap-1 bg-[#14171f]/80 px-2 py-0.5 rounded-full text-[#f59e0b] text-xs font-semibold">
+                        <div className="flex items-center gap-1 bg-muted px-2 py-0.5 rounded-full text-amber-600 dark:text-amber-400 text-xs font-semibold">
                             <Star className="h-3.5 w-3.5 fill-current" />
                             <span>{item.score ?? "N/A"}</span>
                         </div>
-                        <Badge variant="secondary" className="ml-auto text-[10px] bg-[#242938] text-[#e0e2ed] border border-[#2b3245]">
+                        <Badge variant="secondary" className="ml-auto text-[10px] bg-muted text-muted-foreground border border-border">
                             {badgeText}
                         </Badge>
                     </div>
                     <Link
                         href={detailUrl}
-                        className="font-semibold text-sm hover:text-[#6366f1] transition-colors line-clamp-1"
+                        className="font-semibold text-sm text-card-foreground hover:text-primary transition-colors line-clamp-1"
                     >
                         {item.title}
                     </Link>
-                    <p className="text-xs text-[#8492a6] mt-1 line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground mt-1 line-clamp-2 leading-relaxed">
                         {item.synopsis}
                     </p>
                 </div>
@@ -114,11 +114,11 @@ export function MediaCardSkeleton({ count = 4 }: { count?: number }) {
             {Array(count)
                 .fill(null)
                 .map((_, index) => (
-                    <Card key={index} className="animate-pulse border border-[#2b3245] bg-[#1c202c] rounded-lg">
-                        <div className="aspect-[2/3] bg-[#242938]" />
+                    <Card key={index} className="animate-pulse border border-border bg-card rounded-lg">
+                        <div className="aspect-[2/3] bg-muted" />
                         <div className="p-3.5 space-y-2">
-                            <div className="h-4 bg-[#242938] rounded w-3/4" />
-                            <div className="h-3 bg-[#242938] rounded w-1/2" />
+                            <div className="h-4 bg-muted rounded w-3/4" />
+                            <div className="h-3 bg-muted rounded w-1/2" />
                         </div>
                     </Card>
                 ))}

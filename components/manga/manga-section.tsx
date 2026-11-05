@@ -64,7 +64,7 @@ export function MangaSection() {
           ) : (
               mangaList?.slice(0, 8).map((manga: any) => (
                   <motion.div key={manga.mal_id} variants={item}>
-                    <Card className="overflow-hidden group">
+                    <Card className="media-card-surface overflow-hidden group">
                       <div className="relative aspect-[2/3]">
                         <Image
                             src={manga.images.jpg.large_image_url}

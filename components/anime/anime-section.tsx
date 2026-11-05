@@ -90,7 +90,7 @@ export function AnimeSection() {
         ) : (
           animeList?.slice(0, 8).map((anime) => (
               <motion.div key={anime.mal_id} variants={item}>
-                <Card className="group overflow-hidden border border-border/70 bg-card/75 shadow-[0_18px_45px_rgba(0,0,0,0.18)] transition-all duration-300 hover:-translate-y-1 hover:border-primary/60 hover:shadow-[0_22px_50px_rgba(255,75,58,0.12)]">
+                <Card className="media-card-surface group overflow-hidden">
                   <div className="relative aspect-[2/3] bg-muted">
                     {anime.imageUrl && (
                       <Image
