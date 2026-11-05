@@ -11,7 +11,7 @@ interface ShowBannerProps {
 
 export function ShowBanner({ title, subtitle, image, color }: ShowBannerProps) {
     return (
-        <Link href={`/shop/${title.toLowerCase().replace(' ', '-')}`}>
+        <Link href={{ pathname: "/shop/products", query: { anime: title } }}>
             <motion.div
                 className="relative h-[240px] sm:h-[300px] rounded-lg overflow-hidden cursor-pointer"
                 whileHover={{ scale: 1.02 }}

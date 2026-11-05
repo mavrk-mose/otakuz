@@ -34,7 +34,7 @@ export default function TitleBanner() {
                 {titles?.map((show: any) => (
                     <Link
                         key={show.name}
-                        href={`/shop/filter/${show.name}`}
+                        href={{ pathname: "/shop/products", query: { anime: show.name } }}
                         className="relative group shrink-0"
                     >
                         <motion.div

@@ -1,16 +1,6 @@
-"use client"
+import { redirect } from "next/navigation";
 
-import {ProductGrid} from "@/components/shop/product-grid";
-import {useParams} from "next/navigation";
-
-export default function TitlePage() {
-    const params = useParams();
-    const slug = params?.slug;
-    return (
-        <div className="min-h-screen bg-background pb-4 text-foreground">
-            <div className="py-4 px-6">
-                <ProductGrid title={slug as string}/>
-            </div>
-        </div>
-    )
+export default async function TitlePage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  redirect(`/shop/products?${new URLSearchParams({ anime: slug })}`);
 }

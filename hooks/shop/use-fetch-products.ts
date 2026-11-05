@@ -12,7 +12,9 @@ interface ProductListProps {
 const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListProps) => {
     const {
         data: products,
-        isLoading
+        isLoading,
+        isError,
+        refetch
     } = useQuery({
         queryKey: ['products', category, priceRange, sortBy, title],
         queryFn: async () => {
@@ -56,6 +58,8 @@ const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListPr
     return {
         products,
         isLoading,
+        isError,
+        refetch,
     }
 }
 
