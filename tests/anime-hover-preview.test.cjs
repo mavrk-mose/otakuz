@@ -1,0 +1,44 @@
+const {createRequire}=require('node:module');
+const path=require('node:path');
+const rootPath=path.resolve(__dirname, '..');
+const requireApp=createRequire(path.join(rootPath,'package.json'));
+const {test}=require('node:test');
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const {JSDOM}=requireApp('jsdom');
+const dom=new JSDOM('<html><body><div id="root"></div></body></html>',{url:'http://localhost'});
+global.window=dom.window;global.document=dom.window.document;global.navigator=dom.window.navigator;global.IS_REACT_ACT_ENVIRONMENT=true;
+window.matchMedia=()=>({matches:true});
+const React=requireApp('react'), {createRoot}=requireApp('react-dom/client'),{act}=requireApp('react-dom/test-utils');
+let requests=0;
+const mockedRequire=name=>{
+ if(name==='@/hooks/anime/use-anime-videos')return {useAnimeVideos:()=>{requests++;return {data:{promo:[{trailer:{embed_url:'https://www.youtube.com/embed/first'}},{trailer:{embed_url:'https://www.youtube.com/embed/second'}}]},isLoading:false}}};
+ if(name==='@vidstack/react')throw new Error('Hover previews must not mount a disposable Vidstack provider');
+ if(name==='@/components/ui/button')return {Button:({children})=>React.createElement('div',null,children)};
+ if(name==='next/link')return {default:({children,href})=>React.createElement('a',{href},children),__esModule:true};
+ return requireApp(name);
+};
+const code=requireApp('typescript').transpileModule(fs.readFileSync(path.join(rootPath,'components/anime/anime-hover-preview.tsx'),'utf8'),{compilerOptions:{module:1,jsx:4}}).outputText;
+const out={};vm.runInNewContext(code,{exports:out,require:mockedRequire,window,document,Node:window.Node,URL:window.URL,setTimeout,clearTimeout,console});
+const Preview=out.AnimeHoverPreview,root=createRoot(document.getElementById('root'));
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function hover(node,type='mouse',leave=false){const event=new window.MouseEvent(leave?'pointerout':'pointerover',{bubbles:true,relatedTarget:document.body});Object.defineProperty(event,'pointerType',{value:type});node.dispatchEvent(event);}
+test('anime previews stay open through internal media scroll and clean up on departure', async()=>{
+ await act(async()=>root.render(React.createElement(Preview,{animeId:1,title:'Test anime'},React.createElement('div',null,'Card'))));
+ let card=document.querySelector('#root > div');
+ await act(async()=>{hover(card);await wait(300);});assert.equal(requests,0,'No eager fetch before dwell');
+ await act(async()=>{hover(card,'mouse',true);await wait(500);});assert.equal(requests,0,'Passing over a card cancels fetch');
+ await act(async()=>{hover(card);await wait(750);});
+ const video=document.querySelector('iframe');assert.ok(video);assert.equal(new URL(video.src).pathname,'/embed/first');assert.equal(new URL(video.src).searchParams.get('autoplay'),'1');assert.equal(new URL(video.src).searchParams.get('mute'),'1');assert.ok(parseFloat(video.closest('[role=region]').style.width)>=440,'Preview should be substantially larger');
+ await act(async()=>{video.dispatchEvent(new window.Event('scroll'));await wait(20);});assert.ok(document.querySelector('iframe'),'Preview must survive internal media scroll events');
+ const panel=video.closest('[role=region]');
+ const originalMatches=panel.matches.bind(panel);
+ panel.matches=selector=>selector===':hover' || originalMatches(selector);
+ await act(async()=>{hover(card,'mouse',true);await wait(300);});assert.ok(document.querySelector('iframe'),'Portal transitions must not close a hovered panel');
+ panel.matches=originalMatches;
+ await act(async()=>{hover(panel,'mouse',true);await wait(300);});assert.equal(document.querySelector('iframe'),null,'Leaving destroys preview');
+ const before=requests;
+ await act(async()=>root.render(React.createElement(Preview,{animeId:2,title:'Manga',enabled:false},React.createElement('div',null,'Card'))));
+ card=document.querySelector('#root > div');await act(async()=>{hover(card);await wait(750);});assert.equal(requests,before,'Manga never fetches a promo');
+ await act(async()=>root.unmount());
+ console.log('PASS: delayed muted first promo, enlarged popup, internal scroll stability, departure cleanup, manga exclusion.');
+});

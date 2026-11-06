@@ -6,7 +6,7 @@ import { getTopAnime } from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Star, ArrowRight, PlayCircle } from "lucide-react";
+import { Star, ArrowRight, Play } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
@@ -102,11 +102,11 @@ export function AnimeSection() {
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d10]/90 via-[#0c0d10]/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                      <div className="absolute inset-x-4 bottom-4">
-                        <Button className="w-full gap-2 bg-primary text-primary-foreground hover:bg-primary/90" asChild>
-                          <Link href={`/watch/${anime.mal_id}`}>
-                            <PlayCircle className="w-4 h-4" /> {t("anime.watchTrailer")}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0c0d10]/90 via-[#0c0d10]/15 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-within:opacity-100">
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Button size="icon" className="h-14 w-14 rounded-full shadow-lg" asChild>
+                          <Link href={`/watch/${anime.mal_id}`} aria-label={`Play ${anime.title}`}>
+                            <Play className="h-6 w-6 fill-current" aria-hidden="true" />
                           </Link>
                         </Button>
                       </div>
