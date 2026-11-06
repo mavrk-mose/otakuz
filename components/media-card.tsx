@@ -74,7 +74,7 @@ export function MediaCard({ item, type, showBookmark = false }: MediaCardProps) 
                             </Button>
                         </div>
                     </div>
-                    {showBookmark && (
+                    {showBookmark && !isAnime && (
                         <div className="absolute top-3 right-3">
                             <BookmarkButton
                                 itemId={item.mal_id.toString()}

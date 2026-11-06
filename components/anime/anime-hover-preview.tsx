@@ -6,6 +6,7 @@ import { create } from 'zustand';
 import { Play, Loader2, Info } from 'lucide-react';
 import Link from 'next/link';
 import { PromoVideo, promoEmbedUrl } from '@/components/anime/promo-video';
+import { BookmarkButton } from '@/components/bookmark-button';
 import { useAnimeVideos } from '@/hooks/anime/use-anime-videos';
 
 // react-dom's nested React declarations differ from the app's React 18 types.
@@ -15,7 +16,7 @@ const useActivePreview = create<{ active: string | null; setActive: (active: str
   active: null, setActive: active => set({ active }),
 }));
 
-function PromoPreview({ animeId, title, poster }: { animeId: number | string; title: string; poster?: string }) {
+function PromoPreview({ animeId, title, poster, onBookmarkOpenChange }: { animeId: number | string; title: string; poster?: string; onBookmarkOpenChange: (open: boolean) => void }) {
   const { data, isLoading, isError } = useAnimeVideos(String(animeId));
   const embedUrl = data?.promo.map(promo => promoEmbedUrl(promo.trailer?.embed_url)).find(Boolean);
   const [failed, setFailed] = useState(false);
@@ -30,6 +31,9 @@ function PromoPreview({ animeId, title, poster }: { animeId: number | string; ti
       <Link href={`/watch/${animeId}`} aria-label={`Play ${title}`} className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-xl"><Play className="h-8 w-8 fill-current" aria-hidden="true" /></span>
       </Link>
+      <div className="absolute left-3 top-3 z-20 rounded-full bg-black/70 text-white">
+        <BookmarkButton itemId={String(animeId)} type="anime" title={title} image={poster ?? ''} onOpenChange={onBookmarkOpenChange} />
+      </div>
     </div>
     <div className="flex items-center justify-between gap-4 p-5">
       <div className="min-w-0"><p className="line-clamp-2 text-xl font-bold sm:text-2xl">{title}</p><p className="mt-1 text-sm text-muted-foreground">Anime · Promo preview</p></div>
@@ -46,10 +50,12 @@ export function AnimeHoverPreview({ animeId, title, poster, children, className 
   const active = useActivePreview(state => state.active === key);
   const container = useRef<HTMLDivElement>(null);
   const panel = useRef<HTMLDivElement>(null);
+  const bookmarkOpen = useRef(false);
   const enterTimer = useRef<ReturnType<typeof setTimeout>>();
   const leaveTimer = useRef<ReturnType<typeof setTimeout>>();
   const [position, setPosition] = useState<{ left: number; top: number; width: number }>();
   const close = useCallback(() => {
+    bookmarkOpen.current = false;
     clearTimeout(enterTimer.current); clearTimeout(leaveTimer.current);
     if (useActivePreview.getState().active === key) useActivePreview.getState().setActive(null);
   }, [key]);
@@ -59,7 +65,7 @@ export function AnimeHoverPreview({ animeId, title, poster, children, className 
     clearTimeout(leaveTimer.current);
     leaveTimer.current = setTimeout(() => {
       // Portal transitions and iframe insertion can emit synthetic leave events.
-      if (container.current?.matches(':hover') || panel.current?.matches(':hover') || panel.current?.contains(document.activeElement)) return;
+      if (bookmarkOpen.current || container.current?.matches(':hover') || panel.current?.matches(':hover') || panel.current?.contains(document.activeElement)) return;
       close();
     }, 250);
   };
@@ -80,7 +86,7 @@ export function AnimeHoverPreview({ animeId, title, poster, children, className 
     if (!enabled) return;
     const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') close(); };
     const onScroll = (event: Event) => {
-      if (event.target instanceof Node && panel.current?.contains(event.target)) return;
+      if (bookmarkOpen.current || (event.target instanceof Node && panel.current?.contains(event.target))) return;
       close();
     };
     window.addEventListener('scroll', onScroll, true);
@@ -94,6 +100,6 @@ export function AnimeHoverPreview({ animeId, title, poster, children, className 
       className="fixed z-[70] overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-2xl animate-in fade-in zoom-in-95 duration-200 motion-reduce:animate-none"
       style={position} onPointerEnter={cancelLeave} onPointerLeave={scheduleClose} onBlurCapture={scheduleClose}
       role="region" aria-label={`${title} promo preview`}
-    ><PromoPreview animeId={animeId} title={title} poster={poster} /></div>, document.body)}
+    ><PromoPreview animeId={animeId} title={title} poster={poster} onBookmarkOpenChange={open => { bookmarkOpen.current = open; if (!open) scheduleClose(); }} /></div>, document.body)}
   </div>;
 }

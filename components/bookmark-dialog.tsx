@@ -27,7 +27,7 @@ interface Props {
 
 export function BookmarkDialog({ isOpen, onClose, item }: Props) {
     const { t } = useI18n();
-    const { lists, createList, addToList } = useBookmarks();
+    const { lists, createList, addToList, bookmarkPending } = useBookmarks();
     const [selectedListId, setSelectedListId] = useState<string | null>(null);
     const [showNewListInput, setShowNewListInput] = useState(false);
     const [newListName, setNewListName] = useState('');
@@ -54,13 +54,13 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
     };
 
     const handleSave = async () => {
-        if (!selectedListId) return;
+        if (!selectedListId || isSaving || bookmarkPending) return;
 
         setIsSaving(true);
         try {
+            onClose();
             await addToList(selectedListId, item);
             toast.success("Item added to list successfully!");
-            onClose();
         } catch (error) {
             console.error('Error saving item:', error);
             toast.error("Failed to add item to list.");
@@ -193,7 +193,7 @@ export function BookmarkDialog({ isOpen, onClose, item }: Props) {
                     </Button>
                     <Button
                         onClick={handleSave}
-                        disabled={!selectedListId || isSaving}
+                        disabled={!selectedListId || isSaving || bookmarkPending}
                     >
                         {isSaving ? 'Saving...' : 'Save'}
                     </Button>

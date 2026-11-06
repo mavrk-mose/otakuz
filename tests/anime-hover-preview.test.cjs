@@ -11,6 +11,7 @@ window.matchMedia=()=>({matches:true});
 const React=requireApp('react'), {createRoot}=requireApp('react-dom/client'),{act}=requireApp('react-dom/test-utils');
 let requests=0;
 const mockedRequire=name=>{
+ if(name==='@/components/bookmark-button')return {BookmarkButton:({itemId,onOpenChange})=>React.createElement('button',{'aria-label':'Save to a list','data-item-id':itemId,onClick:()=>onOpenChange(true)},'Bookmark')};
  if(name==='@/components/anime/promo-video'){const result={};const source=requireApp('typescript').transpileModule(fs.readFileSync(path.join(rootPath,'components/anime/promo-video.tsx'),'utf8'),{compilerOptions:{module:1,jsx:4}}).outputText;vm.runInNewContext(source,{exports:result,require:mockedRequire,window,URL:window.URL});return result;}
  if(name==='@/hooks/anime/use-anime-videos')return {useAnimeVideos:()=>{requests++;return {data:{promo:[{trailer:{embed_url:'https://www.youtube.com/embed/first'}},{trailer:{embed_url:'https://www.youtube.com/embed/second'}}]},isLoading:false}}};
  if(name==='@vidstack/react')throw new Error('Hover previews must not mount a disposable Vidstack provider');
@@ -30,6 +31,7 @@ test('anime previews stay open through internal media scroll and clean up on dep
  await act(async()=>{hover(card,'mouse',true);await wait(500);});assert.equal(requests,0,'Passing over a card cancels fetch');
  await act(async()=>{hover(card);await wait(750);});
  const video=document.querySelector('iframe');assert.ok(video);assert.equal(new URL(video.src).pathname,'/embed/first');assert.equal(new URL(video.src).searchParams.get('autoplay'),'1');assert.equal(new URL(video.src).searchParams.get('mute'),'1');assert.ok(parseFloat(video.closest('[role=region]').style.width)>=440,'Preview should be substantially larger');
+ assert.equal(document.querySelector('button[data-item-id]').getAttribute('data-item-id'),'1','Preview bookmark targets the hovered anime');
  const commands=[];video.contentWindow.postMessage=(message,origin)=>commands.push({message:JSON.parse(message),origin});
  const audio=document.querySelector('button[aria-label="Enable promo audio"]');assert.ok(audio);
  await act(async()=>audio.click());assert.equal(commands[0].message.func,'unMute');assert.equal(commands[0].origin,'https://www.youtube.com');assert.equal(audio.getAttribute('aria-pressed'),'true');assert.equal(document.querySelector('iframe'),video,'Audio must not restart playback');

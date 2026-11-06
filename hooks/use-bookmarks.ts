@@ -1,6 +1,6 @@
 "use client"
 
-import { useQuery, useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useInfiniteQuery, useMutation, useQueryClient, useIsMutating, type InfiniteData } from '@tanstack/react-query';
 import { db } from '@/lib/firebase';
 import { useAuth } from './use-auth';
 import {
@@ -17,7 +17,8 @@ import {
   serverTimestamp,
   DocumentSnapshot,
   updateDoc,
-  collectionGroup
+  collectionGroup,
+  writeBatch
 } from 'firebase/firestore';
 
 export type ListType = 'favorites' | 'watched' | 'planning' | 'custom';
@@ -49,6 +50,8 @@ export function useBookmarks(targetUserId?: string) {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const effectiveUserId = targetUserId || user?.uid;
+  const bookmarkMutationKey = ['bookmarkWrite', user?.uid];
+  const bookmarkPending = useIsMutating({ mutationKey: bookmarkMutationKey }) > 0;
   const isOwner = !!user && user.uid === effectiveUserId;
 
   const { data: lists = [], isLoading: listsLoading } = useQuery({
@@ -152,7 +155,52 @@ export function useBookmarks(targetUserId?: string) {
     });
   };
 
+  type ItemPages = InfiniteData<{ items: BookmarkedItem[]; lastDoc: DocumentSnapshot | null }>;
+  // Cache list memberships, rather than just a boolean, so removing from one
+  // board preserves the saved indicator when another board still contains it.
+  const membershipKey = (itemId: string) => ['bookmarkLists', user?.uid, itemId];
+  const optimisticItem = async (listId: string, itemId: string, item?: BookmarkedItem) => {
+    const statusKey = membershipKey(itemId);
+    const itemsKey = ['listItems', user?.uid, listId];
+    const listsKey = ['lists', user?.uid];
+    await Promise.all([
+      queryClient.cancelQueries({ queryKey: statusKey }),
+      queryClient.cancelQueries({ queryKey: itemsKey }),
+      queryClient.cancelQueries({ queryKey: listsKey }),
+    ]);
+    const previousMembership = queryClient.getQueryData<string[]>(statusKey);
+    const previousPages = queryClient.getQueriesData<ItemPages>({ queryKey: itemsKey });
+    const previousLists = queryClient.getQueriesData<BookmarkList[]>({ queryKey: listsKey });
+    const updateItems = (items: BookmarkedItem[]) => {
+      const remaining = items.filter(existing => existing.id !== itemId);
+      return item ? [item, ...remaining] : remaining;
+    };
+    queryClient.setQueryData<string[]>(statusKey, old => item
+      ? Array.from(new Set([...(old ?? []), listId]))
+      : (old ?? []).filter(id => id !== listId));
+    queryClient.setQueriesData<ItemPages>({ queryKey: itemsKey }, old => old && ({
+      ...old, pages: old.pages.map((page, index) => ({
+        ...page, items: index === 0 ? updateItems(page.items) : page.items.filter(existing => existing.id !== itemId),
+      })),
+    }));
+    queryClient.setQueriesData<BookmarkList[]>({ queryKey: listsKey }, old => old?.map(list => list.id === listId
+      ? { ...list, items: updateItems(list.items).slice(0, 4) } : list));
+    return { statusKey, previousMembership, previousPages, previousLists };
+  };
+  const rollbackItem = (_error: unknown, _variables: unknown, context?: Awaited<ReturnType<typeof optimisticItem>>) => {
+    if (!context) return;
+    if (context.previousMembership === undefined) queryClient.removeQueries({ queryKey: context.statusKey, exact: true });
+    else queryClient.setQueryData(context.statusKey, context.previousMembership);
+    for (const [key, data] of [...context.previousPages, ...context.previousLists]) queryClient.setQueryData(key, data);
+  };
+  const refreshItem = (listId: string, itemId: string) => {
+    void queryClient.invalidateQueries({ queryKey: membershipKey(itemId) });
+    void queryClient.invalidateQueries({ queryKey: ['listItems', user?.uid, listId] });
+    void queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
+  };
+
   const addToList = useMutation({
+    mutationKey: bookmarkMutationKey,
     mutationFn: async ({
       listId,
       item
@@ -174,28 +222,20 @@ export function useBookmarks(targetUserId?: string) {
 
       const listRef = doc(db, 'users', user.uid, 'lists', listId);
 
-      await setDoc(bookmarkRef, {
-        ...item,
-        addedAt: serverTimestamp(),
-        addedBy: user.uid,
-      });
-
-      await updateDoc(listRef, {
-        updatedAt: serverTimestamp()
-      });
+      const batch = writeBatch(db);
+      batch.set(bookmarkRef, { ...item, addedAt: serverTimestamp(), addedBy: user.uid });
+      batch.update(listRef, { updatedAt: serverTimestamp() });
+      await batch.commit();
 
       return { listId, item };
     },
-    onSuccess: ({ listId }) => {
-      queryClient.invalidateQueries({ queryKey: ['listItems', user?.uid, listId] });
-      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
-      if (effectiveUserId && effectiveUserId !== user?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['lists', effectiveUserId] });
-      }
-    },
+    onMutate: ({ listId, item }) => optimisticItem(listId, item.id, { ...item, addedAt: new Date(), addedBy: user?.uid }),
+    onError: rollbackItem,
+    onSettled: (_data, _error, { listId, item }) => refreshItem(listId, item.id),
   });
 
   const removeFromList = useMutation({
+    mutationKey: bookmarkMutationKey,
     mutationFn: async ({
       listId,
       itemId
@@ -205,24 +245,16 @@ export function useBookmarks(targetUserId?: string) {
     }) => {
       if (!user) throw new Error('User not authenticated');
 
-      await deleteDoc(
-        doc(db, 'users', user.uid, 'lists', listId, 'items', itemId)
-      );
-
-      const listRef = doc(db, 'users', user.uid, 'lists', listId);
-      await updateDoc(listRef, {
-        updatedAt: serverTimestamp()
-      });
+      const batch = writeBatch(db);
+      batch.delete(doc(db, 'users', user.uid, 'lists', listId, 'items', itemId));
+      batch.update(doc(db, 'users', user.uid, 'lists', listId), { updatedAt: serverTimestamp() });
+      await batch.commit();
 
       return { listId, itemId };
     },
-    onSuccess: ({ listId }) => {
-      queryClient.invalidateQueries({ queryKey: ['listItems', user?.uid, listId] });
-      queryClient.invalidateQueries({ queryKey: ['lists', user?.uid] });
-      if (effectiveUserId && effectiveUserId !== user?.uid) {
-        queryClient.invalidateQueries({ queryKey: ['lists', effectiveUserId] });
-      }
-    },
+    onMutate: ({ listId, itemId }) => optimisticItem(listId, itemId),
+    onError: rollbackItem,
+    onSettled: (_data, _error, { listId, itemId }) => refreshItem(listId, itemId),
   });
 
   const createList = useMutation({
@@ -276,22 +308,22 @@ export function useBookmarks(targetUserId?: string) {
   const useIsItemBookmarked = (itemId: string) => {
     const { user } = useAuth();
     
-    return useQuery({
-      queryKey: ['isBookmarked', user?.uid, itemId],
+    const result = useQuery({
+      queryKey: membershipKey(itemId),
       queryFn: async () => {
-        if (!user) return false;
-        
+        if (!user) return [];
         const itemsQuery = query(
           collectionGroup(db, 'items'),
           where('id', '==', itemId),
           where('addedBy', '==', user.uid)
         );
-        
-        const querySnapshot = await getDocs(itemsQuery);
-        return !querySnapshot.empty;
+        const snapshot = await getDocs(itemsQuery);
+        return Array.from(new Set(snapshot.docs.map(item => item.ref.parent.parent!.id)));
       },
       enabled: !!user && !!itemId,
+      staleTime: 60_000,
     });
+    return { ...result, data: Boolean(result.data?.length), listIds: result.data ?? [] };
   };
 
   const updateListSettings = useMutation({
@@ -318,6 +350,7 @@ export function useBookmarks(targetUserId?: string) {
   return {
     lists,
     listsLoading,
+    bookmarkPending,
     isOwner,
     useListItems,
     addToList: (listId: string, item: Omit<BookmarkedItem, 'addedAt'>) =>
