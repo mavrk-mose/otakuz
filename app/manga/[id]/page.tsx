@@ -6,7 +6,7 @@ import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import {Star, BookOpen, Share2} from 'lucide-react';
+import {Star, BookOpen, Users, Share2} from 'lucide-react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {BookmarkButton} from "@/components/bookmark-button";
 import Image from 'next/image';
