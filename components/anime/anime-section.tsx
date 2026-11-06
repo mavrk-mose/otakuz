@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useQuery } from "@tanstack/react-query";
 import { getTopAnime } from "@/lib/api";
 import { Card } from "@/components/ui/card";
@@ -90,6 +91,7 @@ export function AnimeSection() {
         ) : (
           animeList?.slice(0, 8).map((anime) => (
               <motion.div key={anime.mal_id} variants={item}>
+                <AnimeHoverPreview animeId={anime.mal_id} title={anime.title} poster={anime.imageUrl || undefined}>
                 <Card className="media-card-surface group overflow-hidden">
                   <div className="relative aspect-[2/3] bg-muted">
                     {anime.imageUrl && (
@@ -129,6 +131,7 @@ export function AnimeSection() {
                     </p>
                   </div>
                 </Card>
+                </AnimeHoverPreview>
               </motion.div>
             ))
         )}

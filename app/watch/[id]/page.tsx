@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useEffect, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -201,8 +202,8 @@ export default function WatchPage() {
               {data?.pages.flatMap((page, pageIndex) =>
                 page.data.flatMap((animeData: any, groupIndex: number) =>
                   animeData.entry.map((anime: AnimeEntry, animeIndex: number) => (
+                    <AnimeHoverPreview key={`${pageIndex}-${groupIndex}-${animeIndex}-${animeData.content}-${anime.mal_id}`} animeId={anime.mal_id} title={anime.title} poster={anime.images.webp.image_url}>
                     <Card
-                      key={`${pageIndex}-${groupIndex}-${animeIndex}-${animeData.content}-${anime.mal_id}`}
                       className="cursor-pointer overflow-hidden transition-colors hover:bg-accent"
                       onClick={() => router.push(`/watch/${anime.mal_id}`)}
                     >
@@ -224,6 +225,7 @@ export default function WatchPage() {
                         </p>
                       </div>
                     </Card>
+                    </AnimeHoverPreview>
                   ))
                 )
               )}

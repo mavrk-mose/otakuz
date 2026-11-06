@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useClickOutside } from "@/hooks/search/use-click-outside";
@@ -45,9 +46,9 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
         ) : searchResults?.length ? (
           <div className="p-2">
             {searchResults.map((result) => (
+              <AnimeHoverPreview key={`${result.type}-${result.id}`} animeId={result.id} title={result.title} poster={result.image} enabled={result.type === 'anime'}>
               <Link
                 href={`/${result.type}/${result.id}`}
-                key={`${result.type}-${result.id}`}
                 className="flex items-start gap-3 p-2 hover:bg-accent rounded-lg"
                 onClick={onSelect}
               >
@@ -73,6 +74,7 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
                   </div>
                 </div>
               </Link>
+              </AnimeHoverPreview>
             ))}
           </div>
         ) : (

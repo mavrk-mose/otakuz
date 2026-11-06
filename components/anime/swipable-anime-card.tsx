@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import React, { useCallback, useEffect, useRef } from "react";
 import {
   animate,
@@ -146,6 +147,7 @@ export function SwipableAnimeCard({
         pointerEvents: index === 0 ? "auto" : "none",
       }}
     >
+      <AnimeHoverPreview animeId={anime.mal_id} title={anime.title} poster={anime.images.webp.large_image_url} className="h-full" enabled={index === 0}>
       <Card className="w-full h-full overflow-hidden bg-card shadow-xl select-none">
         <div className="relative w-full h-full">
           <Image
@@ -187,6 +189,7 @@ export function SwipableAnimeCard({
           </div>
         </div>
       </Card>
+      </AnimeHoverPreview>
     </motion.div>
   );
 }

@@ -1,3 +1,4 @@
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -84,6 +85,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
         const data = message.animeData
         if (!data) return null
         return (
+          <AnimeHoverPreview animeId={data.id} title={data.title} poster={data.image}>
           <div className="w-full max-w-[270px] overflow-hidden rounded-xl border border-border/50 bg-card text-card-foreground shadow-lg transition-transform hover:scale-[1.01]">
             <div className="relative aspect-[2/3] w-full overflow-hidden bg-muted">
               <Image
@@ -120,6 +122,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
               </div>
             </div>
           </div>
+          </AnimeHoverPreview>
         )
       }
 

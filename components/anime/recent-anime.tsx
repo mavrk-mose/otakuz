@@ -1,3 +1,4 @@
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { AnimeEntry } from "@/types/anime";
 import { Card } from "../ui/card";
 import Image from "next/image";
@@ -17,8 +18,8 @@ interface RecentAnimeProps {
 const RecentAnime = ({ animeData }: RecentAnimeProps) => (
   <>
     {animeData.entry.map((anime: AnimeEntry) => (
+      <AnimeHoverPreview key={anime.mal_id} animeId={anime.mal_id} title={anime.title} poster={anime.images.webp.image_url}>
       <Link
-        key={anime.mal_id}
         href={`/watch/${anime.mal_id}`}
         className="block"
       >
@@ -37,6 +38,7 @@ const RecentAnime = ({ animeData }: RecentAnimeProps) => (
           </div>
         </Card>
       </Link>
+      </AnimeHoverPreview>
     ))}
   </>
 );

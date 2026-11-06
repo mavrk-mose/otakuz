@@ -1,5 +1,6 @@
 "use client"
 
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Star } from 'lucide-react';
@@ -55,6 +56,7 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
               className="w-[210px] sm:w-[240px] md:w-[260px] shrink-0"
               whileHover={{ scale: 1.02 }}
             >
+              <AnimeHoverPreview animeId={rec.entry.mal_id} title={rec.entry.title} poster={rec.entry.images.webp.image_url}>
               <Card className="media-card-surface overflow-hidden">
                 <div className="relative aspect-[2/3]">
                   <Image
@@ -80,6 +82,7 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
                   </Link>
                 </div>
               </Card>
+              </AnimeHoverPreview>
             </motion.div>
           ))}
         </div>

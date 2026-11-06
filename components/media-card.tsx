@@ -1,5 +1,6 @@
 "use client";
 
+import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
 import Link from "next/link";
@@ -52,6 +53,7 @@ export function MediaCard({ item, type, showBookmark = false }: MediaCardProps) 
 
     return (
         <motion.div variants={animationItem}>
+            <AnimeHoverPreview animeId={item.mal_id} title={item.title} poster={imageUrl} enabled={isAnime}>
             <Card className="media-card-surface overflow-hidden group rounded-lg">
                 <div className="relative aspect-[2/3]">
                     <Link href={detailUrl}>
@@ -104,6 +106,7 @@ export function MediaCard({ item, type, showBookmark = false }: MediaCardProps) 
                     </p>
                 </div>
             </Card>
+            </AnimeHoverPreview>
         </motion.div>
     );
 }

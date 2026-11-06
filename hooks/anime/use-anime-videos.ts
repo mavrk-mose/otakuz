@@ -5,8 +5,8 @@ import { useQuery } from "@tanstack/react-query";
 export function useAnimeVideos(id: string) {
     return useQuery<Omit<AnimeVideos, "episodes">>({
         queryKey: ['animeVideos', id],
-        queryFn: async () => {
-            const response = await fetch(`${API_BASE_URL}/anime/${id}/videos`);
+        queryFn: async ({ signal }) => {
+            const response = await fetch(`${API_BASE_URL}/anime/${id}/videos`, { signal });
             if (!response.ok) {
                 const error = new Error('Failed to fetch anime details') as any;
                 error.status = response.status;
