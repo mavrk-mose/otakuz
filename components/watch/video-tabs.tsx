@@ -81,7 +81,7 @@ function VideoThumbnail({ images, youtubeId, title }: VideoThumbnailProps) {
 }
 
 interface VideoTabsProps {
-  animeVideos: AnimeVideos | undefined;
+  animeVideos: Omit<AnimeVideos, "episodes"> | undefined;
   selectedVideoUrl: string;
   onVideoSelect: (url: string) => void;
 }
@@ -94,43 +94,16 @@ export default function VideoTabs({
   const { t } = useI18n();
   if (!animeVideos) return null;
 
-  const { episodes, promo, music_videos } = animeVideos;
+  const { promo, music_videos } = animeVideos;
 
   return (
     <div className="border-b bg-muted/40 p-4">
-      <Tabs defaultValue="episodes" className="w-full">
+      <Tabs key={promo.length ? "promo" : "music"} defaultValue={promo.length ? "promo" : "music"} className="w-full">
         {/* TAB LABELS */}
         <TabsList className="mb-4 bg-muted">
-          {episodes.length > 0 && <TabsTrigger value="episodes">{t("common.episodes")}</TabsTrigger>}
           {promo.length > 0 && <TabsTrigger value="promo">{t("watch.promos")}</TabsTrigger>}
           {music_videos.length > 0 && <TabsTrigger value="music">{t("watch.musicVideos")}</TabsTrigger>}
         </TabsList>
-
-        {/* EPISODES TAB */}
-        <TabsContent value="episodes">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {episodes.map((ep) => (
-              <Card
-                key={ep.mal_id}
-                onClick={() => onVideoSelect(ep.url)}
-                className={cn(
-                  "cursor-pointer border bg-card p-2 transition-colors",
-                  ep.url === selectedVideoUrl
-                    ? "border-primary shadow-md"
-                    : "border-border hover:bg-accent"
-                )}
-              >
-                <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">
-                  <VideoThumbnail
-                    images={{ image_url: ep.images?.jpg?.image_url }}
-                    title={ep.title}
-                  />
-                </div>
-                <p className="text-sm mt-2 line-clamp-2">{ep.title}</p>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
 
         {/* PROMOS TAB */}
         <TabsContent value="promo">

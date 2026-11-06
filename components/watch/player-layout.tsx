@@ -82,6 +82,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
     width: number;
   } | null>(null);
 
+  const autoPlay = usePlayerStore((state) => state.autoPlay);
   const videoSrc = usePlayerStore((state) => state.videoSrc);
   const currentVideoId = usePlayerStore((state) => state.currentVideoId);
   const title = usePlayerStore((state) => state.title);
@@ -295,6 +296,14 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
               src={videoSrc}
               title={title}
               poster={posterUrl ?? undefined}
+              autoPlay={autoPlay}
+              onAutoPlayFail={() => {
+                const player = playerRef.current;
+                if (autoPlay && player && !player.muted) {
+                  player.muted = true;
+                  void player.play().catch(() => undefined);
+                }
+              }}
               playsInline
               crossOrigin
               preload="metadata"
@@ -312,7 +321,12 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                 usePlayerStore.getState().setIsPlaying(false);
               }}
               onTimeUpdate={handleTimeUpdate}
-              onEnded={() => usePlayerStore.getState().setIsPlaying(false)}
+              onEnded={() => {
+                const next = usePlayerStore.getState().advanceQueue();
+                if (next?.playerRoute && pathname === next.playerRoute.split("?")[0]) {
+                  router.replace(next.playerRoute, { scroll: false });
+                }
+              }}
             >
               <MediaProvider />
               {!shouldDisplayMinimized && (

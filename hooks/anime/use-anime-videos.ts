@@ -3,7 +3,7 @@ import { AnimeVideos } from "@/types/anime";
 import { useQuery } from "@tanstack/react-query";
 
 export function useAnimeVideos(id: string) {
-    return useQuery<AnimeVideos>({
+    return useQuery<Omit<AnimeVideos, "episodes">>({
         queryKey: ['animeVideos', id],
         queryFn: async () => {
             const response = await fetch(`${API_BASE_URL}/anime/${id}/videos`);
@@ -13,7 +13,8 @@ export function useAnimeVideos(id: string) {
                 throw error;
             }
             const data = await response.json();
-            return data.data;
+            // The video catalogue endpoint also includes episode links; never retain or use them.
+            return { promo: data.data?.promo || [], music_videos: data.data?.music_videos || [] };
         },
         enabled: !!id,
         staleTime: Infinity,

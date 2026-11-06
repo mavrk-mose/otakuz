@@ -9,9 +9,15 @@ export interface PlayerVideo {
   title?: string;
   posterUrl?: string;
   playerRoute?: string;
+  autoPlay?: boolean;
 }
 
 interface PlayerStore {
+  autoPlay: boolean;
+  queue: PlayerVideo[];
+  queueIndex: number;
+  openQueue: (videos: PlayerVideo[], startIndex?: number) => void;
+  advanceQueue: () => PlayerVideo | null;
   currentVideoId: string | null;
   videoSrc: string | null;
   title: string;
@@ -39,6 +45,9 @@ const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : error;
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
+  autoPlay: false,
+  queue: [],
+  queueIndex: -1,
   currentVideoId: null,
   videoSrc: null,
   title: "Anime video",
@@ -55,6 +64,9 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       const isSameSource = state.videoSrc === video.src;
 
       return {
+        autoPlay: video.autoPlay ?? false,
+        queue: [],
+        queueIndex: -1,
         currentVideoId: video.id,
         videoSrc: video.src,
         title: video.title ?? "Anime video",
@@ -66,6 +78,28 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
         isPlaying: isSameSource ? state.isPlaying : false,
       };
     }),
+
+  openQueue: (videos, startIndex = 0) => {
+    const video = videos[startIndex];
+    if (!video) return;
+    const stayMinimized = get().isMinimized && get().videoSrc === video.src;
+    get().openPlayer({ ...video, autoPlay: true });
+    set({ queue: videos, queueIndex: startIndex, isMinimized: stayMinimized });
+  },
+
+  advanceQueue: () => {
+    const state = get();
+    const nextIndex = state.queueIndex + 1;
+    const next = state.queue[nextIndex];
+    if (!next) { set({ isPlaying: false, autoPlay: false }); return null; }
+    set({
+      currentVideoId: next.id, videoSrc: next.src,
+      title: next.title ?? "Anime video", posterUrl: next.posterUrl ?? null,
+      playerRoute: next.playerRoute ?? null, currentPlaybackTime: 0,
+      autoPlay: true, isPlaying: false, queueIndex: nextIndex,
+    });
+    return next;
+  },
 
   attachPlayer: (player) => set({ player }),
 
@@ -112,6 +146,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
   close: () => {
     set({
+      autoPlay: false, queue: [], queueIndex: -1,
       currentVideoId: null,
       videoSrc: null,
       title: "Anime video",

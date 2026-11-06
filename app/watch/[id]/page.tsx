@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
@@ -13,7 +13,7 @@ import { useAnimeVideos } from "@/hooks/anime/use-anime-videos";
 import WatchSkeleton from "@/components/skeletons/watch-skeleton";
 import Image from "next/image";
 import RecentAnime from "@/components/anime/recent-anime";
-import { AnimeEntry, AnimeVideos } from "@/types/anime";
+import { AnimeEntry } from "@/types/anime";
 import VideoTabs from "@/components/watch/video-tabs";
 
 import Link from "next/link";
@@ -50,74 +50,38 @@ export default function WatchPage() {
 
   const videoFromQuery = searchParams.get("videoUrl");
 
-  const defaultVideoUrl = animeVideos
-    ? animeVideos.episodes?.[0]?.url ||
-      animeVideos.promo?.[0]?.trailer.embed_url ||
-      animeVideos.music_videos?.[0]?.video.embed_url ||
-      null
-    : null;
-
-  const selectedVideoUrl = videoFromQuery || defaultVideoUrl;
-
-  const selectedVideoTitle = animeVideos
-    ? animeVideos.episodes?.find(
-        (episode: AnimeVideos["episodes"][number]) =>
-          episode.url === selectedVideoUrl
-      )?.title ||
-      animeVideos.promo?.find(
-        (promo: AnimeVideos["promo"][number]) =>
-          promo.trailer.embed_url === selectedVideoUrl
-      )?.title ||
-      animeVideos.music_videos?.find(
-        (musicVideo: AnimeVideos["music_videos"][number]) =>
-          musicVideo.video.embed_url === selectedVideoUrl
-      )?.title ||
-      "Anime video"
-    : "Anime video";
-
-  const selectedVideoPoster = animeVideos
-    ? animeVideos.episodes?.find(
-        (episode: AnimeVideos["episodes"][number]) =>
-          episode.url === selectedVideoUrl
-      )?.images?.jpg?.image_url ||
-      animeVideos.promo?.find(
-        (promo: AnimeVideos["promo"][number]) =>
-          promo.trailer.embed_url === selectedVideoUrl
-      )?.trailer.images?.large_image_url ||
-      animeVideos.promo?.find(
-        (promo: AnimeVideos["promo"][number]) =>
-          promo.trailer.embed_url === selectedVideoUrl
-      )?.trailer.images?.medium_image_url ||
-      animeVideos.music_videos?.find(
-        (musicVideo: AnimeVideos["music_videos"][number]) =>
-          musicVideo.video.embed_url === selectedVideoUrl
-      )?.video.images?.large_image_url ||
-      animeVideos.music_videos?.find(
-        (musicVideo: AnimeVideos["music_videos"][number]) =>
-          musicVideo.video.embed_url === selectedVideoUrl
-      )?.video.images?.medium_image_url
-    : undefined;
+  const promoQueue = useMemo(() => {
+    const seen = new Set<string>();
+    return (animeVideos?.promo || []).flatMap(promo => {
+      const src = promo.trailer?.embed_url;
+      if (!src || seen.has(src)) return [];
+      seen.add(src);
+      return [{
+        id: `${currentId}:${src}`, src, title: promo.title,
+        posterUrl: promo.trailer.images?.large_image_url || promo.trailer.images?.medium_image_url || undefined,
+        playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(src)}`,
+      }];
+    });
+  }, [animeVideos, currentId]);
+  const musicQueue = useMemo(() => (animeVideos?.music_videos || []).flatMap(music => {
+    const src = music.video?.embed_url;
+    return src ? [{ id: `${currentId}:${src}`, src, title: music.title,
+      posterUrl: music.video.images?.large_image_url || undefined,
+      playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(src)}` }] : [];
+  }), [animeVideos, currentId]);
+  const promoIndex = promoQueue.findIndex(video => video.src === videoFromQuery);
+  const musicIndex = musicQueue.findIndex(video => video.src === videoFromQuery);
+  const queue = musicIndex >= 0 && promoIndex < 0 ? musicQueue : promoQueue;
+  const selectedIndex = queue === musicQueue ? musicIndex : Math.max(0, promoIndex);
+  const selectedVideo = queue[selectedIndex];
+  const selectedVideoUrl = selectedVideo?.src || null;
+  const selectedVideoTitle = selectedVideo?.title || "Anime video";
+  const selectedVideoPoster = selectedVideo?.posterUrl;
 
   useEffect(() => {
-    if (!currentId || !selectedVideoUrl) {
-      return;
-    }
-
-    usePlayerStore.getState().openPlayer({
-      id: `${currentId}:${selectedVideoUrl}`,
-      src: selectedVideoUrl,
-      title: selectedVideoTitle,
-      posterUrl: selectedVideoPoster!,
-      playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(
-        selectedVideoUrl
-      )}`,
-    });
-  }, [
-    currentId,
-    selectedVideoPoster,
-    selectedVideoTitle,
-    selectedVideoUrl,
-  ]);
+    if (!selectedVideo) return;
+    usePlayerStore.getState().openQueue(queue, selectedIndex);
+  }, [queue, selectedIndex, selectedVideo]);
 
   const selectedAnime =
     data?.pages
@@ -135,7 +99,7 @@ export default function WatchPage() {
               ? `${selectedAnime.title} — ${selectedVideoTitle}`
               : selectedAnime.title
             : selectedVideoTitle,
-          subtitle: "Watched Episode / Video",
+          subtitle: "Watched Promo / Video",
           image:
             selectedVideoPoster ||
             selectedAnime?.images?.webp?.image_url ||
@@ -147,7 +111,7 @@ export default function WatchPage() {
       : null
   );
 
-  if (isLoading) return <WatchSkeleton />;
+  if (isLoading || isLoadingVideos) return <WatchSkeleton />;
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -217,6 +181,8 @@ export default function WatchPage() {
             </div>
           )}
 
+          {!selectedVideo && <p role="status" className="p-4 text-muted-foreground">No promos are available for this anime.</p>}
+          {promoQueue.length > 0 && <p className="px-4 py-2 text-sm text-muted-foreground">Promo queue · {promoIndex >= 0 ? promoIndex + 1 : 1} / {promoQueue.length}</p>}
           <VideoTabs
             animeVideos={animeVideos}
             selectedVideoUrl={selectedVideoUrl ?? ""}
