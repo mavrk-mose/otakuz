@@ -1,6 +1,7 @@
 "use client"
 
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
+import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
 import {motion} from "framer-motion";
 import Image from "next/image";
@@ -13,19 +14,14 @@ export default function TitleBanner() {
     const {titles, isLoading} = useFetchTitles();
 
     if (isLoading) {
-        return (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {[...Array(4)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                        <div className="mb-4 aspect-[3/4] rounded-lg bg-muted"/>
-                        <div className="space-y-2">
-                            <div className="h-4 w-3/4 rounded bg-muted"/>
-                            <div className="h-4 w-1/2 rounded bg-muted"/>
-                        </div>
-                    </div>
-                ))}
-            </div>
-        )
+        return <ScrollArea className="w-full min-w-0 max-w-full" aria-busy="true" aria-label="Loading collections">
+            <div className="flex w-max gap-4 py-2" aria-hidden="true">
+                {Array.from({ length: 4 }, (_, i) => <div key={i} className="relative h-[360px] w-[240px] shrink-0 overflow-hidden rounded-lg sm:h-[420px] sm:w-[280px] md:h-[450px] md:w-[300px]">
+                    <Skeleton className="absolute inset-0" />
+                    <div className="absolute bottom-4 left-4 right-4 space-y-2"><Skeleton className="h-8 w-3/4 bg-muted-foreground/20" /><Skeleton className="h-5 w-20 bg-muted-foreground/20" /></div>
+                </div>)}
+            </div><ScrollBar orientation="horizontal" />
+        </ScrollArea>;
     }
 
     return (

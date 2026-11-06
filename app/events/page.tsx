@@ -8,10 +8,6 @@ import {GoogleAdUnit} from "@/components/ads/google-ad-unit";
 export default function EventsPage() {
     const { events, isLoading } = useFetchEvents();
 
-    if (isLoading) {
-        return <TimelineSkeleton/>;
-    }
-
     return (
         <div className="container mx-auto space-y-10 px-4 py-8">
             <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -22,7 +18,7 @@ export default function EventsPage() {
                 />
             </div>
 
-            <Timeline events={events || []}/>
+            {isLoading ? <TimelineSkeleton/> : <Timeline events={events || []}/>}
 
             <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
                 <GoogleAdUnit

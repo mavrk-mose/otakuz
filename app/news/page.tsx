@@ -1,5 +1,7 @@
 "use client";
 
+import { NewsPageSkeleton } from "@/components/skeletons/news-skeleton";
+
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -107,23 +109,7 @@ export default function NewsPage() {
     }
   };
 
-  if (isLoading && stories.length === 0) {
-    return (
-      <div className="-m-4 min-h-screen bg-background p-6 text-foreground">
-        <div className="mx-auto max-w-7xl animate-pulse space-y-6">
-          <div className="h-12 w-full rounded-lg bg-card/60" />
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-            <div className="h-[460px] rounded-xl bg-card/60 lg:col-span-7" />
-            <div className="space-y-4 lg:col-span-5">
-              <div className="h-36 rounded-xl bg-card/60" />
-              <div className="h-36 rounded-xl bg-card/60" />
-              <div className="h-36 rounded-xl bg-card/60" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  if (isLoading && stories.length === 0) return <NewsPageSkeleton />;
 
   return (
     <div className="-m-4 min-h-screen bg-background text-foreground">

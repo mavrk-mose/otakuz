@@ -11,7 +11,7 @@ import { useInView } from "react-intersection-observer";
 import { useRecentAnime } from "@/hooks/anime/use-recent-anime";
 import { useAnimeVideos } from "@/hooks/anime/use-anime-videos";
 
-import WatchSkeleton from "@/components/skeletons/watch-skeleton";
+import WatchSkeleton, { RecentAnimeSkeleton } from "@/components/skeletons/watch-skeleton";
 import Image from "next/image";
 import RecentAnime from "@/components/anime/recent-anime";
 import { AnimeEntry } from "@/types/anime";
@@ -138,16 +138,7 @@ export default function WatchPage() {
 
           {hasNextPage &&
             Array.from({ length: 4 }).map((_, index) => (
-              <Card
-                key={`next-page-loading-${index}`}
-                className="animate-pulse m-4"
-              >
-                <div className="aspect-[2/3] bg-muted" />
-                <div className="p-4 space-y-2">
-                  <div className="h-4 bg-muted rounded w-3/4" />
-                  <div className="h-4 bg-muted rounded w-1/2" />
-                </div>
-              </Card>
+              <div key={`next-page-loading-${index}`} className="m-4"><RecentAnimeSkeleton /></div>
             ))}
         </ScrollArea>
       </aside>

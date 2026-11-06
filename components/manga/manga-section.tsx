@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { getTopManga } from '@/lib/api';
+import { MediaCardSkeleton } from '@/components/skeletons/media-card-skeleton';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,15 +53,7 @@ export function MangaSection() {
             className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6"
         >
           {isLoading ? (
-              Array(8).fill(null).map((_, index) => (
-                  <Card key={index} className="animate-pulse">
-                    <div className="aspect-[2/3] bg-muted" />
-                    <div className="p-4 space-y-2">
-                      <div className="h-4 bg-muted rounded w-3/4" />
-                      <div className="h-4 bg-muted rounded w-1/2" />
-                    </div>
-                  </Card>
-              ))
+              <MediaCardSkeleton count={8} variant="home-manga" />
           ) : (
               mangaList?.slice(0, 8).map((manga: any) => (
                   <motion.div key={manga.mal_id} variants={item}>

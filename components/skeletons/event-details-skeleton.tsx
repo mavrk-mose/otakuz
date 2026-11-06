@@ -1,13 +1,14 @@
+import { GallerySkeleton } from "./gallery-skeleton"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card } from "@/components/ui/card"
 
 export default function EventDetailsSkeleton() {
     return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto px-4 py-6">
+        <div className="min-h-screen bg-background" aria-busy="true" aria-label="Loading event details">
+            <div className="container mx-auto max-w-full px-4 py-6">
                 <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
                     {/* Main content */}
-                    <div className="lg:col-span-2 space-y-6">
+                    <div className="min-w-0 max-w-full lg:col-span-2 space-y-6">
                         {/* Hero Image Skeleton */}
                         <Card className="overflow-hidden w-full">
                             <Skeleton className="aspect-video w-full" />
@@ -15,7 +16,7 @@ export default function EventDetailsSkeleton() {
 
                         {/* Event details Skeleton */}
                         <div className="space-y-4">
-                            <Skeleton className="h-10 w-3/4" />
+                            <Skeleton className="h-8 w-3/4 md:h-10" />
                             <div className="flex flex-wrap gap-2">
                                 <Skeleton className="h-6 w-20" />
                                 <Skeleton className="h-6 w-32" />
@@ -27,15 +28,7 @@ export default function EventDetailsSkeleton() {
                             </Card>
                         </div>
 
-                        {/* Event Gallery Skeleton */}
-                        <div className="space-y-4 w-full">
-                            <Skeleton className="h-8 w-40" />
-                            <div className="flex gap-4 overflow-x-auto pb-4">
-                                {[...Array(5)].map((_, index) => (
-                                    <Skeleton key={index} className="w-[180px] md:w-[200px] h-[240px] md:h-[266px] shrink-0" />
-                                ))}
-                            </div>
-                        </div>
+                        <GallerySkeleton type="event" />
 
                         {/* Gaming Tournaments Skeleton */}
                         <div className="space-y-4">
@@ -58,7 +51,7 @@ export default function EventDetailsSkeleton() {
                     </div>
 
                     {/* Sidebar */}
-                    <div className="space-y-6">
+                    <div className="min-w-0 space-y-6 self-start lg:sticky lg:top-6">
                         {/* Event Details and Ticket Purchase Skeleton */}
                         <Card className="p-4 md:p-6">
                             <div className="space-y-4">
@@ -77,7 +70,8 @@ export default function EventDetailsSkeleton() {
                                     <Skeleton className="h-4 w-24 mb-1" />
                                     <Skeleton className="h-8 w-32" />
                                 </div>
-                                <Skeleton className="h-10 w-full" />
+                                <Skeleton className="h-11 w-full" />
+                                <Skeleton className="h-11 w-full" />
                             </div>
                         </Card>
 
@@ -109,7 +103,7 @@ export default function EventDetailsSkeleton() {
                         {/* Event Schedule Skeleton */}
                         <Card className="p-4 md:p-6">
                             <Skeleton className="h-6 w-40 mb-4" />
-                            <div className="space-y-4">
+                            <div className="h-[300px] space-y-4 overflow-hidden">
                                 {[...Array(5)].map((_, index) => (
                                     <div key={index} className="flex gap-4">
                                         <Skeleton className="w-20 h-4" />

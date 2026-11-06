@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+import { RecommendationsSkeleton } from '@/components/skeletons/recommendations-skeleton';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -29,27 +30,7 @@ export function MangaRecommendations({ mangaId }: RecommendationsProps) {
     },
   });
 
-  if (isLoading) {
-    return (
-      <div className="w-full min-w-0 max-w-full space-y-4">
-        <h2 className="text-2xl font-bold">{t("anime.recommendations")}</h2>
-        <ScrollArea className="w-full min-w-0 max-w-full">
-          <div className="flex w-max gap-4 py-1">
-            {[...Array(4)].map((_, i) => (
-              <Card key={i} className="w-[210px] sm:w-[240px] md:w-[260px] shrink-0 animate-pulse">
-                <div className="aspect-[2/3] bg-muted" />
-                <div className="p-4 space-y-2">
-                  <div className="h-4 bg-muted rounded w-3/4" />
-                  <div className="h-4 bg-muted rounded w-1/2" />
-                </div>
-              </Card>
-            ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
-    );
-  }
+  if (isLoading) return <RecommendationsSkeleton title={t("anime.recommendations")} />;
 
   if (!recommendations?.length) {
     return null;

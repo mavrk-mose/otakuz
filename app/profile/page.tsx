@@ -1,5 +1,6 @@
 "use client";
 
+import { ProfileSkeleton } from "@/components/skeletons/profile-skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user-profile";
 import { Card } from "@/components/ui/card";
@@ -41,8 +42,10 @@ function ProfileContent() {
     }
   }, [authLoading, user, queryUserId, router]);
 
-  if (authLoading && !queryUserId) return null;
+  if (authLoading && !queryUserId) return <ProfileSkeleton />;
   if (!user && !queryUserId) return null;
+
+  if (profileLoading) return <ProfileSkeleton />;
 
   // If viewing someone else's profile and it is private
   if (!profileLoading && !isOwnProfile && profile && profile.isPublic === false) {
@@ -247,13 +250,7 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <Suspense
-      fallback={
-        <div className="container mx-auto px-4 py-8 animate-pulse text-muted-foreground">
-          Loading profile...
-        </div>
-      }
-    >
+    <Suspense fallback={<ProfileSkeleton />}>
       <ProfileContent />
     </Suspense>
   );

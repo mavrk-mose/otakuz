@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef } from 'react'
+import { ProductDetailsSkeleton } from '@/components/skeletons/product-details-skeleton'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -31,17 +32,7 @@ export default function ProductPage(props: Props) {
 
   const sizes = ["SM", "M", "L", "XL", "2XL", "3XL"]
 
-  if (isLoading) {
-    return (
-        <div className="min-h-screen bg-background">
-          <div className="container mx-auto px-4 py-8">
-            <div className="animate-pulse">
-              <div className="h-96 rounded-lg bg-muted" />
-            </div>
-          </div>
-        </div>
-    )
-  }
+  if (isLoading) return <ProductDetailsSkeleton />
 
   if (!product) {
     return (

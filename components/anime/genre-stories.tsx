@@ -38,9 +38,9 @@ export function GenreStories() {
       <ScrollArea className="w-full min-w-0 max-w-full">
         <div className="flex w-max gap-4 px-10 py-4">
           {[...Array(20)].map((_, i) => (
-            <div key={i} className="animate-pulse">
+            <div key={i} className="flex animate-pulse flex-col items-center motion-reduce:animate-none">
               <div className="w-16 h-16 rounded-full bg-muted" />
-              <div className="w-16 h-4 mt-2 rounded bg-muted" />
+              <div className="w-16 h-5 mt-2 rounded bg-muted" />
             </div>
           ))}
         </div>

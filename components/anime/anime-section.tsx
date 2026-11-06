@@ -3,6 +3,7 @@
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useQuery } from "@tanstack/react-query";
 import { getTopAnime } from "@/lib/api";
+import { MediaCardSkeleton } from '@/components/skeletons/media-card-skeleton';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,17 +66,7 @@ export function AnimeSection() {
                 {t("home.animeRequestPaused")}
               </p>
             )}
-            {Array(8)
-              .fill(null)
-              .map((_, index) => (
-                <Card key={index} className="animate-pulse border border-border/70 bg-card/60">
-                  <div className="aspect-[2/3] bg-muted" />
-                  <div className="space-y-2 p-4">
-                    <div className="h-4 w-3/4 rounded bg-muted" />
-                    <div className="h-4 w-1/2 rounded bg-muted" />
-                  </div>
-                </Card>
-              ))}
+            <MediaCardSkeleton count={8} variant="home-anime" />
           </>
         ) : isError ? (
           <div className="col-span-full text-center text-muted-foreground" role="alert">

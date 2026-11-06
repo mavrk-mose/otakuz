@@ -1,5 +1,7 @@
 "use client";
 
+import { HistorySkeleton } from "@/components/skeletons/history-skeleton";
+
 import { useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -257,19 +259,7 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
     { value: "channel", label: locale === "ja" ? "チャンネル" : "Channels", icon: Radio },
   ];
 
-  if (loading && items.length === 0) {
-    return (
-      <div className="space-y-4">
-        <div className="h-12 animate-pulse rounded-2xl border border-border bg-card" />
-        {[1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            className="h-24 animate-pulse rounded-2xl border border-border bg-card/70"
-          />
-        ))}
-      </div>
-    );
-  }
+  if (loading && items.length === 0) return <HistorySkeleton />;
 
   if (items.length === 0) {
     return (

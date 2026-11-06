@@ -56,7 +56,7 @@ export default function MangaDetailPage(props: Props) {
 
     if (isLoading) {
         return (
-            <DetailsSkeleton/>
+            <DetailsSkeleton type="manga"/>
         );
     }
 

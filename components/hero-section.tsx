@@ -1,5 +1,6 @@
 "use client"
 
+import { HeroSkeleton } from '@/components/skeletons/home-section-skeleton';
 import React, { useState } from 'react';
 import { useAnimeVideos } from '@/hooks/anime/use-anime-videos';
 import { PromoVideo, promoEmbedUrl } from '@/components/anime/promo-video';
@@ -12,12 +13,13 @@ import { useI18n } from "@/components/i18n-provider";
 
 export function HeroSection() {
   const { t } = useI18n();
-  const { data: anime } = useRandomAnime(); // Default to a popular anime
+  const { data: anime, isLoading } = useRandomAnime(); // Default to a popular anime
   const { data: videos } = useAnimeVideos(anime ? String(anime.mal_id) : '');
   const [failedPromo, setFailedPromo] = useState<string>();
   const promo = promoEmbedUrl(anime?.trailer?.embed_url) ?? videos?.promo.map(video => promoEmbedUrl(video.trailer?.embed_url)).find(Boolean);
   const background = anime?.images?.webp?.large_image_url ?? '';
 
+  if (isLoading) return <HeroSkeleton />;
   if (!anime) return null;
 
   return (

@@ -25,6 +25,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import { CommunityMemberSkeleton } from "@/components/skeletons/community-member-skeleton";
+
 const HOME_PREVIEW_COUNT = 10;
 
 export function CommunityMemberCard({
@@ -182,12 +184,9 @@ export function CommunityProfilesSection() {
       </div>
 
       {isLoading ? (
-        <div className="flex gap-4 overflow-hidden pb-2">
+        <div className="flex gap-4 overflow-hidden pb-3 pt-1">
           {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-56 w-[275px] shrink-0 animate-pulse rounded-2xl border border-border bg-muted/40"
-            />
+            <div key={i} className="w-[270px] shrink-0 sm:w-[285px]"><CommunityMemberSkeleton /></div>
           ))}
         </div>
       ) : previewUsers.length === 0 ? (

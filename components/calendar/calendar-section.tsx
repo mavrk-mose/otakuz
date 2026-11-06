@@ -296,7 +296,7 @@ export function CalendarSection() {
               >
                 <Skeleton className="w-12 sm:w-16 h-5 sm:h-6" />
                 <Skeleton className="w-10 h-14 sm:w-12 sm:h-16 rounded-md" />
-                <Skeleton className="flex-1 h-5 sm:h-6" />
+                <div className="min-w-0 flex-1 space-y-1"><Skeleton className="h-5 w-4/5 sm:h-6" /><Skeleton className="h-4 w-1/2" /></div>
                 <Skeleton className="w-16 sm:w-24 h-5 sm:h-6" />
               </div>
             ))

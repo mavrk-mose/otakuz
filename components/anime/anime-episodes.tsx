@@ -47,20 +47,20 @@ export default function AnimeEpisodes({ id }: { id: string }) {
                     <div className="flex w-max gap-4 p-4">
                         {Array(4).fill(null).map((_, index) => (
                             <div key={`loading-${index}`} className="w-[270px] sm:w-[320px] shrink-0">
-                                <Card className="w-full h-full flex flex-col animate-pulse">
+                                <Card className="w-full h-full flex flex-col animate-pulse motion-reduce:animate-none">
                                     <CardHeader className="flex-none">
-                                        <div className="h-6 bg-muted rounded w-3/4 mb-2" />
-                                        <div className="h-4 bg-muted rounded w-1/2" />
+                                        <div className="h-4 bg-muted rounded w-3/4 mb-1" />
+                                        <div className="h-5 bg-muted rounded w-1/2" />
                                     </CardHeader>
                                     <CardContent className="flex-1">
-                                        <div className="space-y-2">
-                                            <div className="h-4 bg-muted rounded w-1/4" />
-                                            <div className="h-4 bg-muted rounded w-1/3" />
-                                            <div className="h-4 bg-muted rounded w-1/2" />
+                                        <div className="grid grid-cols-2 gap-2">
+                                            <div className="h-5 bg-muted rounded w-3/4" />
+                                            <div className="h-5 bg-muted rounded w-full" />
+                                            <div className="col-span-2 h-5 bg-muted rounded w-full" />
                                         </div>
                                     </CardContent>
-                                    <CardFooter className="flex-none pt-4">
-                                        <div className="h-10 bg-muted rounded w-full" />
+                                    <CardFooter className="flex-none pt-2">
+                                        <div className="h-8 bg-muted rounded w-full" />
                                     </CardFooter>
                                 </Card>
                             </div>

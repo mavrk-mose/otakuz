@@ -6,7 +6,7 @@ import { CommunityProfilesSection } from '@/components/home/community-profiles-s
 import { NewsSection } from '@/components/news/news-section';
 import { EventsSection } from '@/components/events/events-section';
 import { CalendarSection } from '@/components/calendar/calendar-section';
-import { I18nText } from '@/components/i18n-text';
+import { HomeSectionSkeleton } from '@/components/skeletons/home-section-skeleton';
 import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
             <HeroSection />
 
             <div className="container mx-auto px-4 py-8 space-y-16">
-                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                <Suspense fallback={<HomeSectionSkeleton type="anime" />}>
                     <AnimeSection />
                 </Suspense>
 
@@ -25,15 +25,15 @@ export default function Home() {
                     adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_HERO}
                 />
 
-                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                <Suspense fallback={<HomeSectionSkeleton type="manga" />}>
                     <MangaSection />
                 </Suspense>
 
-                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                <Suspense fallback={<HomeSectionSkeleton type="community" />}>
                     <CommunityProfilesSection />
                 </Suspense>
 
-                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                <Suspense fallback={<HomeSectionSkeleton type="news" />}>
                     <NewsSection />
                 </Suspense>
 
@@ -45,11 +45,11 @@ export default function Home() {
                     adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_HOME_FEED}
                 />
 
-                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                <Suspense fallback={<HomeSectionSkeleton type="calendar" />}>
                     <CalendarSection />
                 </Suspense>
 
-                <Suspense fallback={<div><I18nText message="common.loading" /></div>}>
+                <Suspense fallback={<HomeSectionSkeleton type="events" />}>
                     <EventsSection />
                 </Suspense>
             </div>

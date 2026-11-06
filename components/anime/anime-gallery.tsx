@@ -3,6 +3,7 @@
 import { useRef, useState } from "react"
 import Image from "next/image"
 import { Images } from "lucide-react"
+import { GallerySkeleton } from '@/components/skeletons/gallery-skeleton'
 import { Card } from "@/components/ui/card"
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
 import { motion } from "framer-motion"
@@ -23,35 +24,7 @@ export function AnimeGallery({ id }: { id: string }) {
   const [selectedIndex, setSelectedIndex] = useState(0)
   const carouselRef = useRef<CarouselApi | null>(null)
 
-  if (isLoading) {
-    return (
-      <div className="w-full min-w-0 max-w-full rounded-2xl border border-border/70 bg-card/50 p-2">
-        <ScrollArea className="w-full min-w-0 max-w-full">
-          <div className="flex items-center px-6 py-8 sm:px-8">
-            {Array(4)
-              .fill(null)
-              .map((_, index) => (
-                <div
-                  key={`loading-${index}`}
-                  className={`relative w-[135px] shrink-0 sm:w-[170px] md:w-[200px] ${
-                    index > 0 ? "-ml-6 sm:-ml-8" : ""
-                  }`}
-                  style={{
-                    transformOrigin: "center bottom",
-                    rotate: `${-5 + (index % 3) * 5}deg`,
-                  }}
-                >
-                  <Card className="overflow-hidden animate-pulse shadow-xl">
-                    <div className="aspect-[2/3] rounded-lg bg-muted" />
-                  </Card>
-                </div>
-              ))}
-          </div>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
-      </div>
-    )
-  }
+  if (isLoading) return <GallerySkeleton type="anime" />
 
   if (!pictures?.length) {
     return null

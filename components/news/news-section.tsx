@@ -1,5 +1,7 @@
 "use client";
 
+import { NewsGridSkeleton } from "@/components/skeletons/news-skeleton";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
 import { getAnimeNews } from "@/lib/api";
 import { ArrowRight, CalendarDays, MessageSquare, Radio, Share2 } from "lucide-react";
@@ -17,25 +19,10 @@ export function NewsSection() {
   });
 
   if (isLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="space-y-2">
-            <div className="h-6 w-36 animate-pulse rounded bg-card/60" />
-            <div className="h-4 w-64 animate-pulse rounded bg-card/40" />
-          </div>
-          <div className="h-9 w-28 animate-pulse rounded bg-card/60" />
-        </div>
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
-          <div className="h-80 animate-pulse rounded-xl bg-card/60 lg:col-span-7" />
-          <div className="space-y-4 lg:col-span-5">
-            <div className="h-24 animate-pulse rounded-xl bg-card/60" />
-            <div className="h-24 animate-pulse rounded-xl bg-card/60" />
-            <div className="h-24 animate-pulse rounded-xl bg-card/60" />
-          </div>
-        </div>
-      </div>
-    );
+    return <div className="space-y-6" aria-busy="true" aria-label="Loading latest news">
+      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4"><div className="space-y-1"><Skeleton className="h-7 w-64 max-w-full sm:h-8" /><Skeleton className="h-4 w-64 max-w-full sm:h-5" /></div><Skeleton className="h-10 w-28" /></div>
+      <NewsGridSkeleton home />
+    </div>;
   }
 
   const items = newsList || [];

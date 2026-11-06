@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { ChannelsSkeleton } from "@/components/skeletons/channels-skeleton";
 import { ChannelBrowser } from "@/components/channels/channel-browser";
 
 export const metadata: Metadata = {
@@ -11,16 +12,7 @@ export const metadata: Metadata = {
 export default function ChannelsPage() {
   return (
     <Suspense
-      fallback={
-        <div className="-m-4 min-h-[calc(100vh-4rem)] animate-pulse bg-background text-foreground">
-          <div className="h-[520px] bg-muted/60 lg:h-[620px]" />
-          <div className="mx-auto grid max-w-[1600px] grid-cols-2 gap-4 px-5 py-10 sm:grid-cols-3 lg:grid-cols-5">
-            {Array.from({ length: 10 }).map((_, index) => (
-              <div key={index} className="aspect-video rounded-xl bg-card border border-border" />
-            ))}
-          </div>
-        </div>
-      }
+      fallback={<ChannelsSkeleton />}
     >
       <ChannelBrowser />
     </Suspense>

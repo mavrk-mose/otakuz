@@ -42,7 +42,7 @@ export function InfiniteMediaGrid({
                     showBookmark={showBookmark}
                 />
             ))}
-            <div ref={ref} />
+            <div ref={ref} className="col-span-full h-px" aria-hidden="true" />
             {hasNextPage && <MediaCardSkeleton count={8} />}
         </>
     );

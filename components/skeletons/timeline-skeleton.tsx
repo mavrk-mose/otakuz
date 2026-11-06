@@ -3,11 +3,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 
 export function TimelineSkeleton() {
     return (
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8" aria-busy="true" aria-label="Loading events">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
                 <div className="space-y-2">
-                    <Skeleton className="h-8 w-64" />
-                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-9 w-64 max-w-full sm:h-10" />
+                    <Skeleton className="h-6 w-64 max-w-full" />
                 </div>
                 <Skeleton className="h-10 w-48" />
             </div>
@@ -18,7 +18,7 @@ export function TimelineSkeleton() {
                 {[...Array(3)].map((_, index) => (
                     <div key={index} className="grid grid-cols-[80px_1fr] sm:grid-cols-[100px_1fr] gap-4 sm:gap-8 relative">
                         {/* Date */}
-                        <div className="text-sm">
+                        <div className="text-sm pt-2">
                             <Skeleton className="h-5 w-16 mb-1" />
                             <Skeleton className="h-4 w-20" />
                         </div>
@@ -36,8 +36,8 @@ export function TimelineSkeleton() {
                                     <div className="flex-1 space-y-4">
                                         {/* Time and Title */}
                                         <div>
-                                            <Skeleton className="h-4 w-20 mb-2" />
-                                            <Skeleton className="h-6 w-3/4" />
+                                            <Skeleton className="h-6 w-20 mb-1" />
+                                            <Skeleton className="h-7 w-3/4 sm:h-8" />
                                         </div>
 
                                         {/* Organizers */}

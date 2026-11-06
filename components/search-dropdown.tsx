@@ -9,8 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
 import { useAnimeStore } from "@/store/use-anime-store";
-import Lottie from "lottie-react";
-import Pochita from "@/public/lottie/Animation - 1734030996440.json";
+import { Skeleton } from "@/components/ui/skeleton";
 import useSearch from "@/hooks/search/use-search";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -40,9 +39,7 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
     >
       <ScrollArea className="h-[400px]">
         {isLoading ? (
-          <div className="p-4 text-center">
-            <Lottie animationData={Pochita} />
-          </div>
+          <div className="p-2" aria-busy="true" aria-label="Loading search results">{Array.from({ length: 5 }, (_, i) => <div key={i} className="flex items-start gap-3 p-2" aria-hidden="true"><Skeleton className="h-[70px] w-[50px] shrink-0" /><div className="min-w-0 flex-1 space-y-2"><Skeleton className="h-6 w-4/5" /><div className="flex gap-2"><Skeleton className="h-5 w-12 rounded-full" /><Skeleton className="h-5 w-1/2" /></div></div></div>)}</div>
         ) : searchResults?.length ? (
           <div className="p-2">
             {searchResults.map((result) => (

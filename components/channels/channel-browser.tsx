@@ -1,5 +1,7 @@
 "use client";
 
+import { ChannelsSkeleton } from "@/components/skeletons/channels-skeleton";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -121,16 +123,6 @@ function ChannelCard({
         </div>
       </div>
     </button>
-  );
-}
-
-function ChannelSkeleton() {
-  return (
-    <div className="animate-pulse">
-      <div className="aspect-video rounded-xl bg-card border border-border" />
-      <div className="mt-3 h-4 w-2/3 rounded bg-muted" />
-      <div className="mt-2 h-3 w-1/3 rounded bg-muted" />
-    </div>
   );
 }
 
@@ -288,16 +280,7 @@ export function ChannelBrowser() {
       !playerIsMinimized
   );
 
-  if (isLoading) {
-    return (
-      <div className="-m-4 min-h-screen bg-background text-foreground">
-        <div className="aspect-[16/8] animate-pulse bg-muted/60" />
-        <div className="-mt-20 grid grid-cols-2 gap-4 px-5 pb-16 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-          {Array.from({ length: 12 }).map((_, index) => <ChannelSkeleton key={index} />)}
-        </div>
-      </div>
-    );
-  }
+  if (isLoading) return <ChannelsSkeleton />;
 
   if (error || !data) {
     return (

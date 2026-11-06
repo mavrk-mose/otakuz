@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { CommunityMemberSkeleton } from "@/components/skeletons/community-member-skeleton";
 import { CommunityMemberCard } from "@/components/home/community-profiles-section";
 import { useCommunityUsers } from "@/hooks/use-community-users";
 import type { UserProfileData } from "@/types/user";
@@ -146,10 +147,7 @@ export default function CommunityDirectoryPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {Array.from({ length: 12 }).map((_, i) => (
-            <div
-              key={i}
-              className="h-56 animate-pulse rounded-2xl border border-border bg-card/60"
-            />
+            <CommunityMemberSkeleton key={i} />
           ))}
         </div>
       ) : filteredUsers.length === 0 ? (

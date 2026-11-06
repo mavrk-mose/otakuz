@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BoardSkeleton } from "@/components/skeletons/board-skeleton";
 import { useBookmarks, BookmarkList, BookmarkedItem } from "@/hooks/use-bookmarks";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -147,10 +148,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       {listsLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="h-64 rounded-2xl bg-muted/40 animate-pulse border border-border"
-            />
+            <BoardSkeleton key={i} />
           ))}
         </div>
       ) : sortedLists.length === 0 ? (
