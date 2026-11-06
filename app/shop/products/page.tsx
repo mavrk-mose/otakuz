@@ -1,5 +1,8 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
+
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import useFetchTitles from "@/hooks/shop/use-fetch-titles";
@@ -199,11 +202,8 @@ function ProductCatalog() {
           </aside>
           <section aria-label={t("shop.products")} className="min-w-0" aria-busy={isLoading}>
 
-            {isError ? (
-              <div role="alert" className="space-y-4 rounded-lg border p-6 text-center">
-                <p>{t("shop.loadError")}</p>
-                <Button onClick={() => refetch()}>{t("shop.retry")}</Button>
-              </div>
+            {isError && !products.length ? (
+              <ErrorState title={t("shop.loadError")} onRetry={() => void refetch()} />
             ) : isLoading ? (
               <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 xl:grid-cols-3">
                 {Array.from({ length: 6 }, (_, i) => <ProductCardSkeleton key={i} />)}
@@ -213,10 +213,8 @@ function ProductCatalog() {
                 {filteredProducts.map(product => <ProductCard key={product._id} product={product} />)}
               </div>
             ) : (
-              <div className="space-y-4 rounded-lg border p-8 text-center">
-                <p>{t("common.noProducts")}</p>
-                <Button variant="outline" onClick={resetFilters}>{t("shop.clearFilters")}</Button>
-              </div>
+              <EmptyState className="rounded-lg border" illustration="collection" title={t("common.noProducts")} description={t("empty.shopDescription")}
+                action={<Button variant="outline" onClick={resetFilters}>{t("shop.clearFilters")}</Button>} />
             )}
           </section>
         </div>

@@ -1,18 +1,17 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
 import { ChannelsSkeleton } from "@/components/skeletons/channels-skeleton";
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  AlertCircle,
   ChevronLeft,
   ChevronRight,
   Globe2,
   History,
   Play,
   Radio,
-  RefreshCw,
   Search,
   Trash2,
   Tv2,
@@ -128,10 +127,9 @@ function ChannelCard({
 
 export function ChannelBrowser() {
   const searchParams = useSearchParams();
-  const { data, error, isLoading, refetch, isFetching } = useQuery({
-    queryKey: ["iptv-org", "animation-channels"],
+  const { data, error, isPending: isLoading, refetch, isFetching } = useQuery({
+    queryKey: ["iptv-channels"],
     queryFn: fetchChannels,
-    staleTime: 30 * 60 * 1000,
   });
   const [selectedChannel, setSelectedChannel] = useState<IptvChannel | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -283,25 +281,7 @@ export function ChannelBrowser() {
   if (isLoading) return <ChannelsSkeleton />;
 
   if (error || !data) {
-    return (
-      <div className="-m-4 flex min-h-[calc(100vh-4rem)] items-center justify-center bg-background px-6 text-foreground">
-        <div className="max-w-md text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-rose-500" />
-          <h1 className="mt-5 text-2xl font-bold">Channels are off air</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            We could not reach the IPTV-org Animation playlist. Try again in a moment.
-          </p>
-          <button
-            type="button"
-            onClick={() => refetch()}
-            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-card border border-border px-5 py-2.5 text-sm font-semibold text-foreground transition hover:bg-muted"
-          >
-            <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
-            Try again
-          </button>
-        </div>
-      </div>
-    );
+    return <ErrorState fullPage title="Channels are off air" description="We could not reach the animation playlist. Try again in a moment." onRetry={() => void refetch()} retrying={isFetching} />;
   }
 
   return (

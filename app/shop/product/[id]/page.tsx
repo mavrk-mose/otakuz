@@ -1,5 +1,6 @@
 "use client"
 
+import { ErrorState, MissingPage } from '@/components/page-state'
 import { useState, useRef } from 'react'
 import { ProductDetailsSkeleton } from '@/components/skeletons/product-details-skeleton'
 import { Card } from '@/components/ui/card'
@@ -23,7 +24,7 @@ interface Props {
 export default function ProductPage(props: Props) {
   const { t } = useI18n()
   const params = use(props.params)
-  const { product, isLoading } = useFetchProduct(params.id)
+  const { product, isLoading, isError, refetch, isFetching } = useFetchProduct(params.id)
   const { addToCart } = useCart()
   const [selectedSize, setSelectedSize] = useState<string>("")
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(true)
@@ -35,13 +36,7 @@ export default function ProductPage(props: Props) {
   if (isLoading) return <ProductDetailsSkeleton />
 
   if (!product) {
-    return (
-        <div className="min-h-screen bg-background text-foreground">
-          <div className="container mx-auto px-4 py-8">
-            <div className="text-center">{t("shop.productNotFound")}</div>
-          </div>
-        </div>
-    )
+    return isError ? <ErrorState fullPage onRetry={() => void refetch()} retrying={isFetching} /> : <MissingPage title={t("shop.productNotFound")} href="/shop" actionLabel={t("shop.products")} />
   }
 
   return (

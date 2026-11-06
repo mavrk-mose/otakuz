@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { db, auth } from "@/lib/firebase";
 import {
@@ -20,6 +21,7 @@ import {
 } from "@/lib/user-sync";
 
 export function useUserProfile(targetUserId?: string) {
+  const queryClient = useQueryClient();
   const { user: currentUser, setUser: setCurrentAuthUser } = useAuthStore();
   const effectiveUserId = targetUserId || currentUser?.uid;
   const isOwnProfile = !!currentUser && currentUser.uid === effectiveUserId;
@@ -193,9 +195,10 @@ export function useUserProfile(targetUserId?: string) {
         setCurrentAuthUser({ ...auth.currentUser });
       }
 
+      void queryClient.invalidateQueries({ queryKey: ["communityUsers"] });
       await refreshStats();
     },
-    [effectiveUserId, isOwnProfile, setCurrentAuthUser, refreshStats]
+    [effectiveUserId, isOwnProfile, setCurrentAuthUser, refreshStats, queryClient]
   );
 
   const resetToGoogleAvatar = useCallback(async () => {

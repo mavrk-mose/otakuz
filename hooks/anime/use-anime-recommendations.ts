@@ -4,7 +4,7 @@ import {API_BASE_URL} from "@/lib/api";
 const useAnimeRecommendations = (animeId: string) => {
     const {
         data: recommendations,
-        isLoading
+        isPending: isLoading
     } = useQuery({
         queryKey: ['animeRecommendations', animeId],
         queryFn: async () => {
@@ -13,7 +13,6 @@ const useAnimeRecommendations = (animeId: string) => {
             const data = await response.json();
             return data.data;
         },
-        staleTime: Infinity
     });
 
     return {

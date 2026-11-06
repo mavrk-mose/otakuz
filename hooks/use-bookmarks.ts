@@ -321,7 +321,6 @@ export function useBookmarks(targetUserId?: string) {
         return Array.from(new Set(snapshot.docs.map(item => item.ref.parent.parent!.id)));
       },
       enabled: !!user && !!itemId,
-      staleTime: 60_000,
     });
     return { ...result, data: Boolean(result.data?.length), listIds: result.data ?? [] };
   };

@@ -131,7 +131,6 @@ export function useGlobalSearch({
         },
         enabled: isCategoryWanted("anime") && debouncedExternalQuery.length >= 1,
         placeholderData: keepPreviousData,
-        staleTime: 2 * 60_000,
         retry: 1,
       },
 
@@ -172,7 +171,6 @@ export function useGlobalSearch({
         },
         enabled: isCategoryWanted("manga") && debouncedExternalQuery.length >= 1,
         placeholderData: keepPreviousData,
-        staleTime: 2 * 60_000,
         retry: 1,
       },
 
@@ -181,7 +179,6 @@ export function useGlobalSearch({
         queryKey: ["communityUsers", 500] as const,
         queryFn: () => fetchPublicCommunityUsers(500),
         enabled: isCategoryWanted("users"),
-        staleTime: 60_000,
         select: (users: Awaited<ReturnType<typeof fetchPublicCommunityUsers>>): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           const qClean = normalizedQuery.replace(/^@/, "");
@@ -214,17 +211,9 @@ export function useGlobalSearch({
 
       // 4. Merch / Shop Products (Sanity catalog + instant select filter)
       {
-        queryKey: ["globalSearch", "merchCatalog"] as const,
-        queryFn: async () => {
-          try {
-            const products = await getProducts();
-            return Array.isArray(products) ? products : [];
-          } catch {
-            return [];
-          }
-        },
+        queryKey: ["products"] as const,
+        queryFn: getProducts,
         enabled: isCategoryWanted("merch"),
-        staleTime: 5 * 60_000,
         select: (products: any[]): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           return products
@@ -257,16 +246,8 @@ export function useGlobalSearch({
       // 5. Events (Shared Sanity events cache + instant select filter)
       {
         queryKey: ["events"] as const,
-        queryFn: async () => {
-          try {
-            const events = await getEvents();
-            return Array.isArray(events) ? events : [];
-          } catch {
-            return [];
-          }
-        },
+        queryFn: getEvents,
         enabled: isCategoryWanted("events"),
-        staleTime: 5 * 60_000,
         select: (events: any[]): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           return events
@@ -315,7 +296,6 @@ export function useGlobalSearch({
           return res.json();
         },
         enabled: isCategoryWanted("channels"),
-        staleTime: 10 * 60_000,
         select: (payload: IptvChannelsResponse): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           const channels: IptvChannel[] = payload?.channels || [];
@@ -361,7 +341,6 @@ export function useGlobalSearch({
           });
         },
         enabled: isCategoryWanted("chatrooms") && Boolean(user?.uid),
-        staleTime: 60_000,
         select: (rooms: { id: string; title: string; memberCount: number }[]): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           const qClean = normalizedQuery.replace(/^#/, "");
@@ -436,6 +415,7 @@ export function useGlobalSearch({
     flatItems.length === 0;
 
   return {
+    retryFailedSearch: () => Promise.all(queryResults.filter(result => result.isError).map(result => result.refetch())),
     sections,
     flatItems,
     isAnyFetching,

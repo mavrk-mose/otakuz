@@ -53,13 +53,12 @@ export const communityUsersQueryOptions = (maxCount = 500) =>
   queryOptions<UserProfileData[]>({
     queryKey: ["communityUsers", maxCount],
     queryFn: () => fetchPublicCommunityUsers(maxCount),
-    staleTime: 60_000,
   });
 
 export function useCommunityUsers(maxCount = 500) {
-  return useQuery<UserProfileData[]>({
+  const query = useQuery<UserProfileData[]>({
     queryKey: ["communityUsers", maxCount],
     queryFn: () => fetchPublicCommunityUsers(maxCount),
-    staleTime: 60_000,
   });
+  return { ...query, isLoading: query.isPending };
 }

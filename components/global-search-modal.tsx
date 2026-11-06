@@ -1,5 +1,8 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
+
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -202,7 +205,7 @@ export function GlobalSearchModal() {
   const inputRef = useRef<HTMLInputElement>(null);
   const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
-  const { sections, flatItems, isAnyFetching, isAllSettledEmpty } = useGlobalSearch({
+  const { sections, flatItems, isAnyFetching, isAllSettledEmpty, retryFailedSearch } = useGlobalSearch({
     rawQuery: query,
     isOpen,
     focusedCategory,
@@ -696,27 +699,14 @@ export function GlobalSearchModal() {
                 })}
               </div>
             </div>
+          ) : isAllSettledEmpty && sections.some(section => section.isError) ? (
+            <ErrorState compact onRetry={() => void retryFailedSearch()} />
           ) : isAllSettledEmpty ? (
-            <div className="py-12 text-center">
-              <SearchIcon className="mx-auto mb-3 h-8 w-8 text-muted-foreground/60" />
-              <p className="text-sm font-bold text-foreground">
-                No matches found for &ldquo;{trimmedQuery}&rdquo;
-              </p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Try another keyword or adjust your active search scopes above.
-              </p>
-              {focusedCategory !== "all" && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setFocusedCategory("all")}
-                  className="mt-3 text-xs text-rose-500 hover:text-rose-600"
-                >
-                  Search across all enabled scopes
-                </Button>
-              )}
-            </div>
+            <EmptyState illustration="search" compact
+              title={<>No matches found for &ldquo;{trimmedQuery}&rdquo;</>}
+              description="Try another keyword or adjust your active search scopes above."
+              action={focusedCategory !== "all" ? <Button type="button" variant="ghost" size="sm" onClick={() => setFocusedCategory("all")} className="text-xs text-primary">Search across all enabled scopes</Button> : undefined}
+            />
           ) : (
             <div className="space-y-4">
               {sections.map((section) => {

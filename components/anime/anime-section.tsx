@@ -1,5 +1,7 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useQuery } from "@tanstack/react-query";
 import { getTopAnime } from "@/lib/api";
@@ -16,7 +18,7 @@ import type { TopAnime } from "@/types/anime";
 
 export function AnimeSection() {
   const { t } = useI18n();
-  const { data: animeList, isLoading, isPaused, isError, refetch } = useQuery<TopAnime[]>({
+  const { data: animeList, isPending: isLoading, isPaused, isError, refetch } = useQuery<TopAnime[]>({
     queryKey: ["topAnime"],
     queryFn: () => getTopAnime(),
   });
@@ -68,17 +70,10 @@ export function AnimeSection() {
             )}
             <MediaCardSkeleton count={8} variant="home-anime" />
           </>
-        ) : isError ? (
-          <div className="col-span-full text-center text-muted-foreground" role="alert">
-            <p>{t("home.animeLoadError")}</p>
-            <Button variant="outline" onClick={() => refetch()} className="mt-2 border-border bg-card/80">
-              {t("common.tryAgain")}
-            </Button>
-          </div>
+        ) : isError && !animeList?.length ? (
+          <ErrorState className="col-span-full" title={t("home.animeLoadError")} onRetry={() => void refetch()} />
         ) : !animeList?.length ? (
-          <p className="col-span-full text-center text-muted-foreground">
-            {t("home.noTopAnime")}
-          </p>
+          <EmptyState className="col-span-full" illustration="collection" title={t("home.noTopAnime")} />
         ) : (
           animeList?.slice(0, 8).map((anime) => (
               <motion.div key={anime.mal_id} variants={item}>

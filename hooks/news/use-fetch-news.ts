@@ -10,11 +10,10 @@ interface UseFetchNewsStoriesResult {
 const useFetchNewsStories = (): UseFetchNewsStoriesResult => {
   const {
     data: stories,
-    isLoading,
+    isPending: isLoading,
   } = useQuery<NewsStory[]>({
     queryKey: ["newsStories"],
     queryFn: getNewsStories,
-    staleTime: Infinity,
   });
 
   return {

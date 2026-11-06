@@ -15,14 +15,13 @@ import { useI18n } from '@/components/i18n-provider';
 
 export function EventsSection() {
     const { locale, t } = useI18n();
-    const {data: events, isLoading} = useQuery({
+    const {data: events, isPending: isLoading} = useQuery({
         queryKey: ['events'],
         queryFn: async () => {
             const events: Event[] = await getEvents();
             //add filters if applicable sort the events, filter by category etc
             return events;
         },
-        staleTime: 60000 //Cache data for 60 seconds
     });
 
     const container = {

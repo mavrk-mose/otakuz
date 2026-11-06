@@ -27,7 +27,6 @@ const useMangaDetails = (mangaId: string) => {
             return data.data;
         },
         enabled: /^\d+$/.test(mangaId),
-        staleTime: Infinity,
         retry: (failureCount, error) => {
             const isTransient = error.status === 429 || (error.status ?? 0) >= 500;
             return isTransient && failureCount < 2;
@@ -37,7 +36,8 @@ const useMangaDetails = (mangaId: string) => {
 
     return {
         manga,
-        ...query
+        ...query,
+        isLoading: query.isPending && /^\d+$/.test(mangaId),
     };
 }
 

@@ -1,5 +1,7 @@
 "use client";
 
+import { EmptyState } from "@/components/empty-state";
+
 import { useState } from "react";
 import { BoardSkeleton } from "@/components/skeletons/board-skeleton";
 import { useBookmarks, BookmarkList, BookmarkedItem } from "@/hooks/use-bookmarks";
@@ -152,22 +154,15 @@ export function UserLists({ userId, onShare }: UserListsProps) {
           ))}
         </div>
       ) : sortedLists.length === 0 ? (
-        <Card className="p-12 text-center border-dashed border-border bg-card/40">
-          <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/10 text-rose-400 mb-4 border border-rose-500/20">
-            <Sparkles className="h-7 w-7" />
-          </div>
-          <h3 className="text-lg font-bold text-foreground mb-1">
-            {isOwner ? "No boards created yet" : "No public boards available"}
-          </h3>
-          <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-6">
-            {isOwner
-              ? "Start curating your dream lists! Create your first board and choose whether it's public for everyone or a secret stash."
-              : "This otaku has not shared any public boards yet. Check back soon for their curated recommendations!"}
-          </p>
+        <Card className="p-6 text-center border-dashed border-border bg-card/40">
+          <EmptyState illustration="collection" className="py-0"
+            title={isOwner ? "Your collection starts here" : "No public boards yet"}
+            description={isOwner ? "Create your first board and give your favorite anime and manga a home." : "This otaku hasn't shared any public boards yet. Check back for their next discovery."}
+          />
           {isOwner && (
             <Button
               onClick={() => setCreateBoardOpen(true)}
-              className="bg-rose-500 hover:bg-rose-600 text-white"
+              className="mt-5 bg-rose-500 hover:bg-rose-600 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
               Create First Board

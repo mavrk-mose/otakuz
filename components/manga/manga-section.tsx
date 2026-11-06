@@ -14,7 +14,7 @@ import { useI18n } from '@/components/i18n-provider';
 
 export function MangaSection() {
   const { t } = useI18n();
-  const { data: mangaList, isLoading } = useQuery({
+  const { data: mangaList, isPending: isLoading } = useQuery({
     queryKey: ['topManga'],
     queryFn: getTopManga
   });

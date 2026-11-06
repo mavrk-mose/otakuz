@@ -5,7 +5,7 @@ import {API_BASE_URL} from "@/lib/api";
 import {AnimeDetails} from "@/types/anime";
 
 const useRandomAnime = () => {
-    return useQuery<AnimeDetails>({
+    const query = useQuery<AnimeDetails>({
         queryKey: ['random'],
         queryFn: async () => {
             const response = await fetch(`${API_BASE_URL}/random/anime`);
@@ -13,8 +13,8 @@ const useRandomAnime = () => {
             const data = await response.json();
             return data.data;
         },
-        staleTime: Infinity
     });
+  return { ...query, isLoading: query.isPending };
 }
 
 export default useRandomAnime;

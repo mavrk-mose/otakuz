@@ -12,13 +12,14 @@ interface ProductListProps {
 const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListProps) => {
     const {
         data: products,
-        isLoading,
+        isPending: isLoading,
         isError,
         refetch
     } = useQuery({
-        queryKey: ['products', category, priceRange, sortBy, title],
-        queryFn: async () => {
-            let filteredProducts: Product[] = await getProducts();
+        queryKey: ['products'],
+        queryFn: getProducts,
+        select: (catalog: Product[]) => {
+            let filteredProducts = [...catalog];
 
             if (category && category !== 'all') {
                 filteredProducts = filteredProducts.filter((p) => p.category === category);
@@ -47,12 +48,11 @@ const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListPr
 
             if (title) {
                 const decodedTitle = decodeURIComponent(title);
-                filteredProducts = filteredProducts.filter((p) => p.title['name'] === decodedTitle);
+                filteredProducts = filteredProducts.filter((p) => p.title?.name === decodedTitle);
             }
 
             return filteredProducts;
         },
-        staleTime: Infinity
     });
 
     return {

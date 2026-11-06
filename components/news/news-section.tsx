@@ -13,7 +13,7 @@ import { recordWatchHistory } from "@/lib/watch-history";
 
 export function NewsSection() {
   const { locale, t } = useI18n();
-  const { data: newsList, isLoading } = useQuery({
+  const { data: newsList, isPending: isLoading } = useQuery({
     queryKey: ["animeNews"],
     queryFn: getAnimeNews,
   });

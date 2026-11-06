@@ -18,7 +18,7 @@ interface RecommendationsProps {
 
 export function MangaRecommendations({ mangaId }: RecommendationsProps) {
   const { t } = useI18n();
-  const { data: recommendations, isLoading } = useQuery({
+  const { data: recommendations, isPending: isLoading } = useQuery({
     queryKey: ["mangaRecommendations", mangaId],
     queryFn: async () => {
       const response = await fetch(

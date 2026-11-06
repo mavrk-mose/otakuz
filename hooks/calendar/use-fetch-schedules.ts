@@ -54,8 +54,11 @@ export default function useFetchSchedules({
   day,
   limit = 25
 }: UseAnimeSchedulesOptions) {
+  // Grouped broadcast times depend on the viewer's timezone and today's date.
+  const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const dateStr = format(new Date(), "yyyy-MM-dd");
   return useInfiniteQuery({
-    queryKey: ["animeSchedules", day, limit],
+    queryKey: ["animeSchedules", day, limit, userTimezone, dateStr],
     queryFn: async ({ pageParam = 1, signal }): Promise<GroupedSchedulePage> => {
       if (!day) {
         throw new Error("A schedule day is required to fetch schedules.");
@@ -84,8 +87,6 @@ export default function useFetchSchedules({
       }
 
       const schedules: GroupedSchedules = {};
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      const dateStr = format(new Date(), "yyyy-MM-dd");
 
       data.data.forEach((anime: ScheduleAnime) => {
         const broadcastTime = anime.broadcast?.time;
@@ -119,8 +120,6 @@ export default function useFetchSchedules({
         : undefined;
     },
     initialPageParam: 1,
-    staleTime: 30 * 60 * 1000,
-    gcTime: 60 * 60 * 1000,
     retry: (failureCount, error) => {
       if (
         error instanceof Error &&
@@ -132,8 +131,5 @@ export default function useFetchSchedules({
     },
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     enabled: day !== null,
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    refetchOnReconnect: false,
   });
 }

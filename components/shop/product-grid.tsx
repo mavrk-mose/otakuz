@@ -1,13 +1,11 @@
 "use client"
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
+
 import { ProductCardSkeleton } from "@/components/shop/product-card-skeleton";
 
-import { motion } from 'framer-motion'
-import Image from 'next/image'
 import useFetchProducts from "@/hooks/shop/use-fetch-products";
-import {urlFor} from "@/lib/sanity";
-import Lottie from "lottie-react";
-import Pochita from "@/public/lottie/pochita.json";
 import {ProductCard} from "@/components/shop/product-card";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -22,7 +20,7 @@ interface ProductGridProps {
 
 export function ProductGrid({ title, filters, sort }: ProductGridProps) {
     const { t } = useI18n();
-    const { products, isLoading } = useFetchProducts({ category: "all", title});
+    const { products, isLoading, isError, refetch } = useFetchProducts({ category: "all", title});
 
     const filteredProducts = products?.filter(product => {
         if (filters?.category.length && !filters.category.includes(product.category)) {
@@ -59,20 +57,12 @@ export function ProductGrid({ title, filters, sort }: ProductGridProps) {
         )
     }
 
-    if (!products || products.length === 0) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <div className="text-center">
-                    <div className="mb-4 text-lg font-semibold text-muted-foreground">{t("common.noProducts")}</div>
-                    <div className="mx-auto w-48 h-48">
-                        <Lottie
-                            animationData={Pochita}
-                            loop={true}
-                        />
-                    </div>
-                </div>
-            </div>
-        )
+    if (isError && !products?.length) {
+        return <ErrorState title={t("shop.loadError")} onRetry={() => void refetch()} />;
+    }
+
+    if (sortedProducts.length === 0) {
+        return <EmptyState illustration="collection" title={t("common.noProducts")} description={t("empty.shopDescription")} />;
     }
 
     return (

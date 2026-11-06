@@ -1,5 +1,8 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
+
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,7 +22,7 @@ interface SearchDropdownProps {
 
 export function SearchDropdown({ onSelect }: SearchDropdownProps) {
   const { t } = useI18n();
-  const { data: searchResults, isLoading } = useSearch();
+  const { data: searchResults, isLoading, isError, refetch, isFetching } = useSearch();
   const searchQuery = useAnimeStore((state) => state.searchQuery);
   const setSearchQuery = useAnimeStore((state) => state.setSearchQuery);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -40,6 +43,8 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
       <ScrollArea className="h-[400px]">
         {isLoading ? (
           <div className="p-2" aria-busy="true" aria-label="Loading search results">{Array.from({ length: 5 }, (_, i) => <div key={i} className="flex items-start gap-3 p-2" aria-hidden="true"><Skeleton className="h-[70px] w-[50px] shrink-0" /><div className="min-w-0 flex-1 space-y-2"><Skeleton className="h-6 w-4/5" /><div className="flex gap-2"><Skeleton className="h-5 w-12 rounded-full" /><Skeleton className="h-5 w-1/2" /></div></div></div>)}</div>
+        ) : isError && !searchResults?.length ? (
+          <ErrorState compact onRetry={() => void refetch()} retrying={isFetching} />
         ) : searchResults?.length ? (
           <div className="p-2">
             {searchResults.map((result) => (
@@ -75,9 +80,7 @@ export function SearchDropdown({ onSelect }: SearchDropdownProps) {
             ))}
           </div>
         ) : (
-          <div className="p-4 text-center text-muted-foreground">
-            {t("search.noResults")}
-          </div>
+          <EmptyState illustration="search" compact title={t("search.noResults")} description={t("empty.searchDescription")} />
         )}
       </ScrollArea>
     </Card>

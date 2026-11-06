@@ -5,7 +5,7 @@ import {client} from "@/lib/sanity";
 const useEventDetails = (eventId: string) => {
     const {
         data: event,
-        isLoading
+        isPending: isLoading
     } = useQuery({
         queryKey: ['event', eventId],
         queryFn: async () => {
@@ -34,7 +34,6 @@ const useEventDetails = (eventId: string) => {
           `, {id: eventId});
             return event;
         },
-        staleTime: Infinity
     });
 
     return {

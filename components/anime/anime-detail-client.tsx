@@ -1,5 +1,6 @@
 "use client";
 
+import { ErrorState, MissingPage } from "@/components/page-state";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -26,7 +27,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   const { t } = useI18n();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
-  const { data: anime, isLoading } = useAnimeDetails(id);
+  const { data: anime, isLoading, error, refetch, isFetching } = useAnimeDetails(id);
   const { setAnimeGenre } = useGenreStore();
 
   useRecordWatchHistory(
@@ -56,11 +57,8 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   }
 
   if (!anime) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center">{t("anime.notFound")}</div>
-      </div>
-    );
+    if (!/^\d+$/.test(id) || error?.status === 404 || !error) return <MissingPage title={t("anime.notFound")} />;
+    return <ErrorState fullPage onRetry={() => void refetch()} retrying={isFetching} />;
   }
 
   return (

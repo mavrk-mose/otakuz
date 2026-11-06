@@ -3,7 +3,7 @@ import { AnimeVideos } from "@/types/anime";
 import { useQuery } from "@tanstack/react-query";
 
 export function useAnimeVideos(id: string) {
-    return useQuery<Omit<AnimeVideos, "episodes">>({
+    const query = useQuery<Omit<AnimeVideos, "episodes">>({
         queryKey: ['animeVideos', id],
         queryFn: async ({ signal }) => {
             const response = await fetch(`${API_BASE_URL}/anime/${id}/videos`, { signal });
@@ -17,7 +17,6 @@ export function useAnimeVideos(id: string) {
             return { promo: data.data?.promo || [], music_videos: data.data?.music_videos || [] };
         },
         enabled: !!id,
-        staleTime: Infinity,
         retry: (failureCount, error: any) => {
             // Retry only if the error is a 429 (Too Many Requests)
             if (error?.status === 429 && failureCount < 5) return true;
@@ -30,4 +29,5 @@ export function useAnimeVideos(id: string) {
             return Math.min(1000 * 2 ** failureCount, 30000);
         }
     });
+  return { ...query, isLoading: query.isPending && !!id };
 }

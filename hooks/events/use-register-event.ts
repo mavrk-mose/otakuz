@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAuth } from "../use-auth";
 import { registerForEvent } from "@/lib/sanity";
@@ -5,6 +6,7 @@ import { toast } from "sonner";
 import { Event } from "@/types/events";
 
 const useRegisterEvent = () => {
+    const queryClient = useQueryClient();
     const [isRegistering, setIsRegistering] = useState(false);
     const { user } = useAuth();
 
@@ -14,6 +16,8 @@ const useRegisterEvent = () => {
         setIsRegistering(true);
         try {
             await registerForEvent(event._id, user.uid, user.displayName || 'Anonymous', user.photoURL || '');
+            void queryClient.invalidateQueries({ queryKey: ['events'] });
+            void queryClient.invalidateQueries({ queryKey: ['event', event._id] });
             toast.success("Registration Successful", {
                 description: "You have successfully registered for this event.",
             });

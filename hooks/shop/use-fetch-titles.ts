@@ -5,7 +5,7 @@ import {Title} from "@/types/shop";
 const useFetchTitles = () => {
     const {
         data: titles,
-        isLoading
+        isPending: isLoading
     } = useQuery<Title[]>({
         queryKey: ['titles'],
         queryFn: async () => {
@@ -17,7 +17,6 @@ const useFetchTitles = () => {
                 }
             `);
         },
-        staleTime: Infinity
     });
 
     return {

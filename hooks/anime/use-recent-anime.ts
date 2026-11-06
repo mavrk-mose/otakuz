@@ -4,8 +4,8 @@ import {useInfiniteQuery} from '@tanstack/react-query';
 import {API_BASE_URL} from "@/lib/api";
 
 export function useRecentAnime() {
-  const {data, isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
-    queryKey: ['animeRecommendations'],
+  const {data, isPending: isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
+    queryKey: ['recentAnime'],
     queryFn: async ({ pageParam = 1 }) => {
         const response = await fetch(
           `${API_BASE_URL}/recommendations/anime?page=${pageParam}`

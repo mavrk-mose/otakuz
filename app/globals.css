@@ -172,3 +172,23 @@
     transform: none;
   }
 }
+
+/* Small, compositor-only motion keeps the illustrated empty states alive. */
+@media (prefers-reduced-motion: no-preference) {
+  .otakuz-empty-float {
+    animation: otakuz-empty-float 6s ease-in-out infinite;
+  }
+  .otakuz-empty-sparkle {
+    animation: otakuz-empty-sparkle 4s ease-in-out infinite;
+  }
+}
+
+@keyframes otakuz-empty-float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-6px) rotate(1deg); }
+}
+
+@keyframes otakuz-empty-sparkle {
+  0%, 100% { opacity: 0.4; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.1); }
+}

@@ -1,14 +1,16 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
+
 import { useState, useEffect } from "react";
 import { format, addDays, startOfToday, startOfWeek } from "date-fns";
-import { AlertCircle, ChevronLeft, ChevronRight, Play } from "lucide-react";
+import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import useFetchSchedules, {
   type GroupedSchedules,
   type ScheduleDay,
@@ -264,30 +266,12 @@ export function CalendarSection() {
             </p>
           )}
 
-          {isError ? (
-            <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>
-                {isRateLimited
-                  ? t("calendar.rateLimited")
-                  : t("calendar.loadFailed")}
-              </AlertTitle>
-              <AlertDescription>
-                {isRateLimited
-                  ? t("calendar.rateLimitedDescription")
-                  : error instanceof Error
-                    ? error.message
-                    : t("calendar.loadFailedDescription")}
-              </AlertDescription>
-              <Button
-                className="mt-3"
-                variant="outline"
-                onClick={() => void refetch()}
-                disabled={isFetching}
-              >
-                {t("common.tryAgain")}
-              </Button>
-            </Alert>
+          {isError && !data?.pages.length ? (
+            <ErrorState
+              title={isRateLimited ? t("calendar.rateLimited") : t("calendar.loadFailed")}
+              description={isRateLimited ? t("calendar.rateLimitedDescription") : t("calendar.loadFailedDescription")}
+              onRetry={() => void refetch()} retrying={isFetching}
+            />
           ) : isLoading || !activeDay ? (
             Array.from({ length: 6 }).map((_, index) => (
               <div
@@ -312,9 +296,7 @@ export function CalendarSection() {
                 : t("common.loadMore")}
             </Button>
           ) : sortedTimes.length === 0 ? (
-            <div className="text-center py-12 text-muted-foreground">
-              {t("calendar.noAnimeScheduled")}
-            </div>
+            <EmptyState illustration="schedule" title={t("calendar.noAnimeScheduled")} description={t("empty.scheduleDescription")} />
           ) : (
             <>
               {visibleAnimeEntries.map(({ time, anime }) => {

@@ -1,5 +1,7 @@
 "use client"
 
+import { EmptyState } from "@/components/empty-state";
+
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -53,9 +55,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex min-h-0 flex-1 flex-col">
           <ScrollArea className="min-h-0 flex-1 -mx-6 px-6">
             {items.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                {t("shop.emptyCart")}
-              </div>
+              <EmptyState illustration="collection" title={t("shop.emptyCart")} description={t("empty.cartDescription")} />
             ) : (
               <div className="space-y-4 py-4">
                 {items.map((item) => (

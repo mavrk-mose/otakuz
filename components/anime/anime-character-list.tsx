@@ -1,8 +1,8 @@
 "use client";
 
+import { ErrorState } from "@/components/page-state";
 import { useAnimeCharacters } from "@/hooks/anime/use-anime-characters";
 import { useI18n } from "@/components/i18n-provider";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimeCharacterCard } from "@/components/anime/anime-character-card";
@@ -30,15 +30,8 @@ export function AnimeCharacterList({ animeId }: { animeId: string }) {
         );
     }
 
-    if (isError) {
-        return (
-            <Card className="flex flex-col items-center gap-3 p-6 text-center">
-                <p className="text-muted-foreground">{t("anime.charactersError")}</p>
-                <Button variant="outline" onClick={() => void refetch()}>
-                    {t("common.tryAgain")}
-                </Button>
-            </Card>
-        );
+    if (isError && !characters?.length) {
+        return <ErrorState compact title={t("anime.charactersError")} onRetry={() => void refetch()} />;
     }
 
     if (!characters?.length) {

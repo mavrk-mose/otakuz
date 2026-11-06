@@ -4,11 +4,10 @@ import { API_BASE_URL, fetchGenres, MediaType } from "@/lib/api";
 export function useMediaGenres(mediaType: MediaType) {
     const {
         data: genres,
-        isLoading: isLoadingGenres
+        isPending: isLoadingGenres
     } = useQuery({
         queryKey: [`${mediaType}Genres`],
         queryFn: () => fetchGenres(mediaType),
-        staleTime: Infinity
     });
 
     return {
@@ -47,15 +46,14 @@ export function useInfiniteMediaList<TData = any>({ mediaType, genreId, queryKey
             return undefined;
         },
         initialPageParam: 1,
-        staleTime: Infinity,
         enabled: genreId !== undefined ? !!genreId : true,
     });
 
-    return query;
+    return { ...query, isLoading: query.isPending && (genreId === undefined || !!genreId) };
 }
 
 export function useMediaPictures<T = any>(mediaType: MediaType, id: string) {
-    return useQuery<T[]>({
+    const query = useQuery<T[]>({
         queryKey: [`${mediaType}Pictures`, id],
         queryFn: async () => {
             const response = await fetch(`${API_BASE_URL}/${mediaType}/${id}/pictures`);
@@ -64,6 +62,6 @@ export function useMediaPictures<T = any>(mediaType: MediaType, id: string) {
             return data.data;
         },
         enabled: Boolean(id),
-        staleTime: Infinity
     });
+    return { ...query, isLoading: query.isPending && !!id };
 }

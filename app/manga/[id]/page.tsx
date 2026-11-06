@@ -1,11 +1,12 @@
 "use client"
 
+import { ErrorState, MissingPage } from "@/components/page-state";
 import { useState } from "react";
 import DetailsSkeleton from "@/components/skeletons/details-skeleton";
 import {Card} from '@/components/ui/card';
 import {Button} from '@/components/ui/button';
 import {Badge} from '@/components/ui/badge';
-import {Star, BookOpen, Users, AlertCircle, RefreshCw, Share2} from 'lucide-react';
+import {Star, BookOpen, Share2} from 'lucide-react';
 import {Tabs, TabsContent, TabsList, TabsTrigger} from '@/components/ui/tabs';
 import {BookmarkButton} from "@/components/bookmark-button";
 import Image from 'next/image';
@@ -60,35 +61,11 @@ export default function MangaDetailPage(props: Props) {
         );
     }
 
-    if (error || !manga) {
-        const isNotFound = !/^\d+$/.test(params.id) || error?.status === 404;
-
-        return (
-            <div className="container mx-auto flex min-h-[60vh] items-center justify-center px-4 py-8">
-                <Card className="w-full max-w-lg p-8 text-center">
-                    <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground"/>
-                    <h1 className="mt-4 text-2xl font-bold">
-                        {isNotFound ? t("manga.notFound") : t("manga.loadFailed")}
-                    </h1>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                        {isNotFound
-                            ? t("manga.notFoundDescription")
-                            : t("manga.loadFailedDescription")}
-                    </p>
-                    {!isNotFound && (
-                        <Button
-                            type="button"
-                            className="mt-6 gap-2"
-                            onClick={() => refetch()}
-                            disabled={isFetching}
-                        >
-                            <RefreshCw className={`h-4 w-4 ${isFetching ? "animate-spin" : ""}`}/>
-                            {t("common.tryAgain")}
-                        </Button>
-                    )}
-                </Card>
-            </div>
-        );
+    if (!manga) {
+        if (!/^\d+$/.test(params.id) || error?.status === 404 || !error) {
+            return <MissingPage title={t("manga.notFound")} description={t("manga.notFoundDescription")} />;
+        }
+        return <ErrorState fullPage title={t("manga.loadFailed")} description={t("manga.loadFailedDescription")} onRetry={() => void refetch()} retrying={isFetching} />;
     }
 
     const coverImage = manga.images?.jpg?.large_image_url

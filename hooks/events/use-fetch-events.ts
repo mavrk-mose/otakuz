@@ -5,11 +5,10 @@ import {getEvents} from "@/lib/sanity";
 const useFetchEvents = () => {
     const {
         data: events,
-        isLoading
+        isPending: isLoading
     } = useQuery<Event[]>({
         queryKey: ['events'],
         queryFn: getEvents,
-        staleTime: Infinity
     });
 
     return {

@@ -1,5 +1,16 @@
 export const messages = {
   en: {
+    "status.errorTitle": "A little glitch in the adventure",
+    "status.errorDescription": "We couldn't load this right now. Try again in a moment.",
+    "status.notFoundTitle": "Looks like we took a wrong turn",
+    "status.notFoundDescription": "This page doesn't exist, or it may have moved. Let's get you back to familiar territory.",
+    "status.backHome": "Back to home",
+
+    "empty.scheduleDescription": "A quiet day in the anime universe. Try another day.",
+    "empty.searchDescription": "Try a different keyword or broaden your search.",
+    "empty.shopDescription": "Try another category or clear your filters to find your next treasure.",
+    "empty.cartDescription": "Explore the shop and add something you love.",
+
     "common.pageNavigation": "Page navigation",
     "common.goBack": "Go back",
     "common.goForward": "Go forward",
@@ -291,6 +302,17 @@ export const messages = {
     "comments.submit": "Comment",
   },
   ja: {
+    "status.errorTitle": "冒険の途中で小さなトラブル",
+    "status.errorDescription": "現在読み込めません。少し待ってから、もう一度お試しください。",
+    "status.notFoundTitle": "道を間違えてしまったようです",
+    "status.notFoundDescription": "このページは存在しないか、移動した可能性があります。ホームに戻りましょう。",
+    "status.backHome": "ホームに戻る",
+
+    "empty.scheduleDescription": "アニメの世界も今日はひと休み。別の日をチェックしてみましょう。",
+    "empty.searchDescription": "別のキーワードで検索するか、検索範囲を広げてみてください。",
+    "empty.shopDescription": "別のカテゴリーを選ぶか、絞り込みを解除してお気に入りを探しましょう。",
+    "empty.cartDescription": "ショップを探索して、お気に入りを追加しましょう。",
+
     "common.pageNavigation": "ページ移動",
     "common.goBack": "戻る",
     "common.goForward": "進む",

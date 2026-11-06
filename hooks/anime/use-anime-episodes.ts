@@ -5,7 +5,7 @@ import type { AnimeEpisodeResponse } from '@/types/anime'
 export function useAnimeEpisodes(id: string) {
     const {
         data,
-        isLoading,
+        isPending: isLoading,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
@@ -25,7 +25,6 @@ export function useAnimeEpisodes(id: string) {
             return undefined
         },
         initialPageParam: 1,
-        staleTime: Infinity,
     })
 
     return {

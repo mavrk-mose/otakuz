@@ -17,7 +17,7 @@ interface SearchResult {
 const useSearch = () => {
   const searchQuery = useAnimeStore((state) => state.searchQuery);
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ['combinedSearch', searchQuery],
     queryFn: async () => {
       if (!searchQuery) return [];
@@ -60,6 +60,7 @@ const useSearch = () => {
     },
     enabled: !!searchQuery,
   });
+  return { ...query, isLoading: query.isPending && !!searchQuery };
 };
 
 export default useSearch;
