@@ -1,4 +1,6 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+
 
 import { NewsPageSkeleton } from "@/components/skeletons/news-skeleton";
 
@@ -36,6 +38,7 @@ const CATEGORIES = [
 ] as const;
 
 export default function NewsPage() {
+  const { t: localizedT } = useI18n();
   const { locale, t } = useI18n();
   const { stories: rawStories, isLoading } = useFetchNewsStories();
   const stories: NewsStory[] = useMemo(() => rawStories || [], [rawStories]);
@@ -223,7 +226,7 @@ export default function NewsPage() {
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="font-semibold text-amber-500">
-                      by {leadStory.authorName || leadStory.author?.name || "Staff"}
+                      <I18nText message="news.by" /> {leadStory.authorName || leadStory.author?.name || "Staff"}
                     </span>
                     <span>•</span>
                     <span className="font-mono">
@@ -245,7 +248,7 @@ export default function NewsPage() {
                       type="button"
                       onClick={(e) => handleShare(e, leadStory.title, leadStory._id)}
                       className="flex h-7 w-7 items-center justify-center rounded-full bg-muted text-muted-foreground transition hover:text-foreground hover:bg-muted/80"
-                      title="Share"
+                      title={localizedT("common.share")}
                     >
                       <Share2 className="h-3.5 w-3.5" />
                     </button>
@@ -320,7 +323,7 @@ export default function NewsPage() {
               </h2>
             </div>
             <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-              <span>REALTIME TRACKER</span>
+              <span><I18nText message="news.realtimeTracker" /></span>
               <TrendingUp className="h-3.5 w-3.5 text-amber-500" />
             </div>
           </div>
@@ -379,7 +382,7 @@ export default function NewsPage() {
                         type="button"
                         onClick={() => toast.success("Starting OtakuCast audio stream...")}
                         className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-500 text-white shadow-xl transition-transform hover:scale-110"
-                        aria-label="Play podcast"
+                        aria-label={localizedT("news.playPodcast")}
                       >
                         <Play className="ml-0.5 h-6 w-6 fill-current" />
                       </button>
@@ -444,7 +447,7 @@ export default function NewsPage() {
                     type="button"
                     onClick={() => toast.success("Added to queue")}
                     className="text-muted-foreground transition hover:text-foreground"
-                    title="Add to Queue"
+                    title={localizedT("news.addQueue")}
                   >
                     <ListPlus className="h-4 w-4" />
                   </button>
@@ -515,13 +518,13 @@ export default function NewsPage() {
 
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
                   <span className="text-xs font-semibold text-amber-500">
-                    by {anomalyStories[0].authorName || "Makoto Shinkawa"}
+                    <I18nText message="news.by" /> {anomalyStories[0].authorName || "Makoto Shinkawa"}
                   </span>
                   <Link
                     href={`/news/${encodeURIComponent(anomalyStories[0]._id)}`}
                     className="flex items-center gap-1.5 font-mono text-xs font-semibold text-rose-500 transition hover:underline"
                   >
-                    <span>Read 12-min Dossier</span>
+                    <span><I18nText message="news.readDossier" /></span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>

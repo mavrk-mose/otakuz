@@ -1,5 +1,8 @@
 "use client";
 
+import { I18nText } from "@/components/i18n-text";
+
+
 import { useState } from "react";
 import { User } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -36,6 +39,7 @@ export function UserProfileCard({
   level = 1,
   rank = "Novice Explorer",
 }: UserProfileCardProps) {
+  const { t: localizedT } = useI18n();
   const { t } = useI18n();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -76,7 +80,7 @@ export function UserProfileCard({
             </Avatar>
             <div
               className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-rose-500 text-white shadow-md border-2 border-card"
-              title="Verified Explorer"
+              title={localizedT("profile.verifiedExplorer")}
             >
               <Zap className="h-3 w-3 fill-current" />
             </div>
@@ -107,12 +111,12 @@ export function UserProfileCard({
               {effectiveIsPublic ? (
                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                   <Globe className="h-2.5 w-2.5" />
-                  Public
+                  <I18nText message="common.public" />
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
                   <Lock className="h-2.5 w-2.5" />
-                  Private
+                  <I18nText message="common.private" />
                 </span>
               )}
             </div>
@@ -126,10 +130,10 @@ export function UserProfileCard({
             size="icon"
             onClick={() => setIsShareModalOpen(true)}
             className="h-9 w-9 rounded-full bg-muted/80 hover:bg-muted text-foreground transition-colors border border-border"
-            title="Share profile to chat"
+            title={localizedT("profile.shareChat")}
           >
             <Share2 className="h-4 w-4" />
-            <span className="sr-only">Share profile</span>
+            <span className="sr-only"><I18nText message="profile.shareProfile" /></span>
           </Button>
 
           {isOwnProfile && (
@@ -138,10 +142,10 @@ export function UserProfileCard({
               size="icon"
               onClick={() => setIsSettingsOpen(true)}
               className="h-9 w-9 rounded-full bg-muted/80 hover:bg-muted text-foreground transition-colors border border-border"
-              title="Profile & platform settings"
+              title={localizedT("profile.settingsTitle")}
             >
               <Settings className="h-4 w-4" />
-              <span className="sr-only">Settings</span>
+              <span className="sr-only"><I18nText message="profile.settingsLabel" /></span>
             </Button>
           )}
         </div>

@@ -1,4 +1,6 @@
 "use client";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -9,6 +11,7 @@ const TOP_JUMP_THRESHOLD = 450;
 const EDGE_THRESHOLD = 32;
 
 export function BackToTopButton() {
+  const { t: localizedT } = useI18n();
   const pathname = usePathname();
   const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollDown, setCanScrollDown] = useState(false);
@@ -94,8 +97,8 @@ export function BackToTopButton() {
           {showJumpTop && (
             <button
               type="button"
-              aria-label="Scroll to top"
-              title="Back to top"
+              aria-label={localizedT("common.scrollTop")}
+              title={localizedT("common.backTop")}
               onClick={scrollToTop}
               className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm transition-transform hover:scale-105 hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -106,8 +109,8 @@ export function BackToTopButton() {
           {canScrollUp && (
             <button
               type="button"
-              aria-label="Scroll page up"
-              title="Scroll up"
+              aria-label={localizedT("common.pageUp")}
+              title={localizedT("common.scrollUp")}
               onClick={() => scrollStep("up")}
               className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
@@ -118,8 +121,8 @@ export function BackToTopButton() {
           {canScrollDown && (
             <button
               type="button"
-              aria-label="Scroll page down"
-              title="Scroll down"
+              aria-label={localizedT("common.pageDown")}
+              title={localizedT("common.scrollDown")}
               onClick={() => scrollStep("down")}
               className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors hover:bg-muted hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >

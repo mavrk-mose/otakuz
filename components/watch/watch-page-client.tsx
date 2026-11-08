@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 "use client"
 
 import { Button } from '@/components/ui/button';
@@ -61,7 +63,7 @@ export default function WatchPageClient({ id }: { id: string }) {
                         <TabsList className="w-full">
                             <TabsTrigger value="comments" className="flex-1">
                                 <MessageCircle className="w-4 h-4 mr-2" />
-                                Comments
+                                <I18nText message="news.commentsLabel" />
                             </TabsTrigger>
                             <TabsTrigger value="chat" className="flex-1">
                                 <MessageCircle className="w-4 h-4 mr-2" />

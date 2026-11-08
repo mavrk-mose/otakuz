@@ -20,6 +20,12 @@ import useAuthStore from "@/store/use-auth-store";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { I18nProvider } from "@/components/i18n-provider";
 
+import { useNotificationsStore } from "@/store/use-notifications-store";
+import { saveUserPushToken } from "@/lib/notifications";
+
+// Share the startup request across Strict Mode effect replays and remounts.
+let notificationStartup: Promise<void> | undefined;
+
 export function Providers({ children, ...props }: ThemeProviderProps) {
   const [queryClient] = useState(createAppQueryClient);
   const [persister] = useState(createQueryPersister);
@@ -41,6 +47,18 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
   }, [queryClient]);
 
   useEffect(() => useAuthStore.getState().subscribeAuth(), []);
+
+  useEffect(() => {
+    notificationStartup ??= useNotificationsStore.getState()
+      .enableWebNotifications()
+      .then(async (result) => {
+        // Authentication can finish while the browser permission prompt is open.
+        const uid = useAuthStore.getState().user?.uid;
+        if (uid && result.pushToken) {
+          await saveUserPushToken(uid, result.pushToken).catch(() => undefined);
+        }
+      });
+  }, []);
 
   useEffect(() => {
     const posthogKey = process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim();

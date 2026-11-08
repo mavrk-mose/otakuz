@@ -1,4 +1,6 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+
 
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useEffect, useMemo } from "react";
@@ -173,7 +175,7 @@ export default function WatchPage() {
             </div>
           )}
 
-          {!selectedVideo && <p role="status" className="p-4 text-muted-foreground">No promos are available for this anime.</p>}
+          {!selectedVideo && <p role="status" className="p-4 text-muted-foreground"><I18nText message="watch.noPromos" /></p>}
           {promoQueue.length > 0 && <p className="px-4 py-2 text-sm text-muted-foreground">Promo queue · {promoIndex >= 0 ? promoIndex + 1 : 1} / {promoQueue.length}</p>}
           <VideoTabs
             animeVideos={animeVideos}

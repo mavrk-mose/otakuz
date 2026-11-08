@@ -1,4 +1,6 @@
 "use client";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import {
   createContext,
@@ -69,6 +71,7 @@ export function PersistentPlayerSlot({
 }
 
 export function PlayerLayout({ children }: PlayerLayoutProps) {
+  const { t: localizedT } = useI18n();
   const pathname = usePathname();
   const router = useRouter();
   const playerRef = useRef<MediaPlayerInstance | null>(null);
@@ -274,7 +277,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                 type="button"
                 onClick={minimize}
                 className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="Minimize video"
+                aria-label={localizedT("watch.minimize")}
               >
                 <Minimize2 className="h-4 w-4" />
               </button>
@@ -282,7 +285,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                 type="button"
                 onClick={close}
                 className="rounded-md p-2 text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                aria-label="Close video"
+                aria-label={localizedT("watch.closeVideo")}
               >
                 <X className="h-4 w-4" />
               </button>
@@ -343,7 +346,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                   type="button"
                   onClick={handleMaximize}
                   className="absolute inset-0 z-10 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-white"
-                  aria-label="Open full video player"
+                  aria-label={localizedT("watch.openFull")}
                 />
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-center gap-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 pt-10 text-white">
                   <button
@@ -375,7 +378,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                       handleMaximize();
                     }}
                     className="pointer-events-auto rounded-full p-2 transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                    aria-label="Maximize video"
+                    aria-label={localizedT("watch.maximize")}
                   >
                     <Maximize2 className="h-4 w-4" />
                   </button>
@@ -386,7 +389,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                       close();
                     }}
                     className="pointer-events-auto rounded-full p-2 transition-colors hover:bg-white/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-                    aria-label="Close video"
+                    aria-label={localizedT("watch.closeVideo")}
                   >
                     <X className="h-4 w-4" />
                   </button>

@@ -145,7 +145,7 @@ export async function initializeNotifications(options?: {
         permission: 'default',
         pushToken: null,
         serviceWorkerReady: false,
-        reason: 'Click "Enable Alerts" to grant browser notification permission.',
+        reason: 'Browser notification permission has not been granted.',
       };
     }
 

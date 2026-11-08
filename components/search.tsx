@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useEffect, useState } from "react";
 import { ArrowLeft, ArrowRight, SearchIcon } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
@@ -14,6 +15,7 @@ import { GlobalSearchModal } from "@/components/global-search-modal";
 import { useGlobalSearchStore } from "@/store/use-global-search-store";
 
 export function Search() {
+  const { t: localizedT } = useI18n();
   const { user } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
@@ -51,7 +53,7 @@ export function Search() {
               <button
                 type="button"
                 onClick={() => openSearch()}
-                aria-label="Open global search"
+                aria-label={localizedT("search.openGlobal")}
                 className="group flex h-10 w-72 items-center justify-between gap-3 rounded-xl border border-border bg-card px-3.5 text-left text-xs text-muted-foreground shadow-sm transition hover:border-rose-500/40 hover:bg-muted/50 hover:text-foreground xl:w-96"
               >
                 <span className="flex min-w-0 items-center gap-2.5">

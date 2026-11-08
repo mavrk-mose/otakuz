@@ -5,6 +5,7 @@ import { EmptyState } from "@/components/empty-state";
 
 import { useState, useEffect } from "react";
 import { format, addDays, startOfToday, startOfWeek } from "date-fns";
+import { enUS, ja } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Play } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -30,7 +31,8 @@ const SCHEDULE_DAYS: ScheduleDay[] = [
 ];
 
 export function CalendarSection() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const dateLocale = locale === "ja" ? ja : enUS;
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [activeDay, setActiveDay] = useState<ScheduleDay | null>(null);
   const [direction, setDirection] = useState(0);
@@ -46,9 +48,8 @@ export function CalendarSection() {
     ? SCHEDULE_DAYS.map((dayOfWeek, index) => {
         const date = addDays(currentDate, index);
         return {
-          dayName: format(date, "EEE"),
-          dayNumber: format(date, "d"),
-          month: format(date, "MMM"),
+          dayName: format(date, locale === "ja" ? "EEEE" : "EEE", { locale: dateLocale }),
+          dateLabel: format(date, locale === "ja" ? "M月d日" : "MMM d", { locale: dateLocale }),
           dayOfWeek,
         };
       })
@@ -220,7 +221,7 @@ export function CalendarSection() {
                             {day.dayName}
                           </span>
                           <span className="text-sm opacity-80">
-                            {day.month} {day.dayNumber}
+                            {day.dateLabel}
                           </span>
                         </div>
                       </TabsTrigger>

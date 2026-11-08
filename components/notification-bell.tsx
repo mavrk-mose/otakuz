@@ -4,12 +4,10 @@ import { useState, useEffect } from "react";
 import {
   AlertTriangle,
   Bell,
-  BellRing,
   Check,
-  CheckCircle2,
-  Send,
   Trash2,
 } from "lucide-react";
+import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -42,17 +40,8 @@ export function NotificationBell() {
   const notifications = useNotificationsStore((state) => state.notifications);
   const unreadCount = useNotificationsStore((state) => state.unreadCount);
   const firestoreError = useNotificationsStore((state) => state.firestoreError);
-  const setupResult = useNotificationsStore((state) => state.setupResult);
-  const isEnablingPush = useNotificationsStore((state) => state.isEnablingPush);
-  const subscribeForUser = useNotificationsStore(
-    (state) => state.subscribeForUser
-  );
-  const enableWebNotifications = useNotificationsStore(
-    (state) => state.enableWebNotifications
-  );
-  const sendTestNotification = useNotificationsStore(
-    (state) => state.sendTestNotification
-  );
+  const loading = useNotificationsStore((state) => state.loading);
+  const subscribeForUser = useNotificationsStore((state) => state.subscribeForUser);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -96,30 +85,6 @@ export function NotificationBell() {
     }
   };
 
-  const handleEnableBrowserAlerts = async () => {
-    const result = await enableWebNotifications(user?.uid);
-    if (result.permission === "granted") {
-      toast.success("Browser web notifications enabled");
-    } else if (result.permission === "denied") {
-      toast.error("Notifications blocked in browser settings", {
-        description: result.reason,
-      });
-    } else if (result.reason) {
-      toast.info("Notification permission not granted", {
-        description: result.reason,
-      });
-    }
-  };
-
-  const handleSendTest = async () => {
-    const ok = await sendTestNotification();
-    if (ok) {
-      toast.success("Sent test browser notification");
-    } else {
-      toast.error("Could not dispatch browser notification");
-    }
-  };
-
   const formatTimestamp = (ts: NotificationItem["timestamp"]) => {
     if (!ts || typeof ts.toDate !== "function") {
       return "Just now";
@@ -145,11 +110,6 @@ export function NotificationBell() {
         return "🔔";
     }
   };
-
-  const hasSetupError =
-    setupResult?.status === "service-worker-error" ||
-    setupResult?.status === "fcm-error" ||
-    setupResult?.status === "insecure-context";
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -196,79 +156,27 @@ export function NotificationBell() {
           )}
         </div>
 
-        {/* Web Notification Permission & Diagnostic Banner */}
-        <div className="border-b border-border bg-muted/40 px-4 py-2.5 text-xs">
-          {!setupResult || setupResult.permission === "default" ? (
-            <div className="flex items-center justify-between gap-2">
-              <span className="flex items-center gap-1.5 text-muted-foreground">
-                <BellRing className="h-3.5 w-3.5 shrink-0 text-primary" />
-                <span>Get desktop &amp; browser alerts</span>
-              </span>
-              <Button
-                type="button"
-                size="sm"
-                disabled={isEnablingPush}
-                onClick={handleEnableBrowserAlerts}
-                className="h-7 shrink-0 rounded-lg px-2.5 text-xs"
-              >
-                {isEnablingPush ? "Enabling..." : "Enable Alerts"}
-              </Button>
-            </div>
-          ) : setupResult.permission === "denied" ? (
-            <div className="flex items-start gap-2 text-amber-500">
-              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <span>
-                Browser notifications are blocked in site permissions. Allow notifications in your browser bar to receive desktop alerts.
-              </span>
-            </div>
-          ) : setupResult.permission === "granted" ? (
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between gap-2">
-                <span className="inline-flex items-center gap-1.5 font-medium text-emerald-600 dark:text-emerald-400">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
-                  <span>
-                    {setupResult.status === "fcm-ready"
-                      ? "Push & Web Alerts Active"
-                      : "Web Alerts Active"}
-                  </span>
-                </span>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={handleSendTest}
-                  className="h-6 gap-1 rounded-md px-2 text-[11px]"
-                >
-                  <Send className="h-3 w-3" />
-                  Test
-                </Button>
-              </div>
-              {hasSetupError && setupResult.reason && (
-                <p className="rounded-md border border-destructive/30 bg-destructive/10 px-2 py-1 text-[11px] text-destructive">
-                  {setupResult.reason}
-                </p>
-              )}
-            </div>
-          ) : (
-            <p className="text-muted-foreground">
-              {setupResult.reason || "Web Notifications unavailable in this browser."}
-            </p>
-          )}
-
-          {firestoreError && (
-            <div className="mt-2 flex items-start gap-1.5 rounded-md border border-destructive/30 bg-destructive/10 p-2 text-[11px] text-destructive">
-              <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <span className="break-words">{firestoreError}</span>
-            </div>
-          )}
-        </div>
+        {firestoreError && (
+          <div role="alert" className="flex items-start gap-2 border-b border-border p-3 text-xs text-destructive">
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+            <span>{t("notifications.loadFailed")}</span>
+          </div>
+        )}
 
         <ScrollArea controlSize="sm" className="h-[360px]">
           <div className="p-3">
-            {notifications.length === 0 ? (
-              <p className="py-10 text-center text-sm text-muted-foreground">
-                {t("notifications.empty")}
+            {loading && notifications.length === 0 ? (
+              <p role="status" className="py-10 text-center text-sm text-muted-foreground">
+                {t("common.loading")}
               </p>
+            ) : notifications.length === 0 && !firestoreError ? (
+              <EmptyState
+                illustration="collection"
+                title={t("notifications.empty")}
+                description={t("notifications.emptyDescription")}
+                compact
+                className="min-h-[330px] justify-center"
+              />
             ) : (
               <div className="space-y-2">
                 <AnimatePresence initial={false}>
@@ -301,7 +209,7 @@ export function NotificationBell() {
                         type="button"
                         variant="ghost"
                         size="icon"
-                        aria-label="Delete notification"
+                        aria-label={t("notifications.delete")}
                         className="h-7 w-7 shrink-0 opacity-70 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 hover:text-destructive"
                         onClick={(e) =>
                           handleDeleteNotification(notification.id, e)

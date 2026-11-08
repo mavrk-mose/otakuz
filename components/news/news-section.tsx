@@ -1,4 +1,6 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+
 
 import { NewsGridSkeleton } from "@/components/skeletons/news-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,6 +14,7 @@ import { useI18n } from "@/components/i18n-provider";
 import { recordWatchHistory } from "@/lib/watch-history";
 
 export function NewsSection() {
+  const { t: localizedT } = useI18n();
   const { locale, t } = useI18n();
   const { data: newsList, isPending: isLoading } = useQuery({
     queryKey: ["animeNews"],
@@ -19,7 +22,7 @@ export function NewsSection() {
   });
 
   if (isLoading) {
-    return <div className="space-y-6" aria-busy="true" aria-label="Loading latest news">
+    return <div className="space-y-6" aria-busy="true" aria-label={localizedT("news.loadingLatest")}>
       <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4"><div className="space-y-1"><Skeleton className="h-7 w-64 max-w-full sm:h-8" /><Skeleton className="h-4 w-64 max-w-full sm:h-5" /></div><Skeleton className="h-10 w-28" /></div>
       <NewsGridSkeleton home />
     </div>;
@@ -121,7 +124,7 @@ export function NewsSection() {
 
             <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
               <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                <span className="text-amber-500 dark:text-amber-400 font-medium">by {featured.author_username}</span>
+                <span className="text-amber-500 dark:text-amber-400 font-medium"><I18nText message="news.by" /> {featured.author_username}</span>
                 <span>•</span>
                 <span>
                   {new Date(featured.date).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US", {
@@ -138,7 +141,7 @@ export function NewsSection() {
                 onClick={() => logExternalNews(featured)}
                 className="flex items-center gap-1 font-mono text-xs font-semibold text-rose-500 hover:underline"
               >
-                <span>Read Dispatch</span>
+                <span><I18nText message="news.readDispatch" /></span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>

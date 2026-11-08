@@ -1,5 +1,8 @@
 "use client";
 
+import { I18nText } from "@/components/i18n-text";
+
+
 import { EmptyState } from "@/components/empty-state";
 
 import { useState } from "react";
@@ -35,6 +38,7 @@ interface UserListsProps {
 }
 
 export function UserLists({ userId, onShare }: UserListsProps) {
+  const { t: localizedT } = useI18n();
   const { t } = useI18n();
   const {
     lists,
@@ -69,12 +73,12 @@ export function UserLists({ userId, onShare }: UserListsProps) {
     if (selectedList) {
       try {
         await deleteList(selectedList.id);
-        toast.success("Board deleted successfully");
+        toast.success(localizedT("board.deleted"));
         setDeleteConfirmOpen(false);
         setSelectedList(null);
       } catch (err) {
         console.error(err);
-        toast.error("Failed to delete board");
+        toast.error(localizedT("board.deleteFailed"));
       }
     }
   };
@@ -84,10 +88,10 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       try {
         await updateListSettings(selectedList.id, settings);
         setSelectedList((prev) => (prev ? { ...prev, ...settings } : null));
-        toast.success("Board settings updated");
+        toast.success(localizedT("board.updated"));
       } catch (err) {
         console.error(err);
-        toast.error("Failed to update board settings");
+        toast.error(localizedT("board.updateFailed"));
       }
     }
   };
@@ -99,15 +103,15 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       await createList(newBoardName.trim(), "custom", newBoardPublic);
       toast.success(
         newBoardPublic
-          ? "Public board created!"
-          : "Secret board created! Only you can see it."
+          ? localizedT("board.createdPublic")
+          : localizedT("board.createdSecret")
       );
       setNewBoardName("");
       setNewBoardPublic(true);
       setCreateBoardOpen(false);
     } catch (err) {
       console.error(err);
-      toast.error("Failed to create board");
+      toast.error(localizedT("board.createFailed"));
     } finally {
       setIsCreating(false);
     }
@@ -123,15 +127,15 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <span>Saved Boards</span>
+            <span><I18nText message="profile.savedBoards" /></span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
               {sortedLists.length}
             </span>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
             {isOwner
-              ? "Organize your favorite titles into public or secret Pinterest-style boards."
-              : "Curated anime & manga collections shared by this member."}
+              ? localizedT("board.ownerDescription")
+              : localizedT("board.memberDescription")}
           </p>
         </div>
 
@@ -142,7 +146,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
             className="bg-rose-500 hover:bg-rose-600 text-white font-medium shadow-md shadow-rose-500/20"
           >
             <Plus className="h-4 w-4 mr-1.5" />
-            Create Board
+            <I18nText message="board.createButton" />
           </Button>
         )}
       </div>
@@ -156,8 +160,8 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       ) : sortedLists.length === 0 ? (
         <Card className="p-6 text-center border-dashed border-border bg-card/40">
           <EmptyState illustration="collection" className="py-0"
-            title={isOwner ? "Your collection starts here" : "No public boards yet"}
-            description={isOwner ? "Create your first board and give your favorite anime and manga a home." : "This otaku hasn't shared any public boards yet. Check back for their next discovery."}
+            title={isOwner ? localizedT("board.collectionStarts") : localizedT("board.noPublic")}
+            description={isOwner ? localizedT("board.firstDescription") : localizedT("board.noPublicDescription")}
           />
           {isOwner && (
             <Button
@@ -165,7 +169,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
               className="mt-5 bg-rose-500 hover:bg-rose-600 text-white"
             >
               <Plus className="h-4 w-4 mr-2" />
-              Create First Board
+              <I18nText message="board.createFirst" />
             </Button>
           )}
         </Card>
@@ -206,20 +210,20 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <Dialog open={createBoardOpen} onOpenChange={setCreateBoardOpen}>
         <DialogContent className="sm:max-w-md bg-card border-border text-card-foreground">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold">Create Saved Board</DialogTitle>
+            <DialogTitle className="text-lg font-bold"><I18nText message="board.create" /></DialogTitle>
             <DialogDescription className="text-muted-foreground text-xs">
-              Pin anime and manga titles into themed collections like Pinterest.
+              <I18nText message="board.introduction" />
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-5 py-2">
             <div className="space-y-2">
               <Label htmlFor="board-name" className="text-xs font-semibold text-foreground">
-                Board Name
+                <I18nText message="board.name" />
               </Label>
               <Input
                 id="board-name"
-                placeholder="e.g. Masterpiece Psychological, 2026 Watchlist"
+                placeholder={localizedT("board.nameExample")}
                 value={newBoardName}
                 onChange={(e) => setNewBoardName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreateBoard()}
@@ -236,13 +240,13 @@ export function UserLists({ userId, onShare }: UserListsProps) {
                     <Lock className="h-4 w-4 text-amber-500" />
                   )}
                   <Label className="text-sm font-semibold text-foreground">
-                    {newBoardPublic ? "Public Board" : "Secret Board"}
+                    {newBoardPublic ? localizedT("board.public") : localizedT("board.secret")}
                   </Label>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {newBoardPublic
-                    ? "Anyone can discover and view this board on your profile."
-                    : "Only you can see this board. Hidden from other users."}
+                    ? localizedT("board.publicDescription")
+                    : localizedT("board.secretDescription")}
                 </p>
               </div>
               <Switch
@@ -266,7 +270,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
               disabled={!newBoardName.trim() || isCreating}
               className="bg-rose-500 hover:bg-rose-600 text-white font-medium"
             >
-              {isCreating ? t("common.loading") : "Create Board"}
+              {isCreating ? t("common.loading") : localizedT("board.createButton")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -278,7 +282,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
           <DialogHeader>
             <DialogTitle>{t("bookmark.deleteList")}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
-              Are you sure you want to delete &ldquo;{selectedList?.name}&rdquo;? All saved items inside this board will be removed.
+              {t("board.deleteNamed", { name: selectedList?.name ?? "" })}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -300,9 +304,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <Dialog open={listSettingsOpen} onOpenChange={setListSettingsOpen}>
         <DialogContent className="bg-card border-border text-card-foreground">
           <DialogHeader>
-            <DialogTitle>Board Privacy & Settings</DialogTitle>
+            <DialogTitle><I18nText message="board.privacySettings" /></DialogTitle>
             <DialogDescription className="text-muted-foreground text-xs">
-              Manage visibility and collaborative options for &ldquo;{selectedList?.name}&rdquo;.
+              {t("board.manageNamed", { name: selectedList?.name ?? "" })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-2">
@@ -315,13 +319,13 @@ export function UserLists({ userId, onShare }: UserListsProps) {
                     <Lock className="h-4 w-4 text-amber-500" />
                   )}
                   <Label className="text-sm font-semibold text-foreground">
-                    {selectedList?.public ? "Public Board" : "Secret Board (Private)"}
+                    {selectedList?.public ? localizedT("board.public") : localizedT("board.privateLabel")}
                   </Label>
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {selectedList?.public
-                    ? "Visible to other otakus visiting your profile."
-                    : "Locked. Only you can view this board."}
+                    ? localizedT("board.visibleDescription")
+                    : t("board.locked")}
                 </p>
               </div>
               <Switch
@@ -334,10 +338,10 @@ export function UserLists({ userId, onShare }: UserListsProps) {
             <div className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-muted/40">
               <div className="space-y-0.5">
                 <Label className="text-sm font-semibold text-foreground">
-                  Collaborative Board
+                  <I18nText message="board.collaborative" />
                 </Label>
                 <p className="text-xs text-muted-foreground">
-                  Allow other community members to pin items to this board.
+                  <I18nText message="board.collaborativeDescription" />
                 </p>
               </div>
               <Switch
@@ -354,7 +358,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
               onClick={() => setListSettingsOpen(false)}
               className="bg-muted hover:bg-muted/80 text-foreground border border-border"
             >
-              Done
+              <I18nText message="board.done" />
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -382,6 +386,7 @@ function ListCard({
   onExpand: () => void;
   useListItems: any;
 }) {
+  const { t: localizedT } = useI18n();
   const { t } = useI18n();
   const { ref, inView } = useInView();
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useListItems(
@@ -425,18 +430,18 @@ function ListCard({
                 {list.public ? (
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
                     <Globe className="h-3 w-3" />
-                    Public Board
+                    <I18nText message="board.public" />
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
                     <Lock className="h-3 w-3" />
-                    Secret Board
+                    <I18nText message="board.secret" />
                   </span>
                 )}
                 {list.collaborative && (
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-purple-500 bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded-full">
                     <Users className="h-3 w-3" />
-                    Collaborative
+                    <I18nText message="board.collaborativeBadge" />
                   </span>
                 )}
               </div>
@@ -453,7 +458,7 @@ function ListCard({
 
           {allItems.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
-              <p>No items added to this board yet.</p>
+              <p><I18nText message="board.noItems" /></p>
             </div>
           ) : (
             <Masonry
@@ -533,18 +538,18 @@ function ListCard({
             {list.public ? (
               <span
                 className="flex items-center gap-1 text-[10px] font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded-full flex-shrink-0"
-                title="Public Board"
+                title={localizedT("board.public")}
               >
                 <Globe className="h-2.5 w-2.5" />
-                Public
+                <I18nText message="common.public" />
               </span>
             ) : (
               <span
                 className="flex items-center gap-1 text-[10px] font-semibold text-amber-500 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full flex-shrink-0"
-                title="Secret Board"
+                title={localizedT("board.secret")}
               >
                 <Lock className="h-2.5 w-2.5" />
-                Secret
+                <I18nText message="common.secret" />
               </span>
             )}
           </div>
@@ -566,7 +571,7 @@ function ListCard({
                   })
                 }
                 className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
-                title="Share board"
+                title={localizedT("board.share")}
               >
                 <Share2 className="h-3.5 w-3.5" />
               </Button>
@@ -579,7 +584,7 @@ function ListCard({
                   size="icon"
                   onClick={() => onSettings(list)}
                   className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full"
-                  title="Board privacy & settings"
+                  title={localizedT("board.settingsLabel")}
                 >
                   <Lock className="h-3.5 w-3.5" />
                 </Button>
@@ -589,7 +594,7 @@ function ListCard({
                     size="icon"
                     onClick={() => onDelete(list)}
                     className="h-8 w-8 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-full"
-                    title="Delete board"
+                    title={localizedT("board.delete")}
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </Button>
@@ -626,7 +631,7 @@ function ListCard({
           ) : (
             <div className="col-span-3 py-10 flex flex-col items-center justify-center text-muted-foreground/60 gap-1">
               <Sparkles className="h-5 w-5 opacity-40" />
-              <span className="text-xs">Empty board</span>
+              <span className="text-xs"><I18nText message="board.empty" /></span>
             </div>
           )}
         </div>

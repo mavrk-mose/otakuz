@@ -1,5 +1,8 @@
 "use client";
 
+import { I18nText } from "@/components/i18n-text";
+
+
 import { useState, useEffect, useRef } from "react";
 import {
   Dialog,
@@ -54,6 +57,7 @@ export function ProfileSettingsModal({
   onSaveProfile,
   onResetGoogleAvatar,
 }: ProfileSettingsModalProps) {
+  const { t: localizedT } = useI18n();
   const { t, locale, setLocale } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
 
@@ -171,11 +175,11 @@ export function ProfileSettingsModal({
         setLocale(language);
       }
 
-      toast.success("Profile & platform settings saved successfully!");
+      toast.success(localizedT("settings.saved"));
       onClose();
     } catch (err: any) {
       console.error(err);
-      toast.error("Failed to save settings: " + (err.message || "Unknown error"));
+      toast.error(localizedT("settings.saveFailed") + (err.message || localizedT("settings.unknownError")));
     } finally {
       setIsSaving(false);
     }
@@ -187,9 +191,9 @@ export function ProfileSettingsModal({
       if (profile?.googlePhotoURL) {
         setPhotoURL(profile.googlePhotoURL);
       }
-      toast.success("Reset avatar to your default Google account photo");
+      toast.success(localizedT("settings.resetSuccess"));
     } catch (err) {
-      toast.error("Failed to reset to Google avatar");
+      toast.error(localizedT("settings.resetFailed"));
     }
   };
 
@@ -200,10 +204,10 @@ export function ProfileSettingsModal({
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Sliders className="h-5 w-5 text-rose-500" />
-            <span>Profile & Platform Settings</span>
+            <span><I18nText message="profile.platformSettings" /></span>
           </DialogTitle>
           <DialogDescription className="text-muted-foreground text-xs">
-            Manage your public identity, privacy visibility, and platform controls.
+            <I18nText message="settings.description" />
           </DialogDescription>
         </DialogHeader>
 
@@ -214,21 +218,21 @@ export function ProfileSettingsModal({
               className="text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center gap-1.5"
             >
               <UserIcon className="h-3.5 w-3.5" />
-              Profile
+              <I18nText message="settings.profile" />
             </TabsTrigger>
             <TabsTrigger
               value="privacy"
               className="text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center gap-1.5"
             >
               <Shield className="h-3.5 w-3.5" />
-              Privacy
+              <I18nText message="settings.privacy" />
             </TabsTrigger>
             <TabsTrigger
               value="platform"
               className="text-xs font-semibold data-[state=active]:bg-card data-[state=active]:text-foreground data-[state=active]:shadow-sm flex items-center gap-1.5"
             >
               <Sliders className="h-3.5 w-3.5" />
-              Platform
+              <I18nText message="settings.platform" />
             </TabsTrigger>
           </TabsList>
 
@@ -237,7 +241,7 @@ export function ProfileSettingsModal({
             {/* Avatar Section */}
             <div className="space-y-3 p-4 rounded-xl border border-border bg-muted/30">
               <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Avatar Photo
+                <I18nText message="settings.avatar" />
               </Label>
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16 border-2 border-rose-500/40 shadow-lg">
@@ -249,24 +253,24 @@ export function ProfileSettingsModal({
 
                 <div className="space-y-2 flex-1">
                   <Input
-                    placeholder="Custom image URL (https://...)"
+                    placeholder={localizedT("profile.customImage")}
                     value={photoURL}
                     onChange={(e) => setPhotoURL(e.target.value)}
                     className="bg-card border-border text-foreground text-xs h-9"
                   />
-                  <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" aria-label="Upload profile image" onChange={async event => {
+                  <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" aria-label={localizedT("profile.uploadImage")} onChange={async event => {
                     const file = event.target.files?.[0]; event.target.value = '';
                     const uid = auth.currentUser?.uid;
                     if (!file || !uid || uid !== profile?.uid) return;
-                    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error('Choose a JPG, PNG, WebP, or GIF under 5 MB.'); return; }
+                    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error(localizedT("settings.imageValidation")); return; }
                     setUploadingPhoto(true);
                     try {
                       const imageRef = ref(storage, `users/${uid}/avatars/${crypto.randomUUID()}`);
                       await uploadBytes(imageRef, file, { contentType: file.type });
                       setPhotoURL(await getDownloadURL(imageRef));
-                    } catch { toast.error('Unable to upload profile image.'); } finally { setUploadingPhoto(false); }
+                    } catch { toast.error(localizedT("settings.uploadFailed")); } finally { setUploadingPhoto(false); }
                   }} />
-                  <Button type="button" size="sm" variant="outline" disabled={uploadingPhoto || isSaving} onClick={() => photoInput.current?.click()}>{uploadingPhoto ? 'Uploading…' : 'Upload photo'}</Button>
+                  <Button type="button" size="sm" variant="outline" disabled={uploadingPhoto || isSaving} onClick={() => photoInput.current?.click()}>{uploadingPhoto ? localizedT("settings.uploading") : localizedT("settings.uploadPhoto")}</Button>
                   {profile?.googlePhotoURL && (
                     <Button
                       type="button"
@@ -276,7 +280,7 @@ export function ProfileSettingsModal({
                       className="text-xs h-7 border-border bg-muted hover:bg-muted/80 text-foreground gap-1.5"
                     >
                       <RotateCcw className="h-3 w-3" />
-                      Reset to Google Photo
+                      <I18nText message="settings.resetGoogle" />
                     </Button>
                   )}
                 </div>
@@ -286,7 +290,7 @@ export function ProfileSettingsModal({
               {apiAvatars.length > 0 && (
                 <div>
                   <p className="text-[11px] text-muted-foreground mb-2 font-medium">
-                    Or choose from popular anime characters (Jikan API):
+                    <I18nText message="settings.chooseCharacter" />
                   </p>
                   <ScrollArea controlSize="sm" className="w-full">
                     <div className="flex w-max gap-2 py-1">
@@ -320,20 +324,20 @@ export function ProfileSettingsModal({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label htmlFor="displayName" className="text-xs font-semibold text-foreground">
-                  Display Name
+                  <I18nText message="settings.displayName" />
                 </Label>
                 <Input
                   id="displayName"
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="e.g. Ren Kisaragi"
+                  placeholder={localizedT("profile.nameExample")}
                   className="bg-card border-border text-foreground"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <Label htmlFor="username" className="text-xs font-semibold text-foreground">
-                  Handle / Username
+                  <I18nText message="settings.username" />
                 </Label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">@</span>
@@ -353,13 +357,13 @@ export function ProfileSettingsModal({
             {/* Bio */}
             <div className="space-y-1.5">
               <Label htmlFor="bio" className="text-xs font-semibold text-foreground">
-                Bio
+                <I18nText message="settings.bio" />
               </Label>
               <Textarea
                 id="bio"
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
-                placeholder="Share your favorite genres, anime milestones, or current obsession..."
+                placeholder={localizedT("profile.bioPlaceholder")}
                 rows={3}
                 className="bg-card border-border text-foreground text-xs resize-none"
               />
@@ -378,13 +382,13 @@ export function ProfileSettingsModal({
                       <Lock className="h-4 w-4 text-amber-500" />
                     )}
                     <Label className="text-sm font-bold text-foreground">
-                      {isPublic ? "Public Profile" : "Private Profile"}
+                      {isPublic ? localizedT("settings.publicProfile") : localizedT("settings.privateProfile")}
                     </Label>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {isPublic
-                      ? "Your profile appears in the Otakuz Homepage community explorer. Other otakus can view your profile, level, rank, and your public saved boards."
-                      : "Only you can see your profile details and boards. Hidden from the homepage and discovery directories."}
+                      ? localizedT("settings.publicDescription")
+                      : localizedT("settings.privateDescription")}
                   </p>
                 </div>
                 <Switch
@@ -397,10 +401,10 @@ export function ProfileSettingsModal({
               <div className="pt-3 border-t border-border flex items-start justify-between gap-4">
                 <div className="space-y-1">
                   <Label className="text-sm font-semibold text-foreground">
-                    Default New Boards to Public
+                    <I18nText message="settings.defaultPublic" />
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    When creating a new saved board, make it public by default.
+                    <I18nText message="settings.defaultPublicDescription" />
                   </p>
                 </div>
                 <Switch
@@ -421,11 +425,11 @@ export function ProfileSettingsModal({
                   <div className="flex items-center gap-2">
                     <Sun className="h-4 w-4 text-amber-500" />
                     <Label className="text-sm font-semibold text-foreground">
-                      Theme Appearance
+                      <I18nText message="settings.theme" />
                     </Label>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Choose between Warm Creamy light mode and Slate Dark mode.
+                    <I18nText message="settings.themeDescription" />
                   </p>
                 </div>
                 <div className="flex gap-1.5">
@@ -441,7 +445,7 @@ export function ProfileSettingsModal({
                     }`}
                   >
                     <Sun className="h-3.5 w-3.5 text-amber-500" />
-                    Creamy
+                    <I18nText message="settings.light" />
                   </Button>
                   <Button
                     type="button"
@@ -455,7 +459,7 @@ export function ProfileSettingsModal({
                     }`}
                   >
                     <Moon className="h-3.5 w-3.5 text-rose-400" />
-                    Slate Dark
+                    <I18nText message="settings.dark" />
                   </Button>
                 </div>
               </div>
@@ -464,10 +468,10 @@ export function ProfileSettingsModal({
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
                   <Label className="text-sm font-semibold text-foreground">
-                    Platform Language
+                    <I18nText message="settings.language" />
                   </Label>
                   <p className="text-xs text-muted-foreground">
-                    Choose interface language for Otakuz.
+                    <I18nText message="settings.languageDescription" />
                   </p>
                 </div>
                 <div className="flex gap-1.5">
@@ -482,7 +486,7 @@ export function ProfileSettingsModal({
                         : "border-border text-foreground hover:bg-muted"
                     }`}
                   >
-                    English
+                    <I18nText message="settings.english" />
                   </Button>
                   <Button
                     type="button"
@@ -506,11 +510,11 @@ export function ProfileSettingsModal({
                   <div className="flex items-center gap-2">
                     <Tv className="h-4 w-4 text-muted-foreground" />
                     <Label className="text-sm font-semibold text-foreground">
-                      Autoplay Trailers & Previews
+                      <I18nText message="settings.autoplay" />
                     </Label>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Automatically play anime PV teasers and trailers when opened.
+                    <I18nText message="settings.autoplayDescription" />
                   </p>
                 </div>
                 <Switch
@@ -526,11 +530,11 @@ export function ProfileSettingsModal({
                   <div className="flex items-center gap-2">
                     <Volume2 className="h-4 w-4 text-muted-foreground" />
                     <Label className="text-sm font-semibold text-foreground">
-                      Sound Effects & Audio Feedback
+                      <I18nText message="settings.sound" />
                     </Label>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Play anime-inspired audio cues on actions and room messages.
+                    <I18nText message="settings.soundDescription" />
                   </p>
                 </div>
                 <Switch
@@ -546,11 +550,11 @@ export function ProfileSettingsModal({
                   <div className="flex items-center gap-2">
                     <EyeOff className="h-4 w-4 text-muted-foreground" />
                     <Label className="text-sm font-semibold text-foreground">
-                      Spoiler & Content Filter
+                      <I18nText message="settings.spoilers" />
                     </Label>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Blur potential plot spoilers and sensitive community content.
+                    <I18nText message="settings.spoilersDescription" />
                   </p>
                 </div>
                 <Switch

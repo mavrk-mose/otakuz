@@ -1,5 +1,9 @@
 "use client";
 
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
+
 import { ErrorState } from "@/components/page-state";
 import { EmptyState } from "@/components/empty-state";
 
@@ -181,6 +185,7 @@ function ResultThumbnail({ item }: { item: GlobalSearchItem }) {
 }
 
 export function GlobalSearchModal() {
+  const { t: localizedT } = useI18n();
   const router = useRouter();
   const {
     isOpen,
@@ -407,7 +412,7 @@ export function GlobalSearchModal() {
         onKeyDown={handleModalKeyDown}
         className="max-w-2xl gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 text-foreground shadow-2xl [&>button]:hidden"
       >
-        <DialogTitle className="sr-only">Global Search</DialogTitle>
+        <DialogTitle className="sr-only"><I18nText message="search.global" /></DialogTitle>
 
         {/* Top Search Input Row */}
         <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
@@ -422,8 +427,8 @@ export function GlobalSearchModal() {
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search anime, manga, @users, merch, events, channels, #chatrooms..."
-            aria-label="Global search query"
+            placeholder={localizedT("search.globalPlaceholder")}
+            aria-label={localizedT("search.queryLabel")}
             className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground sm:text-base"
           />
 
@@ -434,7 +439,7 @@ export function GlobalSearchModal() {
                 setQuery("");
                 inputRef.current?.focus();
               }}
-              aria-label="Clear search query"
+              aria-label={localizedT("search.clearQuery")}
               className="rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
             >
               <X className="h-4 w-4" />
@@ -446,7 +451,7 @@ export function GlobalSearchModal() {
             variant={showScopeCustomizer ? "default" : "outline"}
             size="sm"
             onClick={() => setShowScopeCustomizer((prev) => !prev)}
-            title="Customize what categories Global Search includes"
+            title={localizedT("search.customize")}
             className={cn(
               "h-8 shrink-0 gap-1.5 rounded-xl px-2.5 text-xs font-semibold",
               showScopeCustomizer
@@ -455,7 +460,7 @@ export function GlobalSearchModal() {
             )}
           >
             <SlidersHorizontal className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">Scopes</span>
+            <span className="hidden sm:inline"><I18nText message="search.scopes" /></span>
             <span className="rounded bg-black/15 px-1 text-[10px] dark:bg-white/15">
               {enabledCategories.length}/{ALL_SEARCH_CATEGORIES.length}
             </span>
@@ -467,7 +472,7 @@ export function GlobalSearchModal() {
           <div className="border-b border-border bg-muted/40 px-4 py-3">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                Included Search Sources (Simultaneous Query Targets)
+                <I18nText message="search.sources" />
               </p>
               {enabledCategories.length < ALL_SEARCH_CATEGORIES.length && (
                 <button
@@ -475,7 +480,7 @@ export function GlobalSearchModal() {
                   onClick={enableAllCategories}
                   className="text-[11px] font-semibold text-rose-500 hover:underline"
                 >
-                  Enable all
+                  <I18nText message="search.enableAll" />
                 </button>
               )}
             </div>
@@ -530,7 +535,7 @@ export function GlobalSearchModal() {
             )}
           >
             <Layers className="h-3 w-3" />
-            <span>All</span>
+            <span><I18nText message="search.all" /></span>
             {trimmedQuery.length > 0 && (
               <span
                 className={cn(
@@ -594,14 +599,14 @@ export function GlobalSearchModal() {
                   <div className="flex items-center justify-between px-2">
                     <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
                       <History className="h-3.5 w-3.5 text-rose-500" />
-                      Recent Searches
+                      <I18nText message="search.recent" />
                     </span>
                     <button
                       type="button"
                       onClick={clearRecentSearches}
                       className="text-[11px] text-muted-foreground hover:text-rose-500"
                     >
-                      Clear
+                      <I18nText message="common.clear" />
                     </button>
                   </div>
 
@@ -649,7 +654,7 @@ export function GlobalSearchModal() {
               <div className="space-y-1.5">
                 <div className="px-2">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    Quick Jump Destinations
+                    <I18nText message="search.quickJump" />
                   </span>
                 </div>
 
@@ -703,9 +708,9 @@ export function GlobalSearchModal() {
             <ErrorState compact onRetry={() => void retryFailedSearch()} />
           ) : isAllSettledEmpty ? (
             <EmptyState illustration="search" compact
-              title={<>No matches found for &ldquo;{trimmedQuery}&rdquo;</>}
-              description="Try another keyword or adjust your active search scopes above."
-              action={focusedCategory !== "all" ? <Button type="button" variant="ghost" size="sm" onClick={() => setFocusedCategory("all")} className="text-xs text-primary">Search across all enabled scopes</Button> : undefined}
+              title={localizedT("search.noMatchesFor", { query: trimmedQuery })}
+              description={localizedT("search.emptyDescription")}
+              action={focusedCategory !== "all" ? <Button type="button" variant="ghost" size="sm" onClick={() => setFocusedCategory("all")} className="text-xs text-primary"><I18nText message="search.allScopes" /></Button> : undefined}
             />
           ) : (
             <div className="space-y-4">
@@ -724,7 +729,7 @@ export function GlobalSearchModal() {
                     >
                       <Lock className="mx-auto mb-2 h-5 w-5 text-amber-500" />
                       <p className="text-xs font-semibold text-foreground">
-                        Sign in to search live community chatrooms
+                        <I18nText message="search.signInRooms" />
                       </p>
                     </div>
                   );
@@ -758,7 +763,7 @@ export function GlobalSearchModal() {
                           onClick={() => setFocusedCategory(section.category)}
                           className="text-[11px] font-semibold text-rose-500 hover:underline"
                         >
-                          Filter to {cfg.label} →
+                          <I18nText message="search.filterTo" /> {cfg.label} →
                         </button>
                       )}
                     </div>
@@ -768,7 +773,7 @@ export function GlobalSearchModal() {
                     (section.isPending || section.isFetching) ? (
                       <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-background/40 px-3 py-2.5 text-xs text-muted-foreground">
                         <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
-                        <span>Searching {cfg.label.toLowerCase()}...</span>
+                        <span><I18nText message="search.searching" /> {cfg.label.toLowerCase()}...</span>
                       </div>
                     ) : (
                       section.items.map((item) => {
@@ -846,25 +851,25 @@ export function GlobalSearchModal() {
               <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
                 ↑↓
               </kbd>
-              <span>Navigate</span>
+              <span><I18nText message="search.navigate" /></span>
             </span>
             <span className="inline-flex items-center gap-1">
               <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
                 ↵
               </kbd>
-              <span>Open</span>
+              <span><I18nText message="search.open" /></span>
             </span>
             <span className="inline-flex items-center gap-1">
               <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
                 Tab
               </kbd>
-              <span>Switch Scope</span>
+              <span><I18nText message="search.switchScope" /></span>
             </span>
             <span className="hidden items-center gap-1 sm:inline-flex">
               <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
                 ⌘↵
               </kbd>
-              <span>New Tab</span>
+              <span><I18nText message="search.newTab" /></span>
             </span>
           </div>
 
@@ -872,7 +877,7 @@ export function GlobalSearchModal() {
             <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
               Esc
             </kbd>
-            <span>Close</span>
+            <span><I18nText message="common.closeLabel" /></span>
           </span>
         </div>
       </DialogContent>

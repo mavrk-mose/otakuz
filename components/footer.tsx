@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 export default function Footer() {
   return (
     <footer className="border-t py-8 mt-12">
@@ -6,46 +8,46 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-lg mb-4">Otakuz</h3>
             <p className="text-sm text-muted-foreground">
-              Your ultimate destination for anime news, reviews, and streaming content.
+              <I18nText message="footer.description" />
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
+            <h4 className="font-semibold mb-4"><I18nText message="footer.quickLinks" /></h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="/about" className="text-muted-foreground hover:text-foreground">
-                  About Us
+                  <I18nText message="footer.about" />
                 </a>
               </li>
               <li>
                 <a href="/contact" className="text-muted-foreground hover:text-foreground">
-                  Contact
+                  <I18nText message="footer.contact" />
                 </a>
               </li>
               <li>
                 <a href="/faq" className="text-muted-foreground hover:text-foreground">
-                  FAQ
+                  <I18nText message="footer.faq" />
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Legal</h4>
+            <h4 className="font-semibold mb-4"><I18nText message="footer.legal" /></h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="/privacy" className="text-muted-foreground hover:text-foreground">
-                  Privacy Policy
+                  <I18nText message="footer.privacy" />
                 </a>
               </li>
               <li>
                 <a href="/terms" className="text-muted-foreground hover:text-foreground">
-                  Terms of Service
+                  <I18nText message="footer.terms" />
                 </a>
               </li>
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4">Connect</h4>
+            <h4 className="font-semibold mb-4"><I18nText message="footer.connect" /></h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground">
@@ -66,7 +68,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Otakuz. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Otakuz. <I18nText message="footer.rights" /></p>
         </div>
       </div>
     </footer>

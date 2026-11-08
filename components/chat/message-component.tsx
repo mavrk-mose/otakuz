@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useState } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -159,7 +161,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
               <div className="mt-2.5">
                 <Button asChild size="sm" variant="outline" className="w-full gap-1.5 border-emerald-500/30 text-xs font-semibold text-emerald-400 hover:bg-emerald-500/10 hover:text-emerald-300">
                   <Link href={`/manga/${data.id}`}>
-                    <span>Read Manga</span>
+                    <span><I18nText message="chat.readManga" /></span>
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>
@@ -211,7 +213,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
               <div className="mt-2.5">
                 <Button asChild size="sm" className="w-full gap-1.5 bg-rose-600 text-xs font-semibold text-white hover:bg-rose-700">
                   <Link href={`/shop/product/${data.id}`}>
-                    <span>View in Shop</span>
+                    <span><I18nText message="chat.viewShop" /></span>
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>
@@ -271,7 +273,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
               <div className="mt-2.5">
                 <Button asChild size="sm" className="w-full gap-1.5 bg-amber-500 font-semibold text-black hover:bg-amber-600 text-xs">
                   <Link href={`/events/${data.id}`}>
-                    <span>Event Details & Tickets</span>
+                    <span><I18nText message="chat.eventDetails" /></span>
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>
@@ -325,11 +327,11 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
               <div className="mt-3 grid grid-cols-3 gap-1 rounded-lg border border-border/30 bg-[#121215] p-2 text-center">
                 <div>
                   <p className="text-xs font-extrabold text-white">{data.watchedCount ?? 42}</p>
-                  <p className="text-[9px] font-medium text-muted-foreground">Watched</p>
+                  <p className="text-[9px] font-medium text-muted-foreground"><I18nText message="chat.watchedLabel" /></p>
                 </div>
                 <div className="border-x border-border/30 px-1">
                   <p className="text-xs font-extrabold text-white">{data.readingCount ?? 18}</p>
-                  <p className="text-[9px] font-medium text-muted-foreground">Reading</p>
+                  <p className="text-[9px] font-medium text-muted-foreground"><I18nText message="chat.readingLabel" /></p>
                 </div>
                 <div>
                   <p className="text-xs font-extrabold text-white">{data.totalExp ?? '1,450'}</p>
@@ -340,7 +342,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
               <div className="mt-3">
                 <Button asChild size="sm" variant="outline" className="w-full gap-1.5 border-rose-500/30 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300">
                   <Link href={`/profile?userId=${data.userId}`}>
-                    <span>View Profile</span>
+                    <span><I18nText message="profile.viewProfile" /></span>
                     <ArrowRight className="h-3 w-3" />
                   </Link>
                 </Button>

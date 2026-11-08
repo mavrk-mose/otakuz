@@ -1,4 +1,7 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
@@ -101,6 +104,7 @@ export function GoogleAdUnit({
   seedOffset = 0,
   className,
 }: GoogleAdUnitProps) {
+  const { t: localizedT } = useI18n();
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || ADSENSE_CLIENT_ID;
   const resolvedSlot = resolveAdSenseSlot(adSlot, process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT) || ADSENSE_GENERAL_SLOT;
   const resolvedFormat = resolveAdSenseFormat(adFormat, adLayoutKey);
@@ -205,8 +209,8 @@ export function GoogleAdUnit({
       {hasLiveAdSenseConfig && (
         <div hidden={adSenseStatus === "unfilled"} className="mb-3 overflow-hidden rounded-2xl border border-border/80 bg-card p-3">
           <div className="mb-1.5 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            <span>Sponsored • Google AdSense</span>
-            <span>Ad</span>
+            <span><I18nText message="ads.sponsored" /></span>
+            <span><I18nText message="ads.ad" /></span>
           </div>
           <ins
             ref={insRef}
@@ -337,7 +341,7 @@ export function GoogleAdUnit({
                   <div className="flex items-center gap-1.5">
                     <button
                       type="button"
-                      aria-label="Previous sponsored pick"
+                      aria-label={localizedT("ads.previous")}
                       onClick={() =>
                         setActiveIndex(
                           (prev) =>
@@ -353,7 +357,7 @@ export function GoogleAdUnit({
                     </span>
                     <button
                       type="button"
-                      aria-label="Next sponsored pick"
+                      aria-label={localizedT("ads.next")}
                       onClick={() =>
                         setActiveIndex((prev) => (prev + 1) % campaigns.length)
                       }
@@ -392,7 +396,7 @@ export function GoogleAdUnit({
               <div className="min-w-0 space-y-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="rounded border border-border bg-background/90 px-1.5 py-0.5 font-mono text-[10px] font-bold uppercase text-muted-foreground">
-                    Ad
+                    <I18nText message="ads.ad" />
                   </span>
                   <span className="inline-flex items-center gap-1 font-mono text-[11px] font-semibold uppercase tracking-wider text-rose-500">
                     <TagIcon className="h-3 w-3" />
@@ -490,7 +494,7 @@ export function GoogleAdUnit({
                         {item.discountBadge}
                       </Badge>
                       <span className="absolute right-2.5 top-2.5 rounded bg-black/70 px-1.5 py-0.5 font-mono text-[9px] uppercase text-white">
-                        Ad
+                        <I18nText message="ads.ad" />
                       </span>
                     </div>
 

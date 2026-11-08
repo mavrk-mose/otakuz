@@ -1,4 +1,7 @@
 'use client';
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import { useEffect, useState } from 'react';
 import { Download, X } from 'lucide-react';
@@ -10,6 +13,7 @@ interface InstallPromptEvent extends Event {
 }
 
 export function PwaInstall() {
+  const { t: localizedT } = useI18n();
   const [prompt, setPrompt] = useState<InstallPromptEvent | null>(null);
   const [ios, setIos] = useState(false);
   const [hidden, setHidden] = useState(true);
@@ -69,17 +73,17 @@ export function PwaInstall() {
   if (hidden || (!prompt && !ios)) return null;
 
   return (
-    <aside aria-label="Install Otakuz" className="fixed bottom-24 left-4 right-4 z-50 rounded-xl border bg-card p-4 text-card-foreground shadow-xl sm:left-auto sm:w-80 lg:bottom-6">
+    <aside aria-label={localizedT("pwa.installLabel")} className="fixed bottom-24 left-4 right-4 z-50 rounded-xl border bg-card p-4 text-card-foreground shadow-xl sm:left-auto sm:w-80 lg:bottom-6">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="font-semibold">Take Otakuz with you</p>
+          <p className="font-semibold"><I18nText message="pwa.takeWithYou" /></p>
           <p className="mt-1 text-sm text-muted-foreground">
-            {ios ? 'In Safari, tap Share, then Add to Home Screen to install Otakuz.' : 'Install Otakuz for quick access from your home screen.'}
+            {ios ? localizedT("pwa.iosInstructions") : localizedT("pwa.instructions")}
           </p>
         </div>
-        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={dismiss} aria-label="Dismiss install suggestion"><X className="h-4 w-4" /></Button>
+        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={dismiss} aria-label={localizedT("pwa.dismiss")}><X className="h-4 w-4" /></Button>
       </div>
-      {prompt && <Button className="mt-3 w-full" disabled={installing} onClick={install}><Download className="mr-2 h-4 w-4" />{installing ? 'Installing…' : 'Install Otakuz'}</Button>}
+      {prompt && <Button className="mt-3 w-full" disabled={installing} onClick={install}><Download className="mr-2 h-4 w-4" />{installing ? localizedT("pwa.installing") : localizedT("pwa.installLabel")}</Button>}
     </aside>
   );
 }

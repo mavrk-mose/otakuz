@@ -1,5 +1,8 @@
 "use client";
 
+import { I18nText } from "@/components/i18n-text";
+
+
 import React, { useState, useEffect, useMemo } from 'react';
 import {
     Dialog,
@@ -31,6 +34,7 @@ export interface ShareContentModalProps {
 }
 
 export function ShareContentModal({ isOpen, onClose, payload }: ShareContentModalProps) {
+  const { t: localizedT } = useI18n();
     const { t } = useI18n();
     const [searchQuery, setSearchQuery] = useState('');
     const [isSharing, setIsSharing] = useState(false);
@@ -216,7 +220,7 @@ export function ShareContentModal({ isOpen, onClose, payload }: ShareContentModa
                             <div className="flex items-center gap-1.5">
                                 <Badge variant="secondary" className="gap-1 text-[10px] font-mono uppercase">
                                     <UserIcon className="h-3 w-3 text-rose-400" />
-                                    Profile
+                                    <I18nText message="settings.profile" />
                                 </Badge>
                                 {payload.data.level && (
                                     <span className="text-[10px] font-bold text-rose-400">
@@ -253,7 +257,7 @@ export function ShareContentModal({ isOpen, onClose, payload }: ShareContentModa
                     <div className="relative">
                         <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
                         <Input
-                            placeholder="Filter chat rooms..."
+                            placeholder={localizedT("chat.filterRooms")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-9"
@@ -296,7 +300,7 @@ export function ShareContentModal({ isOpen, onClose, payload }: ShareContentModa
                                                 className="shrink-0 font-mono text-xs text-primary"
                                                 tabIndex={-1}
                                             >
-                                                Share
+                                                <I18nText message="common.share" />
                                             </Button>
                                         </button>
                                     ))}

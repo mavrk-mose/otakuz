@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 "use client"
 
 import { useState, useRef } from "react"
@@ -92,7 +94,7 @@ export function MangaGallery({ id }: { id: string }) {
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="w-[calc(100vw-2rem)] max-w-4xl rounded-2xl border-border bg-card/95 p-3 sm:p-4 backdrop-blur-xl">
-          <DialogTitle className="sr-only">Manga Gallery Viewer</DialogTitle>
+          <DialogTitle className="sr-only"><I18nText message="manga.galleryViewer" /></DialogTitle>
           <Carousel
             className="w-full"
             opts={{ startIndex: selectedImageIndex, loop: true }}

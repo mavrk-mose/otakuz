@@ -1,5 +1,6 @@
 "use client";
 
+
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useBookmarks } from "@/hooks/use-bookmarks";
@@ -33,6 +34,7 @@ export function BookmarkButton({
   image,
   onOpenChange,
 }: BookmarkButtonProps) {
+  const { t: localizedT } = useI18n();
   const { t } = useI18n();
   const { user } = useAuth();
   const { lists, createList, addToList, removeFromList, isBookmarked, bookmarkPending } = useBookmarks();
@@ -90,7 +92,7 @@ export function BookmarkButton({
         variant="ghost"
         size="icon"
         onClick={() => (window.location.href = "/auth")}
-        aria-label="Sign in to save to a list"
+        aria-label={localizedT("bookmark.signInSave")}
         className="transition-opacity"
       >
         <Bookmark className="h-4 w-4" />
@@ -195,7 +197,7 @@ export function BookmarkButton({
                     />}
                   </div>
                   <span className="flex-1 text-left text-sm">{list.name}</span>
-                  {listIds.includes(list.id) && <Check className="h-4 w-4" aria-label="Saved; click to remove" />}
+                  {listIds.includes(list.id) && <Check className="h-4 w-4" aria-label={localizedT("bookmark.savedRemove")} />}
                 </button>
               ))
             )}

@@ -1,4 +1,7 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
@@ -17,6 +20,7 @@ const useActivePreview = create<{ active: string | null; setActive: (active: str
 }));
 
 function PromoPreview({ animeId, title, poster, onBookmarkOpenChange }: { animeId: number | string; title: string; poster?: string; onBookmarkOpenChange: (open: boolean) => void }) {
+  const { t: localizedT } = useI18n();
   const { data, isLoading, isError } = useAnimeVideos(String(animeId));
   const embedUrl = data?.promo.map(promo => promoEmbedUrl(promo.trailer?.embed_url)).find(Boolean);
   const [failed, setFailed] = useState(false);
@@ -25,7 +29,7 @@ function PromoPreview({ animeId, title, poster, onBookmarkOpenChange }: { animeI
       {embedUrl && !failed ? <PromoVideo key={embedUrl} src={embedUrl} title={`${title} promo preview`} onError={() => setFailed(true)} /> : <>
         {poster && <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${JSON.stringify(poster)})` }} />}
         <div className="absolute inset-0 flex items-center justify-center bg-black/30 text-sm text-white">
-          {isLoading ? <Loader2 className="h-6 w-6 animate-spin" aria-label="Loading preview" /> : (isError || failed) ? 'Preview unavailable' : 'No promo available'}
+          {isLoading ? <Loader2 className="h-6 w-6 animate-spin" aria-label={localizedT("anime.loadingPreview")} /> : (isError || failed) ? localizedT("anime.previewUnavailable") : localizedT("anime.noPromo")}
         </div>
       </>}
       <Link href={`/watch/${animeId}`} aria-label={`Play ${title}`} className="absolute inset-0 flex items-center justify-center bg-black/10 opacity-0 transition-opacity hover:opacity-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary">
@@ -36,7 +40,7 @@ function PromoPreview({ animeId, title, poster, onBookmarkOpenChange }: { animeI
       </div>
     </div>
     <div className="flex items-center justify-between gap-4 p-5">
-      <div className="min-w-0"><p className="line-clamp-2 text-xl font-bold sm:text-2xl">{title}</p><p className="mt-1 text-sm text-muted-foreground">Anime · Promo preview</p></div>
+      <div className="min-w-0"><p className="line-clamp-2 text-xl font-bold sm:text-2xl">{title}</p><p className="mt-1 text-sm text-muted-foreground"><I18nText message="anime.promoPreview" /></p></div>
       <Link href={`/anime/${animeId}`} aria-label={`View details for ${title}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border bg-muted transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"><Info className="h-5 w-5" aria-hidden="true" /></Link>
     </div>
   </>;

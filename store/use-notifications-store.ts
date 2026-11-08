@@ -39,7 +39,6 @@ interface NotificationsStoreState {
   isEnablingPush: boolean;
   subscribeForUser: (uid: string) => () => void;
   enableWebNotifications: (uid?: string) => Promise<NotificationSetupResult>;
-  sendTestNotification: () => Promise<boolean>;
 }
 
 let activeUid: string | null = null;
@@ -84,15 +83,6 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
         await saveUserPushToken(uid, result.pushToken).catch(() => undefined);
       }
 
-      if (result.permission === 'granted') {
-        await showBrowserNotification({
-          title: 'Otakuz Notifications Enabled',
-          body: 'You will now receive live chat, anime, and community alerts.',
-          link: '/',
-          tag: 'otakuz-welcome',
-        });
-      }
-
       return result;
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
@@ -112,15 +102,6 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
     }
   },
 
-  sendTestNotification: async () => {
-    return showBrowserNotification({
-      title: 'Otakuz Live Alert Test',
-      body: 'Browser web notifications are working properly on this device.',
-      link: '/',
-      tag: `otakuz-test-${Date.now()}`,
-    });
-  },
-
   subscribeForUser: (uid: string) => {
     if (typeof window === 'undefined' || !uid) {
       return () => {};
@@ -137,7 +118,7 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
       set({ loading: true, firestoreError: null });
 
       // Auto-sync Service Worker + FCM token if browser permission was already granted
-      // (never auto-prompting without a user click gesture).
+      // (the app provider handles the initial permission request).
       void initializeNotifications({ promptPermission: false }).then((result) => {
         if (activeUid !== uid) return;
         set({ setupResult: result });

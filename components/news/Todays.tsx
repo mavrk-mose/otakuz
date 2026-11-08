@@ -1,4 +1,6 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+
 
 import Image from "next/image";
 import Link from "next/link";
@@ -73,7 +75,7 @@ const TodaysStream = ({ stories = [] }: TodaysProps) => {
             {t("news.todayStream")}
           </h2>
         </div>
-        <span className="font-mono text-[11px] font-semibold text-amber-500 dark:text-amber-400">REALTIME</span>
+        <span className="font-mono text-[11px] font-semibold text-amber-500 dark:text-amber-400"><I18nText message="news.realtime" /></span>
       </div>
       <div className="divide-y divide-border">
         {stories.map((story) => (

@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 "use client"
 
 import React, { use, useEffect } from 'react'
@@ -45,9 +47,9 @@ export default function Room(props: Props) {
 
     if (!user) return null
 
-    if (!loading && (error || !roomDetails)) return <div role="alert" className="space-y-4 p-6"><p>This conversation is unavailable or you do not have access.</p><Button onClick={() => router.replace('/chat')}>Back to rooms</Button></div>
+    if (!loading && (error || !roomDetails)) return <div role="alert" className="space-y-4 p-6"><p><I18nText message="chat.unavailable" /></p><Button onClick={() => router.replace('/chat')}><I18nText message="chat.backRooms" /></Button></div>
 
-    if (loading && !roomDetails) return <p role="status" className="p-4">Loading room…</p>
+    if (loading && !roomDetails) return <p role="status" className="p-4"><I18nText message="chat.loadingRoom" /></p>
     const isUserInRoom = Boolean(roomDetails?.members.includes(user.uid))
 
     return (

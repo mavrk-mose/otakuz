@@ -1,5 +1,9 @@
 "use client";
 
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
+
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -24,6 +28,7 @@ const EMPTY_USERS: UserProfileData[] = [];
 type SortMode = "active" | "level" | "watched" | "name";
 
 export default function CommunityDirectoryPage() {
+  const { t: localizedT } = useI18n();
   const { data, isLoading } = useCommunityUsers(500);
   const users = data ?? EMPTY_USERS;
   const [searchQuery, setSearchQuery] = useState("");
@@ -77,14 +82,14 @@ export default function CommunityDirectoryPage() {
           >
             <Link href="/">
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Home</span>
+              <span><I18nText message="common.backHome" /></span>
             </Link>
           </Button>
 
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="flex items-center gap-2.5 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
               <Users className="h-7 w-7 text-rose-500" />
-              <span>Community Otakus Directory</span>
+              <span><I18nText message="community.directory" /></span>
             </h1>
             {!isLoading && (
               <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-0.5 text-xs font-bold text-rose-500">
@@ -94,7 +99,7 @@ export default function CommunityDirectoryPage() {
           </div>
 
           <p className="max-w-2xl text-sm text-muted-foreground">
-            Browse all public Otakuz community profiles, explore their curated saved boards, and see what fellow members are watching and reading.
+            <I18nText message="community.description" />
           </p>
         </div>
 
@@ -106,7 +111,7 @@ export default function CommunityDirectoryPage() {
         >
           <Link href="/profile">
             <UserIcon className="h-3.5 w-3.5 text-rose-500" />
-            <span>My Profile</span>
+            <span><I18nText message="community.myProfile" /></span>
           </Link>
         </Button>
       </div>
@@ -119,7 +124,7 @@ export default function CommunityDirectoryPage() {
             type="search"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Filter members by name, @username, rank, or bio..."
+            placeholder={localizedT("community.filter")}
             className="h-10 rounded-xl border-border bg-background/60 pl-9 text-sm"
           />
         </div>
@@ -127,7 +132,7 @@ export default function CommunityDirectoryPage() {
         <div className="flex items-center gap-2">
           <SlidersHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" />
           <label htmlFor="community-sort" className="text-xs font-medium text-muted-foreground">
-            Sort:
+            <I18nText message="community.sort" />
           </label>
           <select
             id="community-sort"
@@ -135,10 +140,10 @@ export default function CommunityDirectoryPage() {
             onChange={(e) => setSortBy(e.target.value as SortMode)}
             className="h-10 rounded-xl border border-border bg-background/60 px-3 text-xs font-semibold text-foreground outline-none transition focus:border-rose-500"
           >
-            <option value="active">Most Active & Boards</option>
-            <option value="level">Highest Level</option>
-            <option value="watched">Most Watched</option>
-            <option value="name">Alphabetical (A–Z)</option>
+            <option value="active"><I18nText message="community.sortActive" /></option>
+            <option value="level"><I18nText message="community.sortLevel" /></option>
+            <option value="watched"><I18nText message="community.sortWatched" /></option>
+            <option value="name"><I18nText message="community.sortName" /></option>
           </select>
         </div>
       </Card>
@@ -154,10 +159,10 @@ export default function CommunityDirectoryPage() {
         <Card className="rounded-2xl border-dashed border-border bg-card/60 p-12 text-center">
           <Sparkles className="mx-auto mb-3 h-8 w-8 text-muted-foreground" />
           <h2 className="text-base font-bold text-foreground">
-            No matching community profiles
+            <I18nText message="community.noMatch" />
           </h2>
           <p className="mt-1 text-xs text-muted-foreground">
-            Try adjusting your search query to find other members.
+            <I18nText message="community.trySearch" />
           </p>
           {searchQuery && (
             <Button
@@ -167,7 +172,7 @@ export default function CommunityDirectoryPage() {
               onClick={() => setSearchQuery("")}
               className="mt-3 text-xs text-rose-500 hover:text-rose-600"
             >
-              Clear filter
+              <I18nText message="community.clearFilter" />
             </Button>
           )}
         </Card>

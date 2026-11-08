@@ -1,4 +1,7 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
@@ -17,6 +20,7 @@ interface ThemeToggleProps {
 }
 
 export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) {
+  const { t: localizedT } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = React.useState(false);
 
@@ -30,7 +34,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
         variant="ghost"
         size="icon"
         className={`h-9 w-9 rounded-full border border-border/60 bg-muted/40 ${className || ""}`}
-        aria-label="Toggle theme"
+        aria-label={localizedT("nav.themeLabel")}
       >
         <div className="h-4 w-4" />
       </Button>
@@ -77,7 +81,7 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
                 {isDark ? "Creamy Mode" : "Dark Mode"}
               </span>
             )}
-            <span className="sr-only">Toggle theme</span>
+            <span className="sr-only"><I18nText message="nav.themeLabel" /></span>
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs font-medium">

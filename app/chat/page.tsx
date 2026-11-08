@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 "use client"
 
 import React, { useEffect, useState } from 'react'
@@ -78,7 +80,7 @@ export default function ChatPage() {
                     {selectedRoom && window.innerWidth >= 768 ? (
                             <>
                                 <RoomHeader roomId={selectedRoom} roomDetails={roomDetails} onLeave={() => setSelectedRoom(null)}/>
-                                {roomDetails?.members.includes(user.uid) ? <ChatRoom key={selectedRoom} roomId={selectedRoom} title={roomDetails.title} /> : <p role="status" className="p-4">Joining conversation…</p>}
+                                {roomDetails?.members.includes(user.uid) ? <ChatRoom key={selectedRoom} roomId={selectedRoom} title={roomDetails.title} /> : <p role="status" className="p-4"><I18nText message="chat.joining" /></p>}
                             </>
                     ) : (
                         rooms.map((room: Room) => (

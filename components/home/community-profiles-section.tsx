@@ -1,4 +1,7 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+import { useI18n } from "@/components/i18n-provider";
+
 
 import { useRef } from "react";
 import { Card } from "@/components/ui/card";
@@ -87,14 +90,14 @@ export function CommunityMemberCard({
               <strong className="text-foreground">
                 {communityUser.watchedCount}
               </strong>{" "}
-              Watched
+              <I18nText message="chat.watchedLabel" />
             </span>
             <span>·</span>
             <span>
               <strong className="text-foreground">
                 {communityUser.readingCount}
               </strong>{" "}
-              Reading
+              <I18nText message="chat.readingLabel" />
             </span>
           </div>
 
@@ -109,6 +112,7 @@ export function CommunityMemberCard({
 }
 
 export function CommunityProfilesSection() {
+  const { t: localizedT } = useI18n();
   const { data, isLoading } = useCommunityUsers(50);
   const allUsers: UserProfileData[] = data ?? [];
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -131,7 +135,7 @@ export function CommunityProfilesSection() {
           </p>
           <h2 className="flex items-center gap-2 text-2xl font-black tracking-tight text-foreground md:text-3xl">
             <Users className="h-6 w-6 text-rose-500" />
-            <span>Community Profiles & Saved Boards</span>
+            <span><I18nText message="community.profiles" /></span>
           </h2>
           <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
             Discover fellow members, browse their public profiles, and explore their Pinterest-style saved collections.
@@ -145,7 +149,7 @@ export function CommunityProfilesSection() {
               variant="outline"
               size="icon"
               onClick={() => scrollByAmount("left")}
-              aria-label="Scroll profiles left"
+              aria-label={localizedT("community.scrollLeft")}
               className="h-9 w-9 rounded-xl border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <ChevronLeft className="h-4 w-4" />
@@ -155,7 +159,7 @@ export function CommunityProfilesSection() {
               variant="outline"
               size="icon"
               onClick={() => scrollByAmount("right")}
-              aria-label="Scroll profiles right"
+              aria-label={localizedT("community.scrollRight")}
               className="h-9 w-9 rounded-xl border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground"
             >
               <ChevronRight className="h-4 w-4" />
@@ -171,13 +175,13 @@ export function CommunityProfilesSection() {
                   asChild
                   className="h-9 gap-1.5 rounded-xl border-border bg-card px-3 text-xs font-semibold text-foreground hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-500"
                 >
-                  <Link href="/community" aria-label="Show more community users">
-                    <span>Show All</span>
+                  <Link href="/community" aria-label={localizedT("community.showMore")}>
+                    <span><I18nText message="common.showAll" /></span>
                     <ArrowUpRight className="h-4 w-4 text-rose-500" />
                   </Link>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Browse all community members</TooltipContent>
+              <TooltipContent><I18nText message="community.browse" /></TooltipContent>
             </Tooltip>
           </TooltipProvider>
         </div>
@@ -227,7 +231,7 @@ export function CommunityProfilesSection() {
           <div className="w-[220px] shrink-0 snap-start sm:w-[240px]">
             <Link
               href="/community"
-              aria-label="Show all community profiles"
+              aria-label={localizedT("community.showAll")}
               className="block h-full"
             >
               <Card className="group flex h-full min-h-[210px] flex-col items-center justify-center gap-3 rounded-2xl border-dashed border-border bg-card/70 p-6 text-center transition-all duration-300 hover:border-rose-500/60 hover:bg-rose-500/5 hover:shadow-lg">

@@ -1,3 +1,5 @@
+
+import { I18nText } from "@/components/i18n-text";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -97,11 +99,11 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-1.5 font-mono text-xs font-semibold text-foreground transition hover:bg-muted"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span>ALL DISPATCHES</span>
+            <span><I18nText message="news.allDispatches" /></span>
           </Link>
 
           <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <span className="uppercase text-rose-500 font-semibold">Otakuz Editorial</span>
+            <span className="uppercase text-rose-500 font-semibold"><I18nText message="news.editorial" /></span>
             <span>{"//"}</span>
             <span>{article.readTime || "12 min read"}</span>
           </div>
@@ -188,7 +190,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-muted-foreground">by</span>
+                    <span className="text-xs text-muted-foreground"><I18nText message="news.by" /></span>
                     <span className="inline-flex items-center gap-1 text-sm font-bold text-foreground">
                       <Plus className="h-3 w-3 text-emerald-500" />
                       {authorName}
@@ -260,7 +262,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             {/* Editorial "More in" Link Stack */}
             <div className="mt-8 border-t border-border pt-8">
               <div className="mb-4 flex items-center gap-2">
-                <span className="font-mono text-xs text-muted-foreground">More in:</span>
+                <span className="font-mono text-xs text-muted-foreground"><I18nText message="news.moreIn" /></span>
                 <span className="text-sm font-bold text-emerald-500">
                   All the latest updates on anime production and studio pipelines
                 </span>

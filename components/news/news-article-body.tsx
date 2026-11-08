@@ -1,4 +1,6 @@
 "use client";
+import { I18nText } from "@/components/i18n-text";
+
 
 import { useState } from "react";
 import Image from "next/image";
@@ -208,7 +210,7 @@ export function NewsArticleBody({
           </p>
         </div>
       ) : (
-        <p className="text-lg text-muted-foreground">This story does not have body copy yet.</p>
+        <p className="text-lg text-muted-foreground"><I18nText message="news.noBody" /></p>
       )}
 
       {/* Topic Tracking Box */}
@@ -250,7 +252,7 @@ export function NewsArticleBody({
           className="group flex w-full items-center justify-center gap-2.5 rounded-2xl border border-border bg-card py-4 font-bold uppercase tracking-wider text-foreground shadow-sm transition hover:border-rose-500/40 hover:bg-muted"
         >
           <MessageSquare className="h-5 w-5 text-rose-500 transition-transform group-hover:scale-110" />
-          <span>{commentsCount} Comments</span>
+          <span>{commentsCount} <I18nText message="news.commentsLabel" /></span>
         </button>
       </div>
     </div>
