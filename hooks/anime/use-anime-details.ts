@@ -10,8 +10,14 @@ export default function useAnimeDetails(id: string) {
   return { ...query, isLoading: query.isPending && /^\d+$/.test(id) };
 }
 
-const animePayload = z.object({ data: z.custom<AnimeDetails>(value => mediaRecordSchema.safeParse(value).success) });
-export const animeDetailsOptions = (id: string) => queryOptions({
-  queryKey: ["animeDetail", id], enabled: /^\d+$/.test(id), ...apiQueryPolicy,
-  queryFn: async ({ signal }) => (await fetchJson(`/api/jikan/anime/${id}`, animePayload, { signal })).data,
+const animePayload = z.object({
+  data: z.custom<AnimeDetails>((value) => mediaRecordSchema.safeParse(value).success),
 });
+export const animeDetailsOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["animeDetail", id],
+    enabled: /^\d+$/.test(id),
+    ...apiQueryPolicy,
+    queryFn: async ({ signal }) =>
+      (await fetchJson(`/api/jikan/anime/${id}`, animePayload, { signal })).data,
+  });

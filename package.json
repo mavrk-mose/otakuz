@@ -15,7 +15,9 @@
     "sanity:build": "sanity build",
     "sanity:typegen": "sanity typegen generate",
     "test": "npm run test:legacy && tsx --tsconfig tsconfig.test.json --test tests/*.test.ts tests/*.test.tsx",
-    "test:legacy": "node --test tests/adsense.test.cjs tests/anime-hover-preview.test.cjs tests/bookmarks.test.cjs tests/player-queue.test.cjs tests/query-cache.test.cjs"
+    "test:legacy": "node --test tests/adsense.test.cjs tests/anime-hover-preview.test.cjs tests/bookmarks.test.cjs tests/player-queue.test.cjs tests/query-cache.test.cjs",
+    "format": "prettier --write . --ignore-unknown",
+    "format:check": "prettier --check . --ignore-unknown"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -110,6 +112,7 @@
     "fake-indexeddb": "^6",
     "groq-js": "^1",
     "jsdom": "^26",
-    "tsx": "^4"
+    "tsx": "^4",
+    "prettier": "3.9.5"
   }
 }

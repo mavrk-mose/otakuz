@@ -2,7 +2,6 @@
 import { useQueryState, parseAsString } from "nuqs";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import {
   Suspense,
   createContext,
@@ -16,15 +15,8 @@ import {
   type ReactNode,
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  MediaPlayer,
-  MediaProvider,
-  type MediaPlayerInstance,
-} from "@vidstack/react";
-import {
-  DefaultVideoLayout,
-  defaultLayoutIcons,
-} from "@vidstack/react/player/layouts/default";
+import { MediaPlayer, MediaProvider, type MediaPlayerInstance } from "@vidstack/react";
+import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 import { Maximize2, Minimize2, Pause, Play, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -75,10 +67,17 @@ export function PersistentPlayerSlot({
 type QueueQueryUpdater = { current: ((videoUrl: string) => void) | null };
 
 function QueueUrlSync({ updater }: { updater: QueueQueryUpdater }) {
-  const [, setVideoQuery] = useQueryState("videoUrl", parseAsString.withOptions({ history: "replace", scroll: false }));
+  const [, setVideoQuery] = useQueryState(
+    "videoUrl",
+    parseAsString.withOptions({ history: "replace", scroll: false }),
+  );
   useEffect(() => {
-    updater.current = value => { void setVideoQuery(value); };
-    return () => { updater.current = null; };
+    updater.current = (value) => {
+      void setVideoQuery(value);
+    };
+    return () => {
+      updater.current = null;
+    };
   }, [setVideoQuery, updater]);
   return null;
 }
@@ -119,10 +118,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
     setSlotElement(element);
   }, []);
 
-  const slotContextValue = useMemo(
-    () => ({ registerSlot }),
-    [registerSlot]
-  );
+  const slotContextValue = useMemo(() => ({ registerSlot }), [registerSlot]);
 
   useEffect(() => {
     if (!slotElement) {
@@ -186,20 +182,21 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
   const shouldDisplayMinimized = isMinimized || isAwayFromPlayerRoute;
   const isDocked = Boolean(!shouldDisplayMinimized && slotElement && slotRect);
   const isChannelPlayerOnChannelRoute = Boolean(
-    pathname === "/channels" && currentVideoId?.startsWith("channel:")
+    pathname === "/channels" && currentVideoId?.startsWith("channel:"),
   );
   const isWaitingForChannelSlot = Boolean(
-    isChannelPlayerOnChannelRoute && !shouldDisplayMinimized && !isDocked
+    isChannelPlayerOnChannelRoute && !shouldDisplayMinimized && !isDocked,
   );
-  const dockedStyle: CSSProperties | undefined = isDocked && slotRect
-    ? {
-        position: "absolute",
-        top: slotRect.top,
-        left: slotRect.left,
-        width: slotRect.width,
-        margin: 0,
-      }
-    : undefined;
+  const dockedStyle: CSSProperties | undefined =
+    isDocked && slotRect
+      ? {
+          position: "absolute",
+          top: slotRect.top,
+          left: slotRect.left,
+          width: slotRect.width,
+          margin: 0,
+        }
+      : undefined;
 
   const attachPlayer = useCallback((player: MediaPlayerInstance | null) => {
     playerRef.current = player;
@@ -257,7 +254,9 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
 
   return (
     <PlayerSlotContext.Provider value={slotContextValue}>
-      <Suspense fallback={null}><QueueUrlSync updater={queueQueryUpdater} /></Suspense>
+      <Suspense fallback={null}>
+        <QueueUrlSync updater={queueQueryUpdater} />
+      </Suspense>
       {isOpen && videoSrc && (
         <section
           className={cn(
@@ -268,7 +267,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                 ? "z-30 rounded-xl transition-none"
                 : isWaitingForChannelSlot
                   ? "pointer-events-none fixed left-0 top-0 z-[-1] h-px w-px opacity-0"
-                : "relative z-20 mx-auto my-4 w-[calc(100%-2rem)] max-w-5xl rounded-xl"
+                  : "relative z-20 mx-auto my-4 w-[calc(100%-2rem)] max-w-5xl rounded-xl",
           )}
           style={dockedStyle}
           aria-label={shouldDisplayMinimized ? "Mini video player" : "Video player"}
@@ -279,13 +278,12 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                 "flex items-center gap-3 bg-card",
                 isDocked
                   ? "absolute right-3 top-3 z-30 rounded-lg border border-white/10 bg-black/75 p-1 text-white shadow-xl backdrop-blur"
-                  : "h-12 border-b px-4"
+                  : "h-12 border-b px-4",
               )}
             >
-              <p className={cn(
-                "min-w-0 flex-1 truncate text-sm font-medium",
-                isDocked && "sr-only"
-              )}>
+              <p
+                className={cn("min-w-0 flex-1 truncate text-sm font-medium", isDocked && "sr-only")}
+              >
                 {title}
               </p>
               <button
@@ -331,9 +329,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
                 const player = playerRef.current;
 
                 if (player) {
-                  usePlayerStore
-                    .getState()
-                    .setCurrentPlaybackTime(player.currentTime);
+                  usePlayerStore.getState().setCurrentPlaybackTime(player.currentTime);
                 }
 
                 usePlayerStore.getState().setIsPlaying(false);
@@ -348,10 +344,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
             >
               <MediaProvider />
               {!shouldDisplayMinimized && (
-                <DefaultVideoLayout
-                  icons={defaultLayoutIcons}
-                  colorScheme="dark"
-                />
+                <DefaultVideoLayout icons={defaultLayoutIcons} colorScheme="dark" />
               )}
             </MediaPlayer>
 

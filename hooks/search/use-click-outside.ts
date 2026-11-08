@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { useEffect } from 'react';
+import { useEffect } from "react";
 
 export function useClickOutside(ref: React.RefObject<HTMLElement>, handler: () => void) {
   useEffect(() => {
@@ -21,15 +21,14 @@ export function useClickOutside(ref: React.RefObject<HTMLElement>, handler: () =
       startedInside = ref.current?.contains(event.target as Node) || false;
     };
 
-    document.addEventListener('mousedown', validateEventStart);
-    document.addEventListener('touchstart', validateEventStart);
-    document.addEventListener('click', listener);
+    document.addEventListener("mousedown", validateEventStart);
+    document.addEventListener("touchstart", validateEventStart);
+    document.addEventListener("click", listener);
 
     return () => {
-      document.removeEventListener('mousedown', validateEventStart);
-      document.removeEventListener('touchstart', validateEventStart);
-      document.removeEventListener('click', listener);
+      document.removeEventListener("mousedown", validateEventStart);
+      document.removeEventListener("touchstart", validateEventStart);
+      document.removeEventListener("click", listener);
     };
   }, [ref, handler]);
 }
-

@@ -2,7 +2,6 @@
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
@@ -23,7 +22,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ADSENSE_CLIENT_ID, ADSENSE_GENERAL_SLOT, resolveAdSenseSlot, resolveAdSenseFormat } from "@/lib/adsense-config";
+import {
+  ADSENSE_CLIENT_ID,
+  ADSENSE_GENERAL_SLOT,
+  resolveAdSenseSlot,
+  resolveAdSenseFormat,
+} from "@/lib/adsense-config";
 import {
   getCampaignsForContext,
   type AdContextCategory,
@@ -38,11 +42,7 @@ declare global {
 }
 
 export type AdPlacementVariant =
-  | "spotlight"
-  | "leaderboard"
-  | "in-feed-grid"
-  | "sidebar"
-  | "timeline";
+  "spotlight" | "leaderboard" | "in-feed-grid" | "sidebar" | "timeline";
 
 interface GoogleAdUnitProps {
   /** Google AdSense data-ad-slot ID (falls back to the configured default slot) */
@@ -106,21 +106,20 @@ export function GoogleAdUnit({
 }: GoogleAdUnitProps) {
   const { t: localizedT } = useI18n();
   const clientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || ADSENSE_CLIENT_ID;
-  const resolvedSlot = resolveAdSenseSlot(adSlot, process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT) || ADSENSE_GENERAL_SLOT;
+  const resolvedSlot =
+    resolveAdSenseSlot(adSlot, process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT) ||
+    ADSENSE_GENERAL_SLOT;
   const resolvedFormat = resolveAdSenseFormat(adFormat, adLayoutKey);
 
-  const hasLiveAdSenseConfig =
-    clientId.startsWith("ca-pub-") && resolvedSlot.length > 0;
+  const hasLiveAdSenseConfig = clientId.startsWith("ca-pub-") && resolvedSlot.length > 0;
 
   const insRef = useRef<HTMLModElement | null>(null);
   const pushedRef = useRef(false);
-  const [adSenseStatus, setAdSenseStatus] = useState<
-    "idle" | "pending" | "filled" | "unfilled"
-  >(hasLiveAdSenseConfig ? "pending" : "unfilled");
+  const [adSenseStatus, setAdSenseStatus] = useState<"idle" | "pending" | "filled" | "unfilled">(
+    hasLiveAdSenseConfig ? "pending" : "unfilled",
+  );
 
-  const [selectedInterest, setSelectedInterest] = useState<
-    "All" | AdInterestTag
-  >("All");
+  const [selectedInterest, setSelectedInterest] = useState<"All" | AdInterestTag>("All");
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -207,10 +206,17 @@ export function GoogleAdUnit({
     >
       {/* Google retains ownership of the mounted slot, including late callbacks. */}
       {hasLiveAdSenseConfig && (
-        <div hidden={adSenseStatus === "unfilled"} className="mb-3 overflow-hidden rounded-2xl border border-border/80 bg-card p-3">
+        <div
+          hidden={adSenseStatus === "unfilled"}
+          className="mb-3 overflow-hidden rounded-2xl border border-border/80 bg-card p-3"
+        >
           <div className="mb-1.5 flex items-center justify-between font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            <span><I18nText message="ads.sponsored" /></span>
-            <span><I18nText message="ads.ad" /></span>
+            <span>
+              <I18nText message="ads.sponsored" />
+            </span>
+            <span>
+              <I18nText message="ads.ad" />
+            </span>
           </div>
           <ins
             ref={insRef}
@@ -251,7 +257,7 @@ export function GoogleAdUnit({
                       "rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition",
                       active
                         ? "bg-rose-500 text-white"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground",
                     )}
                   >
                     {pill}
@@ -265,7 +271,7 @@ export function GoogleAdUnit({
           <div
             className={cn(
               "grid grid-cols-1 gap-6 bg-gradient-to-r p-5 sm:p-7 lg:grid-cols-12 lg:items-center",
-              currentCampaign.accentClass
+              currentCampaign.accentClass,
             )}
           >
             <div className="relative aspect-[16/9] overflow-hidden rounded-xl border border-border/60 bg-muted lg:col-span-5">
@@ -321,9 +327,7 @@ export function GoogleAdUnit({
                   {currentCampaign.promoCode && (
                     <button
                       type="button"
-                      onClick={(e) =>
-                        handleCopyPromo(e, currentCampaign.promoCode!)
-                      }
+                      onClick={(e) => handleCopyPromo(e, currentCampaign.promoCode!)}
                       className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-dashed border-rose-500/50 bg-background/80 px-3 font-mono text-xs font-bold text-foreground transition hover:border-rose-500 hover:bg-rose-500/5"
                     >
                       <span>CODE: {currentCampaign.promoCode}</span>
@@ -343,10 +347,7 @@ export function GoogleAdUnit({
                       type="button"
                       aria-label={localizedT("ads.previous")}
                       onClick={() =>
-                        setActiveIndex(
-                          (prev) =>
-                            (prev - 1 + campaigns.length) % campaigns.length
-                        )
+                        setActiveIndex((prev) => (prev - 1 + campaigns.length) % campaigns.length)
                       }
                       className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:text-foreground"
                     >
@@ -358,9 +359,7 @@ export function GoogleAdUnit({
                     <button
                       type="button"
                       aria-label={localizedT("ads.next")}
-                      onClick={() =>
-                        setActiveIndex((prev) => (prev + 1) % campaigns.length)
-                      }
+                      onClick={() => setActiveIndex((prev) => (prev + 1) % campaigns.length)}
                       className="flex h-8 w-8 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition hover:text-foreground"
                     >
                       <ChevronRight className="h-4 w-4" />
@@ -378,7 +377,7 @@ export function GoogleAdUnit({
         <Card
           className={cn(
             "relative overflow-hidden border-border/80 bg-card bg-gradient-to-r p-4 sm:p-5",
-            currentCampaign.accentClass
+            currentCampaign.accentClass,
           )}
         >
           <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -420,9 +419,7 @@ export function GoogleAdUnit({
               {currentCampaign.promoCode && (
                 <button
                   type="button"
-                  onClick={(e) =>
-                    handleCopyPromo(e, currentCampaign.promoCode!)
-                  }
+                  onClick={(e) => handleCopyPromo(e, currentCampaign.promoCode!)}
                   className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-dashed border-rose-500/40 bg-background/90 px-2.5 font-mono text-xs font-bold text-foreground hover:border-rose-500"
                 >
                   <span>{currentCampaign.promoCode}</span>
@@ -439,11 +436,7 @@ export function GoogleAdUnit({
                 asChild
                 className="gap-1 bg-rose-500 font-semibold text-white hover:bg-rose-600"
               >
-                <a
-                  href={currentCampaign.href}
-                  target="_blank"
-                  rel="sponsored noopener noreferrer"
-                >
+                <a href={currentCampaign.href} target="_blank" rel="sponsored noopener noreferrer">
                   <span>{currentCampaign.ctaLabel}</span>
                   <ArrowUpRight className="h-3.5 w-3.5" />
                 </a>
@@ -601,11 +594,7 @@ export function GoogleAdUnit({
               asChild
               className="w-full gap-1.5 bg-rose-500 font-semibold text-white hover:bg-rose-600"
             >
-              <a
-                href={currentCampaign.href}
-                target="_blank"
-                rel="sponsored noopener noreferrer"
-              >
+              <a href={currentCampaign.href} target="_blank" rel="sponsored noopener noreferrer">
                 <span>{currentCampaign.ctaLabel}</span>
                 <ArrowUpRight className="h-4 w-4" />
               </a>
@@ -660,9 +649,7 @@ export function GoogleAdUnit({
                   {currentCampaign.promoCode ? (
                     <button
                       type="button"
-                      onClick={(e) =>
-                        handleCopyPromo(e, currentCampaign.promoCode!)
-                      }
+                      onClick={(e) => handleCopyPromo(e, currentCampaign.promoCode!)}
                       className="inline-flex items-center gap-1.5 rounded-lg border border-dashed border-rose-500/40 bg-background px-2.5 py-1 font-mono text-xs font-bold text-foreground"
                     >
                       <span>Promo: {currentCampaign.promoCode}</span>

@@ -1,7 +1,6 @@
 "use client";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import { useCallback, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -24,7 +23,7 @@ export function BackToTopButton() {
     const viewportHeight = window.innerHeight;
     const docHeight = Math.max(
       document.documentElement.scrollHeight,
-      document.body?.scrollHeight ?? 0
+      document.body?.scrollHeight ?? 0,
     );
 
     setCanScrollUp(scrollY > EDGE_THRESHOLD);
@@ -47,9 +46,7 @@ export function BackToTopButton() {
     window.addEventListener("resize", scheduleMeasure, { passive: true });
 
     const resizeObserver =
-      typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(scheduleMeasure)
-        : null;
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(scheduleMeasure) : null;
 
     if (resizeObserver && document.body) {
       resizeObserver.observe(document.body);

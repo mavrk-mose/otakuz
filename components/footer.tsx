@@ -1,4 +1,3 @@
-
 import { I18nText } from "@/components/i18n-text";
 export default function Footer() {
   return (
@@ -12,7 +11,9 @@ export default function Footer() {
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-4"><I18nText message="footer.quickLinks" /></h4>
+            <h4 className="font-semibold mb-4">
+              <I18nText message="footer.quickLinks" />
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="/about" className="text-muted-foreground hover:text-foreground">
@@ -32,7 +33,9 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4"><I18nText message="footer.legal" /></h4>
+            <h4 className="font-semibold mb-4">
+              <I18nText message="footer.legal" />
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="/privacy" className="text-muted-foreground hover:text-foreground">
@@ -47,7 +50,9 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-4"><I18nText message="footer.connect" /></h4>
+            <h4 className="font-semibold mb-4">
+              <I18nText message="footer.connect" />
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <a href="#" className="text-muted-foreground hover:text-foreground">
@@ -68,7 +73,9 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Otakuz. <I18nText message="footer.rights" /></p>
+          <p>
+            © {new Date().getFullYear()} Otakuz. <I18nText message="footer.rights" />
+          </p>
         </div>
       </div>
     </footer>

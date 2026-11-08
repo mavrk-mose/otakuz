@@ -1,11 +1,11 @@
-"use client"
+"use client";
 
-import { Card } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Slider } from '@/components/ui/slider';
-import { useState } from 'react';
-import { useI18n } from '@/components/i18n-provider';
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Slider } from "@/components/ui/slider";
+import { useState } from "react";
+import { useI18n } from "@/components/i18n-provider";
 
 interface ProductFiltersProps {
   onCategoryChange: (category: string) => void;
@@ -22,32 +22,28 @@ export function ProductFilters({
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 1000]);
 
   const categories = [
-    { value: 'all', labelKey: 'shop.allProducts' },
-    { value: 'clothing', labelKey: 'shop.clothing' },
-    { value: 'figures', labelKey: 'shop.figures' },
-    { value: 'accessories', labelKey: 'shop.accessories' },
-    { value: 'manga', labelKey: 'shop.mangaBooks' },
-    { value: 'home', labelKey: 'shop.homeDecor' },
-    { value: 'collectibles', labelKey: 'shop.collectibles' },
+    { value: "all", labelKey: "shop.allProducts" },
+    { value: "clothing", labelKey: "shop.clothing" },
+    { value: "figures", labelKey: "shop.figures" },
+    { value: "accessories", labelKey: "shop.accessories" },
+    { value: "manga", labelKey: "shop.mangaBooks" },
+    { value: "home", labelKey: "shop.homeDecor" },
+    { value: "collectibles", labelKey: "shop.collectibles" },
   ] as const;
 
   const sortOptions = [
-    { value: 'popular', labelKey: 'shop.mostPopular' },
-    { value: 'newest', labelKey: 'shop.newest' },
-    { value: 'price-low', labelKey: 'shop.priceLow' },
-    { value: 'price-high', labelKey: 'shop.priceHigh' },
-    { value: 'rating', labelKey: 'shop.highestRated' },
+    { value: "popular", labelKey: "shop.mostPopular" },
+    { value: "newest", labelKey: "shop.newest" },
+    { value: "price-low", labelKey: "shop.priceLow" },
+    { value: "price-high", labelKey: "shop.priceHigh" },
+    { value: "rating", labelKey: "shop.highestRated" },
   ] as const;
 
   return (
     <div className="space-y-6">
       <Card className="p-4">
         <h3 className="font-semibold mb-4">{t("common.categories")}</h3>
-        <RadioGroup
-          defaultValue="all"
-          onValueChange={onCategoryChange}
-          className="space-y-2"
-        >
+        <RadioGroup defaultValue="all" onValueChange={onCategoryChange} className="space-y-2">
           {categories.map((category) => (
             <div key={category.value} className="flex items-center space-x-2">
               <RadioGroupItem value={category.value} id={category.value} />
@@ -78,11 +74,7 @@ export function ProductFilters({
 
       <Card className="p-4">
         <h3 className="font-semibold mb-4">{t("common.sortBy")}</h3>
-        <RadioGroup
-          defaultValue="popular"
-          onValueChange={onSortChange}
-          className="space-y-2"
-        >
+        <RadioGroup defaultValue="popular" onValueChange={onSortChange} className="space-y-2">
           {sortOptions.map((option) => (
             <div key={option.value} className="flex items-center space-x-2">
               <RadioGroupItem value={option.value} id={option.value} />

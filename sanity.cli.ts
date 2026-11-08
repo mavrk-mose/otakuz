@@ -8,7 +8,7 @@ const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || "production";
 
 if (!projectId) {
   throw new Error(
-    "NEXT_PUBLIC_SANITY_PROJECT_ID is required. Add it to .env before running Sanity CLI commands."
+    "NEXT_PUBLIC_SANITY_PROJECT_ID is required. Add it to .env before running Sanity CLI commands.",
   );
 }
 

@@ -2,113 +2,135 @@
 import { I18nText } from "@/components/i18n-text";
 
 import { EmptyState } from "@/components/empty-state";
-import React, { useEffect, useState } from 'react'
-import { useAuth } from "@/hooks/use-auth"
-import { useRouter } from "next/navigation"
-import { Button } from "@/components/ui/button"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Plus, Globe, MessageCircle, Phone, Settings } from 'lucide-react'
-import useFilteredRooms from "@/hooks/chat/use-filtered-rooms"
-import Link from "next/link"
-import { RoomSidebar } from '@/components/chat/room-sidebar'
-import ChatRoom from '@/components/chat/chat-room'
+import React, { useEffect, useState } from "react";
+import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Plus, Globe, MessageCircle, Phone, Settings } from "lucide-react";
+import useFilteredRooms from "@/hooks/chat/use-filtered-rooms";
+import Link from "next/link";
+import { RoomSidebar } from "@/components/chat/room-sidebar";
+import ChatRoom from "@/components/chat/chat-room";
 import RoomHeader from "@/components/chat/room-header";
 import useRoomDetails from "@/hooks/chat/use-room-details";
-import { useFirebaseChatActions } from '@/hooks/chat/use-firebase-chat-actions';
-import type { Room } from '@/types/room';
+import { useFirebaseChatActions } from "@/hooks/chat/use-firebase-chat-actions";
+import type { Room } from "@/types/room";
 
 export default function ChatPage() {
-    const { user, loading } = useAuth()
-    const router = useRouter()
-    const [searchQuery, setSearchQuery] = useState('')
-    const [selectedRoom, setSelectedRoom] = useState<string | null>(null)
-    const { rooms } = useFilteredRooms(searchQuery)
-    const { roomDetails } = useRoomDetails(selectedRoom);
-    const { joinRoom } = useFirebaseChatActions();
+  const { user, loading } = useAuth();
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const { rooms } = useFilteredRooms(searchQuery);
+  const { roomDetails } = useRoomDetails(selectedRoom);
+  const { joinRoom } = useFirebaseChatActions();
 
-    const handleSelectRoom = (roomId: string) => {
-        // Switch room immediately (0ms)
-        setSelectedRoom(roomId)
+  const handleSelectRoom = (roomId: string) => {
+    // Switch room immediately (0ms)
+    setSelectedRoom(roomId);
 
-        if (user) {
-            const currentRoom = rooms.find((room: Room) => room.id === roomId)
-            const isMember = currentRoom?.members?.includes(user.uid)
-            if (!isMember) {
-                void joinRoom(roomId).catch((err) => {
-                    console.error('Failed to join room in background:', err)
-                })
-            }
-        }
+    if (user) {
+      const currentRoom = rooms.find((room: Room) => room.id === roomId);
+      const isMember = currentRoom?.members?.includes(user.uid);
+      if (!isMember) {
+        void joinRoom(roomId).catch((err) => {
+          console.error("Failed to join room in background:", err);
+        });
+      }
     }
+  };
 
-    useEffect(() => {
-        if (!loading && !user) {
-            router.push("/auth")
-        }
-    }, [user, loading, router])
-
-    if (loading || !rooms) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <div role="status"><EmptyState illustration="chat" title={<I18nText message="chat.loadingRoom" />} /></div>
-            </div>
-        )
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/auth");
     }
+  }, [user, loading, router]);
 
-    if (!user) {
-        return null
-    }
-
+  if (loading || !rooms) {
     return (
-        <div className="flex h-screen bg-background">
-            {/* Sidebar for larger screens */}
-            <div className="hidden md:block w-64 border-r">
-                <RoomSidebar
-                    rooms={rooms}
-                    selectedRoom={selectedRoom}
-                    onSelectRoom={(roomId) => void handleSelectRoom(roomId)}
-                    className="h-screen"
-                />
-            </div>
-
-            {/* Main content area */}
-            <div className="flex-1 flex flex-col">
-                {/* Chat Rooms List (visible on mobile) or Selected Room (visible on desktop) */}
-                <div className="flex-1 overflow-auto">
-                    {selectedRoom && window.innerWidth >= 768 ? (
-                            <>
-                                <RoomHeader roomId={selectedRoom} roomDetails={roomDetails} onLeave={() => setSelectedRoom(null)}/>
-                                {roomDetails?.members.includes(user.uid) ? <ChatRoom key={selectedRoom} roomId={selectedRoom} title={roomDetails.title} /> : <p role="status" className="p-4"><I18nText message="chat.joining" /></p>}
-                            </>
-                    ) : (
-                        <>
-                        <div className={rooms.length > 0 ? "hidden md:flex h-full items-center justify-center" : "flex h-full items-center justify-center"}>
-                            <EmptyState illustration="chat" title={<I18nText message="chat.welcome" />} description={<I18nText message="chat.chooseRoom" />} />
-                        </div>
-                        {rooms.map((room: Room) => (
-                            <Link
-                                key={room.id}
-                                href={`/chat/${room.id}`}
-                                className="flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors md:hidden"
-                            >
-                                <Avatar className="h-12 w-12">
-                                    <AvatarImage src={room.photoURL || `https://avatar.vercel.sh/${room.id}`} />
-                                    <AvatarFallback>{room.title[0]}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-baseline">
-                                        <h3 className="font-semibold truncate">{room.title}</h3>
-                                    </div>
-                                    <p className="text-sm text-muted-foreground truncate">
-                                        Click to join the conversation
-                                    </p>
-                                </div>
-                            </Link>
-                        ))}
-                        </>
-                    )}
-                </div>
-            </div>
+      <div className="flex items-center justify-center h-screen">
+        <div role="status">
+          <EmptyState illustration="chat" title={<I18nText message="chat.loadingRoom" />} />
         </div>
-    )
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div className="flex h-screen bg-background">
+      {/* Sidebar for larger screens */}
+      <div className="hidden md:block w-64 border-r">
+        <RoomSidebar
+          rooms={rooms}
+          selectedRoom={selectedRoom}
+          onSelectRoom={(roomId) => void handleSelectRoom(roomId)}
+          className="h-screen"
+        />
+      </div>
+
+      {/* Main content area */}
+      <div className="flex-1 flex flex-col">
+        {/* Chat Rooms List (visible on mobile) or Selected Room (visible on desktop) */}
+        <div className="flex-1 overflow-auto">
+          {selectedRoom && window.innerWidth >= 768 ? (
+            <>
+              <RoomHeader
+                roomId={selectedRoom}
+                roomDetails={roomDetails}
+                onLeave={() => setSelectedRoom(null)}
+              />
+              {roomDetails?.members.includes(user.uid) ? (
+                <ChatRoom key={selectedRoom} roomId={selectedRoom} title={roomDetails.title} />
+              ) : (
+                <p role="status" className="p-4">
+                  <I18nText message="chat.joining" />
+                </p>
+              )}
+            </>
+          ) : (
+            <>
+              <div
+                className={
+                  rooms.length > 0
+                    ? "hidden md:flex h-full items-center justify-center"
+                    : "flex h-full items-center justify-center"
+                }
+              >
+                <EmptyState
+                  illustration="chat"
+                  title={<I18nText message="chat.welcome" />}
+                  description={<I18nText message="chat.chooseRoom" />}
+                />
+              </div>
+              {rooms.map((room: Room) => (
+                <Link
+                  key={room.id}
+                  href={`/chat/${room.id}`}
+                  className="flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors md:hidden"
+                >
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={room.photoURL || `https://avatar.vercel.sh/${room.id}`} />
+                    <AvatarFallback>{room.title[0]}</AvatarFallback>
+                  </Avatar>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-baseline">
+                      <h3 className="font-semibold truncate">{room.title}</h3>
+                    </div>
+                    <p className="text-sm text-muted-foreground truncate">
+                      Click to join the conversation
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }

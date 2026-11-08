@@ -1,16 +1,7 @@
-export type AdContextCategory =
-  | "home"
-  | "shop"
-  | "events"
-  | "news";
+export type AdContextCategory = "home" | "shop" | "events" | "news";
 
 export type AdInterestTag =
-  | "Energy Drinks"
-  | "Gaming PCs"
-  | "Geek Gear"
-  | "Anime & Merch"
-  | "Events & Cons"
-  | "Creator Tech";
+  "Energy Drinks" | "Gaming PCs" | "Geek Gear" | "Anime & Merch" | "Events & Cons" | "Creator Tech";
 
 export interface DynamicAdCampaign {
   id: string;
@@ -97,7 +88,7 @@ export const DYNAMIC_AD_CAMPAIGNS: DynamicAdCampaign[] = [
     contexts: ["shop", "news", "home"],
     interestTag: "Creator Tech",
     brand: "KUROVIEW DISPLAYS",
-    headline: "32\" 4K 240Hz QD-OLED HDR1000 Anime & Esports Monitor",
+    headline: '32" 4K 240Hz QD-OLED HDR1000 Anime & Esports Monitor',
     description:
       "True 0.03ms response time and 99% DCI-P3 studio color accuracy so MAPPA & Ufotable sakuga sequences pop with infinite contrast.",
     ctaLabel: "Explore Specs",
@@ -190,11 +181,9 @@ export const DYNAMIC_AD_CAMPAIGNS: DynamicAdCampaign[] = [
 
 export function getCampaignsForContext(
   context: AdContextCategory,
-  interestFilter?: AdInterestTag | "All"
+  interestFilter?: AdInterestTag | "All",
 ): DynamicAdCampaign[] {
-  const contextual = DYNAMIC_AD_CAMPAIGNS.filter((c) =>
-    c.contexts.includes(context)
-  );
+  const contextual = DYNAMIC_AD_CAMPAIGNS.filter((c) => c.contexts.includes(context));
   const pool = contextual.length > 0 ? contextual : DYNAMIC_AD_CAMPAIGNS;
   if (!interestFilter || interestFilter === "All") {
     return pool;

@@ -1,14 +1,14 @@
-"use client"
+"use client";
 
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
-import { RecommendationsSkeleton } from '@/components/skeletons/recommendations-skeleton';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Star } from 'lucide-react';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import Image from 'next/image';
-import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { RecommendationsSkeleton } from "@/components/skeletons/recommendations-skeleton";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Star } from "lucide-react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import useAnimeRecommendations from "@/hooks/anime/use-anime-recommendations";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -37,32 +37,36 @@ export function AnimeRecommendations({ animeId }: RecommendationsProps) {
               className="w-[210px] sm:w-[240px] md:w-[260px] shrink-0"
               whileHover={{ scale: 1.02 }}
             >
-              <AnimeHoverPreview animeId={rec.entry.mal_id} title={rec.entry.title} poster={rec.entry.images.webp.image_url}>
-              <Card className="media-card-surface overflow-hidden">
-                <div className="relative aspect-[2/3]">
-                  <Image
-                    src={rec.entry.images.webp.image_url}
-                    alt={rec.entry.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                    <span className="text-sm font-medium">{rec.entry.score}</span>
-                    <Badge variant="secondary" className="ml-auto">
-                      {rec.entry.type}
-                    </Badge>
+              <AnimeHoverPreview
+                animeId={rec.entry.mal_id}
+                title={rec.entry.title}
+                poster={rec.entry.images.webp.image_url}
+              >
+                <Card className="media-card-surface overflow-hidden">
+                  <div className="relative aspect-[2/3]">
+                    <Image
+                      src={rec.entry.images.webp.image_url}
+                      alt={rec.entry.title}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
-                  <Link
-                    href={`/anime/${rec.entry.mal_id}`}
-                    className="font-semibold hover:text-primary transition-colors line-clamp-1"
-                  >
-                    {rec.entry.title}
-                  </Link>
-                </div>
-              </Card>
+                  <div className="p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
+                      <span className="text-sm font-medium">{rec.entry.score}</span>
+                      <Badge variant="secondary" className="ml-auto">
+                        {rec.entry.type}
+                      </Badge>
+                    </div>
+                    <Link
+                      href={`/anime/${rec.entry.mal_id}`}
+                      className="font-semibold hover:text-primary transition-colors line-clamp-1"
+                    >
+                      {rec.entry.title}
+                    </Link>
+                  </div>
+                </Card>
               </AnimeHoverPreview>
             </motion.div>
           ))}

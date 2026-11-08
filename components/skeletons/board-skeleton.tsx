@@ -3,10 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function BoardSkeleton() {
   return (
-    <Card
-      aria-hidden="true"
-      className="overflow-hidden rounded-2xl border-border bg-card p-4"
-    >
+    <Card aria-hidden="true" className="overflow-hidden rounded-2xl border-border bg-card p-4">
       <div className="mb-3.5 flex h-8 items-center justify-between gap-2">
         <Skeleton className="h-6 w-1/2" />
         <div className="flex gap-1">

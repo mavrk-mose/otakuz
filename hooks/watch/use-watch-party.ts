@@ -20,18 +20,25 @@ interface UseWatchPartyRoomResults {
 export function useWatchPartyRoom(roomId: string): UseWatchPartyRoomResults {
   const queryClient = useQueryClient();
   const wsRef = useRef<WebSocket | null>(null);
-  const [connectionStatus, setConnectionStatus] = useState<"connecting" | "open" | "closed">("connecting");
+  const [connectionStatus, setConnectionStatus] = useState<"connecting" | "open" | "closed">(
+    "connecting",
+  );
 
   // ---- 1. Load initial room state via HTTP ----
   const { data, isLoading } = useQuery<RoomState>({
     queryKey: ["room", roomId],
     queryFn: ({ signal }) => fetchJson(`/rooms/${roomId}`, roomStateSchema, { signal }),
-    enabled: !!roomId, retry: retryApiRequest, retryDelay: apiRetryDelay,
+    enabled: !!roomId,
+    retry: retryApiRequest,
+    retryDelay: apiRetryDelay,
     staleTime: 0,
     // A slow HTTP refresh must not overwrite a newer state received over the socket.
     structuralSharing: (previous, incoming) => {
-      const oldState = roomStateSchema.safeParse(previous), newState = roomStateSchema.safeParse(incoming);
-      return oldState.success && newState.success && oldState.data.seq > newState.data.seq ? previous : incoming;
+      const oldState = roomStateSchema.safeParse(previous),
+        newState = roomStateSchema.safeParse(incoming);
+      return oldState.success && newState.success && oldState.data.seq > newState.data.seq
+        ? previous
+        : incoming;
     },
   });
 
@@ -45,7 +52,9 @@ export function useWatchPartyRoom(roomId: string): UseWatchPartyRoomResults {
   // ---- 3. WebSocket setup and event listeners ----
   useEffect(() => {
     if (!roomId) return;
-    const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws/${roomId}`);
+    const ws = new WebSocket(
+      `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws/${roomId}`,
+    );
     wsRef.current = ws;
     setConnectionStatus("connecting");
 
@@ -64,7 +73,11 @@ export function useWatchPartyRoom(roomId: string): UseWatchPartyRoomResults {
 
     ws.onmessage = (event) => {
       let payload: unknown;
-      try { payload = JSON.parse(event.data); } catch { return; }
+      try {
+        payload = JSON.parse(event.data);
+      } catch {
+        return;
+      }
       const parsed = roomEventSchema.safeParse(payload);
       if (!parsed.success) return;
       const msg = parsed.data;

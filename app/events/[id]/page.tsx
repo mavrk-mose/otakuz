@@ -1,277 +1,294 @@
-"use client"
+"use client";
 
-import { use, useState } from 'react';
-import { Card, CardFooter, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users, Ticket, Trophy, Phone, Share2 } from 'lucide-react';
-import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import useEventDetails from '@/hooks/events/use-event-details';
+import { use, useState } from "react";
+import { Card, CardFooter, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Users, Ticket, Trophy, Phone, Share2 } from "lucide-react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import useEventDetails from "@/hooks/events/use-event-details";
 import { urlFor } from "@/lib/sanity";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import EventDetailsSkeleton from '@/components/skeletons/event-details-skeleton';
-import { Gallery } from '@/components/events/event-gallery';
-import { useI18n } from '@/components/i18n-provider';
-import { ShareContentModal } from '@/components/chat/share-content-modal';
-import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
+import EventDetailsSkeleton from "@/components/skeletons/event-details-skeleton";
+import { Gallery } from "@/components/events/event-gallery";
+import { useI18n } from "@/components/i18n-provider";
+import { ShareContentModal } from "@/components/chat/share-content-modal";
+import { GoogleAdUnit } from "@/components/ads/google-ad-unit";
 
 interface Props {
-    params: Promise<{ id: string }>;
+  params: Promise<{ id: string }>;
 }
 
 export default function EventDetailPage(props: Props) {
-    const { locale, t } = useI18n();
-    const params = use(props.params);
-    const { event, isLoading } = useEventDetails(params.id);
-    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const { locale, t } = useI18n();
+  const params = use(props.params);
+  const { event, isLoading } = useEventDetails(params.id);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
-    const item = {
-        hidden: { opacity: 0, scale: 0.8 },
-        show: { opacity: 1, scale: 1 }
-    };
+  const item = {
+    hidden: { opacity: 0, scale: 0.8 },
+    show: { opacity: 1, scale: 1 },
+  };
 
-    if (isLoading) {
-        return <EventDetailsSkeleton />;
-    }
+  if (isLoading) {
+    return <EventDetailsSkeleton />;
+  }
 
-    return (
-        <div className="min-h-screen bg-background">
-            <div className="container mx-auto max-w-full px-4 py-6">
-                <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
-                    {/* Main content */}
-                    <div className="min-w-0 max-w-full lg:col-span-2 space-y-6">
-                        {/* Hero Image */}
-                        <Card className="overflow-hidden w-full">
-                            <div className="relative aspect-video w-full">
-                                {event?.thumbnailUrl && <Image
-                                    src={urlFor(event.thumbnailUrl.asset._ref).url()}
-                                    alt={event ? event.title : 'thumbnail'}
-                                    fill
-                                    className="object-cover"
-                                    priority
-                                />}
+  return (
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto max-w-full px-4 py-6">
+        <div className="grid gap-6 grid-cols-1 lg:grid-cols-3">
+          {/* Main content */}
+          <div className="min-w-0 max-w-full lg:col-span-2 space-y-6">
+            {/* Hero Image */}
+            <Card className="overflow-hidden w-full">
+              <div className="relative aspect-video w-full">
+                {event?.thumbnailUrl && (
+                  <Image
+                    src={urlFor(event.thumbnailUrl.asset._ref).url()}
+                    alt={event ? event.title : "thumbnail"}
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                )}
+              </div>
+            </Card>
+
+            {/* Event details */}
+            <div className="space-y-4">
+              <h1 className="text-2xl md:text-4xl font-bold">{event?.title}</h1>
+              <div className="flex flex-wrap gap-2">
+                <Badge>{event?.category}</Badge>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Badge variant="secondary" className="cursor-pointer">
+                      <Users className="w-4 h-4 mr-1" />
+                      {event?.attendees?.length ?? 0} {t("events.attending")}
+                    </Badge>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle>{t("events.attendees")}</DialogTitle>
+                    </DialogHeader>
+                    <ScrollArea className="h-[300px] pr-4">
+                      <div className="space-y-4">
+                        {event?.attendees?.map((attendee: any, i: number) => (
+                          <div key={i} className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarImage src={urlFor(attendee.avatar.asset._ref).url()} />
+                              <AvatarFallback>{attendee.name[0]}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium">{attendee.name}</p>
                             </div>
-                        </Card>
+                          </div>
+                        ))}
+                      </div>
+                    </ScrollArea>
+                  </DialogContent>
+                </Dialog>
+              </div>
 
-                        {/* Event details */}
-                        <div className="space-y-4">
-                            <h1 className="text-2xl md:text-4xl font-bold">{event?.title}</h1>
-                            <div className="flex flex-wrap gap-2">
-                                <Badge>{event?.category}</Badge>
-                                <Dialog>
-                                    <DialogTrigger asChild>
-                                        <Badge variant="secondary" className="cursor-pointer">
-                                            <Users className="w-4 h-4 mr-1"/>
-                                            {(event?.attendees?.length ?? 0)} {t("events.attending")}
-                                        </Badge>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle>{t("events.attendees")}</DialogTitle>
-                                        </DialogHeader>
-                                        <ScrollArea className="h-[300px] pr-4">
-                                            <div className="space-y-4">
-                                                {event?.attendees?.map((attendee: any, i: number) => (
-                                                    <div key={i} className="flex items-center gap-3">
-                                                        <Avatar>
-                                                            <AvatarImage
-                                                                src={urlFor(attendee.avatar.asset._ref).url()}/>
-                                                            <AvatarFallback>{attendee.name[0]}</AvatarFallback>
-                                                        </Avatar>
-                                                        <div>
-                                                            <p className="font-medium">{attendee.name}</p>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </ScrollArea>
-                                    </DialogContent>
-                                </Dialog>
-                            </div>
-
-                            <Card className="p-4 md:p-6">
-                                <p className="leading-relaxed text-sm md:text-base">{event?.description}</p>
-                            </Card>
-                        </div>
-
-                        <Gallery gallery={event?.gallery}/>
-
-                        {/* Gaming Tournaments */}
-                        <div className="space-y-4">
-                            <h2 className="text-xl md:text-2xl font-bold">{t("events.tournaments")}</h2>
-                            <div className="grid sm:grid-cols-2 gap-4">
-                                {event?.tournaments?.map((tournament: any, index: number) => (
-                                    <Card key={index} className="p-4">
-                                        <div className="flex items-start gap-4">
-                                            <div className="p-3 bg-primary/10 rounded-lg shrink-0">
-                                                <Trophy className="w-6 h-6 text-primary"/>
-                                            </div>
-                                            <div>
-                                                <h3 className="font-semibold mb-2">{tournament.title}</h3>
-                                                <div className="space-y-1 text-sm text-muted-foreground">
-                                                    <p>{t("events.prizePool")}: {tournament.prize}</p>
-                                                    <p>{tournament.participants} {t("events.participants")}</p>
-                                                    <p>{new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { dateStyle: "long" }).format(new Date(tournament.time))} {t("events.at")} {tournament.time}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Sidebar */}
-                    <div className="min-w-0 space-y-6 self-start lg:sticky lg:top-6">
-                        {/* Event Details and Ticket Purchase */}
-                        <Card className="p-4 md:p-6">
-                            <div className="space-y-4">
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    <div className="flex items-center gap-2">
-                                        <Calendar className="w-5 h-5 text-muted-foreground shrink-0"/>
-                                        <div>
-                                            <p className="font-medium">{event?.date}</p>
-                                            <p className="text-sm text-muted-foreground">{event?.time}</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <MapPin className="w-5 h-5 text-muted-foreground shrink-0"/>
-                                        <div>
-                                            <p className="font-medium">{event?.location?.name}</p>
-                                            <p className="text-sm text-muted-foreground">{event?.location?.address}</p>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="pt-4 border-t">
-                                    <p className="text-sm text-muted-foreground mb-1">{t("events.ticketPrice")}</p>
-                                    <p className="text-2xl font-bold">${event?.ticket}</p>
-                                </div>
-                                <Button className="w-full" size="lg">
-                                    <Ticket className="w-4 h-4 mr-2"/>
-                                    {t("events.purchaseTickets")}
-                                </Button>
-                                <Button
-                                    variant="outline"
-                                    className="w-full gap-2 border-border/60 hover:bg-muted"
-                                    size="lg"
-                                    onClick={() => setIsShareModalOpen(true)}
-                                >
-                                    <Share2 className="w-4 h-4 mr-2"/>
-                                    {t("anime.shareChat") || "Share to Chat"}
-                                </Button>
-                            </div>
-                        </Card>
-
-                        {/* Event Partner / Google AdSense Sidebar Unit */}
-                        <GoogleAdUnit
-                            context="events"
-                            variant="sidebar"
-                            adFormat="rectangle"
-                            seedOffset={1}
-                            adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_EVENTS_SIDEBAR}
-                        />
-
-                        {/* Host Information */}
-                        <Card className="p-4 md:p-6">
-                            <CardHeader className="px-0 pt-0">
-                                <h3 className="text-lg font-semibold mb-4">{t("events.hostedBy")}</h3>
-                                <div className="space-y-4">
-                                    {event?.organizers?.map((organizer: any, index: number) => (
-                                        <div key={index} className="flex items-center gap-3">
-                                            <Avatar>
-                                                {organizer.avatar && <AvatarImage src={urlFor(organizer.avatar.asset._ref).url()}/>}
-                                                <AvatarFallback>{organizer.name[0]}</AvatarFallback>
-                                            </Avatar>
-                                            <span className="font-medium">{organizer.name}</span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </CardHeader>
-                            <CardFooter className="flex flex-col space-y-4 pt-4 border-t px-0 pb-0">
-                                <div className="w-full">
-                                    <div className="text-sm text-muted-foreground mb-2">
-                                        {(event?.attendees?.length ?? 0)} {t("events.going")}
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="flex -space-x-2">
-                                            <TooltipProvider>
-                                                {event?.attendees?.slice(0, 5).map((attendee: any, i: number) => (
-                                                    <Tooltip key={i}>
-                                                        <TooltipTrigger>
-                                                            <Avatar className="border-2 border-background w-8 h-8">
-                                                                <AvatarImage
-                                                                    src={urlFor(attendee.avatar.asset._ref).url()}/>
-                                                                <AvatarFallback>{attendee.name[0]}</AvatarFallback>
-                                                            </Avatar>
-                                                        </TooltipTrigger>
-                                                        <TooltipContent>
-                                                            <p>{attendee.name}</p>
-                                                        </TooltipContent>
-                                                    </Tooltip>
-                                                ))}
-                                            </TooltipProvider>
-                                        </div>
-                                        {event?.attendees && event.attendees.length > 5 && (
-                                            <span className="text-sm text-muted-foreground">
-                                                +{event.attendees.length - 5} {t("events.others")}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <Button className="w-full" size="lg">
-                                    <Phone className="w-4 h-4 mr-2"/>
-                                    {t("events.contactHost")}
-                                </Button>
-                            </CardFooter>
-                        </Card>
-
-                        {/* Event Schedule */}
-                        <Card className="p-4 md:p-6">
-                            <h3 className="font-semibold mb-4">{t("events.schedule")}</h3>
-                            <ScrollArea className="h-[300px]">
-                                <div className="space-y-4 pr-4">
-                                    {event?.activities?.map((activity: any, index: number) => (
-                                        <div key={index} className="flex gap-4">
-                                            <div className="w-20 text-sm text-muted-foreground shrink-0">
-                                                {activity?.time}
-                                            </div>
-                                            <div>
-                                                <p className="font-medium">{activity?.title}</p>
-                                                <p className="text-sm text-muted-foreground">{activity?.description}</p>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </ScrollArea>
-                        </Card>
-                    </div>
-                </div>
+              <Card className="p-4 md:p-6">
+                <p className="leading-relaxed text-sm md:text-base">{event?.description}</p>
+              </Card>
             </div>
-            {event && (
-                <ShareContentModal
-                    isOpen={isShareModalOpen}
-                    onClose={() => setIsShareModalOpen(false)}
-                    payload={{
-                        type: 'event',
-                        data: {
-                            id: params.id,
-                            title: event.title,
-                            image: event.thumbnailUrl ? urlFor(event.thumbnailUrl.asset._ref).url() : '',
-                            date: event.date ?? '',
-                            time: event.time,
-                            locationName: event.location?.name,
-                            ticketPrice: event.ticket ? Number(event.ticket) : undefined,
-                            category: event.category,
-                            attendeesCount: event.attendees?.length || 0,
-                        },
-                    }}
-                />
-            )}
+
+            <Gallery gallery={event?.gallery} />
+
+            {/* Gaming Tournaments */}
+            <div className="space-y-4">
+              <h2 className="text-xl md:text-2xl font-bold">{t("events.tournaments")}</h2>
+              <div className="grid sm:grid-cols-2 gap-4">
+                {event?.tournaments?.map((tournament: any, index: number) => (
+                  <Card key={index} className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-primary/10 rounded-lg shrink-0">
+                        <Trophy className="w-6 h-6 text-primary" />
+                      </div>
+                      <div>
+                        <h3 className="font-semibold mb-2">{tournament.title}</h3>
+                        <div className="space-y-1 text-sm text-muted-foreground">
+                          <p>
+                            {t("events.prizePool")}: {tournament.prize}
+                          </p>
+                          <p>
+                            {tournament.participants} {t("events.participants")}
+                          </p>
+                          <p>
+                            {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
+                              dateStyle: "long",
+                            }).format(new Date(tournament.time))}{" "}
+                            {t("events.at")} {tournament.time}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar */}
+          <div className="min-w-0 space-y-6 self-start lg:sticky lg:top-6">
+            {/* Event Details and Ticket Purchase */}
+            <Card className="p-4 md:p-6">
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-muted-foreground shrink-0" />
+                    <div>
+                      <p className="font-medium">{event?.date}</p>
+                      <p className="text-sm text-muted-foreground">{event?.time}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-muted-foreground shrink-0" />
+                    <div>
+                      <p className="font-medium">{event?.location?.name}</p>
+                      <p className="text-sm text-muted-foreground">{event?.location?.address}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-4 border-t">
+                  <p className="text-sm text-muted-foreground mb-1">{t("events.ticketPrice")}</p>
+                  <p className="text-2xl font-bold">${event?.ticket}</p>
+                </div>
+                <Button className="w-full" size="lg">
+                  <Ticket className="w-4 h-4 mr-2" />
+                  {t("events.purchaseTickets")}
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 border-border/60 hover:bg-muted"
+                  size="lg"
+                  onClick={() => setIsShareModalOpen(true)}
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  {t("anime.shareChat") || "Share to Chat"}
+                </Button>
+              </div>
+            </Card>
+
+            {/* Event Partner / Google AdSense Sidebar Unit */}
+            <GoogleAdUnit
+              context="events"
+              variant="sidebar"
+              adFormat="rectangle"
+              seedOffset={1}
+              adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_EVENTS_SIDEBAR}
+            />
+
+            {/* Host Information */}
+            <Card className="p-4 md:p-6">
+              <CardHeader className="px-0 pt-0">
+                <h3 className="text-lg font-semibold mb-4">{t("events.hostedBy")}</h3>
+                <div className="space-y-4">
+                  {event?.organizers?.map((organizer: any, index: number) => (
+                    <div key={index} className="flex items-center gap-3">
+                      <Avatar>
+                        {organizer.avatar && (
+                          <AvatarImage src={urlFor(organizer.avatar.asset._ref).url()} />
+                        )}
+                        <AvatarFallback>{organizer.name[0]}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{organizer.name}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardHeader>
+              <CardFooter className="flex flex-col space-y-4 pt-4 border-t px-0 pb-0">
+                <div className="w-full">
+                  <div className="text-sm text-muted-foreground mb-2">
+                    {event?.attendees?.length ?? 0} {t("events.going")}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex -space-x-2">
+                      <TooltipProvider>
+                        {event?.attendees?.slice(0, 5).map((attendee: any, i: number) => (
+                          <Tooltip key={i}>
+                            <TooltipTrigger>
+                              <Avatar className="border-2 border-background w-8 h-8">
+                                <AvatarImage src={urlFor(attendee.avatar.asset._ref).url()} />
+                                <AvatarFallback>{attendee.name[0]}</AvatarFallback>
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{attendee.name}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ))}
+                      </TooltipProvider>
+                    </div>
+                    {event?.attendees && event.attendees.length > 5 && (
+                      <span className="text-sm text-muted-foreground">
+                        +{event.attendees.length - 5} {t("events.others")}
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <Button className="w-full" size="lg">
+                  <Phone className="w-4 h-4 mr-2" />
+                  {t("events.contactHost")}
+                </Button>
+              </CardFooter>
+            </Card>
+
+            {/* Event Schedule */}
+            <Card className="p-4 md:p-6">
+              <h3 className="font-semibold mb-4">{t("events.schedule")}</h3>
+              <ScrollArea className="h-[300px]">
+                <div className="space-y-4 pr-4">
+                  {event?.activities?.map((activity: any, index: number) => (
+                    <div key={index} className="flex gap-4">
+                      <div className="w-20 text-sm text-muted-foreground shrink-0">
+                        {activity?.time}
+                      </div>
+                      <div>
+                        <p className="font-medium">{activity?.title}</p>
+                        <p className="text-sm text-muted-foreground">{activity?.description}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </Card>
+          </div>
         </div>
-    );
+      </div>
+      {event && (
+        <ShareContentModal
+          isOpen={isShareModalOpen}
+          onClose={() => setIsShareModalOpen(false)}
+          payload={{
+            type: "event",
+            data: {
+              id: params.id,
+              title: event.title,
+              image: event.thumbnailUrl ? urlFor(event.thumbnailUrl.asset._ref).url() : "",
+              date: event.date ?? "",
+              time: event.time,
+              locationName: event.location?.name,
+              ticketPrice: event.ticket ? Number(event.ticket) : undefined,
+              category: event.category,
+              attendeesCount: event.attendees?.length || 0,
+            },
+          }}
+        />
+      )}
+    </div>
+  );
 }

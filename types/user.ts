@@ -1,5 +1,5 @@
 export interface UserPreferences {
-  language: 'en' | 'ja';
+  language: "en" | "ja";
   soundEffects: boolean;
   autoplayTrailers: boolean;
   adultFilter: boolean;

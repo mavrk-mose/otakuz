@@ -1,19 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  AlertTriangle,
-  Bell,
-  Check,
-  Trash2,
-} from "lucide-react";
+import { AlertTriangle, Bell, Check, Trash2 } from "lucide-react";
 import { EmptyState } from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useAuth } from "@/hooks/use-auth";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,10 +17,7 @@ import {
 } from "@/hooks/notifications/notification-requests";
 import { toast } from "sonner";
 import { useI18n } from "@/components/i18n-provider";
-import {
-  useNotificationsStore,
-  type NotificationItem,
-} from "@/store/use-notifications-store";
+import { useNotificationsStore, type NotificationItem } from "@/store/use-notifications-store";
 
 export function NotificationBell() {
   const { locale, t } = useI18n();
@@ -140,16 +128,9 @@ export function NotificationBell() {
 
       <PopoverContent align="end" className="w-80 sm:w-96 p-0 border-border bg-popover">
         <div className="flex items-center justify-between border-b border-border px-4 py-3">
-          <h4 className="font-semibold text-foreground">
-            {t("notifications.title")}
-          </h4>
+          <h4 className="font-semibold text-foreground">{t("notifications.title")}</h4>
           {unreadCount > 0 && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 text-xs"
-              onClick={handleMarkAllRead}
-            >
+            <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={handleMarkAllRead}>
               <Check className="mr-1 h-3.5 w-3.5" />
               {t("notifications.markAllRead")}
             </Button>
@@ -157,7 +138,10 @@ export function NotificationBell() {
         </div>
 
         {firestoreError && (
-          <div role="alert" className="flex items-start gap-2 border-b border-border p-3 text-xs text-destructive">
+          <div
+            role="alert"
+            className="flex items-start gap-2 border-b border-border p-3 text-xs text-destructive"
+          >
             <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
             <span>{t("notifications.loadFailed")}</span>
           </div>
@@ -211,9 +195,7 @@ export function NotificationBell() {
                         size="icon"
                         aria-label={t("notifications.delete")}
                         className="h-7 w-7 shrink-0 opacity-70 transition-opacity sm:opacity-0 sm:group-hover:opacity-100 hover:text-destructive"
-                        onClick={(e) =>
-                          handleDeleteNotification(notification.id, e)
-                        }
+                        onClick={(e) => handleDeleteNotification(notification.id, e)}
                       >
                         <Trash2 className="h-3.5 w-3.5" />
                       </Button>

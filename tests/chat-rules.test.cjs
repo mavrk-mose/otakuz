@@ -1,71 +1,167 @@
 // Run against Firestore + Storage emulators with @firebase/rules-unit-testing installed.
-const { createRequire } = require('node:module');
-const sdkRequire = createRequire(require.resolve('@firebase/rules-unit-testing'));
-const { readFileSync } = require('node:fs');
-const { test, before, after } = require('node:test');
-const { initializeTestEnvironment, assertSucceeds, assertFails } = require('@firebase/rules-unit-testing');
-const { doc, setDoc, getDoc, getDocs, collection, query, where, updateDoc, serverTimestamp } = sdkRequire('firebase/firestore');
-const { ref, uploadBytes, getBytes } = sdkRequire('firebase/storage');
+const { createRequire } = require("node:module");
+const sdkRequire = createRequire(require.resolve("@firebase/rules-unit-testing"));
+const { readFileSync } = require("node:fs");
+const { test, before, after } = require("node:test");
+const {
+  initializeTestEnvironment,
+  assertSucceeds,
+  assertFails,
+} = require("@firebase/rules-unit-testing");
+const { doc, setDoc, getDoc, getDocs, collection, query, where, updateDoc, serverTimestamp } =
+  sdkRequire("firebase/firestore");
+const { ref, uploadBytes, getBytes } = sdkRequire("firebase/storage");
 let env;
-const dmId = `dm_${'a'.repeat(64)}`;
-const room = (members, extra = {}) => ({ title: 'Test room', createdBy: 'alice', createdAt: serverTimestamp(), members, memberCount: members.length, ...extra });
-const message = (userId, extra = {}) => ({ userId, username: userId, message: 'Hello', type: 'text', timestamp: serverTimestamp(), createdAtClient: Date.now(), ...extra });
+const dmId = `dm_${"a".repeat(64)}`;
+const room = (members, extra = {}) => ({
+  title: "Test room",
+  createdBy: "alice",
+  createdAt: serverTimestamp(),
+  members,
+  memberCount: members.length,
+  ...extra,
+});
+const message = (userId, extra = {}) => ({
+  userId,
+  username: userId,
+  message: "Hello",
+  type: "text",
+  timestamp: serverTimestamp(),
+  createdAtClient: Date.now(),
+  ...extra,
+});
 before(async () => {
-  env = await initializeTestEnvironment({ projectId: 'demo-otakuz-chat', firestore: { rules: readFileSync('firestore.rules', 'utf8') }, storage: { rules: readFileSync('storage.rules', 'utf8') } });
+  env = await initializeTestEnvironment({
+    projectId: "demo-otakuz-chat",
+    firestore: { rules: readFileSync("firestore.rules", "utf8") },
+    storage: { rules: readFileSync("storage.rules", "utf8") },
+  });
   await env.clearFirestore();
 });
 after(async () => env?.cleanup());
-test('public rooms allow self join/leave but reserve image and owner changes', async () => {
-  const alice = env.authenticatedContext('alice').firestore();
-  const bob = env.authenticatedContext('bob').firestore();
-  await assertSucceeds(setDoc(doc(alice, 'chatrooms/public'), room(['alice'])));
-  await assertFails(updateDoc(doc(bob, 'chatrooms/public'), { photoURL: 'https://example.com/stolen.png' }));
-  await assertFails(updateDoc(doc(bob, 'chatrooms/public'), { createdBy: 'bob' }));
-  await assertSucceeds(updateDoc(doc(bob, 'chatrooms/public'), { members: ['alice', 'bob'], memberCount: 2 }));
-  await assertFails(updateDoc(doc(bob, 'chatrooms/public'), { members: ['bob'], memberCount: 1 }));
-  await assertFails(updateDoc(doc(bob, 'chatrooms/public'), { memberCount: 99 }));
-  await assertSucceeds(updateDoc(doc(alice, 'chatrooms/public'), { photoURL: 'https://example.com/room.png' }));
-  await assertSucceeds(updateDoc(doc(bob, 'chatrooms/public'), { members: ['alice'], memberCount: 1 }));
-  await assertFails(setDoc(doc(bob, 'chatrooms/public/messages/outsider'), message('bob')));
+test("public rooms allow self join/leave but reserve image and owner changes", async () => {
+  const alice = env.authenticatedContext("alice").firestore();
+  const bob = env.authenticatedContext("bob").firestore();
+  await assertSucceeds(setDoc(doc(alice, "chatrooms/public"), room(["alice"])));
+  await assertFails(
+    updateDoc(doc(bob, "chatrooms/public"), { photoURL: "https://example.com/stolen.png" }),
+  );
+  await assertFails(updateDoc(doc(bob, "chatrooms/public"), { createdBy: "bob" }));
+  await assertSucceeds(
+    updateDoc(doc(bob, "chatrooms/public"), { members: ["alice", "bob"], memberCount: 2 }),
+  );
+  await assertFails(updateDoc(doc(bob, "chatrooms/public"), { members: ["bob"], memberCount: 1 }));
+  await assertFails(updateDoc(doc(bob, "chatrooms/public"), { memberCount: 99 }));
+  await assertSucceeds(
+    updateDoc(doc(alice, "chatrooms/public"), { photoURL: "https://example.com/room.png" }),
+  );
+  await assertSucceeds(
+    updateDoc(doc(bob, "chatrooms/public"), { members: ["alice"], memberCount: 1 }),
+  );
+  await assertFails(setDoc(doc(bob, "chatrooms/public/messages/outsider"), message("bob")));
 });
-test('direct messages, profiles and queries are participant-only', async () => {
-  const alice = env.authenticatedContext('alice').firestore();
-  const bob = env.authenticatedContext('bob').firestore();
-  const eve = env.authenticatedContext('eve').firestore();
+test("direct messages, profiles and queries are participant-only", async () => {
+  const alice = env.authenticatedContext("alice").firestore();
+  const bob = env.authenticatedContext("bob").firestore();
+  const eve = env.authenticatedContext("eve").firestore();
   await assertSucceeds(getDoc(doc(alice, `directChats/${dmId}`)));
-  await assertSucceeds(setDoc(doc(alice, `directChats/${dmId}`), room(['alice', 'bob'], { participantIds: ['alice', 'bob'] })));
-  await assertSucceeds(setDoc(doc(alice, `directChats/${dmId}/messages/first`), message('alice', { photoURL: 'https://example.com/a.png' })));
-  await assertSucceeds(setDoc(doc(bob, `directChats/${dmId}/messages/reply`), message('bob', { replyTo: { id: 'first', userId: 'alice', username: 'alice', preview: 'Hello' } })));
+  await assertSucceeds(
+    setDoc(
+      doc(alice, `directChats/${dmId}`),
+      room(["alice", "bob"], { participantIds: ["alice", "bob"] }),
+    ),
+  );
+  await assertSucceeds(
+    setDoc(
+      doc(alice, `directChats/${dmId}/messages/first`),
+      message("alice", { photoURL: "https://example.com/a.png" }),
+    ),
+  );
+  await assertSucceeds(
+    setDoc(
+      doc(bob, `directChats/${dmId}/messages/reply`),
+      message("bob", {
+        replyTo: { id: "first", userId: "alice", username: "alice", preview: "Hello" },
+      }),
+    ),
+  );
   await assertSucceeds(getDoc(doc(bob, `directChats/${dmId}/messages/first`)));
   await assertFails(getDoc(doc(eve, `directChats/${dmId}`)));
   await assertFails(getDoc(doc(eve, `directChats/${dmId}/messages/first`)));
-  await assertFails(getDocs(collection(eve, 'directChats')));
-  await assertSucceeds(getDocs(query(collection(alice, 'directChats'), where('members', 'array-contains', 'alice'))));
-  await assertFails(updateDoc(doc(eve, `directChats/${dmId}`), { members: ['alice', 'bob', 'eve'], memberCount: 3 }));
-  await assertFails(updateDoc(doc(bob, `directChats/${dmId}`), { participantIds: ['bob', 'eve'] }));
-  await assertFails(setDoc(doc(bob, `directChats/${dmId}/messages/impersonation`), message('alice')));
-  await assertFails(updateDoc(doc(bob, `directChats/${dmId}/messages/reply`), { userId: 'alice' }));
-  await assertFails(updateDoc(doc(bob, `directChats/${dmId}/messages/reply`), { message: 'x'.repeat(10001), editedAt: serverTimestamp() }));
-  await assertSucceeds(updateDoc(doc(bob, `directChats/${dmId}/messages/reply`), { message: 'Edited', editedAt: serverTimestamp() }));
-  await assertSucceeds(setDoc(doc(bob, `directChats/${dmId}/profiles/bob`), { displayName: 'Bob', photoURL: '' }));
-  await assertFails(setDoc(doc(bob, `directChats/${dmId}/profiles/alice`), { displayName: 'Fake', photoURL: '' }));
+  await assertFails(getDocs(collection(eve, "directChats")));
+  await assertSucceeds(
+    getDocs(query(collection(alice, "directChats"), where("members", "array-contains", "alice"))),
+  );
+  await assertFails(
+    updateDoc(doc(eve, `directChats/${dmId}`), {
+      members: ["alice", "bob", "eve"],
+      memberCount: 3,
+    }),
+  );
+  await assertFails(updateDoc(doc(bob, `directChats/${dmId}`), { participantIds: ["bob", "eve"] }));
+  await assertFails(
+    setDoc(doc(bob, `directChats/${dmId}/messages/impersonation`), message("alice")),
+  );
+  await assertFails(updateDoc(doc(bob, `directChats/${dmId}/messages/reply`), { userId: "alice" }));
+  await assertFails(
+    updateDoc(doc(bob, `directChats/${dmId}/messages/reply`), {
+      message: "x".repeat(10001),
+      editedAt: serverTimestamp(),
+    }),
+  );
+  await assertSucceeds(
+    updateDoc(doc(bob, `directChats/${dmId}/messages/reply`), {
+      message: "Edited",
+      editedAt: serverTimestamp(),
+    }),
+  );
+  await assertSucceeds(
+    setDoc(doc(bob, `directChats/${dmId}/profiles/bob`), { displayName: "Bob", photoURL: "" }),
+  );
+  await assertFails(
+    setDoc(doc(bob, `directChats/${dmId}/profiles/alice`), { displayName: "Fake", photoURL: "" }),
+  );
   await assertFails(getDoc(doc(eve, `directChats/${dmId}/profiles/bob`)));
-  await assertSucceeds(updateDoc(doc(bob, `directChats/${dmId}`), { members: ['alice'], memberCount: 1 }));
+  await assertSucceeds(
+    updateDoc(doc(bob, `directChats/${dmId}`), { members: ["alice"], memberCount: 1 }),
+  );
   await assertFails(getDoc(doc(bob, `directChats/${dmId}/messages/first`)));
-  await assertSucceeds(updateDoc(doc(bob, `directChats/${dmId}`), { members: ['alice', 'bob'], memberCount: 2 }));
+  await assertSucceeds(
+    updateDoc(doc(bob, `directChats/${dmId}`), { members: ["alice", "bob"], memberCount: 2 }),
+  );
   await assertSucceeds(getDoc(doc(bob, `directChats/${dmId}/messages/first`)));
-  await assertFails(getDoc(doc(env.unauthenticatedContext().firestore(), `directChats/${dmId}/messages/first`)));
+  await assertFails(
+    getDoc(doc(env.unauthenticatedContext().firestore(), `directChats/${dmId}/messages/first`)),
+  );
 });
-test('room image uploads are owner-only and private attachments are member-only', async () => {
-  const alice = env.authenticatedContext('alice').storage();
-  const bob = env.authenticatedContext('bob').storage();
-  const eve = env.authenticatedContext('eve').storage();
-  await assertSucceeds(uploadBytes(ref(alice, 'room-images/public/alice/image'), new Uint8Array([1, 2]), { contentType: 'image/png' }));
-  await assertFails(uploadBytes(ref(bob, 'room-images/public/bob/image'), new Uint8Array([1]), { contentType: 'image/png' }));
-  await assertFails(uploadBytes(ref(alice, 'room-images/public/alice/bad'), new Uint8Array([1]), { contentType: 'text/html' }));
+test("room image uploads are owner-only and private attachments are member-only", async () => {
+  const alice = env.authenticatedContext("alice").storage();
+  const bob = env.authenticatedContext("bob").storage();
+  const eve = env.authenticatedContext("eve").storage();
+  await assertSucceeds(
+    uploadBytes(ref(alice, "room-images/public/alice/image"), new Uint8Array([1, 2]), {
+      contentType: "image/png",
+    }),
+  );
+  await assertFails(
+    uploadBytes(ref(bob, "room-images/public/bob/image"), new Uint8Array([1]), {
+      contentType: "image/png",
+    }),
+  );
+  await assertFails(
+    uploadBytes(ref(alice, "room-images/public/alice/bad"), new Uint8Array([1]), {
+      contentType: "text/html",
+    }),
+  );
   const path = `directChats/${dmId}/alice/first/image`;
-  await assertSucceeds(uploadBytes(ref(alice, path), new Uint8Array([1, 2]), { contentType: 'image/png' }));
+  await assertSucceeds(
+    uploadBytes(ref(alice, path), new Uint8Array([1, 2]), { contentType: "image/png" }),
+  );
   await assertSucceeds(getBytes(ref(bob, path)));
   await assertFails(getBytes(ref(eve, path)));
-  await assertFails(uploadBytes(ref(eve, `directChats/${dmId}/eve/evil/image`), new Uint8Array([1]), { contentType: 'image/png' }));
+  await assertFails(
+    uploadBytes(ref(eve, `directChats/${dmId}/eve/evil/image`), new Uint8Array([1]), {
+      contentType: "image/png",
+    }),
+  );
 });

@@ -7,7 +7,6 @@ import { channelsResponseSchema } from "@/lib/schemas/media";
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import { ErrorState } from "@/components/page-state";
 import { ChannelsSkeleton } from "@/components/skeletons/channels-skeleton";
 
@@ -47,7 +46,7 @@ function countryFlag(countryCode: string | null) {
   }
 
   return String.fromCodePoint(
-    ...countryCode.split("").map((character) => 127397 + character.charCodeAt(0))
+    ...countryCode.split("").map((character) => 127397 + character.charCodeAt(0)),
   );
 }
 
@@ -56,12 +55,7 @@ function ChannelLogo({ channel, className }: { channel: IptvChannel; className?:
 
   if (!channel.logoUrl || hasError) {
     return (
-      <div
-        className={cn(
-          "flex items-center justify-center bg-muted/60",
-          className
-        )}
-      >
+      <div className={cn("flex items-center justify-center bg-muted/60", className)}>
         <Tv2 className="h-10 w-10 text-muted-foreground" />
       </div>
     );
@@ -97,14 +91,14 @@ function ChannelCard({
       onClick={() => onSelect(channel)}
       className={cn(
         "group min-w-0 text-left outline-none transition duration-300 focus-visible:ring-2 focus-visible:ring-rose-500",
-        isSelected && "relative z-10"
+        isSelected && "relative z-10",
       )}
       aria-label={`Watch ${channel.name}`}
     >
       <div
         className={cn(
           "relative aspect-video overflow-hidden rounded-xl border border-border bg-card shadow-md transition duration-300 group-hover:-translate-y-1 group-hover:scale-[1.02] group-hover:border-primary/50 group-hover:shadow-xl",
-          isSelected && "border-rose-500 ring-2 ring-rose-500/40"
+          isSelected && "border-rose-500 ring-2 ring-rose-500/40",
         )}
       >
         <ChannelLogo channel={channel} className="h-full w-full" />
@@ -118,9 +112,14 @@ function ChannelCard({
         </span>
       </div>
       <div className="px-0.5 pt-3">
-        <h3 className="truncate text-sm font-semibold text-foreground group-hover:text-rose-500 transition-colors">{channel.name}</h3>
+        <h3 className="truncate text-sm font-semibold text-foreground group-hover:text-rose-500 transition-colors">
+          {channel.name}
+        </h3>
         <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
-          <span>{countryFlag(channel.countryCode)} {channel.countryCode || localizedT("channels.global")}</span>
+          <span>
+            {countryFlag(channel.countryCode)}{" "}
+            {channel.countryCode || localizedT("channels.global")}
+          </span>
           {channel.quality ? <span>{channel.quality}</span> : null}
         </div>
       </div>
@@ -130,8 +129,17 @@ function ChannelCard({
 
 export function ChannelBrowser() {
   const { t: localizedT } = useI18n();
-  const [channelFromUrl, setChannelQuery] = useQueryState("channel", parseAsString.withOptions({ history: "push", scroll: false }));
-  const { data, error, isPending: isLoading, refetch, isFetching } = useQuery({
+  const [channelFromUrl, setChannelQuery] = useQueryState(
+    "channel",
+    parseAsString.withOptions({ history: "push", scroll: false }),
+  );
+  const {
+    data,
+    error,
+    isPending: isLoading,
+    refetch,
+    isFetching,
+  } = useQuery({
     queryKey: ["iptv-channels"],
     queryFn: fetchChannels,
   });
@@ -141,9 +149,7 @@ export function ChannelBrowser() {
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const [isHistoryHydrated, setIsHistoryHydrated] = useState(false);
   const recentlyViewed = useChannelHistoryStore((state) => state.recentlyViewed);
-  const clearRecentlyViewed = useChannelHistoryStore(
-    (state) => state.clearRecentlyViewed
-  );
+  const clearRecentlyViewed = useChannelHistoryStore((state) => state.clearRecentlyViewed);
   const activePlayerVideoId = usePlayerStore((state) => state.currentVideoId);
   const playerIsOpen = usePlayerStore((state) => state.isOpen);
   const playerIsMinimized = usePlayerStore((state) => state.isMinimized);
@@ -160,7 +166,7 @@ export function ChannelBrowser() {
     const matchingChannel = channelFromUrl
       ? data.channels.find(
           (channel: IptvChannel) =>
-            channel.channelId === channelFromUrl || channel.id === channelFromUrl
+            channel.channelId === channelFromUrl || channel.id === channelFromUrl,
         )
       : null;
 
@@ -170,11 +176,7 @@ export function ChannelBrowser() {
         itemId: matchingChannel.channelId || matchingChannel.id,
         type: "channel",
         title: matchingChannel.name,
-        subtitle: [
-          matchingChannel.countryCode || "Global",
-          matchingChannel.quality,
-          "Live TV",
-        ]
+        subtitle: [matchingChannel.countryCode || "Global", matchingChannel.quality, "Live TV"]
           .filter(Boolean)
           .join(" • "),
         image: matchingChannel.logoUrl || "",
@@ -190,7 +192,7 @@ export function ChannelBrowser() {
 
   const scrollStrip = (
     ref: React.RefObject<HTMLDivElement | null>,
-    direction: "left" | "right"
+    direction: "left" | "right",
   ) => {
     const el = ref.current;
     if (!el) return;
@@ -209,17 +211,14 @@ export function ChannelBrowser() {
       counts.set(code, (counts.get(code) || 0) + 1);
     });
 
-    return Array.from(counts.entries()).sort(([first], [second]) =>
-      first.localeCompare(second)
-    );
+    return Array.from(counts.entries()).sort(([first], [second]) => first.localeCompare(second));
   }, [data]);
 
   const filteredChannels = useMemo(() => {
     const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
 
     return (data?.channels || []).filter((channel: IptvChannel) => {
-      const matchesCountry =
-        country === "all" || (channel.countryCode || "Global") === country;
+      const matchesCountry = country === "all" || (channel.countryCode || "Global") === country;
       const matchesSearch =
         !normalizedQuery ||
         channel.name.toLocaleLowerCase().includes(normalizedQuery) ||
@@ -237,9 +236,8 @@ export function ChannelBrowser() {
     return recentlyViewed.map(
       (recentChannel) =>
         data?.channels.find(
-          (channel: IptvChannel) =>
-            channel.channelId === recentChannel.channelId
-        ) || recentChannel
+          (channel: IptvChannel) => channel.channelId === recentChannel.channelId,
+        ) || recentChannel,
     );
   }, [data, isHistoryHydrated, recentlyViewed]);
 
@@ -272,20 +270,24 @@ export function ChannelBrowser() {
   };
 
   const isSelectedChannelPlaying = Boolean(
-    selectedChannel &&
-      playerIsOpen &&
-      activePlayerVideoId === `channel:${selectedChannel.id}`
+    selectedChannel && playerIsOpen && activePlayerVideoId === `channel:${selectedChannel.id}`,
   );
   const isPlayerDocked = Boolean(
-    playerIsOpen &&
-      activePlayerVideoId?.startsWith("channel:") &&
-      !playerIsMinimized
+    playerIsOpen && activePlayerVideoId?.startsWith("channel:") && !playerIsMinimized,
   );
 
   if (isLoading) return <ChannelsSkeleton />;
 
   if (error || !data) {
-    return <ErrorState fullPage title={localizedT("channels.offAir")} description={localizedT("channels.error")} onRetry={() => void refetch()} retrying={isFetching} />;
+    return (
+      <ErrorState
+        fullPage
+        title={localizedT("channels.offAir")}
+        description={localizedT("channels.error")}
+        onRetry={() => void refetch()}
+        retrying={isFetching}
+      />
+    );
   }
 
   return (
@@ -294,7 +296,10 @@ export function ChannelBrowser() {
         {selectedChannel ? (
           <>
             <div className="absolute inset-0">
-              <ChannelLogo channel={selectedChannel} className="h-full w-full opacity-20 blur-3xl" />
+              <ChannelLogo
+                channel={selectedChannel}
+                className="h-full w-full opacity-20 blur-3xl"
+              />
               <div className="absolute inset-0 bg-gradient-to-r from-card via-card/95 to-card/60 dark:from-background dark:via-background/95 dark:to-background/60" />
               <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             </div>
@@ -313,14 +318,21 @@ export function ChannelBrowser() {
                   {selectedChannel.name}
                 </h1>
                 <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm font-medium text-muted-foreground">
-                  <span className="text-emerald-500 font-semibold"><I18nText message="channels.streaming" /></span>
-                  <span>{countryFlag(selectedChannel.countryCode)} {selectedChannel.countryCode || localizedT("channels.global")}</span>
+                  <span className="text-emerald-500 font-semibold">
+                    <I18nText message="channels.streaming" />
+                  </span>
+                  <span>
+                    {countryFlag(selectedChannel.countryCode)}{" "}
+                    {selectedChannel.countryCode || localizedT("channels.global")}
+                  </span>
                   {selectedChannel.quality ? <span>{selectedChannel.quality}</span> : null}
-                  <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase font-semibold">HLS</span>
+                  <span className="rounded border border-border px-1.5 py-0.5 text-[10px] uppercase font-semibold">
+                    HLS
+                  </span>
                 </div>
                 <p className="mt-5 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">
-                  Watch free live animation programming from IPTV-org&apos;s public channel directory.
-                  Availability can vary by broadcaster and region.
+                  Watch free live animation programming from IPTV-org&apos;s public channel
+                  directory. Availability can vary by broadcaster and region.
                 </p>
                 <div className="mt-7 flex flex-wrap gap-3">
                   <button
@@ -329,10 +341,15 @@ export function ChannelBrowser() {
                     className="inline-flex items-center gap-2 rounded-xl bg-rose-500 px-6 py-3 text-sm font-bold text-white transition hover:bg-rose-600 shadow-md shadow-rose-500/20"
                   >
                     <Play className="h-5 w-5 fill-current" />
-                    {isSelectedChannelPlaying ? localizedT("channels.watching") : localizedT("channels.watchLive")}
+                    {isSelectedChannelPlaying
+                      ? localizedT("channels.watching")
+                      : localizedT("channels.watchLive")}
                   </button>
                   {selectedChannel.labels.map((label) => (
-                    <span key={label} className="inline-flex items-center rounded-xl border border-border bg-card/80 px-4 py-3 text-xs font-semibold text-foreground backdrop-blur">
+                    <span
+                      key={label}
+                      className="inline-flex items-center rounded-xl border border-border bg-card/80 px-4 py-3 text-xs font-semibold text-foreground backdrop-blur"
+                    >
                       {label}
                     </span>
                   ))}
@@ -345,24 +362,24 @@ export function ChannelBrowser() {
                   className="relative aspect-video overflow-hidden rounded-2xl border border-border bg-black shadow-2xl"
                 >
                   {!isPlayerDocked ? (
-                  <button
-                    type="button"
-                    onClick={() => playChannel(selectedChannel)}
-                    className="group relative block aspect-video w-full overflow-hidden bg-black"
-                    aria-label={`Play ${selectedChannel.name}`}
-                  >
-                    <ChannelLogo channel={selectedChannel} className="h-full w-full" />
-                    <div className="absolute inset-0 bg-black/25 transition group-hover:bg-black/40" />
-                    {isSelectedChannelPlaying && playerIsMinimized ? (
-                      <span className="absolute left-4 top-4 flex items-center gap-2 rounded bg-black/75 px-3 py-2 text-xs font-semibold text-white backdrop-blur">
-                        <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" />
-                        <I18nText message="channels.miniPlayer" />
+                    <button
+                      type="button"
+                      onClick={() => playChannel(selectedChannel)}
+                      className="group relative block aspect-video w-full overflow-hidden bg-black"
+                      aria-label={`Play ${selectedChannel.name}`}
+                    >
+                      <ChannelLogo channel={selectedChannel} className="h-full w-full" />
+                      <div className="absolute inset-0 bg-black/25 transition group-hover:bg-black/40" />
+                      {isSelectedChannelPlaying && playerIsMinimized ? (
+                        <span className="absolute left-4 top-4 flex items-center gap-2 rounded bg-black/75 px-3 py-2 text-xs font-semibold text-white backdrop-blur">
+                          <span className="h-2 w-2 animate-pulse rounded-full bg-rose-500" />
+                          <I18nText message="channels.miniPlayer" />
+                        </span>
+                      ) : null}
+                      <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-rose-500 text-white shadow-2xl transition group-hover:scale-110">
+                        <Play className="ml-1 h-7 w-7 fill-current" />
                       </span>
-                    ) : null}
-                    <span className="absolute left-1/2 top-1/2 flex h-16 w-16 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-rose-500 text-white shadow-2xl transition group-hover:scale-110">
-                      <Play className="ml-1 h-7 w-7 fill-current" />
-                    </span>
-                  </button>
+                    </button>
                   ) : null}
                 </PersistentPlayerSlot>
               </div>
@@ -377,9 +394,13 @@ export function ChannelBrowser() {
             <div className="mb-5 flex items-end justify-between gap-4">
               <div>
                 <p className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                  <History className="h-3.5 w-3.5 text-rose-500" /> <I18nText message="channels.continue" />
+                  <History className="h-3.5 w-3.5 text-rose-500" />{" "}
+                  <I18nText message="channels.continue" />
                 </p>
-                <h2 id="recently-viewed-heading" className="text-2xl font-bold sm:text-3xl text-foreground">
+                <h2
+                  id="recently-viewed-heading"
+                  className="text-2xl font-bold sm:text-3xl text-foreground"
+                >
                   <I18nText message="channels.recentlyViewed" />
                 </h2>
               </div>
@@ -434,10 +455,14 @@ export function ChannelBrowser() {
               <p className="mb-1 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-rose-500">
                 <Wifi className="h-3.5 w-3.5" /> <I18nText message="channels.directoryTitle" />
               </p>
-              <h2 id="live-now-heading" className="text-2xl font-bold sm:text-3xl text-foreground"><I18nText message="channels.liveNow" /></h2>
+              <h2 id="live-now-heading" className="text-2xl font-bold sm:text-3xl text-foreground">
+                <I18nText message="channels.liveNow" />
+              </h2>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-sm text-muted-foreground">{data.channels.length} <I18nText message="channels.countLabel" /></span>
+              <span className="text-sm text-muted-foreground">
+                {data.channels.length} <I18nText message="channels.countLabel" />
+              </span>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
@@ -476,12 +501,18 @@ export function ChannelBrowser() {
         <section className="mt-10" aria-labelledby="browse-heading">
           <div className="flex flex-col gap-5 border-t border-border pt-9 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground"><I18nText message="channels.browse" /></p>
-              <h2 id="browse-heading" className="text-2xl font-bold sm:text-3xl text-foreground"><I18nText message="channels.animation" /></h2>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                <I18nText message="channels.browse" />
+              </p>
+              <h2 id="browse-heading" className="text-2xl font-bold sm:text-3xl text-foreground">
+                <I18nText message="channels.animation" />
+              </h2>
             </div>
             <div className="flex flex-col gap-3 sm:flex-row">
               <label className="relative block">
-                <span className="sr-only"><I18nText message="channels.search" /></span>
+                <span className="sr-only">
+                  <I18nText message="channels.search" />
+                </span>
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
                   type="search"
@@ -492,16 +523,23 @@ export function ChannelBrowser() {
                 />
               </label>
               <label className="relative block">
-                <span className="sr-only"><I18nText message="channels.countryFilter" /></span>
+                <span className="sr-only">
+                  <I18nText message="channels.countryFilter" />
+                </span>
                 <Globe2 className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <select
                   value={country}
                   onChange={(event) => setCountry(event.target.value)}
                   className="h-11 w-full appearance-none rounded-xl border border-border bg-card pl-10 pr-9 text-sm text-foreground outline-none transition focus:border-rose-500 sm:w-52"
                 >
-                  <option value="all"><I18nText message="channels.allCountries" /></option>
+                  <option value="all">
+                    <I18nText message="channels.allCountries" />
+                  </option>
                   {countries.map(([code, count]) => (
-                    <option key={code} value={code}>{countryFlag(code === "Global" ? null : code)} {code === "Global" ? localizedT("channels.global") : code} ({count})</option>
+                    <option key={code} value={code}>
+                      {countryFlag(code === "Global" ? null : code)}{" "}
+                      {code === "Global" ? localizedT("channels.global") : code} ({count})
+                    </option>
                   ))}
                 </select>
               </label>
@@ -536,8 +574,12 @@ export function ChannelBrowser() {
             <div className="mt-8 flex min-h-56 items-center justify-center rounded-2xl border border-dashed border-border bg-card/50 text-center">
               <div>
                 <Search className="mx-auto h-8 w-8 text-muted-foreground" />
-                <p className="mt-3 font-semibold text-foreground"><I18nText message="channels.noMatch" /></p>
-                <p className="mt-1 text-sm text-muted-foreground"><I18nText message="channels.trySearch" /></p>
+                <p className="mt-3 font-semibold text-foreground">
+                  <I18nText message="channels.noMatch" />
+                </p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  <I18nText message="channels.trySearch" />
+                </p>
               </div>
             </div>
           )}

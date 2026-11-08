@@ -1,18 +1,12 @@
 import { get, set, del } from "idb-keyval";
-import type {
-  PersistedClient,
-  Persister,
-} from "@tanstack/react-query-persist-client";
+import type { PersistedClient, Persister } from "@tanstack/react-query-persist-client";
 import { CACHE_MAX_AGE } from "./query-client";
 
 const STORAGE_KEY = "otakuz-query-cache-v1";
 const MAX_QUERIES = 150;
 const MAX_BYTES = 8 * 1024 * 1024;
 
-export function limitPersistedClient(
-  client: PersistedClient,
-  now = Date.now(),
-): PersistedClient {
+export function limitPersistedClient(client: PersistedClient, now = Date.now()): PersistedClient {
   let bytes = 0;
   const queries = client.clientState.queries
     .filter((query) => now - query.state.dataUpdatedAt < CACHE_MAX_AGE)

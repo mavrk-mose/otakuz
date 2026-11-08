@@ -1,108 +1,129 @@
-"use client"
+"use client";
 
 import { ErrorState } from "@/components/page-state";
 import { EmptyState } from "@/components/empty-state";
-import { EventCardSkeleton } from '@/components/skeletons/home-section-skeleton';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Calendar, MapPin, Users, ArrowRight } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import {useQuery} from "@tanstack/react-query";
+import { EventCardSkeleton } from "@/components/skeletons/home-section-skeleton";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Calendar, MapPin, Users, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { catalogToday } from "@/lib/sanity-pagination";
-import {Event} from "@/types/events";
+import { Event } from "@/types/events";
 import { getEvents } from "@/hooks/events/use-fetch-events";
 import { urlFor } from "@/lib/sanity";
-import { useI18n } from '@/components/i18n-provider';
+import { useI18n } from "@/components/i18n-provider";
 
 export function EventsSection() {
-    const { locale, t } = useI18n();
-    const {data: events, isPending: isLoading, isError, refetch} = useQuery({
-        queryKey: ["events", "upcoming", 4, catalogToday()],
-        queryFn: () => getEvents({ period: "upcoming", limit: 4 }),
-    });
+  const { locale, t } = useI18n();
+  const {
+    data: events,
+    isPending: isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["events", "upcoming", 4, catalogToday()],
+    queryFn: () => getEvents({ period: "upcoming", limit: 4 }),
+  });
 
-    const container = {
-        hidden: { opacity: 0 },
-        show: {
-            opacity: 1,
-            transition: { staggerChildren: 0.1 }
-        }
-    };
+  const container = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
 
-    const item = {
-        hidden: { opacity: 0, y: 20 },
-        show: { opacity: 1, y: 0 }
-    };
+  const item = {
+    hidden: { opacity: 0, y: 20 },
+    show: { opacity: 1, y: 0 },
+  };
 
-    return (
-        <section className="space-y-8">
-            <div className="flex items-center justify-between">
-                <div>
-                    <h2 className="text-3xl font-bold mb-2">{t("home.upcomingEvents")}</h2>
-                    <p className="text-muted-foreground">{t("home.upcomingEventsDescription")}</p>
-                </div>
-                <Button variant="ghost" asChild>
-                    <Link href="/events" className="gap-2">
-                        {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
-                    </Link>
-                </Button>
-            </div>
+  return (
+    <section className="space-y-8">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold mb-2">{t("home.upcomingEvents")}</h2>
+          <p className="text-muted-foreground">{t("home.upcomingEventsDescription")}</p>
+        </div>
+        <Button variant="ghost" asChild>
+          <Link href="/events" className="gap-2">
+            {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
+          </Link>
+        </Button>
+      </div>
 
-            {isError && <ErrorState compact onRetry={() => void refetch()} />}
-            {!isError && !isLoading && events?.length === 0 && <EmptyState illustration="schedule" title={t("events.upcomingEmpty")} description={t("events.filteredEmptyDescription")} action={<Button variant="outline" asChild><Link href="/events">{t("events.showAll")}</Link></Button>} />}
+      {isError && <ErrorState compact onRetry={() => void refetch()} />}
+      {!isError && !isLoading && events?.length === 0 && (
+        <EmptyState
+          illustration="schedule"
+          title={t("events.upcomingEmpty")}
+          description={t("events.filteredEmptyDescription")}
+          action={
+            <Button variant="outline" asChild>
+              <Link href="/events">{t("events.showAll")}</Link>
+            </Button>
+          }
+        />
+      )}
 
-            <motion.div
-                variants={container}
-                initial="hidden"
-                animate="show"
-                className="grid md:grid-cols-2 gap-6"
-            >
-                {isLoading ? Array.from({ length: 4 }, (_, i) => <EventCardSkeleton key={i} />) : events?.map((event) => (
-                    <motion.div key={event._id} variants={item}>
-                        <Card className="overflow-hidden group">
-                            <Link href={`/events/${event._id}`}>
-                                <div className="relative h-48">
-                                    {event.thumbnailUrl && <Image
-                                        src={urlFor(event.thumbnailUrl.asset._ref).url()}
-                                        alt={event.title}
-                                        fill
-                                        className="object-cover"
-                                    />}
-                                    <div className="absolute top-4 right-4">
-                                        <Badge>{event.category}</Badge>
-                                    </div>
-                                </div>
-                                <div className="p-4">
-                                    <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
-                                    <div className="space-y-2 text-sm text-muted-foreground">
-                                        <div className="flex items-center">
-                                            <Calendar className="h-4 w-4 mr-2" />
-                                            {event.date
-                                              ? new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
-                                                  year: "numeric",
-                                                  month: "long",
-                                                  day: "numeric",
-                                                }).format(new Date(event.date))
-                                              : t("events.dateTba")}
-                                        </div>
-                                        <div className="flex items-center">
-                                            <MapPin className="h-4 w-4 mr-2" />
-                                            {event.location?.name}
-                                        </div>
-                                        <div className="flex items-center">
-                                            <Users className="h-4 w-4 mr-2" />
-                                            {event.attendeeCount ?? event.attendees?.length ?? 0} {t("events.attending")}
-                                        </div>
-                                    </div>
-                                </div>
-                            </Link>
-                        </Card>
-                    </motion.div>
-                ))}
-            </motion.div>
-        </section>
-    );
+      <motion.div
+        variants={container}
+        initial="hidden"
+        animate="show"
+        className="grid md:grid-cols-2 gap-6"
+      >
+        {isLoading
+          ? Array.from({ length: 4 }, (_, i) => <EventCardSkeleton key={i} />)
+          : events?.map((event) => (
+              <motion.div key={event._id} variants={item}>
+                <Card className="overflow-hidden group">
+                  <Link href={`/events/${event._id}`}>
+                    <div className="relative h-48">
+                      {event.thumbnailUrl && (
+                        <Image
+                          src={urlFor(event.thumbnailUrl.asset._ref).url()}
+                          alt={event.title}
+                          fill
+                          className="object-cover"
+                        />
+                      )}
+                      <div className="absolute top-4 right-4">
+                        <Badge>{event.category}</Badge>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                      <div className="space-y-2 text-sm text-muted-foreground">
+                        <div className="flex items-center">
+                          <Calendar className="h-4 w-4 mr-2" />
+                          {event.date
+                            ? new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              }).format(new Date(event.date))
+                            : t("events.dateTba")}
+                        </div>
+                        <div className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-2" />
+                          {event.location?.name}
+                        </div>
+                        <div className="flex items-center">
+                          <Users className="h-4 w-4 mr-2" />
+                          {event.attendeeCount ?? event.attendees?.length ?? 0}{" "}
+                          {t("events.attending")}
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                </Card>
+              </motion.div>
+            ))}
+      </motion.div>
+    </section>
+  );
 }

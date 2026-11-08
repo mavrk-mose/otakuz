@@ -7,17 +7,11 @@ import { apiQueryPolicy } from "@/lib/api-query-policy";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/lib/api-config";
 import type { AnimeScheduleResponse, ScheduleAnime } from "@/types/anime";
-import { toZonedTime, fromZonedTime } from 'date-fns-tz';
+import { toZonedTime, fromZonedTime } from "date-fns-tz";
 import { parse, format } from "date-fns";
 
 export type ScheduleDay =
-  | "monday"
-  | "tuesday"
-  | "wednesday"
-  | "thursday"
-  | "friday"
-  | "saturday"
-  | "sunday";
+  "monday" | "tuesday" | "wednesday" | "thursday" | "friday" | "saturday" | "sunday";
 
 interface UseAnimeSchedulesOptions {
   day: ScheduleDay | null;
@@ -31,10 +25,7 @@ type GroupedSchedulePage = {
   pagination: AnimeScheduleResponse["pagination"];
 };
 
-export default function useFetchSchedules({
-  day,
-  limit = 25
-}: UseAnimeSchedulesOptions) {
+export default function useFetchSchedules({ day, limit = 25 }: UseAnimeSchedulesOptions) {
   // Grouped broadcast times depend on the viewer's timezone and today's date.
   const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
   const dateStr = format(new Date(), "yyyy-MM-dd");
@@ -50,7 +41,12 @@ export default function useFetchSchedules({
         page: pageParam.toString(),
       });
 
-      const data = withCurrentPage(await fetchJson(`${API_BASE_URL}/schedules/${day}?${params}`, schedulesResponseSchema, { signal }), Number(pageParam));
+      const data = withCurrentPage(
+        await fetchJson(`${API_BASE_URL}/schedules/${day}?${params}`, schedulesResponseSchema, {
+          signal,
+        }),
+        Number(pageParam),
+      );
 
       const schedules: GroupedSchedules = {};
 
@@ -62,15 +58,11 @@ export default function useFetchSchedules({
           return;
         }
 
-        const broadcastDate = parse(
-          `${dateStr} ${broadcastTime}`,
-          "yyyy-MM-dd HH:mm",
-          new Date()
-        );
+        const broadcastDate = parse(`${dateStr} ${broadcastTime}`, "yyyy-MM-dd HH:mm", new Date());
         const broadcastTimezone = anime.broadcast?.timezone || "Asia/Tokyo";
         const localDate = toZonedTime(
           fromZonedTime(broadcastDate, broadcastTimezone),
-          userTimezone
+          userTimezone,
         );
         const localTime = format(localDate, "HH:mm");
 
@@ -81,9 +73,7 @@ export default function useFetchSchedules({
       return { schedules, pagination: data.pagination };
     },
     getNextPageParam: (lastPage) => {
-      return lastPage.pagination.has_next_page
-        ? lastPage.pagination.current_page + 1
-        : undefined;
+      return lastPage.pagination.has_next_page ? lastPage.pagination.current_page + 1 : undefined;
     },
     initialPageParam: 1,
     ...apiQueryPolicy,

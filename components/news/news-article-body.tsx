@@ -1,14 +1,9 @@
 "use client";
 import { I18nText } from "@/components/i18n-text";
 
-
 import { useState } from "react";
 import Image from "next/image";
-import {
-  PortableText,
-  type PortableTextBlock,
-  type PortableTextComponents,
-} from "next-sanity";
+import { PortableText, type PortableTextBlock, type PortableTextComponents } from "next-sanity";
 import { Plus, Check, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { urlFor } from "@/lib/sanity";
@@ -33,9 +28,7 @@ type ArticleImage = {
 const components: PortableTextComponents = {
   block: {
     normal: ({ children }) => (
-      <p className="mb-6 text-[17px] leading-[29px] text-foreground/90">
-        {children}
-      </p>
+      <p className="mb-6 text-[17px] leading-[29px] text-foreground/90">{children}</p>
     ),
     h2: ({ children }) => (
       <h2 className="mb-4 mt-12 text-2xl font-bold tracking-tight text-foreground md:text-3xl">
@@ -156,12 +149,18 @@ export function NewsArticleBody({
               “The Japanese animation sector is at a new inflection point”
             </blockquote>
             <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-              “Decisions made today will shape the baseline compensation, line reliability, and master draftsmanship retention of the global anime pipeline for decades to come,” the industry audit warns.
+              “Decisions made today will shape the baseline compensation, line reliability, and
+              master draftsmanship retention of the global anime pipeline for decades to come,” the
+              industry audit warns.
             </p>
           </div>
 
           <p className="text-[17px] leading-[29px] text-foreground/90">
-            While Japanese studios still generate approximately 65 percent of their background assets through composite digital painting, hand-rendered lead character layouts have quickly regained ground. Analog frame runs produced more measurable fan retention and international Blu-ray pre-orders in late 2025 than digital-only shows did during the preceding three quarters.
+            While Japanese studios still generate approximately 65 percent of their background
+            assets through composite digital painting, hand-rendered lead character layouts have
+            quickly regained ground. Analog frame runs produced more measurable fan retention and
+            international Blu-ray pre-orders in late 2025 than digital-only shows did during the
+            preceding three quarters.
           </p>
 
           {/* Inline Data Visual Card (Verge Infographic Style) */}
@@ -206,11 +205,17 @@ export function NewsArticleBody({
           </div>
 
           <p className="text-[17px] leading-[29px] text-foreground/90">
-            Western distribution platforms stepped into contract renegotiations with an unexpected posture: licensing payouts are now pegged to human credit registries. Licensing agreements that guarantee minimum master keyframe percentages from veteran genga artists are fetching 24 to 35 percent higher initial streaming bids across North America and Western Europe.
+            Western distribution platforms stepped into contract renegotiations with an unexpected
+            posture: licensing payouts are now pegged to human credit registries. Licensing
+            agreements that guarantee minimum master keyframe percentages from veteran genga artists
+            are fetching 24 to 35 percent higher initial streaming bids across North America and
+            Western Europe.
           </p>
         </div>
       ) : (
-        <p className="text-lg text-muted-foreground"><I18nText message="news.noBody" /></p>
+        <p className="text-lg text-muted-foreground">
+          <I18nText message="news.noBody" />
+        </p>
       )}
 
       {/* Topic Tracking Box */}
@@ -252,7 +257,9 @@ export function NewsArticleBody({
           className="group flex w-full items-center justify-center gap-2.5 rounded-2xl border border-border bg-card py-4 font-bold uppercase tracking-wider text-foreground shadow-sm transition hover:border-rose-500/40 hover:bg-muted"
         >
           <MessageSquare className="h-5 w-5 text-rose-500 transition-transform group-hover:scale-110" />
-          <span>{commentsCount} <I18nText message="news.commentsLabel" /></span>
+          <span>
+            {commentsCount} <I18nText message="news.commentsLabel" />
+          </span>
         </button>
       </div>
     </div>

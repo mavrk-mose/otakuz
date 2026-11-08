@@ -1,7 +1,7 @@
-import { initializeApp, getApps, type FirebaseApp } from 'firebase/app';
-import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, type Firestore } from 'firebase/firestore';
-import { getStorage, type FirebaseStorage } from 'firebase/storage';
+import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
+import { getAuth, type Auth } from "firebase/auth";
+import { getFirestore, type Firestore } from "firebase/firestore";
+import { getStorage, type FirebaseStorage } from "firebase/storage";
 import {
   getMessaging,
   getToken,
@@ -9,7 +9,7 @@ import {
   onMessage,
   type MessagePayload,
   type Messaging,
-} from 'firebase/messaging';
+} from "firebase/messaging";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -35,20 +35,20 @@ let messaging: Messaging | null = null;
 let swRegistrationPromise: Promise<ServiceWorkerRegistration> | null = null;
 
 export type NotificationSetupStatus =
-  | 'unsupported-browser'
-  | 'insecure-context'
-  | 'permission-default'
-  | 'permission-denied'
-  | 'service-worker-error'
-  | 'local-only-no-firebase'
-  | 'local-only-no-vapid'
-  | 'fcm-unsupported'
-  | 'fcm-error'
-  | 'fcm-ready';
+  | "unsupported-browser"
+  | "insecure-context"
+  | "permission-default"
+  | "permission-denied"
+  | "service-worker-error"
+  | "local-only-no-firebase"
+  | "local-only-no-vapid"
+  | "fcm-unsupported"
+  | "fcm-error"
+  | "fcm-ready";
 
 export interface NotificationSetupResult {
   status: NotificationSetupStatus;
-  permission: NotificationPermission | 'unsupported';
+  permission: NotificationPermission | "unsupported";
   pushToken: string | null;
   serviceWorkerReady: boolean;
   reason?: string;
@@ -64,13 +64,13 @@ function formatErrorReason(error: unknown): string {
 }
 
 export async function ensureNotificationServiceWorker(): Promise<ServiceWorkerRegistration> {
-  if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
-    throw new Error('Service Workers are not supported in this browser.');
+  if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
+    throw new Error("Service Workers are not supported in this browser.");
   }
 
   if (!swRegistrationPromise) {
     swRegistrationPromise = navigator.serviceWorker
-      .register('/firebase-messaging-sw.js', { scope: '/' })
+      .register("/firebase-messaging-sw.js", { scope: "/" })
       .then(async (registration) => {
         if (registration.active) {
           return registration;
@@ -89,10 +89,10 @@ export async function ensureNotificationServiceWorker(): Promise<ServiceWorkerRe
 async function getMessagingClient(): Promise<Messaging | null> {
   if (
     !app ||
-    typeof window === 'undefined' ||
+    typeof window === "undefined" ||
     !window.isSecureContext ||
-    !('Notification' in window) ||
-    !('serviceWorker' in navigator)
+    !("Notification" in window) ||
+    !("serviceWorker" in navigator)
   ) {
     return null;
   }
@@ -110,25 +110,25 @@ export async function initializeNotifications(options?: {
   promptPermission?: boolean;
 }): Promise<NotificationSetupResult> {
   if (
-    typeof window === 'undefined' ||
-    !('Notification' in window) ||
-    !('serviceWorker' in navigator)
+    typeof window === "undefined" ||
+    !("Notification" in window) ||
+    !("serviceWorker" in navigator)
   ) {
     return {
-      status: 'unsupported-browser',
-      permission: 'unsupported',
+      status: "unsupported-browser",
+      permission: "unsupported",
       pushToken: null,
       serviceWorkerReady: false,
-      reason: 'This browser does not support Web Notifications or Service Workers.',
+      reason: "This browser does not support Web Notifications or Service Workers.",
     };
   }
 
   if (!window.isSecureContext) {
     const reason =
-      'Web Notifications require HTTPS or localhost (window.isSecureContext is false).';
-    console.error('[WebNotifications]', reason);
+      "Web Notifications require HTTPS or localhost (window.isSecureContext is false).";
+    console.error("[WebNotifications]", reason);
     return {
-      status: 'insecure-context',
+      status: "insecure-context",
       permission: window.Notification.permission,
       pushToken: null,
       serviceWorkerReady: false,
@@ -138,30 +138,30 @@ export async function initializeNotifications(options?: {
 
   let permission = window.Notification.permission;
 
-  if (permission === 'default') {
+  if (permission === "default") {
     if (!options?.promptPermission) {
       return {
-        status: 'permission-default',
-        permission: 'default',
+        status: "permission-default",
+        permission: "default",
         pushToken: null,
         serviceWorkerReady: false,
-        reason: 'Browser notification permission has not been granted.',
+        reason: "Browser notification permission has not been granted.",
       };
     }
 
     permission = await window.Notification.requestPermission();
   }
 
-  if (permission !== 'granted') {
+  if (permission !== "granted") {
     return {
-      status: permission === 'denied' ? 'permission-denied' : 'permission-default',
+      status: permission === "denied" ? "permission-denied" : "permission-default",
       permission,
       pushToken: null,
       serviceWorkerReady: false,
       reason:
-        permission === 'denied'
-          ? 'Browser notifications are blocked for this site in your browser settings.'
-          : 'Notification permission was dismissed before granting.',
+        permission === "denied"
+          ? "Browser notifications are blocked for this site in your browser settings."
+          : "Notification permission was dismissed before granting.",
     };
   }
 
@@ -170,9 +170,9 @@ export async function initializeNotifications(options?: {
     serviceWorkerRegistration = await ensureNotificationServiceWorker();
   } catch (error) {
     const reason = `Service Worker registration failed: ${formatErrorReason(error)}`;
-    console.error('[WebNotifications]', reason, error);
+    console.error("[WebNotifications]", reason, error);
     return {
-      status: 'service-worker-error',
+      status: "service-worker-error",
       permission,
       pushToken: null,
       serviceWorkerReady: false,
@@ -183,10 +183,10 @@ export async function initializeNotifications(options?: {
 
   if (!app || !firebaseConfig.messagingSenderId || !firebaseConfig.appId) {
     const reason =
-      'Firebase Messaging config (NEXT_PUBLIC_FIREBASE_*) is incomplete; local browser notifications are active, background FCM push is disabled.';
-    console.info('[WebNotifications]', reason);
+      "Firebase Messaging config (NEXT_PUBLIC_FIREBASE_*) is incomplete; local browser notifications are active, background FCM push is disabled.";
+    console.info("[WebNotifications]", reason);
     return {
-      status: 'local-only-no-firebase',
+      status: "local-only-no-firebase",
       permission,
       pushToken: null,
       serviceWorkerReady: true,
@@ -197,10 +197,10 @@ export async function initializeNotifications(options?: {
   const vapidKey = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY?.trim();
   if (!vapidKey) {
     const reason =
-      'NEXT_PUBLIC_FIREBASE_VAPID_KEY is not set; live browser notifications are active, background FCM push token registration skipped.';
-    console.info('[WebNotifications]', reason);
+      "NEXT_PUBLIC_FIREBASE_VAPID_KEY is not set; live browser notifications are active, background FCM push token registration skipped.";
+    console.info("[WebNotifications]", reason);
     return {
-      status: 'local-only-no-vapid',
+      status: "local-only-no-vapid",
       permission,
       pushToken: null,
       serviceWorkerReady: true,
@@ -211,10 +211,10 @@ export async function initializeNotifications(options?: {
   try {
     const messagingClient = await getMessagingClient();
     if (!messagingClient) {
-      const reason = 'Firebase Cloud Messaging is not supported by this browser.';
-      console.error('[WebNotifications]', reason);
+      const reason = "Firebase Cloud Messaging is not supported by this browser.";
+      console.error("[WebNotifications]", reason);
       return {
-        status: 'fcm-unsupported',
+        status: "fcm-unsupported",
         permission,
         pushToken: null,
         serviceWorkerReady: true,
@@ -228,16 +228,16 @@ export async function initializeNotifications(options?: {
     });
 
     return {
-      status: 'fcm-ready',
+      status: "fcm-ready",
       permission,
       pushToken: pushToken || null,
       serviceWorkerReady: true,
     };
   } catch (error) {
     const reason = `FCM token registration failed: ${formatErrorReason(error)}`;
-    console.error('[WebNotifications]', reason, error);
+    console.error("[WebNotifications]", reason, error);
     return {
-      status: 'fcm-error',
+      status: "fcm-error",
       permission,
       pushToken: null,
       serviceWorkerReady: true,
@@ -254,22 +254,22 @@ export async function showBrowserNotification(options: {
   tag?: string;
 }): Promise<boolean> {
   if (
-    typeof window === 'undefined' ||
-    !('Notification' in window) ||
-    window.Notification.permission !== 'granted'
+    typeof window === "undefined" ||
+    !("Notification" in window) ||
+    window.Notification.permission !== "granted"
   ) {
     return false;
   }
 
-  const { title, body, link = '/', tag } = options;
+  const { title, body, link = "/", tag } = options;
 
   try {
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
       const registration = await ensureNotificationServiceWorker();
       await registration.showNotification(title, {
         body,
-        icon: '/assets/logo.png',
-        badge: '/assets/logo.png',
+        icon: "/assets/logo.png",
+        badge: "/assets/logo.png",
         tag,
         data: { link },
       });
@@ -277,15 +277,15 @@ export async function showBrowserNotification(options: {
     }
   } catch (swError) {
     console.error(
-      '[WebNotifications] Service Worker showNotification failed, falling back to Window Notification:',
-      swError
+      "[WebNotifications] Service Worker showNotification failed, falling back to Window Notification:",
+      swError,
     );
   }
 
   try {
     const notification = new window.Notification(title, {
       body,
-      icon: '/assets/logo.png',
+      icon: "/assets/logo.png",
       tag,
     });
     notification.onclick = () => {
@@ -297,14 +297,14 @@ export async function showBrowserNotification(options: {
     };
     return true;
   } catch (error) {
-    console.error('[WebNotifications] Native Notification dispatch failed:', error);
+    console.error("[WebNotifications] Native Notification dispatch failed:", error);
     return false;
   }
 }
 
 export function onMessageListener(
   onForegroundMessage?: (payload: MessagePayload) => void,
-  onSetupError?: (error: unknown) => void
+  onSetupError?: (error: unknown) => void,
 ) {
   let isActive = true;
   let unsubscribe = () => {};
@@ -324,7 +324,7 @@ export function onMessageListener(
       }
     })
     .catch((error) => {
-      console.error('[WebNotifications] Foreground FCM listener failed:', error);
+      console.error("[WebNotifications] Foreground FCM listener failed:", error);
       onSetupError?.(error);
     });
 

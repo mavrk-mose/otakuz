@@ -10,8 +10,14 @@ export default function useMangaDetails(id: string) {
   return { manga, ...query, isLoading: query.isPending && /^\d+$/.test(id) };
 }
 
-const mangaPayload = z.object({ data: z.custom<Manga>(value => mediaRecordSchema.safeParse(value).success) });
-export const mangaDetailsOptions = (id: string) => queryOptions({
-  queryKey: ["manga", id], enabled: /^\d+$/.test(id), ...apiQueryPolicy,
-  queryFn: async ({ signal }) => (await fetchJson(`/api/jikan/manga/${id}`, mangaPayload, { signal })).data,
+const mangaPayload = z.object({
+  data: z.custom<Manga>((value) => mediaRecordSchema.safeParse(value).success),
 });
+export const mangaDetailsOptions = (id: string) =>
+  queryOptions({
+    queryKey: ["manga", id],
+    enabled: /^\d+$/.test(id),
+    ...apiQueryPolicy,
+    queryFn: async ({ signal }) =>
+      (await fetchJson(`/api/jikan/manga/${id}`, mangaPayload, { signal })).data,
+  });

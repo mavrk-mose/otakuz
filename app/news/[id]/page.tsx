@@ -1,4 +1,3 @@
-
 import { I18nText } from "@/components/i18n-text";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -40,7 +39,11 @@ export async function generateMetadata({ params }: NewsArticlePageProps): Promis
     return { title: "News article not found | Otakuz" };
   }
 
-  const description = article.leadParagraph || article.summary || article.description || "Read the latest story on Otakuz.";
+  const description =
+    article.leadParagraph ||
+    article.summary ||
+    article.description ||
+    "Read the latest story on Otakuz.";
 
   return {
     title: `${article.title} | Otakuz Editorial`,
@@ -68,7 +71,13 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   const authorName = article.author?.name || article.authorName || "Justine Calma";
   const initials = article.author?.initials || getAuthorInitials(authorName);
   const labels = Array.from(
-    new Set([article.tag, article.section, ...(article.tags || ["ANIME", "PRODUCTION", "INDUSTRY"])].filter(Boolean) as string[])
+    new Set(
+      [
+        article.tag,
+        article.section,
+        ...(article.tags || ["ANIME", "PRODUCTION", "INDUSTRY"]),
+      ].filter(Boolean) as string[],
+    ),
   );
   const bodyFallback = article.leadParagraph || article.description || article.summary;
 
@@ -99,11 +108,15 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-1.5 font-mono text-xs font-semibold text-foreground transition hover:bg-muted"
           >
             <ArrowLeft className="h-3.5 w-3.5" />
-            <span><I18nText message="news.allDispatches" /></span>
+            <span>
+              <I18nText message="news.allDispatches" />
+            </span>
           </Link>
 
           <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <span className="uppercase text-rose-500 font-semibold"><I18nText message="news.editorial" /></span>
+            <span className="uppercase text-rose-500 font-semibold">
+              <I18nText message="news.editorial" />
+            </span>
             <span>{"//"}</span>
             <span>{article.readTime || "12 min read"}</span>
           </div>
@@ -161,7 +174,8 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             </div>
 
             <p className="font-mono text-[11px] tracking-wide text-muted-foreground/80">
-              {article.imageCaption || "Image: Otakuz Studio Archive / Toei Animation Reference Desk"}
+              {article.imageCaption ||
+                "Image: Otakuz Studio Archive / Toei Animation Reference Desk"}
             </p>
           </div>
 
@@ -190,7 +204,9 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                 </div>
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
-                    <span className="text-xs text-muted-foreground"><I18nText message="news.by" /></span>
+                    <span className="text-xs text-muted-foreground">
+                      <I18nText message="news.by" />
+                    </span>
                     <span className="inline-flex items-center gap-1 text-sm font-bold text-foreground">
                       <Plus className="h-3 w-3 text-emerald-500" />
                       {authorName}
@@ -204,10 +220,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             </div>
 
             {/* Social Utility Row */}
-            <ArticleActions
-              title={article.title}
-              commentsCount={article.commentsCount ?? 18}
-            />
+            <ArticleActions title={article.title} commentsCount={article.commentsCount ?? 18} />
           </div>
         </div>
       </section>
@@ -262,7 +275,9 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
             {/* Editorial "More in" Link Stack */}
             <div className="mt-8 border-t border-border pt-8">
               <div className="mb-4 flex items-center gap-2">
-                <span className="font-mono text-xs text-muted-foreground"><I18nText message="news.moreIn" /></span>
+                <span className="font-mono text-xs text-muted-foreground">
+                  <I18nText message="news.moreIn" />
+                </span>
                 <span className="text-sm font-bold text-emerald-500">
                   All the latest updates on anime production and studio pipelines
                 </span>
@@ -318,10 +333,10 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                     index === 0
                       ? "text-rose-500"
                       : index === 1
-                      ? "text-primary"
-                      : index === 2
-                      ? "text-amber-500"
-                      : "text-muted-foreground";
+                        ? "text-primary"
+                        : index === 2
+                          ? "text-amber-500"
+                          : "text-muted-foreground";
 
                   return (
                     <div key={item._id} className="flex flex-col gap-3">
@@ -361,15 +376,12 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
                   The Otakuz Dispatch
                 </span>
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  A free morning digest of the global anime, manga, and production news that matters most.
+                  A free morning digest of the global anime, manga, and production news that matters
+                  most.
                 </p>
               </div>
 
-              <form
-                className="mt-4 flex flex-col gap-2.5"
-                action="#"
-                method="POST"
-              >
+              <form className="mt-4 flex flex-col gap-2.5" action="#" method="POST">
                 <input
                   type="email"
                   name="email"

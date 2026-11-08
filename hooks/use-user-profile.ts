@@ -3,22 +3,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect, useCallback } from "react";
 import { db, auth } from "@/lib/firebase";
-import {
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  serverTimestamp,
-  onSnapshot,
-} from "firebase/firestore";
+import { doc, getDoc, setDoc, updateDoc, serverTimestamp, onSnapshot } from "firebase/firestore";
 import { updateProfile as firebaseUpdateProfile } from "firebase/auth";
 import useAuthStore from "@/store/use-auth-store";
 import { UserProfileData, UserPreferences } from "@/types/user";
-import {
-  calculateUserStats,
-  DEFAULT_PREFERENCES,
-  getRankForLevel,
-} from "@/hooks/auth/user-sync";
+import { calculateUserStats, DEFAULT_PREFERENCES, getRankForLevel } from "@/hooks/auth/user-sync";
 
 export function useUserProfile(targetUserId?: string) {
   const queryClient = useQueryClient();
@@ -71,12 +60,9 @@ export function useUserProfile(targetUserId?: string) {
           const docSnap = await getDoc(userDocRef);
           if (!docSnap.exists()) {
             const displayName =
-              currentUser.displayName ||
-              currentUser.email?.split("@")[0] ||
-              "Otaku Member";
+              currentUser.displayName || currentUser.email?.split("@")[0] || "Otaku Member";
             const username = `@${(
-              currentUser.email?.split("@")[0] ||
-              "user_" + currentUser.uid.slice(0, 5)
+              currentUser.email?.split("@")[0] || "user_" + currentUser.uid.slice(0, 5)
             ).toLowerCase()}`;
 
             const initialData: UserProfileData = {
@@ -157,7 +143,7 @@ export function useUserProfile(targetUserId?: string) {
         console.warn("Profile onSnapshot notice:", err.message);
         setError(err.message);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -184,13 +170,8 @@ export function useUserProfile(targetUserId?: string) {
       ) {
         await firebaseUpdateProfile(auth.currentUser, {
           displayName:
-            updates.displayName !== undefined
-              ? updates.displayName
-              : auth.currentUser.displayName,
-          photoURL:
-            updates.photoURL !== undefined
-              ? updates.photoURL
-              : auth.currentUser.photoURL,
+            updates.displayName !== undefined ? updates.displayName : auth.currentUser.displayName,
+          photoURL: updates.photoURL !== undefined ? updates.photoURL : auth.currentUser.photoURL,
         });
         setCurrentAuthUser({ ...auth.currentUser });
       }
@@ -198,13 +179,12 @@ export function useUserProfile(targetUserId?: string) {
       void queryClient.invalidateQueries({ queryKey: ["communityUsers"] });
       await refreshStats();
     },
-    [effectiveUserId, isOwnProfile, setCurrentAuthUser, refreshStats, queryClient]
+    [effectiveUserId, isOwnProfile, setCurrentAuthUser, refreshStats, queryClient],
   );
 
   const resetToGoogleAvatar = useCallback(async () => {
     if (!isOwnProfile || !effectiveUserId) return;
-    const googleAvatar =
-      profile?.googlePhotoURL || currentUser?.photoURL || "";
+    const googleAvatar = profile?.googlePhotoURL || currentUser?.photoURL || "";
     await updateProfileData({ photoURL: googleAvatar });
   }, [
     effectiveUserId,
@@ -218,7 +198,7 @@ export function useUserProfile(targetUserId?: string) {
     async (isPublic: boolean) => {
       await updateProfileData({ isPublic });
     },
-    [updateProfileData]
+    [updateProfileData],
   );
 
   const updatePreferences = useCallback(
@@ -231,7 +211,7 @@ export function useUserProfile(targetUserId?: string) {
       };
       await updateProfileData({ preferences: merged });
     },
-    [profile, updateProfileData]
+    [profile, updateProfileData],
   );
 
   return {

@@ -1,15 +1,15 @@
 "use client";
 import { I18nText } from "@/components/i18n-text";
 
-import { useRef, useState } from "react"
-import Image from "next/image"
-import { Images } from "lucide-react"
-import { GallerySkeleton } from '@/components/skeletons/gallery-skeleton'
-import { Card } from "@/components/ui/card"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { motion } from "framer-motion"
-import { useAnimePictures } from "@/hooks/anime/use-anime-pictures"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { Images } from "lucide-react";
+import { GallerySkeleton } from "@/components/skeletons/gallery-skeleton";
+import { Card } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { useAnimePictures } from "@/hooks/anime/use-anime-pictures";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import {
   Carousel,
   CarouselContent,
@@ -17,24 +17,24 @@ import {
   CarouselNext,
   CarouselPrevious,
   type CarouselApi,
-} from "@/components/ui/carousel"
+} from "@/components/ui/carousel";
 
 export function AnimeGallery({ id }: { id: string }) {
-  const { data: pictures, isLoading } = useAnimePictures(id)
-  const [isGalleryOpen, setIsGalleryOpen] = useState(false)
-  const [selectedIndex, setSelectedIndex] = useState(0)
-  const carouselRef = useRef<CarouselApi | null>(null)
+  const { data: pictures, isLoading } = useAnimePictures(id);
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const carouselRef = useRef<CarouselApi | null>(null);
 
-  if (isLoading) return <GallerySkeleton type="anime" />
+  if (isLoading) return <GallerySkeleton type="anime" />;
 
   if (!pictures?.length) {
-    return null
+    return null;
   }
 
   const handleOpen = (idx: number) => {
-    setSelectedIndex(idx)
-    setIsGalleryOpen(true)
-  }
+    setSelectedIndex(idx);
+    setIsGalleryOpen(true);
+  };
 
   return (
     <div className="w-full min-w-0 max-w-full space-y-3">
@@ -43,9 +43,7 @@ export function AnimeGallery({ id }: { id: string }) {
           <Images className="h-3.5 w-3.5 text-primary" />
           {pictures.length} Visual {pictures.length === 1 ? "Still" : "Stills"}
         </span>
-        <span className="text-xs text-muted-foreground">
-          Click any visual to expand
-        </span>
+        <span className="text-xs text-muted-foreground">Click any visual to expand</span>
       </div>
 
       <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border-border/70 bg-card/60">
@@ -91,7 +89,9 @@ export function AnimeGallery({ id }: { id: string }) {
       {/* Gallery Pop-up */}
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
         <DialogContent className="w-[calc(100vw-2rem)] max-w-4xl rounded-2xl border-border bg-card/95 p-3 sm:p-4 backdrop-blur-xl">
-          <DialogTitle className="sr-only"><I18nText message="anime.galleryViewer" /></DialogTitle>
+          <DialogTitle className="sr-only">
+            <I18nText message="anime.galleryViewer" />
+          </DialogTitle>
           <Carousel
             className="w-full"
             opts={{ startIndex: selectedIndex, loop: true }}
@@ -118,5 +118,5 @@ export function AnimeGallery({ id }: { id: string }) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

@@ -1,23 +1,56 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#17181f">
-  <title>You're offline | Otakuz</title>
-  <style>
-    body { margin: 0; min-height: 100dvh; display: grid; place-items: center; background: #17181f; color: #ededf2; font: 16px/1.6 system-ui, sans-serif; }
-    main { max-width: 28rem; padding: 2rem; text-align: center; }
-    img { border-radius: 1.5rem; }
-    p { color: #9ca2b3; }
-    button { border: 0; border-radius: .75rem; padding: .8rem 1.5rem; background: #ff5543; color: white; font: inherit; cursor: pointer; }
-    button:focus-visible { outline: 3px solid white; outline-offset: 4px; }
-  </style>
-</head>
-<body><main>
-  <img src="/icons/icon-192.png" width="96" height="96" alt="Otakuz">
-  <h1>You're offline</h1>
-  <p>Connect to the internet to discover anime, watch episodes, and catch up with your community.</p>
-  <button onclick="window.location.reload()">Try again</button>
-</main></body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#17181f" />
+    <title>You're offline | Otakuz</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        background: #17181f;
+        color: #ededf2;
+        font:
+          16px/1.6 system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 28rem;
+        padding: 2rem;
+        text-align: center;
+      }
+      img {
+        border-radius: 1.5rem;
+      }
+      p {
+        color: #9ca2b3;
+      }
+      button {
+        border: 0;
+        border-radius: 0.75rem;
+        padding: 0.8rem 1.5rem;
+        background: #ff5543;
+        color: white;
+        font: inherit;
+        cursor: pointer;
+      }
+      button:focus-visible {
+        outline: 3px solid white;
+        outline-offset: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/icon-192.png" width="96" height="96" alt="Otakuz" />
+      <h1>You're offline</h1>
+      <p>
+        Connect to the internet to discover anime, watch episodes, and catch up with your community.
+      </p>
+      <button onclick="window.location.reload()">Try again</button>
+    </main>
+  </body>
 </html>

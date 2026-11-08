@@ -41,8 +41,7 @@ interface PlayerStore {
   close: () => void;
 }
 
-const getErrorMessage = (error: unknown) =>
-  error instanceof Error ? error.message : error;
+const getErrorMessage = (error: unknown) => (error instanceof Error ? error.message : error);
 
 export const usePlayerStore = create<PlayerStore>((set, get) => ({
   autoPlay: false,
@@ -91,12 +90,20 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     const state = get();
     const nextIndex = state.queueIndex + 1;
     const next = state.queue[nextIndex];
-    if (!next) { set({ isPlaying: false, autoPlay: false }); return null; }
+    if (!next) {
+      set({ isPlaying: false, autoPlay: false });
+      return null;
+    }
     set({
-      currentVideoId: next.id, videoSrc: next.src,
-      title: next.title ?? "Anime video", posterUrl: next.posterUrl ?? null,
-      playerRoute: next.playerRoute ?? null, currentPlaybackTime: 0,
-      autoPlay: true, isPlaying: false, queueIndex: nextIndex,
+      currentVideoId: next.id,
+      videoSrc: next.src,
+      title: next.title ?? "Anime video",
+      posterUrl: next.posterUrl ?? null,
+      playerRoute: next.playerRoute ?? null,
+      currentPlaybackTime: 0,
+      autoPlay: true,
+      isPlaying: false,
+      queueIndex: nextIndex,
     });
     return next;
   },
@@ -136,17 +143,17 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
     }
   },
 
-  setCurrentPlaybackTime: (time) =>
-    set({ currentPlaybackTime: Math.max(0, time) }),
+  setCurrentPlaybackTime: (time) => set({ currentPlaybackTime: Math.max(0, time) }),
   setIsPlaying: (isPlaying) => set({ isPlaying }),
-  toggleMinimize: () =>
-    set((state) => ({ isMinimized: !state.isMinimized })),
+  toggleMinimize: () => set((state) => ({ isMinimized: !state.isMinimized })),
   minimize: () => set({ isMinimized: true }),
   maximize: () => set({ isMinimized: false }),
 
   close: () => {
     set({
-      autoPlay: false, queue: [], queueIndex: -1,
+      autoPlay: false,
+      queue: [],
+      queueIndex: -1,
       currentVideoId: null,
       videoSrc: null,
       title: "Anime video",

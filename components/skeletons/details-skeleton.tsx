@@ -2,11 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RecommendationsSkeleton } from "./recommendations-skeleton";
 
-export default function DetailsSkeleton({
-  type = "anime",
-}: {
-  type?: "anime" | "manga";
-}) {
+export default function DetailsSkeleton({ type = "anime" }: { type?: "anime" | "manga" }) {
   const anime = type === "anime";
   return (
     <div
@@ -15,10 +11,7 @@ export default function DetailsSkeleton({
       aria-label={`Loading ${type} details`}
     >
       <div className="grid grid-cols-1 gap-8 md:grid-cols-[280px_minmax(0,1fr)] lg:grid-cols-[340px_minmax(0,1fr)]">
-        <div
-          className="min-w-0 space-y-4 self-start lg:sticky lg:top-4"
-          aria-hidden="true"
-        >
+        <div className="min-w-0 space-y-4 self-start lg:sticky lg:top-4" aria-hidden="true">
           <Card className="overflow-hidden">
             <Skeleton className="aspect-[2/3] w-full rounded-none" />
           </Card>
@@ -71,10 +64,7 @@ export default function DetailsSkeleton({
                 <Skeleton className="mb-4 h-7 w-28" />
                 <div className="space-y-2">
                   {Array.from({ length: 5 }, (_, i) => (
-                    <Skeleton
-                      key={i}
-                      className={`h-[18px] ${i === 4 ? "w-2/3" : "w-full"}`}
-                    />
+                    <Skeleton key={i} className={`h-[18px] ${i === 4 ? "w-2/3" : "w-full"}`} />
                   ))}
                 </div>
               </Card>
@@ -82,11 +72,7 @@ export default function DetailsSkeleton({
                 {Array.from({ length: anime ? 2 : 1 }, (_, i) => (
                   <Card key={i} className={anime ? "p-4" : "p-6"}>
                     <Skeleton className="mb-2 h-6 w-32" />
-                    <div
-                      className={
-                        anime ? "space-y-2" : "grid gap-4 md:grid-cols-2"
-                      }
-                    >
+                    <div className={anime ? "space-y-2" : "grid gap-4 md:grid-cols-2"}>
                       {Array.from({ length: anime ? 5 : 2 }, (_, row) => (
                         <div key={row} className="flex gap-3">
                           <Skeleton className="h-5 w-24 shrink-0" />

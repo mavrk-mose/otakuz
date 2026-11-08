@@ -90,15 +90,12 @@ function formatRelativeTime(timestampMs: number, locale: string): string {
   const diffDay = Math.floor(diffHr / 24);
   if (diffDay < 7) return locale === "ja" ? `${diffDay}日前` : `${diffDay}d ago`;
 
-  return new Date(timestampMs).toLocaleDateString(
-    locale === "ja" ? "ja-JP" : "en-US",
-    {
-      month: "short",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-    }
-  );
+  return new Date(timestampMs).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US", {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function getDateBucket(timestampMs: number, locale: string): string {
@@ -131,7 +128,7 @@ function HistoryThumbnail({ item }: { item: WatchHistoryItem }) {
     <div
       className={cn(
         "relative h-20 w-24 shrink-0 overflow-hidden rounded-xl border border-border",
-        item.type === "channel" ? "bg-card" : "bg-muted"
+        item.type === "channel" ? "bg-card" : "bg-muted",
       )}
     >
       <Image
@@ -142,7 +139,7 @@ function HistoryThumbnail({ item }: { item: WatchHistoryItem }) {
         onError={() => setImgError(true)}
         className={cn(
           "transition-transform duration-300 group-hover:scale-105",
-          item.type === "channel" ? "object-contain p-2.5" : "object-cover"
+          item.type === "channel" ? "object-contain p-2.5" : "object-cover",
         )}
       />
     </div>
@@ -225,13 +222,9 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
   const handleRemove = async (id: string) => {
     try {
       await removeItem(id);
-      toast.success(
-        locale === "ja" ? "履歴から削除しました" : "Removed from watch history"
-      );
+      toast.success(locale === "ja" ? "履歴から削除しました" : "Removed from watch history");
     } catch {
-      toast.error(
-        locale === "ja" ? "削除に失敗しました" : "Failed to remove item"
-      );
+      toast.error(locale === "ja" ? "削除に失敗しました" : "Failed to remove item");
     }
   };
 
@@ -240,13 +233,9 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
     try {
       await clearAll();
       setConfirmClearOpen(false);
-      toast.success(
-        locale === "ja" ? "視聴履歴をすべて消去しました" : "Watch history cleared"
-      );
+      toast.success(locale === "ja" ? "視聴履歴をすべて消去しました" : "Watch history cleared");
     } catch {
-      toast.error(
-        locale === "ja" ? "履歴の消去に失敗しました" : "Failed to clear watch history"
-      );
+      toast.error(locale === "ja" ? "履歴の消去に失敗しました" : "Failed to clear watch history");
     } finally {
       setIsClearing(false);
     }
@@ -268,31 +257,53 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
         <EmptyState
           illustration="history"
           title={locale === "ja" ? "まだ履歴がありません" : "Your Watch & Activity Log is Empty"}
-          description={locale === "ja"
-            ? "アニメ、マンガ、ニュース、ライブチャンネルを開くと自動的にここへ記録され、いつでも見返すことができます。"
-            : "Anything you open across Anime, Manga, News, or Live Channels is automatically logged here so you can jump right back anytime."}
+          description={
+            locale === "ja"
+              ? "アニメ、マンガ、ニュース、ライブチャンネルを開くと自動的にここへ記録され、いつでも見返すことができます。"
+              : "Anything you open across Anime, Manga, News, or Live Channels is automatically logged here so you can jump right back anytime."
+          }
           className="py-0"
         />
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
-          <Button variant="outline" size="sm" asChild className="rounded-xl border-border bg-card hover:bg-muted">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="rounded-xl border-border bg-card hover:bg-muted"
+          >
             <Link href="/anime">
               <Tv2 className="mr-1.5 h-3.5 w-3.5 text-rose-500" />
               Anime
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild className="rounded-xl border-border bg-card hover:bg-muted">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="rounded-xl border-border bg-card hover:bg-muted"
+          >
             <Link href="/manga">
               <BookOpen className="mr-1.5 h-3.5 w-3.5 text-indigo-500" />
               Manga
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild className="rounded-xl border-border bg-card hover:bg-muted">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="rounded-xl border-border bg-card hover:bg-muted"
+          >
             <Link href="/news">
               <Newspaper className="mr-1.5 h-3.5 w-3.5 text-amber-500" />
               News
             </Link>
           </Button>
-          <Button variant="outline" size="sm" asChild className="rounded-xl border-border bg-card hover:bg-muted">
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="rounded-xl border-border bg-card hover:bg-muted"
+          >
             <Link href="/channels">
               <Radio className="mr-1.5 h-3.5 w-3.5 text-emerald-500" />
               Channels
@@ -323,7 +334,7 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
                     "inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all",
                     isActive
                       ? "border-rose-500 bg-rose-500 text-white shadow-sm"
-                      : "border-border bg-background/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+                      : "border-border bg-background/60 text-muted-foreground hover:bg-muted hover:text-foreground",
                   )}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -331,9 +342,7 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
                   <span
                     className={cn(
                       "rounded-full px-1.5 py-0.2 text-[10px]",
-                      isActive
-                        ? "bg-white/20 text-white"
-                        : "bg-muted text-muted-foreground"
+                      isActive ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
                     )}
                   >
                     {count}
@@ -417,7 +426,7 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
                           <span
                             className={cn(
                               "inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider",
-                              meta.badgeClass
+                              meta.badgeClass,
                             )}
                           >
                             <TypeIcon className="h-3 w-3" />
@@ -447,9 +456,7 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
                         </h4>
 
                         {entry.subtitle ? (
-                          <p className="truncate text-xs text-muted-foreground">
-                            {entry.subtitle}
-                          </p>
+                          <p className="truncate text-xs text-muted-foreground">{entry.subtitle}</p>
                         ) : null}
                       </div>
                     </div>
@@ -472,10 +479,7 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
                           {cardInner}
                         </a>
                       ) : (
-                        <Link
-                          href={entry.href}
-                          className="flex min-w-0 flex-1 items-center"
-                        >
+                        <Link href={entry.href} className="flex min-w-0 flex-1 items-center">
                           {cardInner}
                         </Link>
                       )}

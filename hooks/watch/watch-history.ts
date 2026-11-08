@@ -1,4 +1,3 @@
-
 import { serializeChannel } from "@/lib/query-state";
 import { auth, db } from "@/lib/firebase";
 import {
@@ -93,7 +92,7 @@ export function readLocalWatchHistory(): WatchHistoryItem[] {
             valid.sort((a, b) => b.viewedAtMs - a.viewedAtMs);
             window.localStorage.setItem(
               LOCAL_STORAGE_KEY,
-              JSON.stringify(valid.slice(0, MAX_LOCAL_ITEMS))
+              JSON.stringify(valid.slice(0, MAX_LOCAL_ITEMS)),
             );
           }
         }
@@ -111,10 +110,7 @@ export function readLocalWatchHistory(): WatchHistoryItem[] {
 function writeLocalWatchHistory(items: WatchHistoryItem[]) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(
-      LOCAL_STORAGE_KEY,
-      JSON.stringify(items.slice(0, MAX_LOCAL_ITEMS))
-    );
+    window.localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(items.slice(0, MAX_LOCAL_ITEMS)));
     window.dispatchEvent(new CustomEvent("otakuz-watch-history-updated"));
   } catch {
     // Ignore storage quota errors
@@ -127,7 +123,7 @@ function writeLocalWatchHistory(items: WatchHistoryItem[]) {
  */
 export async function recordWatchHistory(
   input: RecordWatchHistoryInput,
-  uidOverride?: string | null
+  uidOverride?: string | null,
 ): Promise<void> {
   if (typeof window === "undefined") return;
   if (!input.itemId || !input.title || !input.href) return;
@@ -151,10 +147,10 @@ export async function recordWatchHistory(
     viewCount: (prevMatch?.viewCount || 0) + 1,
   };
 
-  const updatedLocal = [
-    nextEntry,
-    ...currentLocal.filter((item) => item.id !== docId),
-  ].slice(0, MAX_LOCAL_ITEMS);
+  const updatedLocal = [nextEntry, ...currentLocal.filter((item) => item.id !== docId)].slice(
+    0,
+    MAX_LOCAL_ITEMS,
+  );
   writeLocalWatchHistory(updatedLocal);
 
   // 2. Persist in the background to Firestore for authenticated user
@@ -178,7 +174,7 @@ export async function recordWatchHistory(
         viewedAt: serverTimestamp(),
         viewCount: increment(1),
       },
-      { merge: true }
+      { merge: true },
     );
   } catch (err) {
     console.warn("Background watch history sync skipped:", err);
@@ -190,7 +186,7 @@ export async function recordWatchHistory(
  */
 export async function syncLocalHistoryToFirestore(
   uid: string,
-  existingRemoteIds: Set<string>
+  existingRemoteIds: Set<string>,
 ): Promise<void> {
   if (!uid || typeof window === "undefined") return;
   const localItems = readLocalWatchHistory();
@@ -216,7 +212,7 @@ export async function syncLocalHistoryToFirestore(
           viewedAt: serverTimestamp(),
           viewCount: item.viewCount || 1,
         },
-        { merge: true }
+        { merge: true },
       );
     }
     await batch.commit();
@@ -225,10 +221,7 @@ export async function syncLocalHistoryToFirestore(
   }
 }
 
-export async function removeWatchHistoryItem(
-  docId: string,
-  uid?: string | null
-): Promise<void> {
+export async function removeWatchHistoryItem(docId: string, uid?: string | null): Promise<void> {
   const filtered = readLocalWatchHistory().filter((item) => item.id !== docId);
   writeLocalWatchHistory(filtered);
 

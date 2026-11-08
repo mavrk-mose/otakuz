@@ -2,7 +2,6 @@
 
 import { I18nText } from "@/components/i18n-text";
 
-
 import { ProfileSkeleton } from "@/components/skeletons/profile-skeleton";
 import { useAuth } from "@/hooks/use-auth";
 import { useUserProfile } from "@/hooks/use-user-profile";
@@ -58,10 +57,20 @@ function ProfileContent() {
           <Lock className="h-10 w-10" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-black text-foreground"><I18nText message="profile.privateTitle" /></h1>
-          {targetUserId && <DirectMessageButton userId={targetUserId} displayName={profile.displayName || "Member"} />}
+          <h1 className="text-2xl font-black text-foreground">
+            <I18nText message="profile.privateTitle" />
+          </h1>
+          {targetUserId && (
+            <DirectMessageButton
+              userId={targetUserId}
+              displayName={profile.displayName || "Member"}
+            />
+          )}
           <p className="text-sm text-muted-foreground leading-relaxed">
-            <I18nText message="profile.privateDescription" values={{ name: profile.displayName || t("profile.member") }} />
+            <I18nText
+              message="profile.privateDescription"
+              values={{ name: profile.displayName || t("profile.member") }}
+            />
           </p>
         </div>
         <Button
@@ -90,9 +99,17 @@ function ProfileContent() {
             <I18nText message="common.back" />
           </Button>
           <span className="text-xs text-muted-foreground">
-            <I18nText message="profile.viewingNamed" values={{ name: profile?.displayName || t("profile.member") }} />
+            <I18nText
+              message="profile.viewingNamed"
+              values={{ name: profile?.displayName || t("profile.member") }}
+            />
           </span>
-          {targetUserId && <DirectMessageButton userId={targetUserId} displayName={profile?.displayName || "Member"} />}
+          {targetUserId && (
+            <DirectMessageButton
+              userId={targetUserId}
+              displayName={profile?.displayName || "Member"}
+            />
+          )}
         </div>
       )}
 
@@ -118,7 +135,9 @@ function ProfileContent() {
 
             <Card className="p-6 bg-card border-border shadow-xl rounded-2xl text-card-foreground">
               <h3 className="font-bold mb-4 text-xs text-muted-foreground uppercase tracking-wider flex items-center justify-between">
-                <span><I18nText message="profile.overview" /></span>
+                <span>
+                  <I18nText message="profile.overview" />
+                </span>
                 {profile?.isPublic !== undefined && (
                   <span className="flex items-center gap-1 font-semibold normal-case text-[11px] text-muted-foreground">
                     {profile.isPublic ? (
@@ -138,31 +157,41 @@ function ProfileContent() {
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-muted-foreground text-xs"><I18nText message="profile.joinedOtakuz" /></span>
+                  <span className="text-muted-foreground text-xs">
+                    <I18nText message="profile.joinedOtakuz" />
+                  </span>
                   <span className="font-semibold text-xs text-foreground">
                     {user?.metadata.creationTime?.split("T")[0] || "2024"}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-muted-foreground text-xs"><I18nText message="profile.savedBoards" /></span>
+                  <span className="text-muted-foreground text-xs">
+                    <I18nText message="profile.savedBoards" />
+                  </span>
                   <span className="font-semibold text-xs text-foreground">
                     {stats?.boardsCount ?? 0}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-muted-foreground text-xs"><I18nText message="profile.savedTitles" /></span>
+                  <span className="text-muted-foreground text-xs">
+                    <I18nText message="profile.savedTitles" />
+                  </span>
                   <span className="font-semibold text-xs text-foreground">
                     {stats?.totalSaved ?? 0}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-border">
-                  <span className="text-muted-foreground text-xs"><I18nText message="profile.visibility" /></span>
+                  <span className="text-muted-foreground text-xs">
+                    <I18nText message="profile.visibility" />
+                  </span>
                   <span className="font-semibold text-xs text-foreground">
                     {profile?.isPublic !== false ? "Public Community" : "Private (Secret)"}
                   </span>
                 </div>
                 <div className="flex justify-between py-1.5">
-                  <span className="text-muted-foreground text-xs"><I18nText message="profile.pioneerStatus" /></span>
+                  <span className="text-muted-foreground text-xs">
+                    <I18nText message="profile.pioneerStatus" />
+                  </span>
                   <span className="font-semibold text-xs text-amber-500">
                     {stats?.rank || profile?.rank || "Novice Explorer"}
                   </span>
@@ -227,9 +256,7 @@ function ProfileContent() {
 
               <TabsContent value="reviews">
                 <Card className="p-12 border-border bg-card text-center rounded-2xl">
-                  <p className="text-muted-foreground text-sm">
-                    {t("profile.reviewsComingSoon")}
-                  </p>
+                  <p className="text-muted-foreground text-sm">{t("profile.reviewsComingSoon")}</p>
                 </Card>
               </TabsContent>
             </Tabs>

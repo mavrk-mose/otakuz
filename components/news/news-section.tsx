@@ -1,7 +1,6 @@
 "use client";
 import { I18nText } from "@/components/i18n-text";
 
-
 import { NewsGridSkeleton } from "@/components/skeletons/news-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
@@ -22,10 +21,18 @@ export function NewsSection() {
   });
 
   if (isLoading) {
-    return <div className="space-y-6" aria-busy="true" aria-label={localizedT("news.loadingLatest")}>
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4"><div className="space-y-1"><Skeleton className="h-7 w-64 max-w-full sm:h-8" /><Skeleton className="h-4 w-64 max-w-full sm:h-5" /></div><Skeleton className="h-10 w-28" /></div>
-      <NewsGridSkeleton home />
-    </div>;
+    return (
+      <div className="space-y-6" aria-busy="true" aria-label={localizedT("news.loadingLatest")}>
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border pb-4">
+          <div className="space-y-1">
+            <Skeleton className="h-7 w-64 max-w-full sm:h-8" />
+            <Skeleton className="h-4 w-64 max-w-full sm:h-5" />
+          </div>
+          <Skeleton className="h-10 w-28" />
+        </div>
+        <NewsGridSkeleton home />
+      </div>
+    );
   }
 
   const items = newsList || [];
@@ -124,7 +131,9 @@ export function NewsSection() {
 
             <div className="mt-5 flex items-center justify-between border-t border-border pt-4">
               <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground">
-                <span className="text-amber-500 dark:text-amber-400 font-medium"><I18nText message="news.by" /> {featured.author_username}</span>
+                <span className="text-amber-500 dark:text-amber-400 font-medium">
+                  <I18nText message="news.by" /> {featured.author_username}
+                </span>
                 <span>•</span>
                 <span>
                   {new Date(featured.date).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US", {
@@ -141,7 +150,9 @@ export function NewsSection() {
                 onClick={() => logExternalNews(featured)}
                 className="flex items-center gap-1 font-mono text-xs font-semibold text-rose-500 hover:underline"
               >
-                <span><I18nText message="news.readDispatch" /></span>
+                <span>
+                  <I18nText message="news.readDispatch" />
+                </span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -152,7 +163,11 @@ export function NewsSection() {
         <div className="flex flex-col justify-between gap-4 lg:col-span-5">
           {sideItems.map((news: any, idx: number) => {
             const tagColor =
-              idx === 0 ? "text-rose-500" : idx === 1 ? "text-amber-500 dark:text-amber-400" : "text-indigo-500 dark:text-indigo-400";
+              idx === 0
+                ? "text-rose-500"
+                : idx === 1
+                  ? "text-amber-500 dark:text-amber-400"
+                  : "text-indigo-500 dark:text-indigo-400";
 
             return (
               <Link
@@ -165,7 +180,9 @@ export function NewsSection() {
               >
                 <div className="flex flex-1 flex-col justify-between self-stretch">
                   <div className="flex flex-col gap-1.5">
-                    <span className={`font-mono text-xs uppercase tracking-wider font-semibold ${tagColor}`}>
+                    <span
+                      className={`font-mono text-xs uppercase tracking-wider font-semibold ${tagColor}`}
+                    >
                       {news.author_username || "Anime News"}
                     </span>
                     <h4 className="line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-rose-500">

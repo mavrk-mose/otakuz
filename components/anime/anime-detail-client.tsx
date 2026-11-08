@@ -43,13 +43,10 @@ export default function AnimeDetailClient({ id }: { id: string }) {
           ]
             .filter(Boolean)
             .join(" • "),
-          image:
-            anime.images?.webp?.large_image_url ||
-            anime.images?.jpg?.large_image_url ||
-            "",
+          image: anime.images?.webp?.large_image_url || anime.images?.jpg?.large_image_url || "",
           href: `/anime/${anime.mal_id}`,
         }
-      : null
+      : null,
   );
 
   if (isLoading) {
@@ -57,7 +54,8 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   }
 
   if (!anime) {
-    if (!/^\d+$/.test(id) || (error instanceof ApiError && error.status === 404) || !error) return <MissingPage title={t("anime.notFound")} />;
+    if (!/^\d+$/.test(id) || (error instanceof ApiError && error.status === 404) || !error)
+      return <MissingPage title={t("anime.notFound")} />;
     return <ErrorState fullPage onRetry={() => void refetch()} retrying={isFetching} />;
   }
 
@@ -156,10 +154,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
               <TabsTrigger value="episodes">{t("common.episodes")}</TabsTrigger>
               <TabsTrigger value="gallery">{t("common.gallery")}</TabsTrigger>
             </TabsList>
-            <TabsContent
-              value="overview"
-              className="space-y-4 transition-opacity duration-300"
-            >
+            <TabsContent value="overview" className="space-y-4 transition-opacity duration-300">
               <Card className="p-6">
                 <h3 className="text-lg font-semibold mb-4">{t("common.synopsis")}</h3>
                 <p className="leading-relaxed">{anime.synopsis}</p>
@@ -198,8 +193,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                     <div className="flex">
                       <dt className="w-24 text-muted-foreground">{t("common.score")}</dt>
                       <dd>
-                        {anime?.score} ({anime?.scored_by?.toLocaleString()}{" "}
-                        {t("anime.users")})
+                        {anime?.score} ({anime?.scored_by?.toLocaleString()} {t("anime.users")})
                       </dd>
                     </div>
                     <div className="flex">

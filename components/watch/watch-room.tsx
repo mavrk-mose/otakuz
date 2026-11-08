@@ -24,8 +24,7 @@ export function WatchPartyRoom({
   onLeave,
 }: WatchPartyRoomProps) {
   const { t } = useI18n();
-  const { state, isLoading, wsSend, connectionStatus } =
-    useWatchPartyRoom(roomId);
+  const { state, isLoading, wsSend, connectionStatus } = useWatchPartyRoom(roomId);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isHost, setIsHost] = useState(false);
   const [isSeeking, setIsSeeking] = useState(false);
@@ -181,11 +180,7 @@ export function WatchPartyRoom({
                     }
                   }}
                 >
-                  {state?.isPlaying ? (
-                    <Pause className="h-4 w-4" />
-                  ) : (
-                    <Play className="h-4 w-4" />
-                  )}
+                  {state?.isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
                 </Button>
               </div>
 
@@ -197,9 +192,7 @@ export function WatchPartyRoom({
                     <Button
                       key={rate}
                       size="sm"
-                      variant={
-                        state?.playbackRate === rate ? "default" : "outline"
-                      }
+                      variant={state?.playbackRate === rate ? "default" : "outline"}
                       onClick={() => handlePlaybackRateChange(rate)}
                       className="flex-1"
                     >

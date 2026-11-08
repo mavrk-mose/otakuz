@@ -1,13 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  collection,
-  limit,
-  onSnapshot,
-  orderBy,
-  query,
-} from "firebase/firestore";
+import { collection, limit, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/hooks/use-auth";
 import {
@@ -140,7 +134,7 @@ export function useWatchHistory(targetUserId?: string) {
       (err) => {
         console.warn("Watch history listener notice:", err.message);
         setLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -167,7 +161,7 @@ export function useWatchHistory(targetUserId?: string) {
       setLocalItems((prev) => prev.filter((item) => item.id !== docId));
       await removeWatchHistoryItem(docId, user?.uid);
     },
-    [user?.uid]
+    [user?.uid],
   );
 
   const clearAll = useCallback(async () => {

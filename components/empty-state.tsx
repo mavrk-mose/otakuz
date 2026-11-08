@@ -44,10 +44,7 @@ export function EmptyState({
     >
       <div
         aria-hidden="true"
-        className={cn(
-          "relative isolate mb-5 shrink-0",
-          compact ? "w-32 sm:w-36" : "w-44 sm:w-52",
-        )}
+        className={cn("relative isolate mb-5 shrink-0", compact ? "w-32 sm:w-36" : "w-44 sm:w-52")}
       >
         <div className="absolute inset-4 -z-10 rounded-full bg-primary/10 blur-2xl" />
         <div className="absolute inset-2 -z-10 rounded-full border border-dashed border-primary/15" />
@@ -81,9 +78,7 @@ export function EmptyState({
         </p>
       )}
       {action && (
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
-          {action}
-        </div>
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-2">{action}</div>
       )}
     </div>
   );

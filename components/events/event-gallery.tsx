@@ -82,7 +82,9 @@ export function Gallery({ gallery }: EventGalleryProps) {
 
       <Dialog open={isGalleryOpen} onOpenChange={setIsGalleryOpen}>
         <DialogContent className="w-[calc(100vw-2rem)] max-w-3xl rounded-2xl border-border bg-card/95 p-3 sm:p-4 backdrop-blur-xl">
-          <DialogTitle className="sr-only"><I18nText message="events.galleryViewer" /></DialogTitle>
+          <DialogTitle className="sr-only">
+            <I18nText message="events.galleryViewer" />
+          </DialogTitle>
           <Carousel
             className="w-full"
             opts={{ startIndex: selectedIndex, loop: true }}

@@ -23,10 +23,7 @@ export function HistorySkeleton() {
           <Skeleton className="h-px flex-1" />
         </div>
         {Array.from({ length: 4 }, (_, i) => (
-          <Card
-            key={i}
-            className="flex items-center gap-4 rounded-2xl border-border p-3 sm:p-4"
-          >
+          <Card key={i} className="flex items-center gap-4 rounded-2xl border-border p-3 sm:p-4">
             <Skeleton className="h-20 w-24 shrink-0 rounded-xl" />
             <div className="flex-1 space-y-1">
               <Skeleton className="h-5 w-24" />

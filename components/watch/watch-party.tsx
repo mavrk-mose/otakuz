@@ -26,11 +26,7 @@ interface WatchPartyProps {
   videoUrl: string;
 }
 
-export function WatchParty({
-  animeTitle,
-  episodeNumber,
-  videoUrl,
-}: WatchPartyProps) {
+export function WatchParty({ animeTitle, episodeNumber, videoUrl }: WatchPartyProps) {
   const { t } = useI18n();
   const [showDialog, setShowDialog] = useState(false);
   const [currentRoomId, setCurrentRoomId] = useState<string | null>(null);
@@ -225,4 +221,3 @@ function RoomSelector({
     </div>
   );
 }
-

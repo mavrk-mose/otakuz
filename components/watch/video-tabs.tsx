@@ -32,14 +32,9 @@ function VideoThumbnail({ images, youtubeId, title }: VideoThumbnailProps) {
       images?.image_url,
       images?.small_image_url,
       images?.maximum_image_url,
-    ].filter(
-      (source): source is string =>
-        typeof source === "string" && source.trim().length > 0
-    );
+    ].filter((source): source is string => typeof source === "string" && source.trim().length > 0);
 
-    return candidates.filter(
-      (source, index) => candidates.indexOf(source) === index
-    );
+    return candidates.filter((source, index) => candidates.indexOf(source) === index);
   }, [
     images?.image_url,
     images?.large_image_url,
@@ -94,10 +89,12 @@ export default function VideoTabs({
   const { t } = useI18n();
   if (!animeVideos) return null;
 
-  const promo = animeVideos.promo.filter(video => !!video.trailer?.embed_url);
-  const music_videos = animeVideos.music_videos.filter(video => !!video.video?.embed_url);
+  const promo = animeVideos.promo.filter((video) => !!video.trailer?.embed_url);
+  const music_videos = animeVideos.music_videos.filter((video) => !!video.video?.embed_url);
   if (!promo.length && !music_videos.length) return null;
-  const selectedTab = music_videos.some(video => video.video.embed_url === selectedVideoUrl) ? "music" : "promo";
+  const selectedTab = music_videos.some((video) => video.video.embed_url === selectedVideoUrl)
+    ? "music"
+    : "promo";
 
   return (
     <div className="border-b bg-muted/40 p-4">
@@ -105,7 +102,9 @@ export default function VideoTabs({
         {/* TAB LABELS */}
         <TabsList className="mb-4 bg-muted">
           {promo.length > 0 && <TabsTrigger value="promo">{t("watch.promos")}</TabsTrigger>}
-          {music_videos.length > 0 && <TabsTrigger value="music">{t("watch.musicVideos")}</TabsTrigger>}
+          {music_videos.length > 0 && (
+            <TabsTrigger value="music">{t("watch.musicVideos")}</TabsTrigger>
+          )}
         </TabsList>
 
         {/* PROMOS TAB */}
@@ -121,7 +120,7 @@ export default function VideoTabs({
                     "cursor-pointer border bg-card p-2 transition-colors",
                     url === selectedVideoUrl
                       ? "border-primary shadow-md"
-                      : "border-border hover:bg-accent"
+                      : "border-border hover:bg-accent",
                   )}
                 >
                   <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">
@@ -151,7 +150,7 @@ export default function VideoTabs({
                     "cursor-pointer border bg-card p-2 transition-colors",
                     url === selectedVideoUrl
                       ? "border-primary shadow-md"
-                      : "border-border hover:bg-accent"
+                      : "border-border hover:bg-accent",
                   )}
                 >
                   <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">

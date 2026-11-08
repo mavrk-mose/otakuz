@@ -2,7 +2,6 @@
 
 import { I18nText } from "@/components/i18n-text";
 
-
 import { useState } from "react";
 import { User } from "firebase/auth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,19 +46,15 @@ export function UserProfileCard({
   // Derived values from Firestore profile or fallback to Firebase Auth user
   const effectiveDisplayName =
     profile?.displayName || user?.displayName || user?.email?.split("@")[0] || "Otaku Member";
-  const effectiveUsername =
-    profile?.username ||
-    `@${user?.email?.split("@")[0] || "user"}`;
-  const effectivePhotoURL =
-    profile?.photoURL || user?.photoURL || undefined;
+  const effectiveUsername = profile?.username || `@${user?.email?.split("@")[0] || "user"}`;
+  const effectivePhotoURL = profile?.photoURL || user?.photoURL || undefined;
   const effectiveLevel = profile?.level || level;
   const effectiveRank = profile?.rank || rank;
   const effectiveWatchedCount = profile?.watchedCount ?? watchedCount;
   const effectiveReadingCount = profile?.readingCount ?? readingCount;
   const effectiveTotalExp = profile?.totalExp ?? totalExp;
   const effectiveBio = profile?.bio;
-  const effectiveIsPublic =
-    profile?.isPublic !== undefined ? profile.isPublic : true;
+  const effectiveIsPublic = profile?.isPublic !== undefined ? profile.isPublic : true;
 
   return (
     <Card className="relative overflow-hidden bg-card border-border p-6 shadow-2xl text-card-foreground rounded-2xl">
@@ -97,9 +92,7 @@ export function UserProfileCard({
               </span>
             </div>
 
-            <p className="text-xs font-semibold text-muted-foreground">
-              {effectiveUsername}
-            </p>
+            <p className="text-xs font-semibold text-muted-foreground">{effectiveUsername}</p>
 
             <div className="flex items-center gap-2 pt-0.5">
               <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-500">
@@ -133,7 +126,9 @@ export function UserProfileCard({
             title={localizedT("profile.shareChat")}
           >
             <Share2 className="h-4 w-4" />
-            <span className="sr-only"><I18nText message="profile.shareProfile" /></span>
+            <span className="sr-only">
+              <I18nText message="profile.shareProfile" />
+            </span>
           </Button>
 
           {isOwnProfile && (
@@ -145,7 +140,9 @@ export function UserProfileCard({
               title={localizedT("profile.settingsTitle")}
             >
               <Settings className="h-4 w-4" />
-              <span className="sr-only"><I18nText message="profile.settingsLabel" /></span>
+              <span className="sr-only">
+                <I18nText message="profile.settingsLabel" />
+              </span>
             </Button>
           )}
         </div>
@@ -162,21 +159,15 @@ export function UserProfileCard({
       <div className="mt-5 grid grid-cols-3 gap-2 rounded-xl border border-border bg-muted/30 p-4 text-center">
         <div className="space-y-1">
           <p className="text-xl font-black text-foreground">{effectiveWatchedCount}</p>
-          <p className="text-[11px] font-medium text-muted-foreground">
-            {t("profile.watched")}
-          </p>
+          <p className="text-[11px] font-medium text-muted-foreground">{t("profile.watched")}</p>
         </div>
         <div className="space-y-1 border-x border-border px-2">
           <p className="text-xl font-black text-foreground">{effectiveReadingCount}</p>
-          <p className="text-[11px] font-medium text-muted-foreground">
-            {t("profile.reading")}
-          </p>
+          <p className="text-[11px] font-medium text-muted-foreground">{t("profile.reading")}</p>
         </div>
         <div className="space-y-1">
           <p className="text-xl font-black text-foreground">{effectiveTotalExp}</p>
-          <p className="text-[11px] font-medium text-muted-foreground">
-            {t("profile.totalExp")}
-          </p>
+          <p className="text-[11px] font-medium text-muted-foreground">{t("profile.totalExp")}</p>
         </div>
       </div>
 

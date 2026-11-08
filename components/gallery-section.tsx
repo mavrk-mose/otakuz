@@ -20,9 +20,7 @@ export function GallerySection() {
   const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
     queryKey: ["galleryImages"],
     queryFn: async ({ pageParam = 1 }) => {
-      const response = await fetch(
-        `/api/jikan/anime/1/pictures?page=${pageParam}`,
-      );
+      const response = await fetch(`/api/jikan/anime/1/pictures?page=${pageParam}`);
       if (!response.ok) throw new Error("Failed to fetch gallery images");
       const data = await response.json();
       return data;
@@ -60,9 +58,7 @@ export function GallerySection() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold mb-2">{t("common.gallery")}</h2>
-          <p className="text-muted-foreground">
-            {t("home.galleryDescription")}
-          </p>
+          <p className="text-muted-foreground">{t("home.galleryDescription")}</p>
         </div>
         <Button variant="ghost" asChild>
           <Link href="/gallery" className="gap-2">
@@ -79,11 +75,7 @@ export function GallerySection() {
       >
         {data?.pages.map((page) =>
           page.data.slice(0, 8).map((image: any, index: number) => (
-            <motion.div
-              key={index}
-              variants={item}
-              className="relative aspect-square group"
-            >
+            <motion.div key={index} variants={item} className="relative aspect-square group">
               <Card className="overflow-hidden w-full h-full">
                 <Image
                   src={image.webp.image_url}

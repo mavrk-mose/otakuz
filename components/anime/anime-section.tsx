@@ -5,7 +5,7 @@ import { EmptyState } from "@/components/empty-state";
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useQuery } from "@tanstack/react-query";
 import { getTopAnime } from "@/hooks/anime/use-fetch-anime";
-import { MediaCardSkeleton } from '@/components/skeletons/media-card-skeleton';
+import { MediaCardSkeleton } from "@/components/skeletons/media-card-skeleton";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -18,7 +18,13 @@ import type { TopAnime } from "@/types/anime";
 
 export function AnimeSection() {
   const { t } = useI18n();
-  const { data: animeList, isPending: isLoading, isPaused, isError, refetch } = useQuery<TopAnime[]>({
+  const {
+    data: animeList,
+    isPending: isLoading,
+    isPaused,
+    isError,
+    refetch,
+  } = useQuery<TopAnime[]>({
     queryKey: ["topAnime"],
     queryFn: () => getTopAnime(),
   });
@@ -48,7 +54,11 @@ export function AnimeSection() {
           </h2>
           <p className="text-sm text-muted-foreground">{t("home.popularAnimeDescription")}</p>
         </div>
-        <Button variant="outline" asChild className="border-border bg-card/80 text-foreground hover:border-primary/60 hover:text-primary">
+        <Button
+          variant="outline"
+          asChild
+          className="border-border bg-card/80 text-foreground hover:border-primary/60 hover:text-primary"
+        >
           <Link href="/anime" className="gap-2">
             {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
           </Link>
@@ -71,13 +81,25 @@ export function AnimeSection() {
             <MediaCardSkeleton count={8} variant="home-anime" />
           </>
         ) : isError && !animeList?.length ? (
-          <ErrorState className="col-span-full" title={t("home.animeLoadError")} onRetry={() => void refetch()} />
+          <ErrorState
+            className="col-span-full"
+            title={t("home.animeLoadError")}
+            onRetry={() => void refetch()}
+          />
         ) : !animeList?.length ? (
-          <EmptyState className="col-span-full" illustration="collection" title={t("home.noTopAnime")} />
+          <EmptyState
+            className="col-span-full"
+            illustration="collection"
+            title={t("home.noTopAnime")}
+          />
         ) : (
           animeList?.slice(0, 8).map((anime) => (
-              <motion.div key={anime.mal_id} variants={item}>
-                <AnimeHoverPreview animeId={anime.mal_id} title={anime.title} poster={anime.imageUrl || undefined}>
+            <motion.div key={anime.mal_id} variants={item}>
+              <AnimeHoverPreview
+                animeId={anime.mal_id}
+                title={anime.title}
+                poster={anime.imageUrl || undefined}
+              >
                 <Card className="media-card-surface group overflow-hidden">
                   <div className="relative aspect-[2/3] bg-muted">
                     {anime.imageUrl && (
@@ -101,8 +123,13 @@ export function AnimeSection() {
                   <div className="space-y-3 p-4">
                     <div className="flex items-center gap-2">
                       <Star className="h-4 w-4 fill-current text-[#f59e0b]" />
-                      <span className="text-sm font-medium text-foreground">{anime.score ?? "N/A"}</span>
-                      <Badge variant="secondary" className="ml-auto border border-secondary/30 bg-secondary/10 text-secondary-foreground">
+                      <span className="text-sm font-medium text-foreground">
+                        {anime.score ?? "N/A"}
+                      </span>
+                      <Badge
+                        variant="secondary"
+                        className="ml-auto border border-secondary/30 bg-secondary/10 text-secondary-foreground"
+                      >
                         {anime.episodes ?? "?"} EP
                       </Badge>
                     </div>
@@ -117,9 +144,9 @@ export function AnimeSection() {
                     </p>
                   </div>
                 </Card>
-                </AnimeHoverPreview>
-              </motion.div>
-            ))
+              </AnimeHoverPreview>
+            </motion.div>
+          ))
         )}
       </motion.div>
     </section>

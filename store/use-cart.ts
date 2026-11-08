@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import {Product} from "@/types/shop";
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { Product } from "@/types/shop";
 
 interface CartStore {
   items: Product[];
@@ -36,14 +36,12 @@ export const useCart = create<CartStore>()(
         })),
       updateQuantity: (productId, quantity) =>
         set((state) => ({
-          items: state.items.map((item) =>
-            item._id === productId ? { ...item, quantity } : item
-          ),
+          items: state.items.map((item) => (item._id === productId ? { ...item, quantity } : item)),
         })),
       clearCart: () => set({ items: [], totalItems: 0 }),
     }),
     {
-      name: 'cart-storage',
-    }
-  )
+      name: "cart-storage",
+    },
+  ),
 );

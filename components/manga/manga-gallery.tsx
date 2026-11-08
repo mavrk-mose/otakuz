@@ -1,14 +1,14 @@
 "use client";
 import { I18nText } from "@/components/i18n-text";
 
-import { useState, useRef } from "react"
-import Image from "next/image"
-import { Images } from "lucide-react"
-import { GallerySkeleton } from '@/components/skeletons/gallery-skeleton'
-import { Card } from "@/components/ui/card"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { motion } from "framer-motion"
-import { useMangaPictures } from "@/hooks/manga/use-manga-pictures"
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { Images } from "lucide-react";
+import { GallerySkeleton } from "@/components/skeletons/gallery-skeleton";
+import { Card } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { motion } from "framer-motion";
+import { useMangaPictures } from "@/hooks/manga/use-manga-pictures";
 import {
   Carousel,
   CarouselContent,
@@ -16,25 +16,25 @@ import {
   CarouselPrevious,
   CarouselNext,
   type CarouselApi,
-} from "@/components/ui/carousel"
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+} from "@/components/ui/carousel";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 
 export function MangaGallery({ id }: { id: string }) {
-  const { data: pictures, isLoading } = useMangaPictures(id)
-  const [openDialog, setOpenDialog] = useState(false)
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0)
-  const carouselRef = useRef<CarouselApi | null>(null)
+  const { data: pictures, isLoading } = useMangaPictures(id);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const carouselRef = useRef<CarouselApi | null>(null);
 
-  if (isLoading) return <GallerySkeleton type="manga" />
+  if (isLoading) return <GallerySkeleton type="manga" />;
 
   if (!pictures?.length) {
-    return null
+    return null;
   }
 
   const handleImageClick = (index: number) => {
-    setSelectedImageIndex(index)
-    setOpenDialog(true)
-  }
+    setSelectedImageIndex(index);
+    setOpenDialog(true);
+  };
 
   return (
     <div className="w-full min-w-0 max-w-full space-y-3">
@@ -43,16 +43,11 @@ export function MangaGallery({ id }: { id: string }) {
           <Images className="h-3.5 w-3.5 text-primary" />
           {pictures.length} Cover & Artwork {pictures.length === 1 ? "Plate" : "Plates"}
         </span>
-        <span className="text-xs text-muted-foreground">
-          Click any cover to expand
-        </span>
+        <span className="text-xs text-muted-foreground">Click any cover to expand</span>
       </div>
 
       <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border-border/70 bg-card/60">
-        <ScrollArea
-          className="w-full min-w-0 max-w-full"
-          scrollStep={360}
-        >
+        <ScrollArea className="w-full min-w-0 max-w-full" scrollStep={360}>
           <div className="flex w-max items-center px-8 py-9 sm:px-12 sm:py-10">
             {pictures.map((picture: any, idx: number) => (
               <motion.div
@@ -93,12 +88,14 @@ export function MangaGallery({ id }: { id: string }) {
 
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
         <DialogContent className="w-[calc(100vw-2rem)] max-w-4xl rounded-2xl border-border bg-card/95 p-3 sm:p-4 backdrop-blur-xl">
-          <DialogTitle className="sr-only"><I18nText message="manga.galleryViewer" /></DialogTitle>
+          <DialogTitle className="sr-only">
+            <I18nText message="manga.galleryViewer" />
+          </DialogTitle>
           <Carousel
             className="w-full"
             opts={{ startIndex: selectedImageIndex, loop: true }}
             setApi={(api) => {
-              carouselRef.current = api
+              carouselRef.current = api;
             }}
           >
             <CarouselContent>
@@ -126,5 +123,5 @@ export function MangaGallery({ id }: { id: string }) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

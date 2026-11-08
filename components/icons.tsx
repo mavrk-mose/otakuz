@@ -1,9 +1,4 @@
-import {
-  Loader2,
-  Facebook,
-  Mail,
-  type Icon as LucideIcon,
-} from "lucide-react"
+import { Loader2, Facebook, Mail, type Icon as LucideIcon } from "lucide-react";
 
 export const Icons = {
   spinner: Loader2,
@@ -26,4 +21,4 @@ export const Icons = {
   ),
   facebook: Facebook,
   mail: Mail,
-}
+};

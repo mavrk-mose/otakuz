@@ -7,12 +7,8 @@ export function NewsGridSkeleton({ home = false }: { home?: boolean }) {
         <div>
           <Skeleton className="aspect-[16/10] w-full rounded-xl" />
           <div className="mt-4 space-y-2">
-            <Skeleton
-              className={home ? "h-7 w-full sm:h-8" : "h-8 w-full sm:h-9"}
-            />
-            <Skeleton
-              className={home ? "h-7 w-4/5 sm:h-8" : "h-8 w-4/5 sm:h-9"}
-            />
+            <Skeleton className={home ? "h-7 w-full sm:h-8" : "h-8 w-full sm:h-9"} />
+            <Skeleton className={home ? "h-7 w-4/5 sm:h-8" : "h-8 w-4/5 sm:h-9"} />
             <div className="space-y-1">
               <Skeleton className="h-5 w-full" />
               <Skeleton className="h-5 w-3/4" />
@@ -40,9 +36,7 @@ export function NewsGridSkeleton({ home = false }: { home?: boolean }) {
               </div>
               <Skeleton className="mt-3 h-4 w-24" />
             </div>
-            <Skeleton
-              className={`${home ? "h-20" : "h-24"} w-24 shrink-0 rounded-xl`}
-            />
+            <Skeleton className={`${home ? "h-20" : "h-24"} w-24 shrink-0 rounded-xl`} />
           </div>
         ))}
       </div>

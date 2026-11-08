@@ -79,9 +79,7 @@ export const useGlobalSearchStore = create<GlobalSearchState>()(
           return {
             recentSearches: [
               clean,
-              ...state.recentSearches.filter(
-                (item) => item.toLowerCase() !== clean.toLowerCase()
-              ),
+              ...state.recentSearches.filter((item) => item.toLowerCase() !== clean.toLowerCase()),
             ].slice(0, 6),
           };
         }),
@@ -98,6 +96,6 @@ export const useGlobalSearchStore = create<GlobalSearchState>()(
         enabledCategories: state.enabledCategories,
         recentSearches: state.recentSearches,
       }),
-    }
-  )
+    },
+  ),
 );

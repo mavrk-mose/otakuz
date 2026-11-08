@@ -2,13 +2,7 @@
 
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import React, { useCallback, useEffect, useRef } from "react";
-import {
-  animate,
-  motion,
-  PanInfo,
-  useMotionValue,
-  useTransform,
-} from "framer-motion";
+import { animate, motion, PanInfo, useMotionValue, useTransform } from "framer-motion";
 import Image from "next/image";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -45,11 +39,7 @@ export function SwipableAnimeCard({
 }: SwipableAnimeCardProps) {
   const x = useMotionValue(0);
   const topCardRotation = useTransform(x, [-500, 0, 500], [-14, 0, 14]);
-  const topCardOpacity = useTransform(
-    x,
-    [-700, -150, 0, 150, 700],
-    [0, 0.85, 1, 0.85, 0]
-  );
+  const topCardOpacity = useTransform(x, [-700, -150, 0, 150, 700], [0, 0.85, 1, 0.85, 0]);
   const isLeaving = useRef(false);
   const lastHandledRequest = useRef<number | null>(null);
 
@@ -60,10 +50,8 @@ export function SwipableAnimeCard({
       isLeaving.current = true;
       onSwipeStart();
 
-      const viewportWidth =
-        typeof window === "undefined" ? 1000 : window.innerWidth;
-      const destination =
-        direction === "right" ? viewportWidth * 1.25 : viewportWidth * -1.25;
+      const viewportWidth = typeof window === "undefined" ? 1000 : window.innerWidth;
+      const destination = direction === "right" ? viewportWidth * 1.25 : viewportWidth * -1.25;
 
       await animate(x, destination, {
         duration: 0.22,
@@ -71,7 +59,7 @@ export function SwipableAnimeCard({
       });
       onSwipe(direction);
     },
-    [index, onSwipe, onSwipeStart, x]
+    [index, onSwipe, onSwipeStart, x],
   );
 
   useEffect(() => {
@@ -147,48 +135,54 @@ export function SwipableAnimeCard({
         pointerEvents: index === 0 ? "auto" : "none",
       }}
     >
-      <AnimeHoverPreview animeId={anime.mal_id} title={anime.title} poster={anime.images.webp.large_image_url} className="h-full" enabled={index === 0}>
-      <Card className="w-full h-full overflow-hidden bg-card shadow-xl select-none">
-        <div className="relative w-full h-full">
-          <Image
-            src={anime.images.webp.large_image_url}
-            alt={anime.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 576px"
-            className="object-cover pointer-events-none"
-            priority={index === 0}
-            draggable={false}
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
-          <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8">
-            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-4">
-              {anime.title}
-            </h2>
-            <div className="flex justify-between items-center mb-2 md:mb-4">
-              <div className="flex items-center">
-                <Star className="w-5 h-5 md:w-6 md:h-6 text-yellow-400 mr-1" />
-                <span className="text-white font-semibold text-lg md:text-xl">
-                  {anime.score?.toFixed(1) || "N/A"}
+      <AnimeHoverPreview
+        animeId={anime.mal_id}
+        title={anime.title}
+        poster={anime.images.webp.large_image_url}
+        className="h-full"
+        enabled={index === 0}
+      >
+        <Card className="w-full h-full overflow-hidden bg-card shadow-xl select-none">
+          <div className="relative w-full h-full">
+            <Image
+              src={anime.images.webp.large_image_url}
+              alt={anime.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 576px"
+              className="object-cover pointer-events-none"
+              priority={index === 0}
+              draggable={false}
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/80" />
+            <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8">
+              <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-4">
+                {anime.title}
+              </h2>
+              <div className="flex justify-between items-center mb-2 md:mb-4">
+                <div className="flex items-center">
+                  <Star className="w-5 h-5 md:w-6 md:h-6 text-yellow-400 mr-1" />
+                  <span className="text-white font-semibold text-lg md:text-xl">
+                    {anime.score?.toFixed(1) || "N/A"}
+                  </span>
+                </div>
+                <span className="text-white text-lg md:text-xl">
+                  {anime.episodes || "Unknown"} episodes
                 </span>
               </div>
-              <span className="text-white text-lg md:text-xl">
-                {anime.episodes || "Unknown"} episodes
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {anime.genres.map((genre) => (
-                <Badge
-                  key={genre.mal_id}
-                  variant="secondary"
-                  className="text-sm md:text-base bg-black/50 hover:bg-black/60"
-                >
-                  {genre.name}
-                </Badge>
-              ))}
+              <div className="flex flex-wrap gap-2">
+                {anime.genres.map((genre) => (
+                  <Badge
+                    key={genre.mal_id}
+                    variant="secondary"
+                    className="text-sm md:text-base bg-black/50 hover:bg-black/60"
+                  >
+                    {genre.name}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>
       </AnimeHoverPreview>
     </motion.div>
   );

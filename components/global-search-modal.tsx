@@ -4,7 +4,6 @@ import { Command } from "cmdk";
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import { ErrorState } from "@/components/page-state";
 import { EmptyState } from "@/components/empty-state";
 
@@ -31,11 +30,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -45,10 +40,7 @@ import {
   type SearchScopeTab,
   useGlobalSearchStore,
 } from "@/store/use-global-search-store";
-import {
-  type GlobalSearchItem,
-  useGlobalSearch,
-} from "@/hooks/search/use-global-search";
+import { type GlobalSearchItem, useGlobalSearch } from "@/hooks/search/use-global-search";
 
 const CATEGORY_CONFIG: Record<
   GlobalSearchCategory,
@@ -155,7 +147,7 @@ function ResultThumbnail({ item }: { item: GlobalSearchItem }) {
       <div
         className={cn(
           "flex h-11 w-11 shrink-0 items-center justify-center border border-border bg-muted/60 text-muted-foreground",
-          item.category === "users" ? "rounded-full" : "rounded-xl"
+          item.category === "users" ? "rounded-full" : "rounded-xl",
         )}
       >
         <Icon className="h-4 w-4" />
@@ -168,7 +160,7 @@ function ResultThumbnail({ item }: { item: GlobalSearchItem }) {
       className={cn(
         "relative h-11 w-11 shrink-0 overflow-hidden border border-border",
         item.category === "users" ? "rounded-full bg-muted" : "rounded-xl",
-        item.category === "channels" ? "bg-card" : "bg-muted"
+        item.category === "channels" ? "bg-card" : "bg-muted",
       )}
     >
       <Image
@@ -177,9 +169,7 @@ function ResultThumbnail({ item }: { item: GlobalSearchItem }) {
         fill
         sizes="44px"
         onError={() => setFailed(true)}
-        className={cn(
-          item.category === "channels" ? "object-contain p-1.5" : "object-cover"
-        )}
+        className={cn(item.category === "channels" ? "object-contain p-1.5" : "object-cover")}
       />
     </div>
   );
@@ -211,12 +201,13 @@ export function GlobalSearchModal() {
   const pointerModifiers = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const { sections, flatItems, isAnyFetching, isAllSettledEmpty, retryFailedSearch } = useGlobalSearch({
-    rawQuery: query,
-    isOpen,
-    focusedCategory,
-    enabledCategories,
-  });
+  const { sections, flatItems, isAnyFetching, isAllSettledEmpty, retryFailedSearch } =
+    useGlobalSearch({
+      rawQuery: query,
+      isOpen,
+      focusedCategory,
+      enabledCategories,
+    });
 
   const visibleScopeTabs = useMemo<SearchScopeTab[]>(() => {
     return ["all", ...ALL_SEARCH_CATEGORIES.filter((c) => enabledCategories.includes(c))];
@@ -248,13 +239,7 @@ export function GlobalSearchModal() {
         return;
       }
 
-      if (
-        !isOpen &&
-        event.key === "/" &&
-        !event.metaKey &&
-        !event.ctrlKey &&
-        !event.altKey
-      ) {
+      if (!isOpen && event.key === "/" && !event.metaKey && !event.ctrlKey && !event.altKey) {
         const target = event.target as HTMLElement | null;
         const tagName = target?.tagName?.toLowerCase();
         const isEditable =
@@ -304,15 +289,19 @@ export function GlobalSearchModal() {
         router.push(item.href);
       }
     },
-    [addRecentSearch, closeSearch, router, setQuery, trimmedQuery]
+    [addRecentSearch, closeSearch, router, setQuery, trimmedQuery],
   );
 
   const handleModalKeyDown = (event: React.KeyboardEvent) => {
     pointerModifiers.current = false;
     // cmdk owns arrows, Ctrl+N/P, Enter, selection, and scrolling.
     if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
-      const selected = navigableItems.find(item => item.id === activeItemId);
-      if (selected) { event.preventDefault(); event.stopPropagation(); handleSelectItem(selected, true); }
+      const selected = navigableItems.find((item) => item.id === activeItemId);
+      if (selected) {
+        event.preventDefault();
+        event.stopPropagation();
+        handleSelectItem(selected, true);
+      }
       return;
     }
     // Cycle Scope Tabs: Tab / Shift+Tab
@@ -355,463 +344,506 @@ export function GlobalSearchModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => (open ? openSearch() : closeSearch())}>
-      <DialogContent
-        className="max-w-2xl gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 text-foreground shadow-2xl [&>button]:hidden"
-      >
-        <Command shouldFilter={false} loop value={activeItemId} onValueChange={setActiveItemId} onKeyDown={handleModalKeyDown}>
-        <DialogTitle className="sr-only"><I18nText message="search.global" /></DialogTitle>
+      <DialogContent className="max-w-2xl gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 text-foreground shadow-2xl [&>button]:hidden">
+        <Command
+          shouldFilter={false}
+          loop
+          value={activeItemId}
+          onValueChange={setActiveItemId}
+          onKeyDown={handleModalKeyDown}
+        >
+          <DialogTitle className="sr-only">
+            <I18nText message="search.global" />
+          </DialogTitle>
 
-        {/* Top Search Input Row */}
-        <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
-          {isAnyFetching ? (
-            <Loader2 className="h-5 w-5 shrink-0 animate-spin text-rose-500" />
-          ) : (
-            <SearchIcon className="h-5 w-5 shrink-0 text-muted-foreground" />
-          )}
-
-          <Command.Input
-            ref={inputRef}
-            value={query}
-            onValueChange={setQuery}
-            placeholder={localizedT("search.globalPlaceholder")}
-            aria-label={localizedT("search.queryLabel")}
-            className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground sm:text-base"
-          />
-
-          {query && (
-            <button
-              type="button"
-              onClick={() => {
-                setQuery("");
-                inputRef.current?.focus();
-              }}
-              aria-label={localizedT("search.clearQuery")}
-              className="rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
-
-          <Button
-            type="button"
-            variant={showScopeCustomizer ? "default" : "outline"}
-            size="sm"
-            onClick={() => setShowScopeCustomizer((prev) => !prev)}
-            title={localizedT("search.customize")}
-            className={cn(
-              "h-8 shrink-0 gap-1.5 rounded-xl px-2.5 text-xs font-semibold",
-              showScopeCustomizer
-                ? "bg-rose-500 text-white hover:bg-rose-600"
-                : "border-border bg-background/60 text-muted-foreground hover:bg-muted hover:text-foreground"
+          {/* Top Search Input Row */}
+          <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+            {isAnyFetching ? (
+              <Loader2 className="h-5 w-5 shrink-0 animate-spin text-rose-500" />
+            ) : (
+              <SearchIcon className="h-5 w-5 shrink-0 text-muted-foreground" />
             )}
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline"><I18nText message="search.scopes" /></span>
-            <span className="rounded bg-black/15 px-1 text-[10px] dark:bg-white/15">
-              {enabledCategories.length}/{ALL_SEARCH_CATEGORIES.length}
-            </span>
-          </Button>
-        </div>
 
-        {/* Expandable Scope Customizer ("Adjust what you want to search for") */}
-        {showScopeCustomizer && (
-          <div className="border-b border-border bg-muted/40 px-4 py-3">
-            <div className="mb-2 flex items-center justify-between">
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                <I18nText message="search.sources" />
-              </p>
-              {enabledCategories.length < ALL_SEARCH_CATEGORIES.length && (
-                <button
-                  type="button"
-                  onClick={enableAllCategories}
-                  className="text-[11px] font-semibold text-rose-500 hover:underline"
-                >
-                  <I18nText message="search.enableAll" />
-                </button>
+            <Command.Input
+              ref={inputRef}
+              value={query}
+              onValueChange={setQuery}
+              placeholder={localizedT("search.globalPlaceholder")}
+              aria-label={localizedT("search.queryLabel")}
+              className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground sm:text-base"
+            />
+
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery("");
+                  inputRef.current?.focus();
+                }}
+                aria-label={localizedT("search.clearQuery")}
+                className="rounded-lg p-1 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+
+            <Button
+              type="button"
+              variant={showScopeCustomizer ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowScopeCustomizer((prev) => !prev)}
+              title={localizedT("search.customize")}
+              className={cn(
+                "h-8 shrink-0 gap-1.5 rounded-xl px-2.5 text-xs font-semibold",
+                showScopeCustomizer
+                  ? "bg-rose-500 text-white hover:bg-rose-600"
+                  : "border-border bg-background/60 text-muted-foreground hover:bg-muted hover:text-foreground",
               )}
-            </div>
+            >
+              <SlidersHorizontal className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">
+                <I18nText message="search.scopes" />
+              </span>
+              <span className="rounded bg-black/15 px-1 text-[10px] dark:bg-white/15">
+                {enabledCategories.length}/{ALL_SEARCH_CATEGORIES.length}
+              </span>
+            </Button>
+          </div>
 
-            <div className="flex flex-wrap gap-1.5">
-              {ALL_SEARCH_CATEGORIES.map((category) => {
-                const cfg = CATEGORY_CONFIG[category];
-                const Icon = cfg.icon;
-                const enabled = enabledCategories.includes(category);
-                return (
+          {/* Expandable Scope Customizer ("Adjust what you want to search for") */}
+          {showScopeCustomizer && (
+            <div className="border-b border-border bg-muted/40 px-4 py-3">
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <I18nText message="search.sources" />
+                </p>
+                {enabledCategories.length < ALL_SEARCH_CATEGORIES.length && (
                   <button
-                    key={category}
                     type="button"
-                    onClick={() => toggleEnabledCategory(category)}
-                    className={cn(
-                      "inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-semibold transition",
-                      enabled
-                        ? "border-rose-500/40 bg-rose-500/10 text-foreground"
-                        : "border-border bg-card/50 text-muted-foreground opacity-65 hover:opacity-100"
-                    )}
+                    onClick={enableAllCategories}
+                    className="text-[11px] font-semibold text-rose-500 hover:underline"
                   >
-                    <span
+                    <I18nText message="search.enableAll" />
+                  </button>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-1.5">
+                {ALL_SEARCH_CATEGORIES.map((category) => {
+                  const cfg = CATEGORY_CONFIG[category];
+                  const Icon = cfg.icon;
+                  const enabled = enabledCategories.includes(category);
+                  return (
+                    <button
+                      key={category}
+                      type="button"
+                      onClick={() => toggleEnabledCategory(category)}
                       className={cn(
-                        "flex h-3.5 w-3.5 items-center justify-center rounded-sm border",
+                        "inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-semibold transition",
                         enabled
-                          ? "border-rose-500 bg-rose-500 text-white"
-                          : "border-muted-foreground/40"
+                          ? "border-rose-500/40 bg-rose-500/10 text-foreground"
+                          : "border-border bg-card/50 text-muted-foreground opacity-65 hover:opacity-100",
                       )}
                     >
-                      {enabled && <Check className="h-2.5 w-2.5" />}
-                    </span>
-                    <Icon className="h-3.5 w-3.5" />
-                    <span>{cfg.label}</span>
-                  </button>
-                );
-              })}
+                      <span
+                        className={cn(
+                          "flex h-3.5 w-3.5 items-center justify-center rounded-sm border",
+                          enabled
+                            ? "border-rose-500 bg-rose-500 text-white"
+                            : "border-muted-foreground/40",
+                        )}
+                      >
+                        {enabled && <Check className="h-2.5 w-2.5" />}
+                      </span>
+                      <Icon className="h-3.5 w-3.5" />
+                      <span>{cfg.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {/* Active Scope Filter Tabs (Cycle with Tab / Shift+Tab) */}
-        <ScrollArea controlSize="sm" className="w-full border-b border-border">
-          <div className="flex w-max items-center gap-1.5 px-4 py-2">
-          <button
-            type="button"
-            onClick={() => setFocusedCategory("all")}
-            className={cn(
-              "inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-semibold transition",
-              focusedCategory === "all"
-                ? "border-rose-500 bg-rose-500 text-white shadow-sm"
-                : "border-border bg-background/50 text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <Layers className="h-3 w-3" />
-            <span><I18nText message="search.all" /></span>
-            {trimmedQuery.length > 0 && (
-              <span
-                className={cn(
-                  "rounded-full px-1.5 text-[10px]",
-                  focusedCategory === "all"
-                    ? "bg-white/20 text-white"
-                    : "bg-muted text-muted-foreground"
-                )}
-              >
-                {flatItems.length}
-              </span>
-            )}
-          </button>
-
-          {ALL_SEARCH_CATEGORIES.filter((cat) =>
-            enabledCategories.includes(cat)
-          ).map((category) => {
-            const cfg = CATEGORY_CONFIG[category];
-            const Icon = cfg.icon;
-            const isActive = focusedCategory === category;
-            const count = categoryCountMap[category];
-
-            return (
+          {/* Active Scope Filter Tabs (Cycle with Tab / Shift+Tab) */}
+          <ScrollArea controlSize="sm" className="w-full border-b border-border">
+            <div className="flex w-max items-center gap-1.5 px-4 py-2">
               <button
-                key={category}
                 type="button"
-                onClick={() => setFocusedCategory(category)}
+                onClick={() => setFocusedCategory("all")}
                 className={cn(
                   "inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-semibold transition",
-                  isActive
+                  focusedCategory === "all"
                     ? "border-rose-500 bg-rose-500 text-white shadow-sm"
-                    : "border-border bg-background/50 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "border-border bg-background/50 text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
-                <Icon className="h-3 w-3" />
-                <span>{cfg.label}</span>
-                {trimmedQuery.length > 0 && count !== undefined && (
+                <Layers className="h-3 w-3" />
+                <span>
+                  <I18nText message="search.all" />
+                </span>
+                {trimmedQuery.length > 0 && (
                   <span
                     className={cn(
                       "rounded-full px-1.5 text-[10px]",
-                      isActive
+                      focusedCategory === "all"
                         ? "bg-white/20 text-white"
-                        : "bg-muted text-muted-foreground"
+                        : "bg-muted text-muted-foreground",
                     )}
                   >
-                    {count}
+                    {flatItems.length}
                   </span>
                 )}
               </button>
-            );
-          })}
-          </div>
-        </ScrollArea>
 
-        {/* Scrollable Results / Zero-Query Quick Palette */}
-        <Command.List aria-label="Search results"><ScrollArea controlSize="sm" className="max-h-[62vh] p-3">
-          {trimmedQuery.length === 0 ? (
-            <div className="space-y-4">
-              {recentSearches.length > 0 && (
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between px-2">
-                    <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                      <History className="h-3.5 w-3.5 text-rose-500" />
-                      <I18nText message="search.recent" />
-                    </span>
+              {ALL_SEARCH_CATEGORIES.filter((cat) => enabledCategories.includes(cat)).map(
+                (category) => {
+                  const cfg = CATEGORY_CONFIG[category];
+                  const Icon = cfg.icon;
+                  const isActive = focusedCategory === category;
+                  const count = categoryCountMap[category];
+
+                  return (
                     <button
+                      key={category}
                       type="button"
-                      onClick={clearRecentSearches}
-                      className="text-[11px] text-muted-foreground hover:text-rose-500"
+                      onClick={() => setFocusedCategory(category)}
+                      className={cn(
+                        "inline-flex shrink-0 items-center gap-1.5 rounded-xl border px-2.5 py-1 text-xs font-semibold transition",
+                        isActive
+                          ? "border-rose-500 bg-rose-500 text-white shadow-sm"
+                          : "border-border bg-background/50 text-muted-foreground hover:bg-muted hover:text-foreground",
+                      )}
                     >
-                      <I18nText message="common.clear" />
-                    </button>
-                  </div>
-
-                  {recentSearches.map((term) => {
-                    const itemId = `recent-${term}`;
-                    const isHighlighted = itemId === activeItemId;
-                    return (
-                      <div
-                        key={itemId}
-                        className={cn(
-                          "flex items-center justify-between rounded-xl px-3 py-2 transition",
-                          isHighlighted ? "bg-muted text-foreground" : "hover:bg-muted/60"
-                        )}
-                      >
-                        <Command.Item value={itemId} onPointerDown={(event) => { pointerModifiers.current = event.metaKey || event.ctrlKey; }} onSelect={() => { setQuery(term); inputRef.current?.focus(); pointerModifiers.current = false; }}
-
-
-
-
-                          className="flex flex-1 items-center gap-2.5 text-left text-sm font-medium"
+                      <Icon className="h-3 w-3" />
+                      <span>{cfg.label}</span>
+                      {trimmedQuery.length > 0 && count !== undefined && (
+                        <span
+                          className={cn(
+                            "rounded-full px-1.5 text-[10px]",
+                            isActive ? "bg-white/20 text-white" : "bg-muted text-muted-foreground",
+                          )}
                         >
-                          <Clock className="h-4 w-4 text-muted-foreground" />
-                          <span className="truncate">{term}</span>
-                        </Command.Item>
+                          {count}
+                        </span>
+                      )}
+                    </button>
+                  );
+                },
+              )}
+            </div>
+          </ScrollArea>
+
+          {/* Scrollable Results / Zero-Query Quick Palette */}
+          <Command.List aria-label="Search results">
+            <ScrollArea controlSize="sm" className="max-h-[62vh] p-3">
+              {trimmedQuery.length === 0 ? (
+                <div className="space-y-4">
+                  {recentSearches.length > 0 && (
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between px-2">
+                        <span className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                          <History className="h-3.5 w-3.5 text-rose-500" />
+                          <I18nText message="search.recent" />
+                        </span>
                         <button
                           type="button"
-                          onClick={() => removeRecentSearch(term)}
-                          aria-label={`Remove ${term} from recent searches`}
-                          className="rounded p-1 text-muted-foreground hover:bg-background hover:text-rose-500"
+                          onClick={clearRecentSearches}
+                          className="text-[11px] text-muted-foreground hover:text-rose-500"
                         >
-                          <X className="h-3.5 w-3.5" />
+                          <I18nText message="common.clear" />
                         </button>
+                      </div>
+
+                      {recentSearches.map((term) => {
+                        const itemId = `recent-${term}`;
+                        const isHighlighted = itemId === activeItemId;
+                        return (
+                          <div
+                            key={itemId}
+                            className={cn(
+                              "flex items-center justify-between rounded-xl px-3 py-2 transition",
+                              isHighlighted ? "bg-muted text-foreground" : "hover:bg-muted/60",
+                            )}
+                          >
+                            <Command.Item
+                              value={itemId}
+                              onPointerDown={(event) => {
+                                pointerModifiers.current = event.metaKey || event.ctrlKey;
+                              }}
+                              onSelect={() => {
+                                setQuery(term);
+                                inputRef.current?.focus();
+                                pointerModifiers.current = false;
+                              }}
+
+                              className="flex flex-1 items-center gap-2.5 text-left text-sm font-medium"
+                            >
+                              <Clock className="h-4 w-4 text-muted-foreground" />
+                              <span className="truncate">{term}</span>
+                            </Command.Item>
+                            <button
+                              type="button"
+                              onClick={() => removeRecentSearch(term)}
+                              aria-label={`Remove ${term} from recent searches`}
+                              className="rounded p-1 text-muted-foreground hover:bg-background hover:text-rose-500"
+                            >
+                              <X className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  <div className="space-y-1.5">
+                    <div className="px-2">
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                        <I18nText message="search.quickJump" />
+                      </span>
+                    </div>
+
+                    {QUICK_JUMP_LINKS.map((item) => {
+                      const cfg = CATEGORY_CONFIG[item.category];
+                      const Icon = cfg.icon;
+
+                      const isHighlighted = item.id === activeItemId;
+
+                      return (
+                        <Command.Item
+                          value={item.id}
+                          onPointerDown={(event) => {
+                            pointerModifiers.current = event.metaKey || event.ctrlKey;
+                          }}
+                          onSelect={() => {
+                            handleSelectItem(item, pointerModifiers.current);
+                            pointerModifiers.current = false;
+                          }}
+                          key={item.id}
+
+                          className={cn(
+                            "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition",
+                            isHighlighted
+                              ? "bg-muted text-foreground shadow-sm"
+                              : "hover:bg-muted/60",
+                          )}
+                        >
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div
+                              className={cn(
+                                "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border",
+                                cfg.accentClass,
+                              )}
+                            >
+                              <Icon className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-semibold text-foreground">
+                                {item.title}
+                              </p>
+                              <p className="truncate text-xs text-muted-foreground">
+                                {item.subtitle}
+                              </p>
+                            </div>
+                          </div>
+                          <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                        </Command.Item>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : isAllSettledEmpty && sections.some((section) => section.isError) ? (
+                <ErrorState compact onRetry={() => void retryFailedSearch()} />
+              ) : isAllSettledEmpty ? (
+                <EmptyState
+                  illustration="search"
+                  compact
+                  title={localizedT("search.noMatchesFor", { query: trimmedQuery })}
+                  description={localizedT("search.emptyDescription")}
+                  action={
+                    focusedCategory !== "all" ? (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFocusedCategory("all")}
+                        className="text-xs text-primary"
+                      >
+                        <I18nText message="search.allScopes" />
+                      </Button>
+                    ) : undefined
+                  }
+                />
+              ) : (
+                <div className="space-y-4">
+                  {sections.map((section) => {
+                    const cfg = CATEGORY_CONFIG[section.category];
+                    const SectionIcon = cfg.icon;
+
+                    if (section.requiresAuth && focusedCategory === "chatrooms") {
+                      return (
+                        <div
+                          key={section.category}
+                          className="rounded-xl border border-border bg-muted/40 p-6 text-center"
+                        >
+                          <Lock className="mx-auto mb-2 h-5 w-5 text-amber-500" />
+                          <p className="text-xs font-semibold text-foreground">
+                            <I18nText message="search.signInRooms" />
+                          </p>
+                        </div>
+                      );
+                    }
+
+                    if (section.items.length === 0 && !section.isPending && !section.isFetching) {
+                      return null;
+                    }
+
+                    return (
+                      <div key={section.category} className="space-y-1.5">
+                        {/* Section Header */}
+                        <div className="flex items-center justify-between px-2">
+                          <div className="flex items-center gap-1.5">
+                            <SectionIcon className="h-3.5 w-3.5 text-rose-500" />
+                            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+                              {cfg.label}
+                            </span>
+                            {section.isFetching && (
+                              <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+                            )}
+                          </div>
+
+                          {focusedCategory === "all" && section.items.length >= 5 && (
+                            <button
+                              type="button"
+                              onClick={() => setFocusedCategory(section.category)}
+                              className="text-[11px] font-semibold text-rose-500 hover:underline"
+                            >
+                              <I18nText message="search.filterTo" /> {cfg.label} →
+                            </button>
+                          )}
+                        </div>
+
+                        {/* Async Streaming Placeholder while this specific source resolves */}
+                        {section.items.length === 0 && (section.isPending || section.isFetching) ? (
+                          <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-background/40 px-3 py-2.5 text-xs text-muted-foreground">
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
+                            <span>
+                              <I18nText message="search.searching" /> {cfg.label.toLowerCase()}...
+                            </span>
+                          </div>
+                        ) : (
+                          section.items.map((item) => {
+                            const isHighlighted = item.id === activeItemId;
+
+                            return (
+                              <Command.Item
+                                value={item.id}
+                                onPointerDown={(event) => {
+                                  pointerModifiers.current = event.metaKey || event.ctrlKey;
+                                }}
+                                onSelect={() => {
+                                  handleSelectItem(item, pointerModifiers.current);
+                                  pointerModifiers.current = false;
+                                }}
+                                key={item.id}
+
+                                className={cn(
+                                  "group flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-left transition",
+                                  isHighlighted
+                                    ? "bg-muted text-foreground ring-1 ring-rose-500/40"
+                                    : "hover:bg-muted/60",
+                                )}
+                              >
+                                <div className="flex min-w-0 flex-1 items-center gap-3">
+                                  <ResultThumbnail item={item} />
+
+                                  <div className="min-w-0 flex-1">
+                                    <div className="flex items-center gap-2">
+                                      <p className="truncate text-sm font-bold text-foreground group-hover:text-rose-500">
+                                        {item.title}
+                                      </p>
+                                      {item.badge && (
+                                        <span
+                                          className={cn(
+                                            "shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
+                                            cfg.accentClass,
+                                          )}
+                                        >
+                                          {item.badge}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <p className="truncate text-xs text-muted-foreground">
+                                      {item.subtitle}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <CornerDownLeft
+                                  className={cn(
+                                    "h-4 w-4 shrink-0 transition-opacity",
+                                    isHighlighted
+                                      ? "text-rose-500 opacity-100"
+                                      : "text-muted-foreground opacity-0 group-hover:opacity-60",
+                                  )}
+                                />
+                              </Command.Item>
+                            );
+                          })
+                        )}
                       </div>
                     );
                   })}
                 </div>
               )}
+            </ScrollArea>
+          </Command.List>
 
-              <div className="space-y-1.5">
-                <div className="px-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                    <I18nText message="search.quickJump" />
-                  </span>
-                </div>
-
-                {QUICK_JUMP_LINKS.map((item) => {
-                  const cfg = CATEGORY_CONFIG[item.category];
-                  const Icon = cfg.icon;
-
-                  const isHighlighted = item.id === activeItemId;
-
-                  return (
-                    <Command.Item value={item.id} onPointerDown={(event) => { pointerModifiers.current = event.metaKey || event.ctrlKey; }} onSelect={() => { handleSelectItem(item, pointerModifiers.current); pointerModifiers.current = false; }}
-                      key={item.id}
-
-
-
-
-                      className={cn(
-                        "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition",
-                        isHighlighted
-                          ? "bg-muted text-foreground shadow-sm"
-                          : "hover:bg-muted/60"
-                      )}
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div
-                          className={cn(
-                            "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border",
-                            cfg.accentClass
-                          )}
-                        >
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-foreground">
-                            {item.title}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            {item.subtitle}
-                          </p>
-                        </div>
-                      </div>
-                      <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    </Command.Item>
-                  );
-                })}
-              </div>
+          {/* Keyboard Shortcuts Footer */}
+          <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="inline-flex items-center gap-1">
+                <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
+                  ↑↓
+                </kbd>
+                <span>
+                  <I18nText message="search.navigate" />
+                </span>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
+                  ↵
+                </kbd>
+                <span>
+                  <I18nText message="search.open" />
+                </span>
+              </span>
+              <span className="inline-flex items-center gap-1">
+                <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
+                  Tab
+                </kbd>
+                <span>
+                  <I18nText message="search.switchScope" />
+                </span>
+              </span>
+              <span className="hidden items-center gap-1 sm:inline-flex">
+                <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
+                  ⌘↵
+                </kbd>
+                <span>
+                  <I18nText message="search.newTab" />
+                </span>
+              </span>
             </div>
-          ) : isAllSettledEmpty && sections.some(section => section.isError) ? (
-            <ErrorState compact onRetry={() => void retryFailedSearch()} />
-          ) : isAllSettledEmpty ? (
-            <EmptyState illustration="search" compact
-              title={localizedT("search.noMatchesFor", { query: trimmedQuery })}
-              description={localizedT("search.emptyDescription")}
-              action={focusedCategory !== "all" ? <Button type="button" variant="ghost" size="sm" onClick={() => setFocusedCategory("all")} className="text-xs text-primary"><I18nText message="search.allScopes" /></Button> : undefined}
-            />
-          ) : (
-            <div className="space-y-4">
-              {sections.map((section) => {
-                const cfg = CATEGORY_CONFIG[section.category];
-                const SectionIcon = cfg.icon;
 
-                if (
-                  section.requiresAuth &&
-                  focusedCategory === "chatrooms"
-                ) {
-                  return (
-                    <div
-                      key={section.category}
-                      className="rounded-xl border border-border bg-muted/40 p-6 text-center"
-                    >
-                      <Lock className="mx-auto mb-2 h-5 w-5 text-amber-500" />
-                      <p className="text-xs font-semibold text-foreground">
-                        <I18nText message="search.signInRooms" />
-                      </p>
-                    </div>
-                  );
-                }
-
-                if (
-                  section.items.length === 0 &&
-                  !section.isPending &&
-                  !section.isFetching
-                ) {
-                  return null;
-                }
-
-                return (
-                  <div key={section.category} className="space-y-1.5">
-                    {/* Section Header */}
-                    <div className="flex items-center justify-between px-2">
-                      <div className="flex items-center gap-1.5">
-                        <SectionIcon className="h-3.5 w-3.5 text-rose-500" />
-                        <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                          {cfg.label}
-                        </span>
-                        {section.isFetching && (
-                          <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
-                        )}
-                      </div>
-
-                      {focusedCategory === "all" && section.items.length >= 5 && (
-                        <button
-                          type="button"
-                          onClick={() => setFocusedCategory(section.category)}
-                          className="text-[11px] font-semibold text-rose-500 hover:underline"
-                        >
-                          <I18nText message="search.filterTo" /> {cfg.label} →
-                        </button>
-                      )}
-                    </div>
-
-                    {/* Async Streaming Placeholder while this specific source resolves */}
-                    {section.items.length === 0 &&
-                    (section.isPending || section.isFetching) ? (
-                      <div className="flex items-center gap-3 rounded-xl border border-border/50 bg-background/40 px-3 py-2.5 text-xs text-muted-foreground">
-                        <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
-                        <span><I18nText message="search.searching" /> {cfg.label.toLowerCase()}...</span>
-                      </div>
-                    ) : (
-                      section.items.map((item) => {
-
-                        const isHighlighted = item.id === activeItemId;
-
-                        return (
-                          <Command.Item value={item.id} onPointerDown={(event) => { pointerModifiers.current = event.metaKey || event.ctrlKey; }} onSelect={() => { handleSelectItem(item, pointerModifiers.current); pointerModifiers.current = false; }}
-                            key={item.id}
-
-
-
-
-                            className={cn(
-                              "group flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-left transition",
-                              isHighlighted
-                                ? "bg-muted text-foreground ring-1 ring-rose-500/40"
-                                : "hover:bg-muted/60"
-                            )}
-                          >
-                            <div className="flex min-w-0 flex-1 items-center gap-3">
-                              <ResultThumbnail item={item} />
-
-                              <div className="min-w-0 flex-1">
-                                <div className="flex items-center gap-2">
-                                  <p className="truncate text-sm font-bold text-foreground group-hover:text-rose-500">
-                                    {item.title}
-                                  </p>
-                                  {item.badge && (
-                                    <span
-                                      className={cn(
-                                        "shrink-0 rounded-md border px-1.5 py-0.5 text-[10px] font-bold",
-                                        cfg.accentClass
-                                      )}
-                                    >
-                                      {item.badge}
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="truncate text-xs text-muted-foreground">
-                                  {item.subtitle}
-                                </p>
-                              </div>
-                            </div>
-
-                            <CornerDownLeft
-                              className={cn(
-                                "h-4 w-4 shrink-0 transition-opacity",
-                                isHighlighted
-                                  ? "text-rose-500 opacity-100"
-                                  : "text-muted-foreground opacity-0 group-hover:opacity-60"
-                              )}
-                            />
-                          </Command.Item>
-                        );
-                      })
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </ScrollArea></Command.List>
-
-        {/* Keyboard Shortcuts Footer */}
-        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground">
-          <div className="flex flex-wrap items-center gap-3">
             <span className="inline-flex items-center gap-1">
               <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
-                ↑↓
+                Esc
               </kbd>
-              <span><I18nText message="search.navigate" /></span>
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
-                ↵
-              </kbd>
-              <span><I18nText message="search.open" /></span>
-            </span>
-            <span className="inline-flex items-center gap-1">
-              <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
-                Tab
-              </kbd>
-              <span><I18nText message="search.switchScope" /></span>
-            </span>
-            <span className="hidden items-center gap-1 sm:inline-flex">
-              <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
-                ⌘↵
-              </kbd>
-              <span><I18nText message="search.newTab" /></span>
+              <span>
+                <I18nText message="common.closeLabel" />
+              </span>
             </span>
           </div>
-
-          <span className="inline-flex items-center gap-1">
-            <kbd className="rounded border border-border bg-card px-1.5 py-0.5 font-mono text-[10px] font-semibold text-foreground">
-              Esc
-            </kbd>
-            <span><I18nText message="common.closeLabel" /></span>
-          </span>
-        </div>
         </Command>
       </DialogContent>
     </Dialog>

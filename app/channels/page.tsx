@@ -11,9 +11,7 @@ export const metadata: Metadata = {
 
 export default function ChannelsPage() {
   return (
-    <Suspense
-      fallback={<ChannelsSkeleton />}
-    >
+    <Suspense fallback={<ChannelsSkeleton />}>
       <ChannelBrowser />
     </Suspense>
   );

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { useCallback } from 'react';
-import { useRouter } from 'next/navigation';
-import useAuthStore from '@/store/use-auth-store';
+import { useCallback } from "react";
+import { useRouter } from "next/navigation";
+import useAuthStore from "@/store/use-auth-store";
 
 export function useAuth() {
   const user = useAuthStore((state) => state.user);
@@ -15,7 +15,7 @@ export function useAuth() {
 
   const handleSignOut = useCallback(async () => {
     await signOut();
-    router.push('/auth');
+    router.push("/auth");
   }, [router, signOut]);
 
   return { user, token, loading, initialized, signIn, signOut: handleSignOut };

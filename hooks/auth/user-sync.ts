@@ -90,11 +90,9 @@ export async function syncUserProfileToFirestore(user: User): Promise<void> {
 
     if (!docSnap.exists()) {
       const username = `@${(
-        user.email?.split("@")[0] ||
-        "user_" + user.uid.slice(0, 5)
+        user.email?.split("@")[0] || "user_" + user.uid.slice(0, 5)
       ).toLowerCase()}`;
-      const displayName =
-        user.displayName || user.email?.split("@")[0] || "Otaku Member";
+      const displayName = user.displayName || user.email?.split("@")[0] || "Otaku Member";
 
       const initialData: UserProfileData = {
         uid: user.uid,

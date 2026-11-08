@@ -9,10 +9,7 @@ export function ProfileSkeleton() {
       aria-busy="true"
       aria-label="Loading profile"
     >
-      <div
-        className="grid items-start gap-8 lg:grid-cols-[380px_1fr]"
-        aria-hidden="true"
-      >
+      <div className="grid items-start gap-8 lg:grid-cols-[380px_1fr]" aria-hidden="true">
         <div className="space-y-6">
           <Card className="rounded-2xl p-6">
             <div className="flex gap-4">

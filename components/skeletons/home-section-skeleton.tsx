@@ -30,9 +30,7 @@ export function HomeSectionSkeleton({
 }) {
   return (
     <section
-      className={
-        type === "anime" || type === "news" ? "space-y-6" : "space-y-8"
-      }
+      className={type === "anime" || type === "news" ? "space-y-6" : "space-y-8"}
       aria-busy="true"
       aria-label={`Loading ${type}`}
     >
@@ -74,10 +72,7 @@ export function HomeSectionSkeleton({
           </div>
           <Card className="overflow-hidden">
             {Array.from({ length: 6 }, (_, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-2 border-b p-3 sm:gap-4 sm:p-4"
-              >
+              <div key={i} className="flex items-center gap-2 border-b p-3 sm:gap-4 sm:p-4">
                 <Skeleton className="h-5 w-12 sm:w-16" />
                 <Skeleton className="h-14 w-10 shrink-0 sm:h-16 sm:w-12" />
                 <Skeleton className="h-5 flex-1" />
@@ -90,10 +85,7 @@ export function HomeSectionSkeleton({
         <div
           className={`grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 ${type === "anime" ? "gap-5" : "gap-6"}`}
         >
-          <MediaCardSkeleton
-            count={8}
-            variant={type === "anime" ? "home-anime" : "home-manga"}
-          />
+          <MediaCardSkeleton count={8} variant={type === "anime" ? "home-anime" : "home-manga"} />
         </div>
       )}
     </section>

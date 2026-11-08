@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { ADSENSE_CLIENT_ID } from '@/lib/adsense-config';
+import { ADSENSE_CLIENT_ID } from "@/lib/adsense-config";
 
 export async function GET() {
   const rawClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID?.trim() || ADSENSE_CLIENT_ID;

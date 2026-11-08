@@ -29,10 +29,7 @@ export function ErrorState({
   return (
     <div
       role="alert"
-      className={cn(
-        fullPage && "flex min-h-[65vh] items-center justify-center",
-        className,
-      )}
+      className={cn(fullPage && "flex min-h-[65vh] items-center justify-center", className)}
     >
       <EmptyState
         illustration="error"

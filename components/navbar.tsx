@@ -36,12 +36,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useI18n } from "@/components/i18n-provider";
@@ -96,7 +91,7 @@ export default function Navbar() {
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 hidden h-screen flex-col overflow-hidden border-r border-sidebar-border bg-sidebar p-3 text-sidebar-foreground transition-[width] duration-300 ease-in-out lg:flex",
-          isExpanded ? "w-[240px]" : "w-[72px]"
+          isExpanded ? "w-[240px]" : "w-[72px]",
         )}
       >
         <TooltipProvider delayDuration={150}>
@@ -113,9 +108,7 @@ export default function Navbar() {
                     className="h-10 w-10 rounded-2xl object-cover"
                   />
                 </div>
-                <span className="truncate text-lg font-bold tracking-wide">
-                  OTAKUZ
-                </span>
+                <span className="truncate text-lg font-bold tracking-wide">OTAKUZ</span>
               </Link>
 
               <Tooltip>
@@ -139,10 +132,7 @@ export default function Navbar() {
             </div>
           ) : (
             <div className="mb-4 flex shrink-0 flex-col items-center gap-2">
-              <Link
-                href="/"
-                className="flex h-10 w-10 items-center justify-center rounded-2xl"
-              >
+              <Link href="/" className="flex h-10 w-10 items-center justify-center rounded-2xl">
                 <Image
                   src="/assets/logo.png"
                   alt="Otakuz Logo"
@@ -191,7 +181,7 @@ export default function Navbar() {
                             "h-11 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
                             isExpanded ? "justify-start px-3.5" : "justify-center px-0",
                             isActive &&
-                              "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                              "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
                           )}
                         >
                           <navItem.icon className="h-5 w-5 shrink-0" />
@@ -220,7 +210,7 @@ export default function Navbar() {
                   variant="ghost"
                   className={cn(
                     "h-11 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
-                    isExpanded ? "justify-start px-3.5" : "justify-center px-0"
+                    isExpanded ? "justify-start px-3.5" : "justify-center px-0",
                   )}
                   onClick={toggleTheme}
                   aria-label={t("nav.toggleTheme")}
@@ -248,7 +238,7 @@ export default function Navbar() {
                   variant="ghost"
                   className={cn(
                     "h-11 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
-                    isExpanded ? "justify-start px-3.5" : "justify-center px-0"
+                    isExpanded ? "justify-start px-3.5" : "justify-center px-0",
                   )}
                   onClick={toggleLocale}
                   aria-label={t("nav.switchLanguage")}
@@ -274,7 +264,7 @@ export default function Navbar() {
                     variant="ghost"
                     className={cn(
                       "h-12 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
-                      isExpanded ? "justify-start px-2" : "justify-center px-0"
+                      isExpanded ? "justify-start px-2" : "justify-center px-0",
                     )}
                   >
                     <Avatar className="h-8 w-8 shrink-0">
@@ -282,9 +272,7 @@ export default function Navbar() {
                         src={user.photoURL || undefined}
                         alt={user.displayName || "User avatar"}
                       />
-                      <AvatarFallback>
-                        {user.displayName?.[0] || "U"}
-                      </AvatarFallback>
+                      <AvatarFallback>{user.displayName?.[0] || "U"}</AvatarFallback>
                     </Avatar>
                     {isExpanded && (
                       <span className="ml-3 max-w-[140px] truncate text-sm font-medium">
@@ -297,18 +285,12 @@ export default function Navbar() {
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">
-                          {user.displayName}
-                        </p>
-                        <p className="text-xs leading-none text-muted-foreground">
-                          {user.email}
-                        </p>
+                        <p className="text-sm font-medium leading-none">{user.displayName}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
                       </div>
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleSignOut}>
-                    {t("nav.logOut")}
-                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>{t("nav.logOut")}</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
@@ -319,7 +301,7 @@ export default function Navbar() {
                       variant="ghost"
                       className={cn(
                         "h-11 w-full rounded-2xl transition-all duration-200 hover:rounded-xl",
-                        isExpanded ? "justify-start px-3.5" : "justify-center px-0"
+                        isExpanded ? "justify-start px-3.5" : "justify-center px-0",
                       )}
                     >
                       <LogOut className="h-5 w-5 shrink-0" />
@@ -406,7 +388,7 @@ export default function Navbar() {
                     "flex h-full w-full flex-col items-center justify-center text-xs transition-colors",
                     isMobileMenuOpen
                       ? "font-semibold text-rose-500"
-                      : "text-muted-foreground hover:text-foreground"
+                      : "text-muted-foreground hover:text-foreground",
                   )}
                 >
                   <tab.icon className={cn("h-5 w-5", isMobileMenuOpen && "text-rose-500")} />
@@ -428,7 +410,7 @@ export default function Navbar() {
                   "flex h-full w-full flex-col items-center justify-center text-xs transition-colors",
                   isActive
                     ? "font-semibold text-rose-500"
-                    : "text-muted-foreground hover:text-foreground"
+                    : "text-muted-foreground hover:text-foreground",
                 )}
               >
                 <tab.icon className={cn("h-5 w-5", isActive && "text-rose-500")} />
@@ -466,11 +448,7 @@ export default function Navbar() {
                 </div>
                 <span className="text-base font-bold tracking-wider">OTAKUZ</span>
               </Link>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
+              <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
                 <X className="h-5 w-5" />
                 <span className="sr-only">{t("common.close")}</span>
               </Button>
@@ -491,9 +469,8 @@ export default function Navbar() {
                         "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                         (navItem.href === "/"
                           ? pathname === "/"
-                          : pathname === navItem.href ||
-                            pathname.startsWith(`${navItem.href}/`)) &&
-                          "bg-sidebar-accent text-sidebar-accent-foreground font-semibold"
+                          : pathname === navItem.href || pathname.startsWith(`${navItem.href}/`)) &&
+                          "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
                       )}
                     >
                       <navItem.icon className="mr-3 h-5 w-5" />
@@ -506,11 +483,7 @@ export default function Navbar() {
 
             <div className="my-3 h-[1px] bg-border" />
 
-            <Button
-              variant="ghost"
-              className="h-11 justify-start"
-              onClick={toggleTheme}
-            >
+            <Button variant="ghost" className="h-11 justify-start" onClick={toggleTheme}>
               <div className="relative mr-3 h-5 w-5">
                 <Sun className="absolute h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
                 <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
@@ -518,11 +491,7 @@ export default function Navbar() {
               {t("nav.toggleTheme")}
             </Button>
 
-            <Button
-              variant="ghost"
-              className="h-11 justify-start"
-              onClick={toggleLocale}
-            >
+            <Button variant="ghost" className="h-11 justify-start" onClick={toggleLocale}>
               <Languages className="mr-3 h-5 w-5" />
               {locale === "en" ? t("locale.japanese") : t("locale.english")}
             </Button>
@@ -537,17 +506,13 @@ export default function Navbar() {
                           src={user.photoURL || undefined}
                           alt={user.displayName || "User avatar"}
                         />
-                        <AvatarFallback>
-                          {user.displayName?.[0] || "U"}
-                        </AvatarFallback>
+                        <AvatarFallback>{user.displayName?.[0] || "U"}</AvatarFallback>
                       </Avatar>
                       <div className="flex min-w-0 flex-col">
                         <p className="truncate text-sm font-medium">
                           {user.displayName || t("profile.anonymous")}
                         </p>
-                        <p className="truncate text-xs text-muted-foreground">
-                          {user.email}
-                        </p>
+                        <p className="truncate text-xs text-muted-foreground">{user.email}</p>
                       </div>
                     </div>
                   </Link>

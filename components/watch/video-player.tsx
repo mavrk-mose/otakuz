@@ -1,16 +1,8 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import {
-  MediaPlayer,
-  MediaProvider,
-  Track,
-  type MediaPlayerInstance,
-} from "@vidstack/react";
-import {
-  DefaultVideoLayout,
-  defaultLayoutIcons,
-} from "@vidstack/react/player/layouts/default";
+import { MediaPlayer, MediaProvider, Track, type MediaPlayerInstance } from "@vidstack/react";
+import { DefaultVideoLayout, defaultLayoutIcons } from "@vidstack/react/player/layouts/default";
 
 export interface VideoSubtitle {
   src: string;
@@ -176,11 +168,7 @@ export function VideoPlayer({
         ))}
       </MediaProvider>
 
-      <DefaultVideoLayout
-        icons={defaultLayoutIcons}
-        colorScheme="dark"
-        thumbnails={thumbnailUrl}
-      />
+      <DefaultVideoLayout icons={defaultLayoutIcons} colorScheme="dark" thumbnails={thumbnailUrl} />
     </MediaPlayer>
   );
 }

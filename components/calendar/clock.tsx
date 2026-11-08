@@ -28,17 +28,17 @@ export function RealtimeClock() {
     const minutes = Math.abs(offset % 60);
     const sign = offset <= 0 ? "+" : "-";
 
-    return `${sign}${hours.toString().padStart(2, "0")}${minutes
-      .toString()
-      .padStart(2, "0")}`;
+    return `${sign}${hours.toString().padStart(2, "0")}${minutes.toString().padStart(2, "0")}`;
   };
 
   return (
     <div
       className="rounded-full bg-card px-4 py-2 font-mono text-sm"
-      aria-label={time
-        ? t("calendar.currentTime", { time: format(time, "PPpp", { locale: dateLocale }) })
-        : t("calendar.loadingTime")}
+      aria-label={
+        time
+          ? t("calendar.currentTime", { time: format(time, "PPpp", { locale: dateLocale }) })
+          : t("calendar.loadingTime")
+      }
     >
       {time
         ? `(GMT${getGMTOffset(time)}) ${format(time, locale === "ja" ? "yyyy年M月d日 HH:mm:ss" : "dd/MM/yyyy HH:mm:ss", { locale: dateLocale })}`

@@ -2,7 +2,6 @@
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import { useState } from "react";
 import { Bookmark, Check, Gift, Link2, MessageSquare, Share2 } from "lucide-react";
 import { toast } from "sonner";
@@ -66,7 +65,11 @@ export function ArticleActions({ commentsCount, title }: ArticleActionsProps) {
           title={localizedT("news.copyLink")}
           aria-label={localizedT("news.copyLinkLabel")}
         >
-          {isCopied ? <Check className="h-4 w-4 text-emerald-400" /> : <Link2 className="h-4 w-4" />}
+          {isCopied ? (
+            <Check className="h-4 w-4 text-emerald-400" />
+          ) : (
+            <Link2 className="h-4 w-4" />
+          )}
         </button>
 
         <button
@@ -105,8 +108,12 @@ export function ArticleActions({ commentsCount, title }: ArticleActionsProps) {
         className="group flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1 text-xs font-medium transition hover:border-rose-500/40 hover:bg-rose-500 hover:text-white"
       >
         <MessageSquare className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 group-hover:text-white" />
-        <span className="font-mono font-bold text-amber-500 dark:text-amber-400 group-hover:text-white">{commentsCount}</span>
-        <span className="text-muted-foreground group-hover:text-white"><I18nText message="news.commentsLabel" /></span>
+        <span className="font-mono font-bold text-amber-500 dark:text-amber-400 group-hover:text-white">
+          {commentsCount}
+        </span>
+        <span className="text-muted-foreground group-hover:text-white">
+          <I18nText message="news.commentsLabel" />
+        </span>
         <span className="font-mono text-[10px] font-semibold uppercase text-emerald-500 group-hover:text-white">
           (Live)
         </span>

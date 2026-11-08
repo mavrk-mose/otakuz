@@ -2,7 +2,10 @@ import { Card } from "@/components/ui/card";
 
 export function ProductCardSkeleton() {
   return (
-    <Card aria-hidden="true" className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden motion-reduce:animate-none">
+    <Card
+      aria-hidden="true"
+      className="flex h-full min-w-0 animate-pulse flex-col overflow-hidden motion-reduce:animate-none"
+    >
       <div className="aspect-square bg-muted" />
       <div className="flex flex-1 flex-col p-3 sm:p-4">
         <div className="mb-1.5 flex items-center justify-between gap-2 sm:mb-2">

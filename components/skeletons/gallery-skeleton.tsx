@@ -2,11 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
-export function GallerySkeleton({
-  type = "anime",
-}: {
-  type?: "anime" | "manga" | "event";
-}) {
+export function GallerySkeleton({ type = "anime" }: { type?: "anime" | "manga" | "event" }) {
   const widths =
     type === "manga"
       ? "w-[130px] sm:w-[160px] md:w-[185px] lg:w-[195px]"
@@ -29,10 +25,7 @@ export function GallerySkeleton({
       )}
       <Card className="w-full min-w-0 max-w-full overflow-hidden rounded-2xl border-border/70 bg-card/60">
         <ScrollArea className="w-full min-w-0 max-w-full">
-          <div
-            className="flex w-max items-center px-8 py-9 sm:px-12 sm:py-10"
-            aria-hidden="true"
-          >
+          <div className="flex w-max items-center px-8 py-9 sm:px-12 sm:py-10" aria-hidden="true">
             {Array.from({ length: 4 }, (_, index) => (
               <div
                 key={index}

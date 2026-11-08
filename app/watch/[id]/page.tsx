@@ -2,7 +2,6 @@
 import { EmptyState } from "@/components/empty-state";
 import { WatchAnimeDetails } from "@/components/watch/watch-anime-details";
 
-
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useQueryState, parseAsString } from "nuqs";
 import { serializeVideo } from "@/lib/query-state";
@@ -29,7 +28,10 @@ export default function WatchPage() {
   const { t } = useI18n();
   const router = useRouter();
   const params = useParams();
-  const [videoFromQuery, setVideoUrl] = useQueryState("videoUrl", parseAsString.withOptions({ history: "push", scroll: false }));
+  const [videoFromQuery, setVideoUrl] = useQueryState(
+    "videoUrl",
+    parseAsString.withOptions({ history: "push", scroll: false }),
+  );
 
   const currentId = params?.id as string;
 
@@ -38,9 +40,7 @@ export default function WatchPage() {
 
   const initialAnimeData = data?.pages[0]?.data?.[0]?.entry?.[0] ?? null;
 
-  const { data: animeVideos, isLoading: isLoadingVideos } = useAnimeVideos(
-    currentId ?? ""
-  );
+  const { data: animeVideos, isLoading: isLoadingVideos } = useAnimeVideos(currentId ?? "");
 
   useEffect(() => {
     if (inView && hasNextPage) fetchNextPage();
@@ -52,29 +52,48 @@ export default function WatchPage() {
     }
   }, [currentId, initialAnimeData, router]);
 
-
   const promoQueue = useMemo(() => {
     const seen = new Set<string>();
-    return (animeVideos?.promo || []).flatMap(promo => {
+    return (animeVideos?.promo || []).flatMap((promo) => {
       const src = promo.trailer?.embed_url;
       if (!src || seen.has(src)) return [];
       seen.add(src);
-      return [{
-        id: `${currentId}:${src}`, src, title: promo.title,
-        posterUrl: promo.trailer.images?.large_image_url || promo.trailer.images?.medium_image_url || undefined,
-        playerRoute: serializeVideo(`/watch/${currentId}`, { videoUrl: src }),
-      }];
+      return [
+        {
+          id: `${currentId}:${src}`,
+          src,
+          title: promo.title,
+          posterUrl:
+            promo.trailer.images?.large_image_url ||
+            promo.trailer.images?.medium_image_url ||
+            undefined,
+          playerRoute: serializeVideo(`/watch/${currentId}`, { videoUrl: src }),
+        },
+      ];
     });
   }, [animeVideos, currentId]);
-  const musicQueue = useMemo(() => (animeVideos?.music_videos || []).flatMap(music => {
-    const src = music.video?.embed_url;
-    return src ? [{ id: `${currentId}:${src}`, src, title: music.title,
-      posterUrl: music.video.images?.large_image_url || undefined,
-      playerRoute: serializeVideo(`/watch/${currentId}`, { videoUrl: src }) }] : [];
-  }), [animeVideos, currentId]);
-  const promoIndex = promoQueue.findIndex(video => video.src === videoFromQuery);
-  const musicIndex = musicQueue.findIndex(video => video.src === videoFromQuery);
-  const queue = (musicIndex >= 0 && promoIndex < 0) || promoQueue.length === 0 ? musicQueue : promoQueue;
+  const musicQueue = useMemo(
+    () =>
+      (animeVideos?.music_videos || []).flatMap((music) => {
+        const src = music.video?.embed_url;
+        return src
+          ? [
+              {
+                id: `${currentId}:${src}`,
+                src,
+                title: music.title,
+                posterUrl: music.video.images?.large_image_url || undefined,
+                playerRoute: serializeVideo(`/watch/${currentId}`, { videoUrl: src }),
+              },
+            ]
+          : [];
+      }),
+    [animeVideos, currentId],
+  );
+  const promoIndex = promoQueue.findIndex((video) => video.src === videoFromQuery);
+  const musicIndex = musicQueue.findIndex((video) => video.src === videoFromQuery);
+  const queue =
+    (musicIndex >= 0 && promoIndex < 0) || promoQueue.length === 0 ? musicQueue : promoQueue;
   const selectedIndex = Math.max(0, queue === musicQueue ? musicIndex : promoIndex);
   const selectedVideo = queue[selectedIndex];
   const selectedVideoUrl = selectedVideo?.src || null;
@@ -103,15 +122,12 @@ export default function WatchPage() {
               : selectedAnime.title
             : selectedVideoTitle,
           subtitle: "Watched Promo / Video",
-          image:
-            selectedVideoPoster ||
-            selectedAnime?.images?.webp?.image_url ||
-            "",
+          image: selectedVideoPoster || selectedAnime?.images?.webp?.image_url || "",
           href: selectedVideoUrl
             ? serializeVideo(`/watch/${currentId}`, { videoUrl: selectedVideoUrl })
             : `/watch/${currentId}`,
         }
-      : null
+      : null,
   );
 
   if (isLoading || isLoadingVideos) return <WatchSkeleton />;
@@ -120,9 +136,7 @@ export default function WatchPage() {
     <div className="flex h-screen overflow-hidden">
       {/* LEFT SIDEBAR */}
       <aside className="hidden w-64 flex-shrink-0 flex-col overflow-hidden border-r bg-sidebar text-sidebar-foreground md:flex">
-        <h2 className="p-4 text-sm font-semibold">
-          RECENT ANIME
-        </h2>
+        <h2 className="p-4 text-sm font-semibold">RECENT ANIME</h2>
 
         <ScrollArea className="flex-grow">
           <div className="space-y-2 p-4">
@@ -132,7 +146,7 @@ export default function WatchPage() {
                   key={`${pageIndex}-${animeData.content}-${animeData.entry[0].mal_id}`}
                   animeData={animeData}
                 />
-              ))
+              )),
             )}
           </div>
 
@@ -140,7 +154,9 @@ export default function WatchPage() {
 
           {hasNextPage &&
             Array.from({ length: 4 }).map((_, index) => (
-              <div key={`next-page-loading-${index}`} className="m-4"><RecentAnimeSkeleton /></div>
+              <div key={`next-page-loading-${index}`} className="m-4">
+                <RecentAnimeSkeleton />
+              </div>
             ))}
         </ScrollArea>
       </aside>
@@ -150,14 +166,31 @@ export default function WatchPage() {
         <ScrollArea className="h-full">
           <WatchAnimeDetails id={currentId} />
           {promoQueue.length === 0 && (
-            <EmptyState illustration="not-found" compact title={t("watch.noPromos")}
-              description={musicQueue.length > 0 ? t("watch.playingMusicInstead") : t("watch.noVideosDescription")} />
+            <EmptyState
+              illustration="not-found"
+              compact
+              title={t("watch.noPromos")}
+              description={
+                musicQueue.length > 0
+                  ? t("watch.playingMusicInstead")
+                  : t("watch.noVideosDescription")
+              }
+            />
           )}
-          {selectedVideo && <p className="px-4 py-2 text-sm text-muted-foreground">{t(queue === musicQueue ? "watch.musicQueue" : "watch.promoQueue", { current: selectedIndex + 1, total: queue.length })}</p>}
+          {selectedVideo && (
+            <p className="px-4 py-2 text-sm text-muted-foreground">
+              {t(queue === musicQueue ? "watch.musicQueue" : "watch.promoQueue", {
+                current: selectedIndex + 1,
+                total: queue.length,
+              })}
+            </p>
+          )}
           <VideoTabs
             animeVideos={animeVideos}
             selectedVideoUrl={selectedVideoUrl ?? ""}
-            onVideoSelect={(url: string) => { void setVideoUrl(url); }}
+            onVideoSelect={(url: string) => {
+              void setVideoUrl(url);
+            }}
           />
 
           {/* RECOMMENDED ANIME */}
@@ -168,32 +201,35 @@ export default function WatchPage() {
               {data?.pages.flatMap((page, pageIndex) =>
                 page.data.flatMap((animeData: any, groupIndex: number) =>
                   animeData.entry.map((anime: AnimeEntry, animeIndex: number) => (
-                    <AnimeHoverPreview key={`${pageIndex}-${groupIndex}-${animeIndex}-${animeData.content}-${anime.mal_id}`} animeId={anime.mal_id} title={anime.title} poster={anime.images.webp.image_url}>
-                    <Card
-                      className="cursor-pointer overflow-hidden transition-colors hover:bg-accent"
-                      onClick={() => router.push(`/watch/${anime.mal_id}`)}
+                    <AnimeHoverPreview
+                      key={`${pageIndex}-${groupIndex}-${animeIndex}-${animeData.content}-${anime.mal_id}`}
+                      animeId={anime.mal_id}
+                      title={anime.title}
+                      poster={anime.images.webp.image_url}
                     >
-                      <div className="relative aspect-video">
-                        <Image
-                          src={anime.images.webp.image_url}
-                          alt={anime.title}
-                          layout="fill"
-                          objectFit="cover"
-                        />
-                      </div>
+                      <Card
+                        className="cursor-pointer overflow-hidden transition-colors hover:bg-accent"
+                        onClick={() => router.push(`/watch/${anime.mal_id}`)}
+                      >
+                        <div className="relative aspect-video">
+                          <Image
+                            src={anime.images.webp.image_url}
+                            alt={anime.title}
+                            layout="fill"
+                            objectFit="cover"
+                          />
+                        </div>
 
-                      <div className="p-2">
-                        <h3 className="font-medium text-sm line-clamp-2">
-                          {anime.title}
-                        </h3>
-                        <p className="text-xs text-muted-foreground">
-                          MyAnimeList ID: {anime.mal_id}
-                        </p>
-                      </div>
-                    </Card>
+                        <div className="p-2">
+                          <h3 className="font-medium text-sm line-clamp-2">{anime.title}</h3>
+                          <p className="text-xs text-muted-foreground">
+                            MyAnimeList ID: {anime.mal_id}
+                          </p>
+                        </div>
+                      </Card>
                     </AnimeHoverPreview>
-                  ))
-                )
+                  )),
+                ),
               )}
             </div>
           </div>

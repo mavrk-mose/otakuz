@@ -1,15 +1,15 @@
-"use client"
+"use client";
 
-import { useState } from 'react';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Calendar, MapPin, Users, Ticket, Share2 } from 'lucide-react';
-import { motion } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useI18n } from '@/components/i18n-provider';
-import { ShareContentModal } from '@/components/chat/share-content-modal';
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar, MapPin, Users, Ticket, Share2 } from "lucide-react";
+import { motion } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
+import { useI18n } from "@/components/i18n-provider";
+import { ShareContentModal } from "@/components/chat/share-content-modal";
 
 interface EventCardProps {
   event: {
@@ -32,19 +32,11 @@ export function EventCard({ event }: EventCardProps) {
   const { locale, t } = useI18n();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-    >
+    <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
       <Card className="overflow-hidden">
         <Link href={`/events/${event.id}`}>
           <div className="relative h-48">
-            <Image
-              src={event.thumbnailUrl}
-              alt={event.title}
-              fill
-              className="object-cover"
-            />
+            <Image src={event.thumbnailUrl} alt={event.title} fill className="object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
             <div className="absolute top-4 right-4">
               <Badge>{event.category}</Badge>
@@ -54,7 +46,9 @@ export function EventCard({ event }: EventCardProps) {
               <div className="flex items-center gap-4 text-white/80 text-sm">
                 <div className="flex items-center gap-1">
                   <Calendar className="w-4 h-4" />
-                  {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { dateStyle: "long" }).format(new Date(event.date))}
+                  {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", {
+                    dateStyle: "long",
+                  }).format(new Date(event.date))}
                 </div>
                 <div className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
@@ -75,7 +69,9 @@ export function EventCard({ event }: EventCardProps) {
                 <p className="text-xs text-muted-foreground">{t("events.startingFrom")}</p>
                 <p className="text-base font-bold">${event.price}</p>
               </div>
-            ) : <div />}
+            ) : (
+              <div />
+            )}
             <div className="flex items-center gap-2">
               <Button
                 size="sm"
@@ -101,7 +97,7 @@ export function EventCard({ event }: EventCardProps) {
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
         payload={{
-          type: 'event',
+          type: "event",
           data: {
             id: event.id,
             title: event.title,

@@ -2,17 +2,11 @@
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import * as React from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ThemeToggleProps {
   className?: string;
@@ -63,25 +57,21 @@ export function ThemeToggle({ className, showLabel = false }: ThemeToggleProps) 
             <div className="relative flex items-center justify-center">
               <Sun
                 className={`h-4 w-4 text-amber-500 transition-all duration-300 ${
-                  isDark
-                    ? "rotate-90 scale-0 opacity-0"
-                    : "rotate-0 scale-100 opacity-100"
+                  isDark ? "rotate-90 scale-0 opacity-0" : "rotate-0 scale-100 opacity-100"
                 }`}
               />
               <Moon
                 className={`h-4 w-4 text-rose-400 absolute transition-all duration-300 ${
-                  isDark
-                    ? "rotate-0 scale-100 opacity-100"
-                    : "-rotate-90 scale-0 opacity-0"
+                  isDark ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-0 opacity-0"
                 }`}
               />
             </div>
             {showLabel && (
-              <span className="text-xs font-semibold">
-                {isDark ? "Creamy Mode" : "Dark Mode"}
-              </span>
+              <span className="text-xs font-semibold">{isDark ? "Creamy Mode" : "Dark Mode"}</span>
             )}
-            <span className="sr-only"><I18nText message="nav.themeLabel" /></span>
+            <span className="sr-only">
+              <I18nText message="nav.themeLabel" />
+            </span>
           </Button>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs font-medium">

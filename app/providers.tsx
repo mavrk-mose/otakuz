@@ -33,8 +33,7 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
 
   useEffect(() => {
     const unsubscribe = useAuthStore.subscribe((state, previous) => {
-      if (state.user?.uid !== previous.user?.uid)
-        clearAccountQueries(queryClient);
+      if (state.user?.uid !== previous.user?.uid) clearAccountQueries(queryClient);
     });
     const refresh = () => {
       if (document.visibilityState === "visible" && navigator.onLine)
@@ -50,7 +49,8 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
   useEffect(() => useAuthStore.getState().subscribeAuth(), []);
 
   useEffect(() => {
-    notificationStartup ??= useNotificationsStore.getState()
+    notificationStartup ??= useNotificationsStore
+      .getState()
       .enableWebNotifications()
       .then(async (result) => {
         // Authentication can finish while the browser permission prompt is open.
@@ -66,8 +66,7 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
     if (!posthogKey) return;
 
     posthog.init(posthogKey, {
-      api_host:
-        process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
+      api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com",
       disable_session_recording: true,
       person_profiles: "always",
       debug: false,
@@ -89,12 +88,12 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
         },
       }}
     >
-      {process.env.NODE_ENV === "development" && (
-        <ReactQueryDevtools initialIsOpen={false} />
-      )}
+      {process.env.NODE_ENV === "development" && <ReactQueryDevtools initialIsOpen={false} />}
       <PostHogProvider client={posthog}>
         <NextThemesProvider {...props}>
-          <NuqsAdapter><I18nProvider>{children}</I18nProvider></NuqsAdapter>
+          <NuqsAdapter>
+            <I18nProvider>{children}</I18nProvider>
+          </NuqsAdapter>
         </NextThemesProvider>
       </PostHogProvider>
     </PersistQueryClientProvider>

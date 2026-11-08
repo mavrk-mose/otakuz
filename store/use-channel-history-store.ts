@@ -26,7 +26,7 @@ export const useChannelHistoryStore = create<ChannelHistoryStore>()(
           recentlyViewed: [
             { ...channel, viewedAt: Date.now() },
             ...state.recentlyViewed.filter(
-              (recentChannel) => recentChannel.channelId !== channel.channelId
+              (recentChannel) => recentChannel.channelId !== channel.channelId,
             ),
           ].slice(0, MAX_RECENT_CHANNELS),
         })),
@@ -36,6 +36,6 @@ export const useChannelHistoryStore = create<ChannelHistoryStore>()(
       name: "otakuz-channel-history",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ recentlyViewed: state.recentlyViewed }),
-    }
-  )
+    },
+  ),
 );

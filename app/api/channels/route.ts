@@ -2,8 +2,7 @@ import { NextResponse } from "next/server";
 
 import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
 
-const ANIMATION_PLAYLIST_URL =
-  "https://iptv-org.github.io/iptv/categories/animation.m3u";
+const ANIMATION_PLAYLIST_URL = "https://iptv-org.github.io/iptv/categories/animation.m3u";
 
 function splitExtInf(line: string) {
   let isQuoted = false;
@@ -39,9 +38,7 @@ function getCountryCode(channelId: string) {
   const baseId = channelId.split("@")[0];
   const countryCode = baseId.split(".").at(-1);
 
-  return countryCode && /^[a-z]{2}$/i.test(countryCode)
-    ? countryCode.toUpperCase()
-    : null;
+  return countryCode && /^[a-z]{2}$/i.test(countryCode) ? countryCode.toUpperCase() : null;
 }
 
 function getDisplayName(title: string) {
@@ -145,7 +142,7 @@ export async function GET() {
 
     return NextResponse.json(
       { error: "Animation channels are temporarily unavailable." },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }

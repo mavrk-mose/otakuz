@@ -13,10 +13,7 @@ export default function NewsArticleLoading() {
           <Skeleton className="h-4 w-36" />
         </div>
       </div>
-      <section
-        className="mx-auto w-full max-w-[1400px] px-6 pb-8 pt-8"
-        aria-hidden="true"
-      >
+      <section className="mx-auto w-full max-w-[1400px] px-6 pb-8 pt-8" aria-hidden="true">
         <div className="mb-4 flex gap-2">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-4 w-28" />
@@ -56,10 +53,7 @@ export default function NewsArticleLoading() {
       <div className="border-y px-6 py-2.5">
         <Skeleton className="mx-auto h-5 w-full max-w-[1400px]" />
       </div>
-      <div
-        className="mx-auto max-w-3xl space-y-3 px-6 py-10"
-        aria-hidden="true"
-      >
+      <div className="mx-auto max-w-3xl space-y-3 px-6 py-10" aria-hidden="true">
         {Array.from({ length: 8 }, (_, i) => (
           <Skeleton key={i} className="h-5 w-full" />
         ))}

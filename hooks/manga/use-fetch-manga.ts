@@ -6,25 +6,31 @@ import { mediaRecordSchema } from "@/lib/schemas/media";
 import type { MangaResponse } from "@/types/manga";
 
 const useFetchManga = () => {
-    const {
-        data,
-        isLoading,
-        fetchNextPage,
-        hasNextPage
-    } = useInfiniteMediaList({
-        mediaType: 'manga'
-    });
+  const { data, isLoading, fetchNextPage, hasNextPage } = useInfiniteMediaList({
+    mediaType: "manga",
+  });
 
-    return {
-        data,
-        isLoading,
-        fetchNextPage,
-        hasNextPage
-    };
+  return {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+  };
 };
 
 export default useFetchManga;
 
 export async function getTopManga() {
-    return (await fetchJson(`${API_BASE_URL}/top/manga`, z.object({ data: z.array(z.custom<MangaResponse["data"][number]>(value => mediaRecordSchema.safeParse(value).success)) }))).data;
+  return (
+    await fetchJson(
+      `${API_BASE_URL}/top/manga`,
+      z.object({
+        data: z.array(
+          z.custom<MangaResponse["data"][number]>(
+            (value) => mediaRecordSchema.safeParse(value).success,
+          ),
+        ),
+      }),
+    )
+  ).data;
 }

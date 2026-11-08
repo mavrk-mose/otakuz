@@ -18,26 +18,28 @@ interface RecentAnimeProps {
 const RecentAnime = ({ animeData }: RecentAnimeProps) => (
   <>
     {animeData.entry.map((anime: AnimeEntry) => (
-      <AnimeHoverPreview key={anime.mal_id} animeId={anime.mal_id} title={anime.title} poster={anime.images.webp.image_url}>
-      <Link
-        href={`/watch/${anime.mal_id}`}
-        className="block"
+      <AnimeHoverPreview
+        key={anime.mal_id}
+        animeId={anime.mal_id}
+        title={anime.title}
+        poster={anime.images.webp.image_url}
       >
-        <Card className="flex cursor-pointer items-center space-x-2 bg-card p-2 transition-colors hover:bg-sidebar-accent">
-          <div className="relative w-16 h-24">
-            <Image
-              src={anime.images.webp.small_image_url}
-              alt={anime.title}
-              fill
-              className="object-cover rounded"
-            />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium line-clamp-2">{anime.title}</h3>
-            <p className="truncate text-xs text-muted-foreground">{animeData.user.username}</p>
-          </div>
-        </Card>
-      </Link>
+        <Link href={`/watch/${anime.mal_id}`} className="block">
+          <Card className="flex cursor-pointer items-center space-x-2 bg-card p-2 transition-colors hover:bg-sidebar-accent">
+            <div className="relative w-16 h-24">
+              <Image
+                src={anime.images.webp.small_image_url}
+                alt={anime.title}
+                fill
+                className="object-cover rounded"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-medium line-clamp-2">{anime.title}</h3>
+              <p className="truncate text-xs text-muted-foreground">{animeData.user.username}</p>
+            </div>
+          </Card>
+        </Link>
       </AnimeHoverPreview>
     ))}
   </>

@@ -17,10 +17,7 @@ export function RecommendationsSkeleton({ title }: { title?: string }) {
       <ScrollArea className="w-full min-w-0 max-w-full">
         <div className="flex w-max gap-4 py-2">
           {Array.from({ length: 4 }, (_, index) => (
-            <div
-              key={index}
-              className="w-[210px] shrink-0 sm:w-[240px] md:w-[260px]"
-            >
+            <div key={index} className="w-[210px] shrink-0 sm:w-[240px] md:w-[260px]">
               <MediaCardSkeleton count={1} variant="recommendation" />
             </div>
           ))}

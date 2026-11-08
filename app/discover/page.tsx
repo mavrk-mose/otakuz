@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SwipableAnimeCard } from "@/components/anime/swipable-anime-card";
 import { Button } from "@/components/ui/button";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
@@ -31,22 +25,13 @@ export default function DiscoverPage() {
   const [isSwiping, setIsSwiping] = useState(false);
   const [swipeRequest, setSwipeRequest] = useState<SwipeRequest | null>(null);
   const lastFetchTriggerIndex = useRef<number | null>(null);
-  const {
-    data,
-    isLoading,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useFetchAnime();
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchAnime();
 
   // Rankings can move between requests. De-duplicating here keeps React keys and
   // the position of the active card stable while another page is appended.
   const animeList = useMemo(() => {
     const animeById = new Map(
-      (data?.pages.flatMap((page) => page.data) ?? []).map((anime) => [
-        anime.mal_id,
-        anime,
-      ])
+      (data?.pages.flatMap((page) => page.data) ?? []).map((anime) => [anime.mal_id, anime]),
     );
 
     return Array.from(animeById.values());
@@ -85,22 +70,13 @@ export default function DiscoverPage() {
       lastFetchTriggerIndex.current = currentIndex;
       void fetchNextPage();
     }
-  }, [
-    animeList.length,
-    currentIndex,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  ]);
+  }, [animeList.length, currentIndex, fetchNextPage, hasNextPage, isFetchingNextPage]);
 
   if (isLoading) {
     return <DiscoverSkeleton />;
   }
 
-  const visibleAnime = animeList.slice(
-    currentIndex,
-    currentIndex + VISIBLE_CARDS
-  );
+  const visibleAnime = animeList.slice(currentIndex, currentIndex + VISIBLE_CARDS);
   const hasCurrentCard = visibleAnime.length > 0;
 
   if (!hasCurrentCard && isFetchingNextPage) {
@@ -120,11 +96,7 @@ export default function DiscoverPage() {
             anime={anime}
             onSwipe={handleSwipe}
             onSwipeStart={() => setIsSwiping(true)}
-            swipeRequest={
-              swipeRequest?.animeId === anime.mal_id
-                ? swipeRequest
-                : null
-            }
+            swipeRequest={swipeRequest?.animeId === anime.mal_id ? swipeRequest : null}
             index={index}
             total={visibleAnime.length}
           />

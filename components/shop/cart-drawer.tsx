@@ -1,17 +1,17 @@
-"use client"
+"use client";
 
 import { EmptyState } from "@/components/empty-state";
 
-import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Minus, Plus, Trash2 } from 'lucide-react';
-import Image from 'next/image';
-import { usePostHog } from 'posthog-js/react';
-import { useState } from 'react';
-import {urlFor} from "@/lib/sanity";
-import { useCart } from '@/store/use-cart';
-import { useI18n } from '@/components/i18n-provider';
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Minus, Plus, Trash2 } from "lucide-react";
+import Image from "next/image";
+import { usePostHog } from "posthog-js/react";
+import { useState } from "react";
+import { urlFor } from "@/lib/sanity";
+import { useCart } from "@/store/use-cart";
+import { useI18n } from "@/components/i18n-provider";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -22,27 +22,32 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const { t } = useI18n();
   const { items, removeFromCart, updateQuantity } = useCart();
   const [customerInfo, setCustomerInfo] = useState({
-    name: '',
-    phone: '',
-    email: '',
-    address: ''
+    name: "",
+    phone: "",
+    email: "",
+    address: "",
   });
 
   const posthog = usePostHog();
 
-  const total = items.reduce((sum, item) => sum + (item.price * (item.stock || 1)), 0);
+  const total = items.reduce((sum, item) => sum + item.price * (item.stock || 1), 0);
 
   const handleCheckout = async () => {
-    const message = `New Order:\n\n${items.map(item => 
-      `${item.name} x${item.stock || 1} - $${(item.price * (item.stock || 1)).toFixed(2)}`
-    ).join('\n')}\n\nTotal: $${total.toFixed(2)}\n\nCustomer Details:\nName: ${customerInfo.name}\nPhone: ${customerInfo.phone}\nEmail: ${customerInfo.email}\nAddress: ${customerInfo.address}`;
+    const message = `New Order:\n\n${items
+      .map(
+        (item) =>
+          `${item.name} x${item.stock || 1} - $${(item.price * (item.stock || 1)).toFixed(2)}`,
+      )
+      .join(
+        "\n",
+      )}\n\nTotal: $${total.toFixed(2)}\n\nCustomer Details:\nName: ${customerInfo.name}\nPhone: ${customerInfo.phone}\nEmail: ${customerInfo.email}\nAddress: ${customerInfo.address}`;
 
     //TODO get the number from environment variables
     const whatsappUrl = `https://wa.me/255768159239?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappUrl, "_blank");
     onClose();
 
-    posthog.capture('checkout clicked')
+    posthog.capture("checkout clicked");
   };
 
   return (
@@ -55,7 +60,11 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex min-h-0 flex-1 flex-col">
           <ScrollArea className="min-h-0 flex-1 -mx-6 px-6">
             {items.length === 0 ? (
-              <EmptyState illustration="cart" title={t("shop.emptyCart")} description={t("empty.cartDescription")} />
+              <EmptyState
+                illustration="cart"
+                title={t("shop.emptyCart")}
+                description={t("empty.cartDescription")}
+              />
             ) : (
               <div className="space-y-4 py-4">
                 {items.map((item) => (
@@ -70,9 +79,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     </div>
                     <div className="min-w-0 flex-1">
                       <h3 className="break-words font-medium">{item.name}</h3>
-                      <p className="text-sm text-muted-foreground">
-                        Tshs. {item.price.toFixed(2)}
-                      </p>
+                      <p className="text-sm text-muted-foreground">Tshs. {item.price.toFixed(2)}</p>
                       <div className="flex flex-wrap items-center gap-2 mt-2">
                         <Button
                           variant="outline"
@@ -115,27 +122,35 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       placeholder={t("shop.name")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.name}
-                      onChange={(e) => setCustomerInfo(prev => ({ ...prev, name: e.target.value }))}
+                      onChange={(e) =>
+                        setCustomerInfo((prev) => ({ ...prev, name: e.target.value }))
+                      }
                     />
                     <input
                       type="tel"
                       placeholder={t("shop.phone")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.phone}
-                      onChange={(e) => setCustomerInfo(prev => ({ ...prev, phone: e.target.value }))}
+                      onChange={(e) =>
+                        setCustomerInfo((prev) => ({ ...prev, phone: e.target.value }))
+                      }
                     />
                     <input
                       type="email"
                       placeholder={t("shop.email")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.email}
-                      onChange={(e) => setCustomerInfo(prev => ({ ...prev, email: e.target.value }))}
+                      onChange={(e) =>
+                        setCustomerInfo((prev) => ({ ...prev, email: e.target.value }))
+                      }
                     />
                     <textarea
                       placeholder={t("shop.deliveryAddress")}
                       className="w-full p-2 border rounded"
                       value={customerInfo.address}
-                      onChange={(e) => setCustomerInfo(prev => ({ ...prev, address: e.target.value }))}
+                      onChange={(e) =>
+                        setCustomerInfo((prev) => ({ ...prev, address: e.target.value }))
+                      }
                     />
                   </div>
                 </div>

@@ -1,13 +1,13 @@
-"use client"
+"use client";
 
-import { useState } from 'react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Heart } from 'lucide-react';
-import { Comment } from '@/types/anime';
-import { useI18n } from '@/components/i18n-provider';
+import { useState } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Heart } from "lucide-react";
+import { Comment } from "@/types/anime";
+import { useI18n } from "@/components/i18n-provider";
 
 interface CommentSectionProps {
   animeId?: string;
@@ -16,31 +16,29 @@ interface CommentSectionProps {
 export function CommentSection() {
   const { locale, t } = useI18n();
   const [comments, setComments] = useState<Comment[]>([]);
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState("");
 
   const addComment = () => {
     if (!newComment.trim()) return;
 
     const comment: Comment = {
       id: Date.now().toString(),
-      userId: 'user-1', // Replace with actual user ID
-      username: 'User', // Replace with actual username
+      userId: "user-1", // Replace with actual user ID
+      username: "User", // Replace with actual username
       content: newComment,
       timestamp: Date.now(),
-      likes: 0
+      likes: 0,
     };
 
-    setComments(prev => [comment, ...prev]);
-    setNewComment('');
+    setComments((prev) => [comment, ...prev]);
+    setNewComment("");
   };
 
   const handleLike = (commentId: string) => {
-    setComments(prev =>
-      prev.map(comment =>
-        comment.id === commentId
-          ? { ...comment, likes: comment.likes + 1 }
-          : comment
-      )
+    setComments((prev) =>
+      prev.map((comment) =>
+        comment.id === commentId ? { ...comment, likes: comment.likes + 1 } : comment,
+      ),
     );
   };
 
@@ -51,12 +49,9 @@ export function CommentSection() {
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
           placeholder={t("comments.placeholder")}
-          onKeyPress={(e) => e.key === 'Enter' && addComment()}
+          onKeyPress={(e) => e.key === "Enter" && addComment()}
         />
-        <Button 
-          onClick={addComment}
-          className="mt-2 w-full"
-        >
+        <Button onClick={addComment} className="mt-2 w-full">
           {t("comments.submit")}
         </Button>
       </div>
@@ -72,7 +67,9 @@ export function CommentSection() {
                 <div className="flex items-baseline gap-2">
                   <span className="font-medium">{comment.username}</span>
                   <span className="text-xs text-muted-foreground">
-                    {new Date(comment.timestamp).toLocaleString(locale === "ja" ? "ja-JP" : "en-US")}
+                    {new Date(comment.timestamp).toLocaleString(
+                      locale === "ja" ? "ja-JP" : "en-US",
+                    )}
                   </span>
                 </div>
                 <p className="mt-1">{comment.content}</p>

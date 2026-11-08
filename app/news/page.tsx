@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/empty-state";
 import { I18nText } from "@/components/i18n-text";
 
-
 import { NewsPageSkeleton } from "@/components/skeletons/news-skeleton";
 
 import { Suspense, useMemo } from "react";
@@ -43,8 +42,18 @@ const CATEGORIES = [
 function NewsContent() {
   const { t: localizedT } = useI18n();
   const { locale, t } = useI18n();
-  const [activeCategory, setActiveCategory] = useQueryState("category", parseAsString.withDefault("All Stories").withOptions({ history: "push", scroll: false }));
-  const { stories: rawStories, highlights, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchNewsStories(activeCategory);
+  const [activeCategory, setActiveCategory] = useQueryState(
+    "category",
+    parseAsString.withDefault("All Stories").withOptions({ history: "push", scroll: false }),
+  );
+  const {
+    stories: rawStories,
+    highlights,
+    isLoading,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useFetchNewsStories(activeCategory);
   const stories: NewsStory[] = useMemo(() => rawStories || [], [rawStories]);
   const leadStory = highlights?.lead[0];
   const secondaryStories = highlights?.lead.slice(1) ?? [];
@@ -80,40 +89,40 @@ function NewsContent() {
       <div className="sticky top-14 lg:top-16 z-30 w-full border-b border-border bg-card/90 backdrop-blur-md shadow-sm">
         <ScrollArea controlSize="sm" className="mx-auto max-w-7xl">
           <div className="flex w-max min-w-full items-center justify-between gap-6 px-6 py-3">
-          <div className="flex shrink-0 items-center gap-4">
-            <span className="font-mono text-sm font-bold uppercase tracking-wider text-rose-500">
-              Otaku Wire
-            </span>
-            <span className="font-mono text-xs text-muted-foreground/50">/</span>
-            <div className="flex items-center gap-2">
-              {CATEGORIES.map((cat) => {
-                const isActive = activeCategory === cat;
-                return (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveCategory(cat)}
-                    className={`rounded-md px-2.5 py-1 text-xs font-semibold transition ${
-                      isActive
-                        ? "bg-rose-500 text-white shadow-sm"
-                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                );
-              })}
+            <div className="flex shrink-0 items-center gap-4">
+              <span className="font-mono text-sm font-bold uppercase tracking-wider text-rose-500">
+                Otaku Wire
+              </span>
+              <span className="font-mono text-xs text-muted-foreground/50">/</span>
+              <div className="flex items-center gap-2">
+                {CATEGORIES.map((cat) => {
+                  const isActive = activeCategory === cat;
+                  return (
+                    <button
+                      key={cat}
+                      onClick={() => setActiveCategory(cat)}
+                      className={`rounded-md px-2.5 py-1 text-xs font-semibold transition ${
+                        isActive
+                          ? "bg-rose-500 text-white shadow-sm"
+                          : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
-          </div>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
-            </span>
-            <span className="font-mono text-xs uppercase tracking-widest text-amber-500">
-              Live Wire // Ep. 248 JST
-            </span>
-          </div>
+            <div className="flex shrink-0 items-center gap-2">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-rose-500" />
+              </span>
+              <span className="font-mono text-xs uppercase tracking-widest text-amber-500">
+                Live Wire // Ep. 248 JST
+              </span>
+            </div>
           </div>
         </ScrollArea>
       </div>
@@ -129,7 +138,8 @@ function NewsContent() {
               </h2>
               <span className="font-mono text-xl font-light text-rose-500">/</span>
               <p className="text-sm text-muted-foreground sm:text-base">
-                Why premier Tokyo animation directors are ditching digital tablets for hand-drawn cel workflows
+                Why premier Tokyo animation directors are ditching digital tablets for hand-drawn
+                cel workflows
               </p>
             </div>
             <div className="h-0.5 w-full bg-gradient-to-r from-rose-500 via-amber-500 to-transparent opacity-80" />
@@ -186,15 +196,19 @@ function NewsContent() {
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="font-semibold text-amber-500">
-                      <I18nText message="news.by" /> {leadStory.authorName || leadStory.author?.name || "Staff"}
+                      <I18nText message="news.by" />{" "}
+                      {leadStory.authorName || leadStory.author?.name || "Staff"}
                     </span>
                     <span>•</span>
                     <span className="font-mono">
                       {leadStory.publishedAt
-                        ? new Date(leadStory.publishedAt).toLocaleDateString(locale === "ja" ? "ja-JP" : "en-US", {
-                            month: "short",
-                            day: "numeric",
-                          })
+                        ? new Date(leadStory.publishedAt).toLocaleDateString(
+                            locale === "ja" ? "ja-JP" : "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                            },
+                          )
                         : "Today"}
                     </span>
                   </div>
@@ -229,7 +243,11 @@ function NewsContent() {
                     <div className="flex flex-col gap-1.5">
                       <span
                         className={`font-mono text-xs uppercase tracking-wider font-semibold ${
-                          idx === 0 ? "text-rose-500" : idx === 1 ? "text-amber-500" : "text-primary"
+                          idx === 0
+                            ? "text-rose-500"
+                            : idx === 1
+                              ? "text-amber-500"
+                              : "text-primary"
                         }`}
                       >
                         {story.tag || "Production Desk"}
@@ -283,7 +301,9 @@ function NewsContent() {
               </h2>
             </div>
             <div className="flex items-center gap-1.5 font-mono text-xs text-muted-foreground">
-              <span><I18nText message="news.realtimeTracker" /></span>
+              <span>
+                <I18nText message="news.realtimeTracker" />
+              </span>
               <TrendingUp className="h-3.5 w-3.5 text-amber-500" />
             </div>
           </div>
@@ -307,11 +327,15 @@ function NewsContent() {
                         {item.title}
                       </h3>
                       <div className="mt-1 flex flex-wrap items-center gap-2 font-mono text-xs text-muted-foreground">
-                        <span className="text-amber-500 font-medium">{item.authorName || item.author?.name || "Staff"}</span>
+                        <span className="text-amber-500 font-medium">
+                          {item.authorName || item.author?.name || "Staff"}
+                        </span>
                         <span>•</span>
                         <span>{formatReadsCount(item.readsCount)}</span>
                         <span>•</span>
-                        <span className="text-rose-500 font-medium">{item.commentsCount ?? 18} comments</span>
+                        <span className="text-rose-500 font-medium">
+                          {item.commentsCount ?? 18} comments
+                        </span>
                       </div>
                     </div>
                   </Link>
@@ -478,13 +502,16 @@ function NewsContent() {
 
                 <div className="mt-6 flex items-center justify-between border-t border-border pt-4">
                   <span className="text-xs font-semibold text-amber-500">
-                    <I18nText message="news.by" /> {anomalyStories[0].authorName || "Makoto Shinkawa"}
+                    <I18nText message="news.by" />{" "}
+                    {anomalyStories[0].authorName || "Makoto Shinkawa"}
                   </span>
                   <Link
                     href={`/news/${encodeURIComponent(anomalyStories[0]._id)}`}
                     className="flex items-center gap-1.5 font-mono text-xs font-semibold text-rose-500 transition hover:underline"
                   >
-                    <span><I18nText message="news.readDossier" /></span>
+                    <span>
+                      <I18nText message="news.readDossier" />
+                    </span>
                     <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
@@ -538,12 +565,39 @@ function NewsContent() {
         <section className="mt-10 space-y-4" aria-label={t("home.latestNews")}>
           <h2 className="text-xl font-bold">{t("home.latestNews")}</h2>
           {!stories.length && <EmptyState illustration="search" title={t("search.noResults")} />}
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{stories.map(story => <Link key={story._id} href={`/news/${story._id}`} className="rounded-xl border bg-card p-4 hover:bg-accent"><h3 className="font-semibold">{story.title}</h3><p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{story.summary || story.description}</p></Link>)}</div>
-          {hasNextPage && <Button variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>{t(isFetchingNextPage ? "common.loading" : "common.loadMore")}</Button>}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {stories.map((story) => (
+              <Link
+                key={story._id}
+                href={`/news/${story._id}`}
+                className="rounded-xl border bg-card p-4 hover:bg-accent"
+              >
+                <h3 className="font-semibold">{story.title}</h3>
+                <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">
+                  {story.summary || story.description}
+                </p>
+              </Link>
+            ))}
+          </div>
+          {hasNextPage && (
+            <Button
+              variant="outline"
+              disabled={isFetchingNextPage}
+              onClick={() => void fetchNextPage()}
+            >
+              {t(isFetchingNextPage ? "common.loading" : "common.loadMore")}
+            </Button>
+          )}
         </section>
       </div>
     </div>
   );
 }
 
-export default function NewsPage() { return <Suspense fallback={<NewsPageSkeleton />}><NewsContent /></Suspense>; }
+export default function NewsPage() {
+  return (
+    <Suspense fallback={<NewsPageSkeleton />}>
+      <NewsContent />
+    </Suspense>
+  );
+}

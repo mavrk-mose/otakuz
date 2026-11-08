@@ -2,7 +2,6 @@
 
 import { I18nText } from "@/components/i18n-text";
 
-
 import { EmptyState } from "@/components/empty-state";
 
 import { useState } from "react";
@@ -40,15 +39,8 @@ interface UserListsProps {
 export function UserLists({ userId, onShare }: UserListsProps) {
   const { t: localizedT } = useI18n();
   const { t } = useI18n();
-  const {
-    lists,
-    listsLoading,
-    isOwner,
-    useListItems,
-    deleteList,
-    updateListSettings,
-    createList,
-  } = useBookmarks(userId);
+  const { lists, listsLoading, isOwner, useListItems, deleteList, updateListSettings, createList } =
+    useBookmarks(userId);
 
   const [selectedList, setSelectedList] = useState<BookmarkList | null>(null);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
@@ -102,9 +94,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
     try {
       await createList(newBoardName.trim(), "custom", newBoardPublic);
       toast.success(
-        newBoardPublic
-          ? localizedT("board.createdPublic")
-          : localizedT("board.createdSecret")
+        newBoardPublic ? localizedT("board.createdPublic") : localizedT("board.createdSecret"),
       );
       setNewBoardName("");
       setNewBoardPublic(true);
@@ -118,7 +108,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
   };
 
   const sortedLists = [...lists].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   );
 
   return (
@@ -127,15 +117,15 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-            <span><I18nText message="profile.savedBoards" /></span>
+            <span>
+              <I18nText message="profile.savedBoards" />
+            </span>
             <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">
               {sortedLists.length}
             </span>
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {isOwner
-              ? localizedT("board.ownerDescription")
-              : localizedT("board.memberDescription")}
+            {isOwner ? localizedT("board.ownerDescription") : localizedT("board.memberDescription")}
           </p>
         </div>
 
@@ -159,9 +149,15 @@ export function UserLists({ userId, onShare }: UserListsProps) {
         </div>
       ) : sortedLists.length === 0 ? (
         <Card className="p-6 text-center border-dashed border-border bg-card/40">
-          <EmptyState illustration="collection" className="py-0"
+          <EmptyState
+            illustration="collection"
+            className="py-0"
             title={isOwner ? localizedT("board.collectionStarts") : localizedT("board.noPublic")}
-            description={isOwner ? localizedT("board.firstDescription") : localizedT("board.noPublicDescription")}
+            description={
+              isOwner
+                ? localizedT("board.firstDescription")
+                : localizedT("board.noPublicDescription")
+            }
           />
           {isOwner && (
             <Button
@@ -196,9 +192,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
                   setListSettingsOpen(true);
                 }}
                 expanded={expandedList === list.id}
-                onExpand={() =>
-                  setExpandedList(expandedList === list.id ? null : list.id)
-                }
+                onExpand={() => setExpandedList(expandedList === list.id ? null : list.id)}
                 useListItems={useListItems}
               />
             ))}
@@ -210,7 +204,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <Dialog open={createBoardOpen} onOpenChange={setCreateBoardOpen}>
         <DialogContent className="sm:max-w-md bg-card border-border text-card-foreground">
           <DialogHeader>
-            <DialogTitle className="text-lg font-bold"><I18nText message="board.create" /></DialogTitle>
+            <DialogTitle className="text-lg font-bold">
+              <I18nText message="board.create" />
+            </DialogTitle>
             <DialogDescription className="text-muted-foreground text-xs">
               <I18nText message="board.introduction" />
             </DialogDescription>
@@ -304,7 +300,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
       <Dialog open={listSettingsOpen} onOpenChange={setListSettingsOpen}>
         <DialogContent className="bg-card border-border text-card-foreground">
           <DialogHeader>
-            <DialogTitle><I18nText message="board.privacySettings" /></DialogTitle>
+            <DialogTitle>
+              <I18nText message="board.privacySettings" />
+            </DialogTitle>
             <DialogDescription className="text-muted-foreground text-xs">
               {t("board.manageNamed", { name: selectedList?.name ?? "" })}
             </DialogDescription>
@@ -319,7 +317,9 @@ export function UserLists({ userId, onShare }: UserListsProps) {
                     <Lock className="h-4 w-4 text-amber-500" />
                   )}
                   <Label className="text-sm font-semibold text-foreground">
-                    {selectedList?.public ? localizedT("board.public") : localizedT("board.privateLabel")}
+                    {selectedList?.public
+                      ? localizedT("board.public")
+                      : localizedT("board.privateLabel")}
                   </Label>
                 </div>
                 <p className="text-xs text-muted-foreground">
@@ -346,9 +346,7 @@ export function UserLists({ userId, onShare }: UserListsProps) {
               </div>
               <Switch
                 checked={!!selectedList?.collaborative}
-                onCheckedChange={(checked) =>
-                  handleUpdateSettings({ collaborative: checked })
-                }
+                onCheckedChange={(checked) => handleUpdateSettings({ collaborative: checked })}
                 className="data-[state=checked]:bg-rose-500"
               />
             </div>
@@ -389,9 +387,7 @@ function ListCard({
   const { t: localizedT } = useI18n();
   const { t } = useI18n();
   const { ref, inView } = useInView();
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useListItems(
-    list.id
-  );
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } = useListItems(list.id);
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -458,7 +454,9 @@ function ListCard({
 
           {allItems.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
-              <p><I18nText message="board.noItems" /></p>
+              <p>
+                <I18nText message="board.noItems" />
+              </p>
             </div>
           ) : (
             <Masonry
@@ -631,7 +629,9 @@ function ListCard({
           ) : (
             <div className="col-span-3 py-10 flex flex-col items-center justify-center text-muted-foreground/60 gap-1">
               <Sparkles className="h-5 w-5 opacity-40" />
-              <span className="text-xs"><I18nText message="board.empty" /></span>
+              <span className="text-xs">
+                <I18nText message="board.empty" />
+              </span>
             </div>
           )}
         </div>

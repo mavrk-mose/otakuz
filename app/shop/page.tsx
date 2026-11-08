@@ -51,7 +51,6 @@ export default function ShopPage() {
             />
           </div>
         </div>
-
       </section>
 
       {/* Shop By Title */}
@@ -101,7 +100,7 @@ export default function ShopPage() {
           <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
             <h2 className="theme-outline-heading min-w-0 break-words text-3xl font-bold leading-none tracking-tighter sm:text-6xl">
               {t("shop.allProducts")}
-              </h2>
+            </h2>
             <Button variant="ghost" asChild>
               <Link href="/shop/products" className="gap-2">
                 {t("common.viewAll")} <ArrowRight className="w-4 h-4" />
@@ -112,7 +111,6 @@ export default function ShopPage() {
           <ProductList category="all" limit={8} />
         </div>
       </section>
-
     </div>
   );
 }

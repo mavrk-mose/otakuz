@@ -3,7 +3,6 @@
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
-
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -42,7 +41,7 @@ export default function CommunityDirectoryPage() {
             u.displayName.toLowerCase().includes(q) ||
             u.username.toLowerCase().includes(q) ||
             (u.rank && u.rank.toLowerCase().includes(q)) ||
-            (u.bio && u.bio.toLowerCase().includes(q))
+            (u.bio && u.bio.toLowerCase().includes(q)),
         )
       : [...users];
 
@@ -82,14 +81,18 @@ export default function CommunityDirectoryPage() {
           >
             <Link href="/">
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span><I18nText message="common.backHome" /></span>
+              <span>
+                <I18nText message="common.backHome" />
+              </span>
             </Link>
           </Button>
 
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="flex items-center gap-2.5 text-2xl font-black tracking-tight text-foreground sm:text-3xl">
               <Users className="h-7 w-7 text-rose-500" />
-              <span><I18nText message="community.directory" /></span>
+              <span>
+                <I18nText message="community.directory" />
+              </span>
             </h1>
             {!isLoading && (
               <span className="rounded-full border border-rose-500/30 bg-rose-500/10 px-3 py-0.5 text-xs font-bold text-rose-500">
@@ -111,7 +114,9 @@ export default function CommunityDirectoryPage() {
         >
           <Link href="/profile">
             <UserIcon className="h-3.5 w-3.5 text-rose-500" />
-            <span><I18nText message="community.myProfile" /></span>
+            <span>
+              <I18nText message="community.myProfile" />
+            </span>
           </Link>
         </Button>
       </div>
@@ -140,10 +145,18 @@ export default function CommunityDirectoryPage() {
             onChange={(e) => setSortBy(e.target.value as SortMode)}
             className="h-10 rounded-xl border border-border bg-background/60 px-3 text-xs font-semibold text-foreground outline-none transition focus:border-rose-500"
           >
-            <option value="active"><I18nText message="community.sortActive" /></option>
-            <option value="level"><I18nText message="community.sortLevel" /></option>
-            <option value="watched"><I18nText message="community.sortWatched" /></option>
-            <option value="name"><I18nText message="community.sortName" /></option>
+            <option value="active">
+              <I18nText message="community.sortActive" />
+            </option>
+            <option value="level">
+              <I18nText message="community.sortLevel" />
+            </option>
+            <option value="watched">
+              <I18nText message="community.sortWatched" />
+            </option>
+            <option value="name">
+              <I18nText message="community.sortName" />
+            </option>
           </select>
         </div>
       </Card>

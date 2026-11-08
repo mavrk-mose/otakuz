@@ -1,44 +1,47 @@
-"use client"
+"use client";
 
-import { useRef, useEffect } from "react"
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { motion } from "framer-motion"
-import useAnimeGenres from "@/hooks/anime/use-anime-genres"
-import type { Genre } from "@/types/anime"
+import { useRef, useEffect } from "react";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { motion } from "framer-motion";
+import useAnimeGenres from "@/hooks/anime/use-anime-genres";
+import type { Genre } from "@/types/anime";
 import { useGenreFilter } from "@/hooks/use-genre-filter";
-import { isEqual } from "@/lib/utils"
+import { isEqual } from "@/lib/utils";
 
 export function GenreStories() {
-  const { genres, isLoadingGenres } = useAnimeGenres()
+  const { genres, isLoadingGenres } = useAnimeGenres();
   const { genre: animeGenre, setGenre: setAnimeGenre } = useGenreFilter();
 
-  const genreRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const genreRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const handleGenreClick = (genre: Genre) => {
-    setAnimeGenre(genre.mal_id.toString())
-  }
+    setAnimeGenre(genre.mal_id.toString());
+  };
 
   useEffect(() => {
-    if (!animeGenre || isLoadingGenres) return
+    if (!animeGenre || isLoadingGenres) return;
 
-    const activeGenreElement = genreRefs.current.get(animeGenre)
+    const activeGenreElement = genreRefs.current.get(animeGenre);
     if (activeGenreElement) {
       activeGenreElement.scrollIntoView({
         behavior: "smooth",
         inline: "center",
         block: "nearest",
-      })
+      });
     }
-  }, [animeGenre, isLoadingGenres])
+  }, [animeGenre, isLoadingGenres]);
 
   if (isLoadingGenres) {
     return (
       <ScrollArea className="w-full min-w-0 max-w-full">
         <div className="flex w-max gap-4 px-10 py-4">
           {[...Array(20)].map((_, i) => (
-            <div key={i} className="flex animate-pulse flex-col items-center motion-reduce:animate-none">
+            <div
+              key={i}
+              className="flex animate-pulse flex-col items-center motion-reduce:animate-none"
+            >
               <div className="w-16 h-16 rounded-full bg-muted" />
               <div className="w-16 h-5 mt-2 rounded bg-muted" />
             </div>
@@ -46,7 +49,7 @@ export function GenreStories() {
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
-    )
+    );
   }
 
   return (
@@ -54,7 +57,7 @@ export function GenreStories() {
       <ScrollArea className="w-full min-w-0 max-w-full">
         <div ref={scrollContainerRef} className="flex w-max gap-4 px-10 py-4">
           {genres?.map((genre: Genre) => {
-            const isActive = isEqual(genre.mal_id.toString(), animeGenre)
+            const isActive = isEqual(genre.mal_id.toString(), animeGenre);
             return (
               <motion.button
                 key={genre.mal_id}
@@ -64,7 +67,7 @@ export function GenreStories() {
                 onClick={() => handleGenreClick(genre)}
                 ref={(el) => {
                   if (el) {
-                    genreRefs.current.set(genre.mal_id.toString(), el)
+                    genreRefs.current.set(genre.mal_id.toString(), el);
                   }
                 }}
                 aria-pressed={isActive}
@@ -88,11 +91,11 @@ export function GenreStories() {
                 </Avatar>
                 <span className="text-sm mt-2 text-muted-foreground">{genre.name}</span>
               </motion.button>
-            )
+            );
           })}
         </div>
         <ScrollBar orientation="horizontal" />
       </ScrollArea>
     </>
-  )
+  );
 }

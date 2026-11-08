@@ -147,10 +147,7 @@ export type RecentAnime = PaginatedResponse<
   PaginationBase & { current_page: number }
 >;
 
-export type PaginatedAnime = PaginatedResponse<
-  AnimeDetails[],
-  DetailedPagination
->;
+export type PaginatedAnime = PaginatedResponse<AnimeDetails[], DetailedPagination>;
 
 export type ScheduleAnime = {
   mal_id: number;
@@ -168,10 +165,7 @@ export type ScheduleAnime = {
   }>;
 };
 
-export type AnimeScheduleResponse = PaginatedResponse<
-  ScheduleAnime[],
-  DetailedPagination
->;
+export type AnimeScheduleResponse = PaginatedResponse<ScheduleAnime[], DetailedPagination>;
 
 export type TrailerImageSizes = {
   image_url: Nullable<string>;

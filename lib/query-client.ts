@@ -1,8 +1,4 @@
-import {
-  QueryClient,
-  defaultShouldDehydrateQuery,
-  type Query,
-} from "@tanstack/react-query";
+import { QueryClient, defaultShouldDehydrateQuery, type Query } from "@tanstack/react-query";
 
 const MINUTE = 60_000;
 const HOUR = 60 * MINUTE;
@@ -57,9 +53,7 @@ export function shouldPersistQuery(query: Query): boolean {
   return (
     defaultShouldDehydrateQuery(query) &&
     query.meta?.persist === true &&
-    PUBLIC_POLICIES.some(([prefix]) =>
-      prefix.every((part, i) => query.queryKey[i] === part),
-    )
+    PUBLIC_POLICIES.some(([prefix]) => prefix.every((part, i) => query.queryKey[i] === part))
   );
 }
 
@@ -80,12 +74,7 @@ export function createAppQueryClient() {
   for (const [prefix, staleTime] of PUBLIC_POLICIES) {
     client.setQueryDefaults(prefix, { staleTime, meta: { persist: true } });
   }
-  for (const family of [
-    "lists",
-    "listItems",
-    "bookmarkLists",
-    "communityUsers",
-  ]) {
+  for (const family of ["lists", "listItems", "bookmarkLists", "communityUsers"]) {
     client.setQueryDefaults([family], {
       staleTime: 2 * MINUTE,
       gcTime: 30 * MINUTE,
@@ -118,9 +107,7 @@ export function refreshStaleQueries(client: QueryClient) {
 export function clearAccountQueries(client: QueryClient) {
   const filters = {
     predicate: (query: Query) =>
-      !PUBLIC_POLICIES.some(([prefix]) =>
-        prefix.every((part, i) => query.queryKey[i] === part),
-      ),
+      !PUBLIC_POLICIES.some(([prefix]) => prefix.every((part, i) => query.queryKey[i] === part)),
   };
   void client.cancelQueries(filters);
   client.removeQueries(filters);

@@ -74,8 +74,7 @@ export function CalendarSection() {
     limit: 25,
   });
 
-  const isRateLimited =
-    error instanceof Error && /rate.?limit/i.test(error.message);
+  const isRateLimited = error instanceof Error && /rate.?limit/i.test(error.message);
 
   const schedules =
     data?.pages.reduce((acc, page) => {
@@ -94,7 +93,7 @@ export function CalendarSection() {
 
   // Flatten all anime entries for limiting visible items
   const allAnimeEntries = sortedTimes.flatMap((time) =>
-    schedules[time].map((anime) => ({ time, anime }))
+    schedules[time].map((anime) => ({ time, anime })),
   );
 
   const visibleAnimeEntries = allAnimeEntries.slice(0, visibleEntries);
@@ -200,11 +199,7 @@ export function CalendarSection() {
               damping: 30,
             }}
           >
-            <Tabs
-              value={activeDay ?? ""}
-              onValueChange={handleDayChange}
-              className="w-full"
-            >
+            <Tabs value={activeDay ?? ""} onValueChange={handleDayChange} className="w-full">
               <TabsList
                 aria-label={t("calendar.weekDays")}
                 className="w-full h-auto bg-card/50 p-1 overflow-x-auto flex space-x-1 no-scrollbar"
@@ -217,12 +212,8 @@ export function CalendarSection() {
                         className="flex-1 min-w-[70px] sm:min-w-[100px] py-3 sm:py-4 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                       >
                         <div className="flex flex-col items-center">
-                          <span className="font-medium text-xs sm:text-sm">
-                            {day.dayName}
-                          </span>
-                          <span className="text-sm opacity-80">
-                            {day.dateLabel}
-                          </span>
+                          <span className="font-medium text-xs sm:text-sm">{day.dayName}</span>
+                          <span className="text-sm opacity-80">{day.dateLabel}</span>
                         </div>
                       </TabsTrigger>
                     ))
@@ -270,8 +261,13 @@ export function CalendarSection() {
           {isError && !data?.pages.length ? (
             <ErrorState
               title={isRateLimited ? t("calendar.rateLimited") : t("calendar.loadFailed")}
-              description={isRateLimited ? t("calendar.rateLimitedDescription") : t("calendar.loadFailedDescription")}
-              onRetry={() => void refetch()} retrying={isFetching}
+              description={
+                isRateLimited
+                  ? t("calendar.rateLimitedDescription")
+                  : t("calendar.loadFailedDescription")
+              }
+              onRetry={() => void refetch()}
+              retrying={isFetching}
             />
           ) : isLoading || !activeDay ? (
             Array.from({ length: 6 }).map((_, index) => (
@@ -281,7 +277,10 @@ export function CalendarSection() {
               >
                 <Skeleton className="w-12 sm:w-16 h-5 sm:h-6" />
                 <Skeleton className="w-10 h-14 sm:w-12 sm:h-16 rounded-md" />
-                <div className="min-w-0 flex-1 space-y-1"><Skeleton className="h-5 w-4/5 sm:h-6" /><Skeleton className="h-4 w-1/2" /></div>
+                <div className="min-w-0 flex-1 space-y-1">
+                  <Skeleton className="h-5 w-4/5 sm:h-6" />
+                  <Skeleton className="h-4 w-1/2" />
+                </div>
                 <Skeleton className="w-16 sm:w-24 h-5 sm:h-6" />
               </div>
             ))
@@ -292,17 +291,18 @@ export function CalendarSection() {
               onClick={handleLoadMore}
               disabled={isFetchingNextPage}
             >
-              {isFetchingNextPage
-                ? t("calendar.loadingMore")
-                : t("common.loadMore")}
+              {isFetchingNextPage ? t("calendar.loadingMore") : t("common.loadMore")}
             </Button>
           ) : sortedTimes.length === 0 ? (
-            <EmptyState illustration="schedule" title={t("calendar.noAnimeScheduled")} description={t("empty.scheduleDescription")} />
+            <EmptyState
+              illustration="schedule"
+              title={t("calendar.noAnimeScheduled")}
+              description={t("empty.scheduleDescription")}
+            />
           ) : (
             <>
               {visibleAnimeEntries.map(({ time, anime }) => {
-                const title =
-                  anime.title_english || anime.title || t("calendar.untitledAnime");
+                const title = anime.title_english || anime.title || t("calendar.untitledAnime");
                 const imageUrl =
                   anime.images?.webp?.small_image_url ||
                   anime.images?.jpg?.small_image_url ||
@@ -311,11 +311,7 @@ export function CalendarSection() {
                   "/assets/logo.png";
 
                 return (
-                  <Link
-                    key={anime.mal_id}
-                    href={`/anime/${anime.mal_id}`}
-                    className="block"
-                  >
+                  <Link key={anime.mal_id} href={`/anime/${anime.mal_id}`} className="block">
                     <motion.div
                       variants={itemVariants}
                       className="flex items-center gap-2 sm:gap-4 p-3 sm:p-4 border-b border-border hover:bg-accent/50 transition-colors"
@@ -337,9 +333,7 @@ export function CalendarSection() {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="font-medium text-sm sm:text-base truncate">
-                          {title}
-                        </h3>
+                        <h3 className="font-medium text-sm sm:text-base truncate">{title}</h3>
                         {anime.title_japanese && (
                           <p className="text-xs text-muted-foreground truncate">
                             {anime.title_japanese}
@@ -365,9 +359,7 @@ export function CalendarSection() {
                     onClick={handleShowMoreClick}
                     disabled={isFetching}
                   >
-                    {isFetching
-                      ? t("calendar.loadingMore")
-                      : t("calendar.showMore")}
+                    {isFetching ? t("calendar.loadingMore") : t("calendar.showMore")}
                   </Button>
                 </div>
               )}
@@ -380,9 +372,7 @@ export function CalendarSection() {
                     onClick={handleLoadMore}
                     disabled={isFetchingNextPage}
                   >
-                    {isFetchingNextPage
-                      ? t("calendar.loadingMore")
-                      : t("common.loadMore")}
+                    {isFetchingNextPage ? t("calendar.loadingMore") : t("common.loadMore")}
                   </Button>
                 </div>
               )}

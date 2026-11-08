@@ -4,10 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function RecentAnimeSkeleton() {
   return (
-    <Card
-      aria-hidden="true"
-      className="flex items-center space-x-2 bg-card p-2"
-    >
+    <Card aria-hidden="true" className="flex items-center space-x-2 bg-card p-2">
       <Skeleton className="h-24 w-16 shrink-0 rounded" />
       <div className="min-w-0 flex-1 space-y-1">
         <Skeleton className="h-5 w-full" />
@@ -69,10 +66,7 @@ export default function WatchSkeleton() {
           <div className="mb-2 ml-4">
             <Skeleton className="h-7 w-40" />
           </div>
-          <div
-            className="grid grid-cols-2 gap-4 p-4 md:grid-cols-3"
-            aria-hidden="true"
-          >
+          <div className="grid grid-cols-2 gap-4 p-4 md:grid-cols-3" aria-hidden="true">
             {Array.from({ length: 6 }, (_, i) => (
               <Card key={i} className="overflow-hidden">
                 <Skeleton className="aspect-video w-full rounded-none" />

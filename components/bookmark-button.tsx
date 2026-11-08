@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useBookmarks } from "@/hooks/use-bookmarks";
@@ -8,11 +7,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useAnimeStore } from "@/store/use-anime-store";
 import { Bookmark, Check, Plus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
@@ -27,38 +22,34 @@ interface BookmarkButtonProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function BookmarkButton({
-  itemId,
-  type,
-  title,
-  image,
-  onOpenChange,
-}: BookmarkButtonProps) {
+export function BookmarkButton({ itemId, type, title, image, onOpenChange }: BookmarkButtonProps) {
   const { t: localizedT } = useI18n();
   const { t } = useI18n();
   const { user } = useAuth();
-  const { lists, createList, addToList, removeFromList, isBookmarked, bookmarkPending } = useBookmarks();
+  const { lists, createList, addToList, removeFromList, isBookmarked, bookmarkPending } =
+    useBookmarks();
   const { data: isItemBookmarked, isLoading, listIds } = isBookmarked(itemId);
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const changeOpen = (open: boolean) => { setPopoverOpen(open); onOpenChange?.(open); };
+  const changeOpen = (open: boolean) => {
+    setPopoverOpen(open);
+    onOpenChange?.(open);
+  };
   const [showNewListInput, setShowNewListInput] = useState(false);
-  const [newListName, setNewListName] = useState('');
+  const [newListName, setNewListName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const saving = useRef(false);
 
-  const bookmarkLoading = useAnimeStore(
-    (state) => state.bookmarkLoading[itemId]
-  );
+  const bookmarkLoading = useAnimeStore((state) => state.bookmarkLoading[itemId]);
 
   const sortedLists = [...lists].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime(),
   );
 
   const handleCreateList = async () => {
     if (!newListName.trim()) return;
     try {
       const newList = await createList(newListName);
-      setNewListName('');
+      setNewListName("");
       setShowNewListInput(false);
       toast.success("List created!");
     } catch (err) {
@@ -79,7 +70,11 @@ export function BookmarkButton({
       toast.success(removing ? "Removed from list!" : "Saved to list!");
     } catch (err) {
       console.error(err);
-      toast.error(removing ? "Could not remove bookmark. Your previous selection was restored." : "Could not save bookmark. Your previous selection was restored.");
+      toast.error(
+        removing
+          ? "Could not remove bookmark. Your previous selection was restored."
+          : "Could not save bookmark. Your previous selection was restored.",
+      );
     } finally {
       saving.current = false;
       setIsSaving(false);
@@ -120,15 +115,9 @@ export function BookmarkButton({
                 className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"
               />
             ) : (
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="relative"
-              >
+              <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="relative">
                 <Bookmark
-                  className={`h-8 w-8 transition-colors ${
-                    isItemBookmarked ? "fill-primary" : ""
-                  }`}
+                  className={`h-8 w-8 transition-colors ${isItemBookmarked ? "fill-primary" : ""}`}
                 />
               </motion.div>
             )}
@@ -139,12 +128,7 @@ export function BookmarkButton({
       <PopoverContent data-bookmark-popover className="z-[80] w-80 space-y-4">
         <div className="flex items-center gap-4">
           <div className="relative w-12 h-16 flex-shrink-0">
-            <Image 
-              src={image} 
-              alt={title} 
-              fill 
-              className="object-cover rounded" 
-            />
+            <Image src={image} alt={title} fill className="object-cover rounded" />
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="font-medium truncate">{title}</h4>
@@ -163,11 +147,7 @@ export function BookmarkButton({
             <Button onClick={handleCreateList}>{t("common.create")}</Button>
           </div>
         ) : (
-          <Button
-            variant="outline"
-            className="w-full"
-            onClick={() => setShowNewListInput(true)}
-          >
+          <Button variant="outline" className="w-full" onClick={() => setShowNewListInput(true)}>
             <Plus className="mr-2 h-4 w-4" />
             {t("bookmark.createNew")}
           </Button>
@@ -176,9 +156,7 @@ export function BookmarkButton({
         <ScrollArea className="h-[250px] pr-2">
           <div className="space-y-2">
             {sortedLists.length === 0 ? (
-              <p className="text-sm text-center text-muted-foreground">
-                {t("bookmark.empty")}
-              </p>
+              <p className="text-sm text-center text-muted-foreground">{t("bookmark.empty")}</p>
             ) : (
               sortedLists.map((list) => (
                 <button
@@ -189,15 +167,19 @@ export function BookmarkButton({
                   className="flex items-center w-full gap-2 p-2 rounded hover:bg-muted transition"
                 >
                   <div className="w-10 h-10 relative rounded overflow-hidden bg-muted shrink-0">
-                    {list.items[0]?.image && <Image
-                      src={list.items[0].image} 
-                      alt={list.name} 
-                      fill 
-                      className="object-cover" 
-                    />}
+                    {list.items[0]?.image && (
+                      <Image
+                        src={list.items[0].image}
+                        alt={list.name}
+                        fill
+                        className="object-cover"
+                      />
+                    )}
                   </div>
                   <span className="flex-1 text-left text-sm">{list.name}</span>
-                  {listIds.includes(list.id) && <Check className="h-4 w-4" aria-label={localizedT("bookmark.savedRemove")} />}
+                  {listIds.includes(list.id) && (
+                    <Check className="h-4 w-4" aria-label={localizedT("bookmark.savedRemove")} />
+                  )}
                 </button>
               ))
             )}

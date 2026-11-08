@@ -1,14 +1,8 @@
-'use client';
+"use client";
 
-import { create } from 'zustand';
-import {
-  collection,
-  onSnapshot,
-  query,
-  where,
-  type Timestamp,
-} from 'firebase/firestore';
-import { toast } from 'sonner';
+import { create } from "zustand";
+import { collection, onSnapshot, query, where, type Timestamp } from "firebase/firestore";
+import { toast } from "sonner";
 import {
   app,
   db,
@@ -16,8 +10,11 @@ import {
   onMessageListener,
   showBrowserNotification,
   type NotificationSetupResult,
-} from '@/lib/firebase';
-import { saveUserPushToken, type NotificationType } from '@/hooks/notifications/notification-requests';
+} from "@/lib/firebase";
+import {
+  saveUserPushToken,
+  type NotificationType,
+} from "@/hooks/notifications/notification-requests";
 
 export interface NotificationItem {
   id: string;
@@ -49,8 +46,8 @@ const notifiedDocIds = new Set<string>();
 
 function getTimestampMillis(ts: Timestamp | null | undefined): number {
   if (!ts) return Date.now();
-  if (typeof ts.toMillis === 'function') return ts.toMillis();
-  if (typeof (ts as { seconds?: number }).seconds === 'number') {
+  if (typeof ts.toMillis === "function") return ts.toMillis();
+  if (typeof (ts as { seconds?: number }).seconds === "number") {
     return (ts as { seconds: number }).seconds * 1000;
   }
   return 0;
@@ -87,11 +84,11 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
     } catch (error) {
       const reason = error instanceof Error ? error.message : String(error);
       const fallbackResult: NotificationSetupResult = {
-        status: 'service-worker-error',
+        status: "service-worker-error",
         permission:
-          typeof window !== 'undefined' && 'Notification' in window
+          typeof window !== "undefined" && "Notification" in window
             ? window.Notification.permission
-            : 'unsupported',
+            : "unsupported",
         pushToken: null,
         serviceWorkerReady: false,
         reason,
@@ -103,7 +100,7 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
   },
 
   subscribeForUser: (uid: string) => {
-    if (typeof window === 'undefined' || !uid) {
+    if (typeof window === "undefined" || !uid) {
       return () => {};
     }
 
@@ -130,25 +127,23 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
       // Foreground FCM messages -> surface toast + OS Web Notification
       unsubscribeForegroundPush = onMessageListener(
         (payload) => {
-          const title =
-            payload.notification?.title || payload.data?.title || 'Otakuz';
-          const body =
-            payload.notification?.body || payload.data?.body || 'New notification';
-          const link = payload.data?.link || payload.fcmOptions?.link || '/';
+          const title = payload.notification?.title || payload.data?.title || "Otakuz";
+          const body = payload.notification?.body || payload.data?.body || "New notification";
+          const link = payload.data?.link || payload.fcmOptions?.link || "/";
 
           toast(title, {
             description: body,
             ...(link
               ? {
                   action: {
-                    label: 'Open',
+                    label: "Open",
                     onClick: () => window.location.assign(link),
                   },
                 }
               : {}),
           });
 
-          if (document.visibilityState !== 'visible') {
+          if (document.visibilityState !== "visible") {
             void showBrowserNotification({
               title,
               body,
@@ -161,23 +156,23 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
           const message = error instanceof Error ? error.message : String(error);
           set((state) => ({
             setupResult: state.setupResult
-              ? { ...state.setupResult, status: 'fcm-error', reason: message, error }
+              ? { ...state.setupResult, status: "fcm-error", reason: message, error }
               : null,
           }));
-        }
+        },
       );
 
       if (!app) {
         set({
           loading: false,
           firestoreError:
-            'Firebase is not configured (NEXT_PUBLIC_FIREBASE_* environment variables missing).',
+            "Firebase is not configured (NEXT_PUBLIC_FIREBASE_* environment variables missing).",
         });
       } else {
         let initialSnapshotProcessed = false;
         const notificationsQuery = query(
-          collection(db, 'notifications'),
-          where('userId', '==', uid)
+          collection(db, "notifications"),
+          where("userId", "==", uid),
         );
 
         unsubscribeFirestore = onSnapshot(
@@ -189,10 +184,7 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
                 ...docSnap.data(),
               })) as NotificationItem[]
             )
-              .sort(
-                (a, b) =>
-                  getTimestampMillis(b.timestamp) - getTimestampMillis(a.timestamp)
-              )
+              .sort((a, b) => getTimestampMillis(b.timestamp) - getTimestampMillis(a.timestamp))
               .slice(0, 30);
 
             set({
@@ -209,12 +201,12 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
             }
 
             snapshot.docChanges().forEach((change) => {
-              if (change.type !== 'added') return;
+              if (change.type !== "added") return;
               const docId = change.doc.id;
               if (notifiedDocIds.has(docId)) return;
               notifiedDocIds.add(docId);
 
-              const data = change.doc.data() as Omit<NotificationItem, 'id'>;
+              const data = change.doc.data() as Omit<NotificationItem, "id">;
               if (data.read) return;
 
               toast(data.title, {
@@ -222,7 +214,7 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
                 ...(data.link
                   ? {
                       action: {
-                        label: 'View',
+                        label: "View",
                         onClick: () => window.location.assign(data.link!),
                       },
                     }
@@ -232,19 +224,19 @@ export const useNotificationsStore = create<NotificationsStoreState>((set) => ({
               void showBrowserNotification({
                 title: data.title,
                 body: data.message,
-                link: data.link || '/',
+                link: data.link || "/",
                 tag: `notif-${docId}`,
               });
             });
           },
           (error) => {
             const formatted = `${error.code}: ${error.message}`;
-            console.error('[Notifications] Firestore snapshot listener error:', error);
+            console.error("[Notifications] Firestore snapshot listener error:", error);
             set({
               loading: false,
               firestoreError: formatted,
             });
-          }
+          },
         );
       }
     }
