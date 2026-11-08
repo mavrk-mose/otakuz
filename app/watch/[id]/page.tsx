@@ -1,5 +1,6 @@
 "use client";
-import { I18nText } from "@/components/i18n-text";
+import { EmptyState } from "@/components/empty-state";
+import { WatchAnimeDetails } from "@/components/watch/watch-anime-details";
 
 
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
@@ -7,7 +8,6 @@ import { useEffect, useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useInView } from "react-intersection-observer";
 
 import { useRecentAnime } from "@/hooks/anime/use-recent-anime";
@@ -19,7 +19,6 @@ import RecentAnime from "@/components/anime/recent-anime";
 import { AnimeEntry } from "@/types/anime";
 import VideoTabs from "@/components/watch/video-tabs";
 
-import Link from "next/link";
 import { useI18n } from "@/components/i18n-provider";
 import { usePlayerStore } from "@/store/use-player-store";
 import { useRecordWatchHistory } from "@/hooks/use-watch-history";
@@ -74,8 +73,8 @@ export default function WatchPage() {
   }), [animeVideos, currentId]);
   const promoIndex = promoQueue.findIndex(video => video.src === videoFromQuery);
   const musicIndex = musicQueue.findIndex(video => video.src === videoFromQuery);
-  const queue = musicIndex >= 0 && promoIndex < 0 ? musicQueue : promoQueue;
-  const selectedIndex = queue === musicQueue ? musicIndex : Math.max(0, promoIndex);
+  const queue = (musicIndex >= 0 && promoIndex < 0) || promoQueue.length === 0 ? musicQueue : promoQueue;
+  const selectedIndex = Math.max(0, queue === musicQueue ? musicIndex : promoIndex);
   const selectedVideo = queue[selectedIndex];
   const selectedVideoUrl = selectedVideo?.src || null;
   const selectedVideoTitle = selectedVideo?.title || "Anime video";
@@ -148,35 +147,12 @@ export default function WatchPage() {
       {/* MAIN CONTENT */}
       <main className="flex-1 overflow-hidden">
         <ScrollArea className="h-full">
-          {/* ANIME INFO */}
-          {selectedAnime && (
-            <div className="border-y bg-muted/40 p-4">
-              <h1 className="text-xl font-bold mb-2">{selectedAnime.title}</h1>
-
-              <div className="flex items-center space-x-2">
-                <Avatar className="w-10 h-10">
-                  <AvatarImage src={selectedAnime.images.webp.small_image_url} />
-                  <AvatarFallback>{selectedAnime.title[0]}</AvatarFallback>
-                </Avatar>
-
-                <div>
-                  <p className="font-medium">{selectedAnime.title}</p>
-                  <p className="text-sm text-muted-foreground">
-                    <Link
-                      href={`/anime/${selectedAnime.mal_id}`}
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      View details
-                    </Link>
-                  </p>
-                </div>
-              </div>
-            </div>
+          <WatchAnimeDetails id={currentId} />
+          {promoQueue.length === 0 && (
+            <EmptyState illustration="not-found" compact title={t("watch.noPromos")}
+              description={musicQueue.length > 0 ? t("watch.playingMusicInstead") : t("watch.noVideosDescription")} />
           )}
-
-          {!selectedVideo && <p role="status" className="p-4 text-muted-foreground"><I18nText message="watch.noPromos" /></p>}
-          {promoQueue.length > 0 && <p className="px-4 py-2 text-sm text-muted-foreground">Promo queue · {promoIndex >= 0 ? promoIndex + 1 : 1} / {promoQueue.length}</p>}
+          {selectedVideo && <p className="px-4 py-2 text-sm text-muted-foreground">{t(queue === musicQueue ? "watch.musicQueue" : "watch.promoQueue", { current: selectedIndex + 1, total: queue.length })}</p>}
           <VideoTabs
             animeVideos={animeVideos}
             selectedVideoUrl={selectedVideoUrl ?? ""}

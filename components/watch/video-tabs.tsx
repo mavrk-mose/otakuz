@@ -94,11 +94,14 @@ export default function VideoTabs({
   const { t } = useI18n();
   if (!animeVideos) return null;
 
-  const { promo, music_videos } = animeVideos;
+  const promo = animeVideos.promo.filter(video => !!video.trailer?.embed_url);
+  const music_videos = animeVideos.music_videos.filter(video => !!video.video?.embed_url);
+  if (!promo.length && !music_videos.length) return null;
+  const selectedTab = music_videos.some(video => video.video.embed_url === selectedVideoUrl) ? "music" : "promo";
 
   return (
     <div className="border-b bg-muted/40 p-4">
-      <Tabs key={promo.length ? "promo" : "music"} defaultValue={promo.length ? "promo" : "music"} className="w-full">
+      <Tabs key={selectedTab} defaultValue={selectedTab} className="w-full">
         {/* TAB LABELS */}
         <TabsList className="mb-4 bg-muted">
           {promo.length > 0 && <TabsTrigger value="promo">{t("watch.promos")}</TabsTrigger>}
