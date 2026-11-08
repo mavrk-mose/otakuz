@@ -1,6 +1,5 @@
-
+"use client";
 import { I18nText } from "@/components/i18n-text";
-"use client"
 
 import React, { use, useEffect } from 'react'
 import { Button } from '@/components/ui/button'

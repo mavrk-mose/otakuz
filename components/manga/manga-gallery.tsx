@@ -1,6 +1,5 @@
-
+"use client";
 import { I18nText } from "@/components/i18n-text";
-"use client"
 
 import { useState, useRef } from "react"
 import Image from "next/image"

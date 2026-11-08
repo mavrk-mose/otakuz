@@ -1,6 +1,5 @@
-
+"use client";
 import { I18nText } from "@/components/i18n-text";
-"use client"
 
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "@/hooks/use-auth"
