@@ -1,5 +1,5 @@
 import {useQuery, useQueryClient, type InfiniteData} from "@tanstack/react-query";
-import type { SanityPage } from "@/lib/sanity-queries";
+import type { SanityPage } from "@/lib/sanity-pagination";
 import {Product} from "@/types/shop";
 import {client} from "@/lib/sanity";
 

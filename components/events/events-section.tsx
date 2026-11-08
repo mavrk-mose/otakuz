@@ -11,9 +11,10 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useQuery} from "@tanstack/react-query";
-import { catalogToday } from "@/lib/sanity-queries";
+import { catalogToday } from "@/lib/sanity-pagination";
 import {Event} from "@/types/events";
-import {getEvents, urlFor} from "@/lib/sanity";
+import { getEvents } from "@/hooks/events/use-fetch-events";
+import { urlFor } from "@/lib/sanity";
 import { useI18n } from '@/components/i18n-provider';
 
 export function EventsSection() {

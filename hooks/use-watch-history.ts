@@ -19,7 +19,7 @@ import {
   syncLocalHistoryToFirestore,
   toHistoryDocId,
   type WatchHistoryItem,
-} from "@/lib/watch-history";
+} from "@/hooks/watch/watch-history";
 
 /**
  * Automatically logs an opened Anime, Manga, News article, or Channel

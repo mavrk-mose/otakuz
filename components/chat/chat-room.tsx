@@ -11,7 +11,7 @@ import { useFirebaseChat } from "@/hooks/chat/use-firebase-chat"
 import {MessageComponent} from "@/components/chat/message-component";
 import useAudioRecorder from "@/hooks/chat/use-audio-recorder";
 import useRoomDetails from "@/hooks/chat/use-room-details";
-import { createChatNotification } from '@/lib/notifications';
+import { createChatNotification } from '@/hooks/notifications/notification-requests';
 import type { Message, MessageReply } from '@/types/message';
 import { messagePreview } from '@/lib/message-preview';
 import { useChatProfiles } from '@/hooks/chat/use-chat-profiles';

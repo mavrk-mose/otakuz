@@ -2,10 +2,10 @@
 
 import { fetchJson } from "@/lib/http";
 import { animeDetailResponseSchema } from "@/lib/schemas/catalogue-responses";
-import { apiQueryPolicy } from "@/lib/media-query-options";
+import { apiQueryPolicy } from "@/lib/api-query-policy";
 
 import {useQuery} from "@tanstack/react-query";
-import {API_BASE_URL} from "@/lib/api";
+import {API_BASE_URL} from "@/lib/api-config";
 import {AnimeDetails} from "@/types/anime";
 
 const useRandomAnime = () => {

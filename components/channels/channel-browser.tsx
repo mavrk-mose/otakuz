@@ -32,7 +32,7 @@ import { PersistentPlayerSlot } from "@/components/watch/player-layout";
 import { cn } from "@/lib/utils";
 import { useChannelHistoryStore } from "@/store/use-channel-history-store";
 import { usePlayerStore } from "@/store/use-player-store";
-import { recordWatchHistory } from "@/lib/watch-history";
+import { recordWatchHistory } from "@/hooks/watch/watch-history";
 import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
 
 const PAGE_SIZE = 36;

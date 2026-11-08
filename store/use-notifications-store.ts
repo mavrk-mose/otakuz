@@ -17,7 +17,7 @@ import {
   showBrowserNotification,
   type NotificationSetupResult,
 } from '@/lib/firebase';
-import { saveUserPushToken, type NotificationType } from '@/lib/notifications';
+import { saveUserPushToken, type NotificationType } from '@/hooks/notifications/notification-requests';
 
 export interface NotificationItem {
   id: string;

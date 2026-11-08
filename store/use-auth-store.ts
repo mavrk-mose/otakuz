@@ -12,7 +12,7 @@ import {
 } from 'firebase/auth';
 import { app, auth } from '@/lib/firebase';
 import { useMessagesStore } from '@/store/use-messages-store';
-import { syncUserProfileToFirestore } from '@/lib/user-sync';
+import { syncUserProfileToFirestore } from '@/hooks/auth/user-sync';
 
 let firebaseUnsubscribe: (() => void) | null = null;
 let authEventVersion = 0;

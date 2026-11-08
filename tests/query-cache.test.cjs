@@ -90,7 +90,7 @@ test('shop filters use distinct cursor queries and delegate filtering and orderi
   let captured; const calls=[];
   const hook=load('hooks/shop/use-fetch-products.ts', {
     '@tanstack/react-query': {useInfiniteQuery: options => {captured=options;return {data:{pages:[{items:[{_id:'1'}],total:1}]}};}},
-    '@/lib/sanity': {getProductPage: async (options, signal) => {calls.push({options,signal});return {items:[],total:0,nextCursor:null};}},
+    '@/lib/sanity': {client: {fetch: async (query, params, options) => {calls.push({query,params,...options});return {items:[],total:0};}}},
   }).default;
   hook({category:'shirts'}); const shirts=captured;
   hook({category:'all',sortBy:'price-low'}); const sorted=captured;
@@ -98,9 +98,9 @@ test('shop filters use distinct cursor queries and delegate filtering and orderi
   assert.equal(shirts.select,undefined);
   await shirts.queryFn({pageParam:null,signal:'cancel-token'});
   await sorted.queryFn({pageParam:{id:'p1',value:20},signal:'cancel-token'});
-  assert.equal(calls[0].options.category,'shirts');
-  assert.equal(calls[1].options.sort,'price-low');
-  assert.equal(calls[1].options.cursor.id,'p1');
+  assert.equal(calls[0].params.categories[0],'shirts');
+  assert.ok(calls[1].query.includes('order(price asc'));
+  assert.equal(calls[1].params.cursorId,'p1');
   assert.equal(calls[1].signal,'cancel-token');
 });
 
@@ -117,7 +117,7 @@ test('unavailable browser storage falls back to memory without blocking startup'
 test('restoring cached data does not briefly show a not-found state', () => {
   const hook=load('hooks/anime/use-anime-details.ts', {
     '@tanstack/react-query':{queryOptions:value=>value,useQuery:()=>({data:undefined,isPending:true,isLoading:false})},
-    '@/lib/api':{API_BASE_URL:'/api/jikan'},
+    '@/lib/api-config':{API_BASE_URL:'/api/jikan'},
   }).default;
   assert.equal(hook('1').isLoading,true);
 });
@@ -127,7 +127,7 @@ test('missing anime and temporary failures retain distinct status and retry beha
   let options;
   const hook=load('hooks/anime/use-anime-details.ts', {
     '@tanstack/react-query':{queryOptions:value=>value,useQuery:value=>{options=value;return {isPending:true};}},
-    '@/lib/api':{API_BASE_URL:'/api/jikan'},
+    '@/lib/api-config':{API_BASE_URL:'/api/jikan'},
   },{fetch:async()=>({ok:false,status:404})}).default;
   hook('1');
   await assert.rejects(options.queryFn({signal:undefined}), error => error.status === 404);

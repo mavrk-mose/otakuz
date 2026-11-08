@@ -2,9 +2,9 @@
 import { withCurrentPage } from "@/lib/schemas/media";
 import { fetchJson } from "@/lib/http";
 import { episodesResponseSchema } from "@/lib/schemas/catalogue-responses";
-import { apiQueryPolicy } from "@/lib/media-query-options";
+import { apiQueryPolicy } from "@/lib/api-query-policy";
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { API_BASE_URL } from '@/lib/api'
+import { API_BASE_URL } from '@/lib/api-config'
 import type { AnimeEpisodeResponse } from '@/types/anime'
 
 export function useAnimeEpisodes(id: string) {

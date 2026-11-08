@@ -18,7 +18,7 @@ import {
   calculateUserStats,
   DEFAULT_PREFERENCES,
   getRankForLevel,
-} from "@/lib/user-sync";
+} from "@/hooks/auth/user-sync";
 
 export function useUserProfile(targetUserId?: string) {
   const queryClient = useQueryClient();

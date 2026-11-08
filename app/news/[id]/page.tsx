@@ -9,7 +9,7 @@ import { ArticleActions } from "@/components/news/article-actions";
 import { NewsArticleBody } from "@/components/news/news-article-body";
 import { WatchHistoryTracker } from "@/components/profile/watch-history-tracker";
 import { GoogleAdUnit } from "@/components/ads/google-ad-unit";
-import { getNewsArticleById, fallbackNewsStories } from "@/lib/sanity";
+import { getNewsArticleById, fallbackNewsStories } from "@/hooks/news/use-fetch-news";
 import { getAuthorInitials, type NewsArticle, type NewsStory } from "@/types/news";
 
 type NewsArticlePageProps = {

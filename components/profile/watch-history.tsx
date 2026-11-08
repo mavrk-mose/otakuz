@@ -36,7 +36,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useI18n } from "@/components/i18n-provider";
 import { useWatchHistory } from "@/hooks/use-watch-history";
-import type { WatchHistoryItem, WatchHistoryType } from "@/lib/watch-history";
+import type { WatchHistoryItem, WatchHistoryType } from "@/hooks/watch/watch-history";
 
 interface WatchHistoryProps {
   userId?: string;

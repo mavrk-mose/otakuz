@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useAuth } from "../use-auth";
-import { registerForEvent } from "@/lib/sanity";
 import { toast } from "sonner";
 import { Event } from "@/types/events";
+import { client } from "@/lib/sanity";
 
 const useRegisterEvent = () => {
     const queryClient = useQueryClient();
@@ -42,3 +42,14 @@ const useRegisterEvent = () => {
 }
 
 export default useRegisterEvent;
+export async function registerForEvent(eventId: string, userId: string, userName: string, userPhotoUrl: string) {
+  return client.patch(eventId)
+    .setIfMissing({ attendees: [] })
+    .append('attendees', [{
+      userId,
+      name: userName,
+      photoUrl: userPhotoUrl,
+      registeredAt: new Date().toISOString()
+    }])
+    .commit();
+}

@@ -5,13 +5,13 @@ import { I18nText } from "@/components/i18n-text";
 import { NewsGridSkeleton } from "@/components/skeletons/news-skeleton";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuery } from "@tanstack/react-query";
-import { getAnimeNews } from "@/lib/api";
+import { getAnimeNews } from "@/hooks/anime/use-anime-news";
 import { ArrowRight, CalendarDays, MessageSquare, Radio, Share2 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/components/i18n-provider";
-import { recordWatchHistory } from "@/lib/watch-history";
+import { recordWatchHistory } from "@/hooks/watch/watch-history";
 
 export function NewsSection() {
   const { t: localizedT } = useI18n();

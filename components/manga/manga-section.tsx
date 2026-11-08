@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from '@tanstack/react-query';
-import { getTopManga } from '@/lib/api';
+import { getTopManga } from "@/hooks/manga/use-fetch-manga";
 import { MediaCardSkeleton } from '@/components/skeletons/media-card-skeleton';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';

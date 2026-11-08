@@ -22,7 +22,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { I18nProvider } from "@/components/i18n-provider";
 
 import { useNotificationsStore } from "@/store/use-notifications-store";
-import { saveUserPushToken } from "@/lib/notifications";
+import { saveUserPushToken } from "@/hooks/notifications/notification-requests";
 
 // Share the startup request across Strict Mode effect replays and remounts.
 let notificationStartup: Promise<void> | undefined;

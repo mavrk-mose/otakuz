@@ -1,9 +1,11 @@
 import { z } from "zod";
 import { fetchJson } from "@/lib/http";
 import { mediaRecordSchema, paginationSchema, imagesSchema, withCurrentPage } from "@/lib/schemas/media";
-import { apiQueryPolicy } from "@/lib/media-query-options";
+import { apiQueryPolicy } from "@/lib/api-query-policy";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
-import { API_BASE_URL, fetchGenres, MediaType } from "@/lib/api";
+import { API_BASE_URL, MediaType } from "@/lib/api-config";
+import { genresResponseSchema } from "@/lib/schemas/media";
+import type { GenreItem } from "@/lib/api-config";
 
 export function useMediaGenres(mediaType: MediaType) {
     const {
@@ -66,4 +68,17 @@ export function useMediaPictures<T = any>(mediaType: MediaType, id: string) {
         enabled: Boolean(id),
     });
     return { ...query, isLoading: query.isPending && !!id };
+}
+
+export async function fetchGenres(mediaType: MediaType): Promise<GenreItem[]> {
+    const { data } = await fetchJson(`${API_BASE_URL}/genres/${mediaType}`, genresResponseSchema);
+    return data;
+}
+
+export async function getAnimeGenres(): Promise<GenreItem[]> {
+    return fetchGenres('anime');
+}
+
+export async function getMangaGenres(): Promise<GenreItem[]> {
+    return fetchGenres('manga');
 }

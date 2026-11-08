@@ -4,7 +4,7 @@ import { ErrorState } from "@/components/page-state";
 import { EmptyState } from "@/components/empty-state";
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useQuery } from "@tanstack/react-query";
-import { getTopAnime } from "@/lib/api";
+import { getTopAnime } from "@/hooks/anime/use-fetch-anime";
 import { MediaCardSkeleton } from '@/components/skeletons/media-card-skeleton';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

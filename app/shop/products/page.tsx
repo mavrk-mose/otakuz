@@ -7,7 +7,7 @@ import { Suspense, useState } from "react";
 import { shopFilterParsers } from "@/lib/query-state";
 import { useQueryStates } from "nuqs";
 import { useCatalogFacets } from "@/hooks/shop/use-catalog-facets";
-import { normalizeCatalogValue as normalize } from "@/lib/sanity-queries";
+import { normalizeCatalogValue as normalize } from "@/lib/sanity-pagination";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity";

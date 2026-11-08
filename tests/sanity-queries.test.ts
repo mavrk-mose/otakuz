@@ -1,8 +1,12 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { parse, evaluate } from "groq-js";
-import { buildProductQuery, buildEventQuery, catalogFacetsQuery, titlesQuery, toSanityPage, type SanityCursor } from "@/lib/sanity-queries";
-import { buildNewsPageQuery, newsHighlightsQuery } from "@/lib/sanity-news-queries";
+import { buildProductQuery } from "@/hooks/shop/use-fetch-products";
+import { buildEventQuery } from "@/hooks/events/use-fetch-events";
+import { catalogFacetsQuery } from "@/hooks/shop/use-catalog-facets";
+import { titlesQuery } from "@/hooks/shop/use-fetch-titles";
+import { toSanityPage, type SanityCursor } from "@/lib/sanity-pagination";
+import { buildNewsPageQuery, newsHighlightsQuery } from "@/hooks/news/use-fetch-news";
 
 const titles = [{ _type: "title", _id: "t1", name: "Naruto" }, { _type: "title", _id: "t2", name: "Bleach" }];
 const product = (id: string, price: number, stock = 1, category = "Figures", title = "t1", rating: number | null = 4) => ({ _type: "product", _id: id, _createdAt: "2026-11-01T00:00:00Z", name: `Figure ${id}`, price, stock, category, title: { _type: "reference", _ref: title }, rating });

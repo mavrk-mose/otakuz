@@ -7,7 +7,7 @@ import { roomEventSchema } from "@/lib/schemas/watch-party";
 import { mediaRecordSchema } from "@/lib/schemas/media";
 import { translate, messages, type MessageKey } from "@/lib/i18n";
 import { serializeGenre, serializeVideo } from "@/lib/query-state";
-import { animeVideosOptions } from "@/lib/media-query-options";
+import { animeVideosOptions } from "@/hooks/anime/use-anime-videos";
 
 const originalFetch = globalThis.fetch;
 test("HTTP errors preserve status; invalid payloads and client errors are not retried", async () => {

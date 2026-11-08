@@ -2,10 +2,10 @@
 
 import { fetchJson } from "@/lib/http";
 import { searchMediaResponseSchema } from "@/lib/schemas/media";
-import { apiQueryPolicy } from "@/lib/media-query-options";
+import { apiQueryPolicy } from "@/lib/api-query-policy";
 import { useAnimeStore } from "@/store/use-anime-store";
 import { useQuery } from "@tanstack/react-query";
-import { API_BASE_URL } from "@/lib/api";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface SearchResult {
   id: string;

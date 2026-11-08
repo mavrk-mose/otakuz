@@ -2,9 +2,9 @@
 
 import { fetchJson } from "@/lib/http";
 import { recentAnimeSchema, withCurrentPage } from "@/lib/schemas/media";
-import { apiQueryPolicy } from "@/lib/media-query-options";
+import { apiQueryPolicy } from "@/lib/api-query-policy";
 import {useInfiniteQuery} from '@tanstack/react-query';
-import {API_BASE_URL} from "@/lib/api";
+import {API_BASE_URL} from "@/lib/api-config";
 
 export function useRecentAnime() {
   const {data, isPending: isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({

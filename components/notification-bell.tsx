@@ -23,7 +23,7 @@ import {
   markAllAsRead,
   deleteNotification,
   type NotificationType,
-} from "@/lib/notifications";
+} from "@/hooks/notifications/notification-requests";
 import { toast } from "sonner";
 import { useI18n } from "@/components/i18n-provider";
 import {
