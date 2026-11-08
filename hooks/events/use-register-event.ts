@@ -17,6 +17,8 @@ const useRegisterEvent = () => {
         try {
             await registerForEvent(event._id, user.uid, user.displayName || 'Anonymous', user.photoURL || '');
             void queryClient.invalidateQueries({ queryKey: ['events'] });
+            void queryClient.invalidateQueries({ queryKey: ['eventPages'] });
+            void queryClient.invalidateQueries({ queryKey: ['globalSearch', 'events'] });
             void queryClient.invalidateQueries({ queryKey: ['event', event._id] });
             toast.success("Registration Successful", {
                 description: "You have successfully registered for this event.",

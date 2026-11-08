@@ -6,7 +6,8 @@ import { EmptyState } from "@/components/empty-state";
 import { Suspense, useState } from "react";
 import { shopFilterParsers } from "@/lib/query-state";
 import { useQueryStates } from "nuqs";
-import useFetchTitles from "@/hooks/shop/use-fetch-titles";
+import { useCatalogFacets } from "@/hooks/shop/use-catalog-facets";
+import { normalizeCatalogValue as normalize } from "@/lib/sanity-queries";
 import Link from "next/link";
 import Image from "next/image";
 import { urlFor } from "@/lib/sanity";
@@ -34,13 +35,12 @@ export default function ProductsPage() {
   return <Suspense><ProductCatalog /></Suspense>;
 }
 
-const normalize = (value: string) => value.trim().toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "-");
 
 function ProductCatalog() {
   const { t } = useI18n();
-  const { products = [], isLoading, isError, refetch } = useFetchProducts({ category: "all" });
   const [query, setQuery] = useQueryStates(shopFilterParsers, { history: "push", scroll: false });
-  const { titles = [], isLoading: titlesLoading } = useFetchTitles();
+  const { data: facets, isLoading: titlesLoading, isError: facetsError, refetch: refetchFacets } = useCatalogFacets();
+  const titles = facets?.titles ?? [];
   const [showAllAnime, setShowAllAnime] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const category = query.category || null;
@@ -51,41 +51,26 @@ function ProductCatalog() {
     void setQuery({ [key]: value ? shopFilterParsers[key].parse(value) : null }, { history: replace ? "replace" : "push" });
   };
   const resetFilters = () => { void setQuery({ category: null, anime: null, q: null, minPrice: null, maxPrice: null, inStock: null, sort: null }); };
-  const categories = Array.from(new Set([
-    ...products.map(product => product.category).filter(Boolean),
-    ...(category && !products.some(product => normalize(product.category) === normalize(category)) ? [category] : []),
-  ])).sort();
-  const animeOptions = Array.from(new Set([
-    ...titles.map(title => title.name),
-    ...products.map(product => product.title?.name).filter(Boolean),
-    ...(anime ? [anime] : []),
-  ])).sort();
-  const prices = products.map(product => product.price).filter(Number.isFinite);
-  const lowestPrice = prices.length ? Math.min(...prices) : 0;
-  const highestPrice = prices.length ? Math.max(...prices) : 0;
+  const categories = facets?.categories ?? [];
+  const animeOptions = titles.map(title => title.name);
+  const lowestPrice = facets?.minPrice ?? 0;
+  const highestPrice = facets?.maxPrice ?? 0;
   const clampPrice = (price: number) => Math.min(highestPrice, Math.max(lowestPrice, price));
-  const priceRange = [
-    clampPrice(minPrice === "" ? lowestPrice : Number(minPrice)),
-    clampPrice(maxPrice === "" ? highestPrice : Number(maxPrice)),
-  ].sort((a, b) => a - b);
+  const priceRange = [clampPrice(minPrice === "" ? lowestPrice : Number(minPrice)), clampPrice(maxPrice === "" ? highestPrice : Number(maxPrice))].sort((a, b) => a - b);
+  const { products = [], total, isLoading: productsLoading, isError: productsError, refetch: refetchProducts, fetchNextPage, hasNextPage, isFetchingNextPage } = useFetchProducts({
+    categories: category ? categories.filter(value => normalize(value) === normalize(category)).concat(categories.some(value => normalize(value) === normalize(category)) ? [] : [category]) : [],
+    titles: anime ? animeOptions.filter(value => normalize(value) === normalize(anime)).concat(animeOptions.some(value => normalize(value) === normalize(anime)) ? [] : [anime]) : [],
+    search, minPrice: minPrice === "" && maxPrice === "" ? undefined : priceRange[0], maxPrice: minPrice === "" && maxPrice === "" ? undefined : priceRange[1], inStock, sort, enabled: !!facets,
+  });
+  const isLoading = titlesLoading || (!facetsError && productsLoading);
+  const isError = facetsError || productsError;
+  const refetch = () => { void refetchFacets(); void refetchProducts(); };
   const updatePriceRange = ([min, max]: number[]) => {
     void setQuery({ minPrice: min === lowestPrice ? null : String(min), maxPrice: max === highestPrice ? null : String(max) }, { history: "replace" });
   };
   const animePreviews = animeOptions.slice(0, 4);
   if (anime && !animePreviews.includes(anime)) animePreviews.push(anime);
   const visibleAnime = showAllAnime ? animeOptions : animePreviews;
-  const filteredProducts = products.filter(product =>
-    (category === null || normalize(product.category) === normalize(category)) &&
-    (!anime || normalize(product.title?.name || "") === normalize(anime)) &&
-    product.name.toLowerCase().includes(search.trim().toLowerCase()) &&
-    product.price >= priceRange[0] && product.price <= priceRange[1] &&
-    (!inStock || product.stock > 0)
-  ).sort((a, b) => {
-    if (sort === "price-low") return a.price - b.price;
-    if (sort === "price-high") return b.price - a.price;
-    if (sort === "rating") return (b.rating ?? 0) - (a.rating ?? 0);
-    return 0;
-  });
 
   return (
     <div className="min-h-screen min-w-0 pb-8">
@@ -113,7 +98,7 @@ function ProductCatalog() {
           ))}
         </nav>
             <div className="flex max-w-full flex-wrap items-center gap-3">
-              <p role="status" className="text-sm text-muted-foreground">{isLoading ? t("common.loading") : t("shop.resultCount", { count: filteredProducts.length })}</p>
+              <p role="status" className="text-sm text-muted-foreground">{isLoading ? t("common.loading") : t("shop.resultCount", { count: total })}</p>
               <label className="flex max-w-full flex-wrap items-center gap-2 text-sm">
                 {t("common.sortBy")}
                 <select value={sort} onChange={event => updateFilter("sort", event.target.value === "newest" ? "" : event.target.value)} className="min-h-11 max-w-full rounded-md border bg-background px-3 py-2">
@@ -147,7 +132,7 @@ function ProductCatalog() {
                   ) : (
                     <div className="grid grid-cols-2 gap-2" id="anime-options">
                       {visibleAnime.map(value => {
-                        const title = titles.find(title => normalize(title.name) === normalize(value)) || products.find(product => normalize(product.title?.name || "") === normalize(value))?.title;
+                        const title = titles.find(title => normalize(title.name) === normalize(value));
                         const imageRef = title?.image?.asset?._ref;
                         const selected = normalize(anime) === normalize(value);
                         return (
@@ -166,7 +151,7 @@ function ProductCatalog() {
                 <fieldset className="space-y-3">
                   <legend className="mb-2 font-medium">{t("shop.priceRange")}</legend>
                   {isLoading ? <div aria-hidden="true" className="h-12 animate-pulse rounded bg-muted motion-reduce:animate-none" /> : <>
-                    <Slider min={lowestPrice} max={highestPrice > lowestPrice ? highestPrice : lowestPrice + 1} step={0.01} value={priceRange} onValueChange={updatePriceRange} disabled={!prices.length || lowestPrice === highestPrice} thumbLabels={[t("shop.minPrice"), t("shop.maxPrice")]} className="py-3" />
+                    <Slider min={lowestPrice} max={highestPrice > lowestPrice ? highestPrice : lowestPrice + 1} step={0.01} value={priceRange} onValueChange={updatePriceRange} disabled={lowestPrice === highestPrice} thumbLabels={[t("shop.minPrice"), t("shop.maxPrice")]} className="py-3" />
                     <div className="flex flex-wrap justify-between gap-2 text-xs text-muted-foreground">
                       <span>Tshs. {priceRange[0].toLocaleString()}</span>
                       <span>Tshs. {priceRange[1].toLocaleString()}</span>
@@ -188,10 +173,12 @@ function ProductCatalog() {
               <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 xl:grid-cols-3">
                 {Array.from({ length: 6 }, (_, i) => <ProductCardSkeleton key={i} />)}
               </div>
-            ) : filteredProducts.length ? (
-              <div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 xl:grid-cols-3">
-                {filteredProducts.map(product => <ProductCard key={product._id} product={product} />)}
+            ) : products.length ? (
+              <><div className="grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:gap-6 xl:grid-cols-3">
+                {products.map(product => <ProductCard key={product._id} product={product} />)}
               </div>
+              {hasNextPage && <Button className="mt-6 w-full" variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>{t(isFetchingNextPage ? "common.loading" : "common.loadMore")}</Button>}
+              {productsError && <ErrorState title={t("shop.loadError")} onRetry={() => void fetchNextPage()} />}</>
             ) : (
               <EmptyState className="rounded-lg border" illustration="collection" title={t("common.noProducts")} description={t("empty.shopDescription")}
                 action={<Button variant="outline" onClick={resetFilters}>{t("shop.clearFilters")}</Button>} />

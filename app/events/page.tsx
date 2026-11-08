@@ -1,12 +1,20 @@
 "use client"
 
+import { Suspense } from "react";
+import { useQueryState, parseAsStringLiteral } from "nuqs";
+import { Button } from "@/components/ui/button";
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
+import { useI18n } from "@/components/i18n-provider";
 import {Timeline} from '@/components/events/timeline';
 import {TimelineSkeleton} from "@/components/skeletons/timeline-skeleton";
 import useFetchEvents from "@/hooks/events/use-fetch-events";
 import {GoogleAdUnit} from "@/components/ads/google-ad-unit";
 
-export default function EventsPage() {
-    const { events, isLoading } = useFetchEvents();
+function EventsContent() {
+    const { t } = useI18n();
+    const [period, setPeriod] = useQueryState("period", parseAsStringLiteral(["upcoming", "past"]).withDefault("upcoming").withOptions({ history: "push", scroll: false }));
+    const { events = [], isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchEvents({ period });
 
     return (
         <div className="container mx-auto space-y-10 px-4 py-8">
@@ -18,7 +26,11 @@ export default function EventsPage() {
                 />
             </div>
 
-            {isLoading ? <TimelineSkeleton/> : <Timeline events={events || []}/>}
+            {isLoading ? <TimelineSkeleton/> : isError && !events.length ? <ErrorState onRetry={() => void refetch()} /> : <>
+                <Timeline events={events} period={period} onPeriodChange={value => { void setPeriod(value); }} />
+                {!events.length && <EmptyState illustration="schedule" title={t("events.empty")} />}
+                {hasNextPage && <Button className="mx-auto flex" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>{t(isFetchingNextPage ? "common.loading" : "common.loadMore")}</Button>}
+            </>}
 
             <div className="mx-auto max-w-5xl px-4 pt-4 sm:px-6 lg:px-8">
                 <GoogleAdUnit
@@ -32,3 +44,4 @@ export default function EventsPage() {
         </div>
     );
 }
+export default function EventsPage() { return <Suspense fallback={<TimelineSkeleton />}><EventsContent /></Suspense>; }

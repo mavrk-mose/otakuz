@@ -1,66 +1,15 @@
-import {useQuery} from "@tanstack/react-query";
-import {Product} from "@/types/shop";
-import {getProducts} from "@/lib/sanity";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import { getProductPage } from "@/lib/sanity";
+import type { ProductQueryOptions, SanityCursor } from "@/lib/sanity-queries";
 
-interface ProductListProps {
-    category?: string;
-    priceRange?: [number, number];
-    sortBy?: string;
-    title?: string;
+export interface ProductListProps extends ProductQueryOptions { priceRange?: [number, number]; sortBy?: string; enabled?: boolean }
+export default function useFetchProducts({ priceRange, sortBy, enabled = true, ...filters }: ProductListProps = {}) {
+  const options = { ...filters, minPrice: filters.minPrice ?? priceRange?.[0], maxPrice: filters.maxPrice ?? priceRange?.[1], sort: sortBy ?? filters.sort };
+  const query = useInfiniteQuery({
+    queryKey: ["productPages", options], enabled,
+    initialPageParam: null as SanityCursor | null,
+    queryFn: ({ pageParam, signal }) => getProductPage({ ...options, cursor: pageParam }, signal),
+    getNextPageParam: page => page.nextCursor ?? undefined,
+  });
+  return { ...query, products: query.data?.pages.flatMap(page => page.items), total: query.data?.pages[0]?.total ?? 0, isLoading: query.isPending };
 }
-
-const useFetchProducts = ({ category, priceRange, sortBy, title }: ProductListProps) => {
-    const {
-        data: products,
-        isPending: isLoading,
-        isError,
-        refetch
-    } = useQuery({
-        queryKey: ['products'],
-        queryFn: getProducts,
-        select: (catalog: Product[]) => {
-            let filteredProducts = [...catalog];
-
-            if (category && category !== 'all') {
-                filteredProducts = filteredProducts.filter((p) => p.category === category);
-            }
-
-            if (priceRange) {
-                filteredProducts = filteredProducts.filter(
-                    (p: { price: number }) => p.price >= priceRange[0] && p.price <= priceRange[1]
-                );
-            }
-
-            if (sortBy) {
-                filteredProducts.sort((a, b) => {
-                    switch (sortBy) {
-                        case 'price-low':
-                            return a.price - b.price;
-                        case 'price-high':
-                            return b.price - a.price;
-                        case 'rating':
-                            return (b.rating ?? 0) - (a.rating ?? 0);
-                        default:
-                            return 0;
-                    }
-                });
-            }
-
-            if (title) {
-                const decodedTitle = decodeURIComponent(title);
-                filteredProducts = filteredProducts.filter((p) => p.title?.name === decodedTitle);
-            }
-
-            return filteredProducts;
-        },
-    });
-
-    return {
-        products,
-        isLoading,
-        isError,
-        refetch,
-    }
-}
-
-export default useFetchProducts;

@@ -40,6 +40,7 @@ export type EventActivity = {
 };
 
 export type Event = SanityCardDisplay & {
+  attendeeCount?: number;
   _id: string;
   title: string;
   description?: string;

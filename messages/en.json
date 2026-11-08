@@ -520,7 +520,8 @@
     "purchaseTickets": "Purchase Tickets",
     "going": "Going",
     "others": "others",
-    "contactHost": "Contact Host"
+    "contactHost": "Contact Host",
+    "empty": "No events in this view yet"
   },
   "nav": {
     "themeLabel": "Toggle theme",

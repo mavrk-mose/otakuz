@@ -108,6 +108,7 @@
     "@testing-library/react": "^16",
     "@testing-library/user-event": "^14",
     "fake-indexeddb": "^6",
+    "groq-js": "^1",
     "jsdom": "^26",
     "tsx": "^4"
   }

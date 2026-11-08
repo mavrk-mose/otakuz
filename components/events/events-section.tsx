@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import {useQuery} from "@tanstack/react-query";
+import { catalogToday } from "@/lib/sanity-queries";
 import {Event} from "@/types/events";
 import {getEvents, urlFor} from "@/lib/sanity";
 import { useI18n } from '@/components/i18n-provider';
@@ -16,12 +17,8 @@ import { useI18n } from '@/components/i18n-provider';
 export function EventsSection() {
     const { locale, t } = useI18n();
     const {data: events, isPending: isLoading} = useQuery({
-        queryKey: ['events'],
-        queryFn: async () => {
-            const events: Event[] = await getEvents();
-            //add filters if applicable sort the events, filter by category etc
-            return events;
-        },
+        queryKey: ["events", "upcoming", 4, catalogToday()],
+        queryFn: () => getEvents({ period: "upcoming", limit: 4 }),
     });
 
     const container = {
@@ -57,7 +54,7 @@ export function EventsSection() {
                 animate="show"
                 className="grid md:grid-cols-2 gap-6"
             >
-                {isLoading ? Array.from({ length: 4 }, (_, i) => <EventCardSkeleton key={i} />) : events?.slice(0, 4).map((event) => (
+                {isLoading ? Array.from({ length: 4 }, (_, i) => <EventCardSkeleton key={i} />) : events?.map((event) => (
                     <motion.div key={event._id} variants={item}>
                         <Card className="overflow-hidden group">
                             <Link href={`/events/${event._id}`}>
@@ -91,7 +88,7 @@ export function EventsSection() {
                                         </div>
                                         <div className="flex items-center">
                                             <Users className="h-4 w-4 mr-2" />
-                                            {event.attendees?.length ?? 0} {t("events.attending")}
+                                            {event.attendeeCount ?? event.attendees?.length ?? 0} {t("events.attending")}
                                         </div>
                                     </div>
                                 </div>

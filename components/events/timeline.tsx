@@ -16,14 +16,13 @@ import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
 
 interface TimelineProps {
     events: Event[];
+    period: "upcoming" | "past";
+    onPeriodChange: (period: "upcoming" | "past") => void;
 }
 
-export function Timeline({ events }: TimelineProps) {
+export function Timeline({ events, period, onPeriodChange }: TimelineProps) {
     const { locale, t } = useI18n();
     const dateRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
-    const sortedEvents = [...events].sort((a, b) =>
-        new Date(b.date ?? 0).getTime() - new Date(a.date ?? 0).getTime()
-    );
 
     return (
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,7 +33,7 @@ export function Timeline({ events }: TimelineProps) {
                         {t("events.description")}
                     </p>
                 </div>
-                <Tabs defaultValue="upcoming">
+                <Tabs value={period} onValueChange={value => onPeriodChange(value as "upcoming" | "past")}>
                     <TabsList className="bg-muted/50">
                         <TabsTrigger value="upcoming">{t("events.upcoming")}</TabsTrigger>
                         <TabsTrigger value="past">{t("events.past")}</TabsTrigger>
@@ -45,13 +44,14 @@ export function Timeline({ events }: TimelineProps) {
             <div className="relative space-y-8">
                 <div className="absolute left-8 sm:left-24 top-0 bottom-0 w-px bg-border/50" />
 
-                {sortedEvents.map((event, idx) => {
+                {events.map((event, idx) => {
                     const attendees = event.attendees ?? [];
-                    const date = new Date(event.date || Date.now());
-                    const dateId = date.toISOString();
+                    const parsedDate = event.date ? new Date(event.date) : null;
+                    const date = parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate : null;
+                    const dateId = date?.toISOString() ?? event._id;
                     const showInlineEventAd =
                         (idx + 1) % 2 === 0 ||
-                        (sortedEvents.length === 1 && idx === 0);
+                        (events.length === 1 && idx === 0);
 
                     return (
                         <Fragment key={event._id}>
@@ -66,10 +66,10 @@ export function Timeline({ events }: TimelineProps) {
                                 className="text-sm sticky top-0 pt-2"
                             >
                                 <div className="font-bold">
-                                    {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { month: "short", day: "numeric" }).format(date)}
+                                    {date ? new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { month: "short", day: "numeric" }).format(date) : t("events.dateTba")}
                                 </div>
                                 <div className="text-muted-foreground">
-                                    {new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { weekday: "long" }).format(date)}
+                                    {date ? new Intl.DateTimeFormat(locale === "ja" ? "ja-JP" : "en-US", { weekday: "long" }).format(date) : t("events.dateTba")}
                                 </div>
                             </div>
 
@@ -125,7 +125,7 @@ export function Timeline({ events }: TimelineProps) {
                                                 <div className="flex items-center gap-2">
                                                     <div className="flex -space-x-2">
                                                         <TooltipProvider>
-                                                            {attendees.slice(0, 5).map((attendee, i) => (
+                                                            {attendees.map((attendee, i) => (
                                                                 <Tooltip key={i}>
                                                                     <TooltipTrigger>
                                                                         <Avatar className="border-2 border-background w-8 h-8">
@@ -140,9 +140,9 @@ export function Timeline({ events }: TimelineProps) {
                                                             ))}
                                                         </TooltipProvider>
                                                     </div>
-                                                    {attendees.length > 5 && (
+                                                    {(event.attendeeCount ?? attendees.length) > 5 && (
                                                         <span className="text-base text-muted-foreground">
-                                                            +{attendees.length - 5}
+                                                            +{(event.attendeeCount ?? attendees.length) - 5}
                                                         </span>
                                                     )}
                                                 </div>

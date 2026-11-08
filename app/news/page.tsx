@@ -1,10 +1,13 @@
 "use client";
+import { useQueryState, parseAsString } from "nuqs";
+import { Button } from "@/components/ui/button";
+import { EmptyState } from "@/components/empty-state";
 import { I18nText } from "@/components/i18n-text";
 
 
 import { NewsPageSkeleton } from "@/components/skeletons/news-skeleton";
 
-import { useState, useMemo } from "react";
+import { Suspense, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -37,60 +40,17 @@ const CATEGORIES = [
   "Box Office",
 ] as const;
 
-export default function NewsPage() {
+function NewsContent() {
   const { t: localizedT } = useI18n();
   const { locale, t } = useI18n();
-  const { stories: rawStories, isLoading } = useFetchNewsStories();
+  const [activeCategory, setActiveCategory] = useQueryState("category", parseAsString.withDefault("All Stories").withOptions({ history: "push", scroll: false }));
+  const { stories: rawStories, highlights, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchNewsStories(activeCategory);
   const stories: NewsStory[] = useMemo(() => rawStories || [], [rawStories]);
-  const [activeCategory, setActiveCategory] = useState<string>("All Stories");
-
-  // Filter stories by category if not "All Stories"
-  const filteredStories: NewsStory[] = useMemo(() => {
-    if (activeCategory === "All Stories") return stories;
-    return stories.filter(
-      (s: NewsStory) =>
-        s.section?.toLowerCase() === activeCategory.toLowerCase() ||
-        s.tag?.toLowerCase() === activeCategory.toLowerCase() ||
-        s.tags?.some((tag: string) => tag.toLowerCase() === activeCategory.toLowerCase())
-    );
-  }, [stories, activeCategory]);
-
-  // Featured Lead Story (from stories or filtered)
-  const leadStory: NewsStory | undefined = useMemo(() => {
-    return filteredStories.find((s: NewsStory) => s.isFeatured) || filteredStories[0] || stories[0];
-  }, [filteredStories, stories]);
-
-  // Secondary stack stories (next 3 after lead)
-  const secondaryStories: NewsStory[] = useMemo(() => {
-    return filteredStories.filter((s: NewsStory) => s._id !== leadStory?._id).slice(0, 3);
-  }, [filteredStories, leadStory]);
-
-  // Top trending leaderboard dispatches (rank 1 to 5)
-  const trendingStories: NewsStory[] = useMemo(() => {
-    const withRank = stories.filter((s: NewsStory) => typeof s.trendingRank === "number");
-    if (withRank.length >= 3) {
-      return [...withRank].sort((a: NewsStory, b: NewsStory) => (a.trendingRank ?? 99) - (b.trendingRank ?? 99)).slice(0, 5);
-    }
-    return stories.slice(2, 7);
-  }, [stories]);
-
-  // Podcast / Media feature story
-  const podcastStory: NewsStory | undefined = useMemo(() => {
-    return stories.find((s: NewsStory) => s.podcast?.isPodcast) || stories[stories.length - 1];
-  }, [stories]);
-
-  // Anomaly / Investigative Dossier section stories
-  const anomalyStories: NewsStory[] = useMemo(() => {
-    const anomaly = stories.filter(
-      (s: NewsStory) =>
-        s.tag?.toLowerCase().includes("investigation") ||
-        s.scoopBadge?.toLowerCase().includes("special report") ||
-        s.scoopBadge?.toLowerCase().includes("leak") ||
-        s.scoopBadge?.toLowerCase().includes("review") ||
-        s._id.startsWith("anomaly")
-    );
-    return anomaly.length ? anomaly : stories.slice(1, 5);
-  }, [stories]);
+  const leadStory = highlights?.lead[0];
+  const secondaryStories = highlights?.lead.slice(1) ?? [];
+  const trendingStories = highlights?.trending ?? [];
+  const podcastStory = highlights?.podcast;
+  const anomalyStories = highlights?.anomalies ?? [];
 
   const handleShare = async (e: React.MouseEvent, title: string, id: string) => {
     e.preventDefault();
@@ -575,7 +535,15 @@ export default function NewsPage() {
             </div>
           </div>
         </section>
+        <section className="mt-10 space-y-4" aria-label={t("home.latestNews")}>
+          <h2 className="text-xl font-bold">{t("home.latestNews")}</h2>
+          {!stories.length && <EmptyState illustration="search" title={t("search.noResults")} />}
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{stories.map(story => <Link key={story._id} href={`/news/${story._id}`} className="rounded-xl border bg-card p-4 hover:bg-accent"><h3 className="font-semibold">{story.title}</h3><p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{story.summary || story.description}</p></Link>)}</div>
+          {hasNextPage && <Button variant="outline" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>{t(isFetchingNextPage ? "common.loading" : "common.loadMore")}</Button>}
+        </section>
       </div>
     </div>
   );
 }
+
+export default function NewsPage() { return <Suspense fallback={<NewsPageSkeleton />}><NewsContent /></Suspense>; }

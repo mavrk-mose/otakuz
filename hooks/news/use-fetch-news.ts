@@ -1,25 +1,11 @@
-import { useQuery } from "@tanstack/react-query";
-import { getNewsStories } from "@/lib/sanity";
-import { type NewsStory } from "@/types/news";
-
-interface UseFetchNewsStoriesResult {
-  stories: NewsStory[] | undefined;
-  isLoading: boolean;
-}
-
-const useFetchNewsStories = (): UseFetchNewsStoriesResult => {
-  const {
-    data: stories,
-    isPending: isLoading,
-  } = useQuery<NewsStory[]>({
-    queryKey: ["newsStories"],
-    queryFn: getNewsStories,
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { getNewsPage, getNewsHighlights } from "@/lib/sanity";
+import type { SanityCursor } from "@/lib/sanity-queries";
+export default function useFetchNewsStories(category = "All Stories") {
+  const query = useInfiniteQuery({
+    queryKey: ["newsStoryPages", category], initialPageParam: null as SanityCursor | null,
+    queryFn: ({ pageParam, signal }) => getNewsPage(category, pageParam, 24, signal), getNextPageParam: page => page.nextCursor ?? undefined,
   });
-
-  return {
-    stories,
-    isLoading,
-  };
-};
-
-export default useFetchNewsStories;
+  const highlights = useQuery({ queryKey: ["newsHighlights", category], queryFn: ({ signal }) => getNewsHighlights(category, signal) });
+  return { ...query, stories: query.data?.pages.flatMap(page => page.items), highlights: highlights.data, isLoading: query.isPending || highlights.isPending };
+}

@@ -86,18 +86,23 @@ test('persisted data expires and storage size is bounded', async () => {
   } finally {client.clear();}
 });
 
-test('shop category and sort changes reuse one catalogue without changing the shared data', () => {
-  const catalogue=[{_id:'1',category:'shirts',price:20},{_id:'2',category:'figures',price:10}];
-  let captured;
-  const hook=load('hooks/shop/use-fetch-products.ts',{'@tanstack/react-query':{queryOptions:value=>value,useQuery:options=>{captured=options;return {}; }},'@/lib/sanity':{getProducts:async()=>catalogue}}).default;
+test('shop filters use distinct cursor queries and delegate filtering and ordering to Sanity', async () => {
+  let captured; const calls=[];
+  const hook=load('hooks/shop/use-fetch-products.ts', {
+    '@tanstack/react-query': {useInfiniteQuery: options => {captured=options;return {data:{pages:[{items:[{_id:'1'}],total:1}]}};}},
+    '@/lib/sanity': {getProductPage: async (options, signal) => {calls.push({options,signal});return {items:[],total:0,nextCursor:null};}},
+  }).default;
   hook({category:'shirts'}); const shirts=captured;
-  hook({category:'all',sortBy:'price-low'});const sorted=captured;
-  assert.equal(shirts.queryKey.join('/'),sorted.queryKey.join('/'));
-  assert.equal(shirts.select(catalogue).length,1);
-  assert.equal(sorted.select(catalogue)[0]._id,'2');
-  assert.equal(catalogue[0]._id,'1');
+  hook({category:'all',sortBy:'price-low'}); const sorted=captured;
+  assert.notEqual(JSON.stringify(shirts.queryKey), JSON.stringify(sorted.queryKey));
+  assert.equal(shirts.select,undefined);
+  await shirts.queryFn({pageParam:null,signal:'cancel-token'});
+  await sorted.queryFn({pageParam:{id:'p1',value:20},signal:'cancel-token'});
+  assert.equal(calls[0].options.category,'shirts');
+  assert.equal(calls[1].options.sort,'price-low');
+  assert.equal(calls[1].options.cursor.id,'p1');
+  assert.equal(calls[1].signal,'cancel-token');
 });
-
 
 test('unavailable browser storage falls back to memory without blocking startup', async () => {
   const {createQueryPersister}=load('lib/query-persister.ts', {'idb-keyval':{

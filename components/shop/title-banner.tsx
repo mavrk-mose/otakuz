@@ -1,5 +1,7 @@
 "use client"
 
+import { Button } from "@/components/ui/button";
+import { serializeShopFilter } from "@/lib/query-state";
 import {ScrollArea, ScrollBar} from "@/components/ui/scroll-area";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
@@ -11,7 +13,7 @@ import { useI18n } from "@/components/i18n-provider";
 
 export default function TitleBanner() {
     const { t } = useI18n();
-    const {titles, isLoading} = useFetchTitles();
+    const {titles, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage} = useFetchTitles();
 
     if (isLoading) {
         return <ScrollArea className="w-full min-w-0 max-w-full" aria-busy="true" aria-label="Loading collections">
@@ -30,7 +32,7 @@ export default function TitleBanner() {
                 {titles?.map((show: any) => (
                     <Link
                         key={show.name}
-                        href={{ pathname: "/shop/products", query: { anime: show.name } }}
+                        href={serializeShopFilter("/shop/products", { anime: show.name })}
                         className="relative group shrink-0"
                     >
                         <motion.div
@@ -54,6 +56,7 @@ export default function TitleBanner() {
                     </Link>
                 ))}
             </div>
+            {hasNextPage && <Button variant="outline" className="m-3" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>{t(isFetchingNextPage ? "common.loading" : "common.loadMore")}</Button>}
             <ScrollBar orientation="horizontal"/>
         </ScrollArea>
     )

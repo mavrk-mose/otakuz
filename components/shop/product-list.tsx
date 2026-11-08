@@ -16,7 +16,7 @@ interface ProductListProps {
 
 export function ProductList({ category = "all", limit }: ProductListProps) {
     const { t } = useI18n()
-    const { products, isLoading, isError, refetch } = useFetchProducts({ category })
+    const { products, isLoading, isError, refetch } = useFetchProducts({ category, limit: limit ?? 24 })
 
     if (isLoading) {
         return (
@@ -36,7 +36,7 @@ export function ProductList({ category = "all", limit }: ProductListProps) {
         return <EmptyState illustration="collection" title={t("common.noProducts")} description={t("empty.shopDescription")} />;
     }
 
-    const displayProducts = limit ? products.slice(0, limit) : products
+    const displayProducts = products
 
     return (
         <div className="grid grid-cols-1 min-[400px]:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">

@@ -12,7 +12,7 @@ import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { collection, getDocs } from "firebase/firestore";
 import { API_BASE_URL } from "@/lib/api";
 import { db } from "@/lib/firebase";
-import { getEvents, getProducts, urlFor } from "@/lib/sanity";
+import { getEventPage, getProductPage, urlFor } from "@/lib/sanity";
 import { useAuth } from "@/hooks/use-auth";
 import { fetchPublicCommunityUsers } from "@/hooks/use-community-users";
 import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
@@ -195,29 +195,15 @@ export function useGlobalSearch({
         },
       },
 
-      // 4. Merch / Shop Products (Sanity catalog + instant select filter)
+      // 4. Sanity filters, ranks, and bounds merch results before transfer.
       {
-        queryKey: ["products"] as const,
-        queryFn: getProducts,
-        enabled: isCategoryWanted("merch"),
+        queryKey: ["globalSearch", "merch", debouncedExternalQuery, maxItems] as const,
+        queryFn: async ({ signal }: { signal: AbortSignal }) => (await getProductPage({ search: debouncedExternalQuery, sort: "relevance", limit: maxItems }, signal)).items,
+        enabled: isCategoryWanted("merch") && !!debouncedExternalQuery,
         select: (products: unknown): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           return searchProductsSchema.parse(products)
-            .map((p) => {
-              const score = Math.max(
-                rankMatchScore(String(p.name || ""), normalizedQuery),
-                rankMatchScore(String(p.category || ""), normalizedQuery),
-                rankMatchScore(String(p.title?.name || ""), normalizedQuery),
-                String(p.description || "").toLowerCase().includes(normalizedQuery)
-                  ? 25
-                  : 0
-              );
-              return { p, score };
-            })
-            .filter(({ score }) => score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, maxItems)
-            .map(({ p }) => ({
+            .map((p) => ({
               id: `merch-${p._id}`,
               category: "merch" as const,
               title: p.name || "Merchandise",
@@ -229,29 +215,15 @@ export function useGlobalSearch({
         },
       },
 
-      // 5. Events (Shared Sanity events cache + instant select filter)
+      // 5. Sanity filters, ranks, and bounds event results before transfer.
       {
-        queryKey: ["events"] as const,
-        queryFn: getEvents,
-        enabled: isCategoryWanted("events"),
+        queryKey: ["globalSearch", "events", debouncedExternalQuery, maxItems] as const,
+        queryFn: async ({ signal }: { signal: AbortSignal }) => (await getEventPage({ search: debouncedExternalQuery, limit: maxItems }, signal)).items,
+        enabled: isCategoryWanted("events") && !!debouncedExternalQuery,
         select: (events: unknown): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           return searchEventsSchema.parse(events)
             .map((ev) => {
-              const locName = ev.location?.name || "";
-              const locAddr = ev.location?.address || "";
-              const score = Math.max(
-                rankMatchScore(String(ev.title || ""), normalizedQuery),
-                rankMatchScore(String(locName), normalizedQuery),
-                rankMatchScore(String(ev.category || ""), normalizedQuery),
-                String(locAddr).toLowerCase().includes(normalizedQuery) ? 25 : 0
-              );
-              return { ev, score };
-            })
-            .filter(({ score }) => score > 0)
-            .sort((a, b) => b.score - a.score)
-            .slice(0, maxItems)
-            .map(({ ev }) => {
               const eventId = ev._id || ev.id;
               const dateLabel = ev.date
                 ? new Date(ev.date).toLocaleDateString("en-US", {

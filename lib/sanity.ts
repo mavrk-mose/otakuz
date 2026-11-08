@@ -1,3 +1,7 @@
+import { buildNewsPageQuery, newsHighlightsQuery } from "@/lib/sanity-news-queries";
+import { buildProductQuery, buildEventQuery, catalogFacetsQuery, titlesQuery, toSanityPage, type ProductQueryOptions, type EventQueryOptions, type SanityCursor } from "@/lib/sanity-queries";
+import type { Product, Title } from "@/types/shop";
+import type { Event } from "@/types/events";
 import { createClient, defineQuery } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
 import type { NewsArticle, NewsStory } from '@/types/news';
@@ -278,60 +282,12 @@ export const fallbackNewsStories: NewsStory[] = [
   },
 ];
 
-export async function getEvents() {
-  return client.fetch(defineQuery(`
-    *[_type == "event"] | order(date desc) {
-      _id,
-      title,
-      date,
-      time,
-      location,
-      thumbnailUrl,
-      attendees[],
-      organizers[]->{
-        _id,
-        name,
-        avatar
-      }
-    }
-  `));
+export async function getEventPage(options: EventQueryOptions = {}, signal?: AbortSignal) {
+  const { query, params, limit } = buildEventQuery(options);
+  const response = await client.fetch<{ items: (Event & { _sort: string })[]; total: number }>(query, params, { signal });
+  return toSanityPage(response, limit);
 }
-
-export const newsStoriesQuery = defineQuery(`
-  *[_type == "article"] | order(publishedAt desc) {
-    _id,
-    title,
-    slug,
-    "description": pt::text(content),
-    leadParagraph,
-    summary,
-    publishedAt,
-    "tag": coalesce(categories[0]->title, "Industry"),
-    "tags": categories[]->title,
-    "section": coalesce(categories[0]->title, "Industry"),
-    categories[]->{
-      _id,
-      title
-    },
-    "imageUrl": mainImage.asset->url,
-    imageCaption,
-    "authorName": coalesce(author->name, "Staff"),
-    author->{
-      _id,
-      name,
-      bio,
-      role,
-      "imageUrl": image.asset->url
-    },
-    isFeatured,
-    scoopBadge,
-    readTime,
-    readsCount,
-    commentsCount,
-    trendingRank,
-    podcast
-  }
-`);
+export async function getEvents(options: EventQueryOptions = {}) { return (await getEventPage(options)).items; }
 
 export const newsArticleByIdQuery = defineQuery(`
   *[_type == "article" && (_id == $id || slug.current == $id)][0] {
@@ -392,16 +348,28 @@ export const newsArticleByIdQuery = defineQuery(`
   }
 `);
 
-export async function getNewsStories(): Promise<NewsStory[]> {
+export type NewsHighlights = { lead: NewsStory[]; trending: NewsStory[]; podcast: NewsStory | null; anomalies: NewsStory[] };
+function fallbackStories(category: string) {
+  return fallbackNewsStories.filter(story => category === "All Stories" || [story.section, story.tag, ...(story.tags ?? [])].some(value => value?.toLowerCase() === category.toLowerCase()));
+}
+export async function getNewsPage(category = "All Stories", cursor: SanityCursor | null = null, limit = 24, signal?: AbortSignal) {
+  const request = buildNewsPageQuery(category, cursor, limit);
   try {
-    const stories = await client.fetch<NewsStory[]>(newsStoriesQuery);
-    if (stories && stories.length > 0) {
-      return stories;
-    }
-  } catch (error) {
-    console.warn('[Sanity] client.fetch error for newsStoriesQuery, using editorial fallback:', error);
-  }
-  return fallbackNewsStories;
+    const response = await client.fetch<{ items: (NewsStory & { _sort: string })[]; total: number }>(request.query, request.params, { signal });
+    if (response.total || cursor || category !== "All Stories") return toSanityPage(response, request.limit);
+  } catch (error) { if (cursor || signal?.aborted) throw error; }
+  // Local editorial fixtures are only used when the remote catalogue is absent/unavailable.
+  const rows = fallbackStories(category).slice(0, request.limit);
+  return { items: rows, total: rows.length, nextCursor: null };
+}
+export async function getNewsStories() { return (await getNewsPage()).items; }
+export async function getNewsHighlights(category = "All Stories", signal?: AbortSignal): Promise<NewsHighlights> {
+  try {
+    const highlights = await client.fetch<NewsHighlights>(newsHighlightsQuery, { category, categoryLower: category.toLowerCase() }, { signal });
+    if (highlights.lead.length || category !== "All Stories") return highlights;
+  } catch (error) { if (signal?.aborted) throw error; }
+  const lead = fallbackStories(category);
+  return { lead: lead.slice(0, 4), trending: fallbackNewsStories.slice(2, 7), podcast: fallbackNewsStories.find(story => story.podcast?.isPodcast) ?? null, anomalies: fallbackNewsStories.slice(1, 5) };
 }
 
 export async function getNewsArticleById(id: string): Promise<NewsArticle | null> {
@@ -439,30 +407,22 @@ export async function getNewsArticleById(id: string): Promise<NewsArticle | null
   };
 }
 
-export async function getProducts() {
-  return client.fetch(defineQuery(`
-    *[_type == "product"] | order(_createdAt desc) {
-      _id,
-      name,
-      description,
-      price,
-      image[],
-      category,
-      rating,
-      stock,
-      variants[],
-      "title": title -> {
-        _id,
-        name,
-        image,
-      }
-    }
-  `));
+export async function getProductPage(options: ProductQueryOptions = {}, signal?: AbortSignal) {
+  const { query, params, limit } = buildProductQuery(options);
+  const response = await client.fetch<{ items: (Product & { _sort: string | number })[]; total: number }>(query, params, { signal });
+  return toSanityPage(response, limit);
+}
+export async function getProducts(options: ProductQueryOptions = {}) { return (await getProductPage(options)).items; }
+export type CatalogFacets = { categories: string[]; titles: Title[]; minPrice: number; maxPrice: number };
+export function getCatalogFacets(signal?: AbortSignal) { return client.fetch<CatalogFacets>(catalogFacetsQuery, {}, { signal }); }
+export async function getTitlePage(cursor: SanityCursor | null = null, limit = 12, signal?: AbortSignal) {
+  const rows = await client.fetch<(Title & { _sort: string })[]>(titlesQuery, { cursorId: cursor?.id ?? null, fetchLimit: limit + 1 }, { signal });
+  return toSanityPage({ items: rows, total: 0 }, limit);
 }
 
-export async function getArticles() {
+export async function getArticles(limit = 24) {
   return client.fetch(defineQuery(`
-    *[_type == "article"] | order(_createdAt desc) {
+    *[_type == "article"] | order(_createdAt desc, _id asc)[0...$limit] {
       _id,
       title,
       content,
@@ -483,7 +443,7 @@ export async function getArticles() {
         }
       }
     }
-  `));
+  `), { limit: Math.min(100, Math.max(1, limit)) });
 }
 
 export async function registerForEvent(eventId: string, userId: string, userName: string, userPhotoUrl: string) {

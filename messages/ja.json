@@ -520,7 +520,8 @@
     "purchaseTickets": "チケットを購入",
     "going": "人参加予定",
     "others": "人ほか",
-    "contactHost": "主催者に連絡"
+    "contactHost": "主催者に連絡",
+    "empty": "この条件のイベントはまだありません"
   },
   "nav": {
     "themeLabel": "テーマを切り替え",
