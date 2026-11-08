@@ -1,18 +1,16 @@
 "use client"
 
+import { fetchJson } from "@/lib/http";
+import { recentAnimeSchema, withCurrentPage } from "@/lib/schemas/media";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import {useInfiniteQuery} from '@tanstack/react-query';
 import {API_BASE_URL} from "@/lib/api";
 
 export function useRecentAnime() {
   const {data, isPending: isLoading, fetchNextPage, hasNextPage} = useInfiniteQuery({
     queryKey: ['recentAnime'],
-    queryFn: async ({ pageParam = 1 }) => {
-        const response = await fetch(
-          `${API_BASE_URL}/recommendations/anime?page=${pageParam}`
-        );
-        if (!response.ok) throw new Error('Failed to fetch anime');
-        return response.json();
-    },
+    ...apiQueryPolicy,
+    queryFn: async ({ pageParam = 1, signal }) => withCurrentPage(await fetchJson(`${API_BASE_URL}/recommendations/anime?page=${pageParam}`, recentAnimeSchema, { signal }), Number(pageParam)),
     getNextPageParam: (lastPage) => {
         if (lastPage.pagination.has_next_page) {
             return lastPage.pagination.current_page + 1;

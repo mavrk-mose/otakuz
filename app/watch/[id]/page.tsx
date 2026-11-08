@@ -4,8 +4,10 @@ import { WatchAnimeDetails } from "@/components/watch/watch-anime-details";
 
 
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
+import { useQueryState, parseAsString } from "nuqs";
+import { serializeVideo } from "@/lib/query-state";
 import { useEffect, useMemo } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { useInView } from "react-intersection-observer";
@@ -27,7 +29,7 @@ export default function WatchPage() {
   const { t } = useI18n();
   const router = useRouter();
   const params = useParams();
-  const searchParams = useSearchParams();
+  const [videoFromQuery, setVideoUrl] = useQueryState("videoUrl", parseAsString.withOptions({ history: "push", scroll: false }));
 
   const currentId = params?.id as string;
 
@@ -50,7 +52,6 @@ export default function WatchPage() {
     }
   }, [currentId, initialAnimeData, router]);
 
-  const videoFromQuery = searchParams.get("videoUrl");
 
   const promoQueue = useMemo(() => {
     const seen = new Set<string>();
@@ -61,7 +62,7 @@ export default function WatchPage() {
       return [{
         id: `${currentId}:${src}`, src, title: promo.title,
         posterUrl: promo.trailer.images?.large_image_url || promo.trailer.images?.medium_image_url || undefined,
-        playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(src)}`,
+        playerRoute: serializeVideo(`/watch/${currentId}`, { videoUrl: src }),
       }];
     });
   }, [animeVideos, currentId]);
@@ -69,7 +70,7 @@ export default function WatchPage() {
     const src = music.video?.embed_url;
     return src ? [{ id: `${currentId}:${src}`, src, title: music.title,
       posterUrl: music.video.images?.large_image_url || undefined,
-      playerRoute: `/watch/${currentId}?videoUrl=${encodeURIComponent(src)}` }] : [];
+      playerRoute: serializeVideo(`/watch/${currentId}`, { videoUrl: src }) }] : [];
   }), [animeVideos, currentId]);
   const promoIndex = promoQueue.findIndex(video => video.src === videoFromQuery);
   const musicIndex = musicQueue.findIndex(video => video.src === videoFromQuery);
@@ -107,7 +108,7 @@ export default function WatchPage() {
             selectedAnime?.images?.webp?.image_url ||
             "",
           href: selectedVideoUrl
-            ? `/watch/${currentId}?videoUrl=${encodeURIComponent(selectedVideoUrl)}`
+            ? serializeVideo(`/watch/${currentId}`, { videoUrl: selectedVideoUrl })
             : `/watch/${currentId}`,
         }
       : null
@@ -156,11 +157,7 @@ export default function WatchPage() {
           <VideoTabs
             animeVideos={animeVideos}
             selectedVideoUrl={selectedVideoUrl ?? ""}
-            onVideoSelect={(url: string) =>
-              router.push(
-                `/watch/${currentId}?videoUrl=${encodeURIComponent(url)}`
-              )
-            }
+            onVideoSelect={(url: string) => { void setVideoUrl(url); }}
           />
 
           {/* RECOMMENDED ANIME */}

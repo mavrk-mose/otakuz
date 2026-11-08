@@ -1,4 +1,6 @@
 "use client";
+
+import { serializeProfile } from "@/lib/query-state";
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -38,7 +40,7 @@ export function CommunityMemberCard({
   communityUser: UserProfileData;
 }) {
   return (
-    <Link href={`/profile?userId=${communityUser.uid}`} className="block h-full">
+    <Link href={serializeProfile("/profile", { userId: communityUser.uid })} className="block h-full">
       <Card className="group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl border-border bg-card p-5 transition-all duration-300 hover:border-rose-500/50 hover:shadow-xl hover:shadow-rose-500/5">
         <div className="pointer-events-none absolute right-0 top-0 -mr-8 -mt-8 h-24 w-24 rounded-full bg-rose-500/10 blur-xl transition-all group-hover:bg-rose-500/20" />
 

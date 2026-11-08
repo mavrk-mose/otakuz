@@ -1,5 +1,8 @@
 "use client"
 
+import { fetchJson } from "@/lib/http";
+import { searchMediaResponseSchema } from "@/lib/schemas/media";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import { useAnimeStore } from "@/store/use-anime-store";
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/lib/api";
@@ -19,40 +22,30 @@ const useSearch = () => {
 
   const query = useQuery({
     queryKey: ['combinedSearch', searchQuery],
-    queryFn: async () => {
+    ...apiQueryPolicy,
+    queryFn: async ({ signal }) => {
       if (!searchQuery) return [];
 
-      const [animeResponse, mangaResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/anime?q=${searchQuery}&limit=5`),
-        fetch(`${API_BASE_URL}/manga?q=${searchQuery}&limit=5`)
-      ]);
-
-      if (!animeResponse.ok || !mangaResponse.ok) {
-        throw new Error('Failed to fetch search results');
-      }
-
       const [animeData, mangaData] = await Promise.all([
-        animeResponse.json(),
-        mangaResponse.json()
+        fetchJson(`${API_BASE_URL}/anime?q=${encodeURIComponent(searchQuery)}&limit=5`, searchMediaResponseSchema, { signal }),
+        fetchJson(`${API_BASE_URL}/manga?q=${encodeURIComponent(searchQuery)}&limit=5`, searchMediaResponseSchema, { signal }),
       ]);
-
-      
-      const animeResults: SearchResult[] = animeData.data.map((anime: any) => ({
+      const animeResults: SearchResult[] = animeData.data.map((anime) => ({
         id: anime.mal_id.toString(),
         title: anime.title,
         type: 'anime',
-        image: anime.images.webp.small_image_url,
-        score: anime.score,
-        episodes: anime.episodes
+        image: anime.images.webp?.small_image_url || "",
+        score: anime.score ?? 0,
+        episodes: anime.episodes ?? undefined
       }));
 
-      const mangaResults: SearchResult[] = mangaData.data.map((manga: any) => ({
+      const mangaResults: SearchResult[] = mangaData.data.map((manga) => ({
         id: manga.mal_id.toString(),
         title: manga.title,
         type: 'manga',
-        image: manga.images.jpg.small_image_url,
-        score: manga.score,
-        chapters: manga.chapters
+        image: manga.images.jpg?.small_image_url || "",
+        score: manga.score ?? 0,
+        chapters: manga.chapters ?? undefined
       }));
 
       return [...animeResults, ...mangaResults]

@@ -1,4 +1,5 @@
 "use client"
+import { ApiError } from "@/lib/http";
 
 import { ErrorState, MissingPage } from "@/components/page-state";
 import { useState } from "react";
@@ -15,6 +16,7 @@ import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
 import useMangaDetails from "@/hooks/manga/use-manga-details";
 import { useRouter } from "next/navigation"
+import { serializeGenre } from "@/lib/query-state";
 import { useI18n } from "@/components/i18n-provider"
 import { ShareContentModal } from "@/components/chat/share-content-modal"
 import { useRecordWatchHistory } from "@/hooks/use-watch-history"
@@ -60,7 +62,7 @@ export default function MangaDetailPage(props: Props) {
     }
 
     if (!manga) {
-        if (!/^\d+$/.test(params.id) || error?.status === 404 || !error) {
+        if (!/^\d+$/.test(params.id) || (error instanceof ApiError && error.status === 404) || !error) {
             return <MissingPage title={t("manga.notFound")} description={t("manga.notFoundDescription")} />;
         }
         return <ErrorState fullPage title={t("manga.loadFailed")} description={t("manga.loadFailedDescription")} onRetry={() => void refetch()} retrying={isFetching} />;
@@ -149,7 +151,7 @@ export default function MangaDetailPage(props: Props) {
                                     key={genre.mal_id} 
                                     variant="secondary"
                                     onClick={() => {
-                                        router.push(`/manga?genre=${genre.mal_id}`);
+                                        router.push(serializeGenre("/manga", { genre: String(genre.mal_id) }));
                                     }}
                                     className="cursor-pointer"
                                 >

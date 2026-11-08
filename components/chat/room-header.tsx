@@ -1,4 +1,6 @@
 "use client";
+
+import { serializeProfile } from "@/lib/query-state";
 import { I18nText } from "@/components/i18n-text";
 
 
@@ -67,7 +69,7 @@ export default function RoomHeader({ roomId, roomDetails, onLeave }: { roomId: s
       <ul className="space-y-4">{roomDetails?.members.map(id => {
         const member = profiles[id]; const name = member?.displayName || (id === user?.uid ? user.displayName : null) || 'Member';
         return <li key={id} className="flex flex-wrap items-center justify-between gap-3 rounded-md border p-3">
-          <Link href={`/profile?userId=${encodeURIComponent(id)}`} className="flex min-w-0 items-center gap-3 hover:underline">
+          <Link href={serializeProfile("/profile", { userId: id })} className="flex min-w-0 items-center gap-3 hover:underline">
             <Avatar><AvatarImage src={member?.photoURL || (id === user?.uid ? user.photoURL || undefined : undefined)} /><AvatarFallback>{name[0]}</AvatarFallback></Avatar>
             <span className="truncate">{name}{id === roomDetails.createdBy ? ' · Creator' : ''}</span>
           </Link>

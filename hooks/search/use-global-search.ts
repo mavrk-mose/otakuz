@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { serializeChannel, serializeProfile } from "@/lib/query-state";
+
+import { searchProductsSchema, searchEventsSchema, searchUsersSchema } from "@/lib/schemas/search-sources";
+import { fetchJson } from "@/lib/http";
+import { searchMediaResponseSchema, channelsResponseSchema } from "@/lib/schemas/media";
+import { apiQueryPolicy } from "@/lib/media-query-options";
+import useDebounce from "@/hooks/search/use-debounce";
+import { useCallback, useMemo } from "react";
 import { keepPreviousData, useQueries } from "@tanstack/react-query";
 import { collection, getDocs } from "firebase/firestore";
 import { API_BASE_URL } from "@/lib/api";
@@ -31,17 +38,6 @@ export interface CategorySearchSection {
   isFetching: boolean;
   isError: boolean;
   requiresAuth: boolean;
-}
-
-function useDebouncedValue<T>(value: T, delayMs: number): T {
-  const [debounced, setDebounced] = useState<T>(value);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setDebounced(value), delayMs);
-    return () => window.clearTimeout(timer);
-  }, [value, delayMs]);
-
-  return debounced;
 }
 
 function safeSanityImageUrl(source: any): string {
@@ -82,13 +78,13 @@ export function useGlobalSearch({
   const { user } = useAuth();
   const trimmedQuery = rawQuery.trim();
   const normalizedQuery = trimmedQuery.toLowerCase();
-  const debouncedExternalQuery = useDebouncedValue(trimmedQuery, 280);
+  const debouncedExternalQuery = useDebounce(trimmedQuery, 280);
 
-  const isCategoryWanted = (cat: GlobalSearchCategory) => {
+  const isCategoryWanted = useCallback((cat: GlobalSearchCategory) => {
     if (!isOpen || trimmedQuery.length === 0) return false;
     if (focusedCategory !== "all") return focusedCategory === cat;
     return enabledCategories.includes(cat);
-  };
+  }, [isOpen, trimmedQuery.length, focusedCategory, enabledCategories]);
 
   const maxItems = focusedCategory === "all" ? 5 : 18;
 
@@ -104,13 +100,8 @@ export function useGlobalSearch({
             limit: String(Math.min(maxItems, 12)),
             sfw: "true",
           });
-          const res = await fetch(`${API_BASE_URL}/anime?${params.toString()}`, {
-            signal,
-          });
-          if (!res.ok) throw new Error(`Anime search failed (${res.status})`);
-          const json = await res.json();
-          const list = Array.isArray(json?.data) ? json.data : [];
-          return list.map((anime: any) => ({
+          const { data: list } = await fetchJson(`${API_BASE_URL}/anime?${params.toString()}`, searchMediaResponseSchema, { signal });
+          return list.map((anime) => ({
             id: `anime-${anime.mal_id}`,
             category: "anime" as const,
             title: anime.title || "Untitled Anime",
@@ -131,7 +122,7 @@ export function useGlobalSearch({
         },
         enabled: isCategoryWanted("anime") && debouncedExternalQuery.length >= 1,
         placeholderData: keepPreviousData,
-        retry: 1,
+        ...apiQueryPolicy,
       },
 
       // 2. Manga (Jikan API - async streaming with AbortSignal + keepPreviousData)
@@ -144,13 +135,8 @@ export function useGlobalSearch({
             limit: String(Math.min(maxItems, 12)),
             sfw: "true",
           });
-          const res = await fetch(`${API_BASE_URL}/manga?${params.toString()}`, {
-            signal,
-          });
-          if (!res.ok) throw new Error(`Manga search failed (${res.status})`);
-          const json = await res.json();
-          const list = Array.isArray(json?.data) ? json.data : [];
-          return list.map((manga: any) => ({
+          const { data: list } = await fetchJson(`${API_BASE_URL}/manga?${params.toString()}`, searchMediaResponseSchema, { signal });
+          return list.map((manga) => ({
             id: `manga-${manga.mal_id}`,
             category: "manga" as const,
             title: manga.title || "Untitled Manga",
@@ -171,7 +157,7 @@ export function useGlobalSearch({
         },
         enabled: isCategoryWanted("manga") && debouncedExternalQuery.length >= 1,
         placeholderData: keepPreviousData,
-        retry: 1,
+        ...apiQueryPolicy,
       },
 
       // 3. Community Users (Shared Firestore cache + 0ms select filter)
@@ -182,7 +168,7 @@ export function useGlobalSearch({
         select: (users: Awaited<ReturnType<typeof fetchPublicCommunityUsers>>): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
           const qClean = normalizedQuery.replace(/^@/, "");
-          return users
+          return searchUsersSchema.parse(users)
             .map((u) => {
               const score = Math.max(
                 rankMatchScore(u.displayName, normalizedQuery),
@@ -204,7 +190,7 @@ export function useGlobalSearch({
                 .join(" • "),
               badge: `Lv. ${u.level}`,
               image: u.photoURL || "",
-              href: `/profile?userId=${u.uid}`,
+              href: serializeProfile("/profile", { userId: u.uid }),
             }));
         },
       },
@@ -214,9 +200,9 @@ export function useGlobalSearch({
         queryKey: ["products"] as const,
         queryFn: getProducts,
         enabled: isCategoryWanted("merch"),
-        select: (products: any[]): GlobalSearchItem[] => {
+        select: (products: unknown): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
-          return products
+          return searchProductsSchema.parse(products)
             .map((p) => {
               const score = Math.max(
                 rankMatchScore(String(p.name || ""), normalizedQuery),
@@ -248,9 +234,9 @@ export function useGlobalSearch({
         queryKey: ["events"] as const,
         queryFn: getEvents,
         enabled: isCategoryWanted("events"),
-        select: (events: any[]): GlobalSearchItem[] => {
+        select: (events: unknown): GlobalSearchItem[] => {
           if (!normalizedQuery) return [];
-          return events
+          return searchEventsSchema.parse(events)
             .map((ev) => {
               const locName = ev.location?.name || "";
               const locAddr = ev.location?.address || "";
@@ -291,9 +277,7 @@ export function useGlobalSearch({
       {
         queryKey: ["iptv-channels"] as const,
         queryFn: async ({ signal }: { signal: AbortSignal }): Promise<IptvChannelsResponse> => {
-          const res = await fetch("/api/channels", { signal });
-          if (!res.ok) throw new Error("Failed to fetch channels");
-          return res.json();
+          return fetchJson("/api/channels", channelsResponseSchema, { signal });
         },
         enabled: isCategoryWanted("channels"),
         select: (payload: IptvChannelsResponse): GlobalSearchItem[] => {
@@ -320,7 +304,7 @@ export function useGlobalSearch({
                 .join(" • "),
               badge: "LIVE",
               image: ch.logoUrl || "",
-              href: `/channels?channel=${encodeURIComponent(ch.channelId)}`,
+              href: serializeChannel("/channels", { channel: ch.channelId }),
             }));
         },
       },
@@ -394,14 +378,7 @@ export function useGlobalSearch({
         };
       })
       .filter((s): s is CategorySearchSection => s !== null);
-  }, [
-    enabledCategories,
-    focusedCategory,
-    isOpen,
-    queryResults,
-    trimmedQuery,
-    user?.uid,
-  ]);
+  }, [isCategoryWanted, queryResults, user?.uid]);
 
   const flatItems = useMemo(
     () => sections.flatMap((section) => section.items),

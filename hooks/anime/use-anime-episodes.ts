@@ -1,3 +1,8 @@
+
+import { withCurrentPage } from "@/lib/schemas/media";
+import { fetchJson } from "@/lib/http";
+import { episodesResponseSchema } from "@/lib/schemas/catalogue-responses";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { API_BASE_URL } from '@/lib/api'
 import type { AnimeEpisodeResponse } from '@/types/anime'
@@ -11,13 +16,8 @@ export function useAnimeEpisodes(id: string) {
         isFetchingNextPage,
     } = useInfiniteQuery<AnimeEpisodeResponse>({
         queryKey: ['animeEpisodes', id],
-        queryFn: async ({ pageParam = 1 }) => {
-            const response = await fetch(
-                `${API_BASE_URL}/anime/${id}/episodes?page=${pageParam}`
-            )
-            if (!response.ok) throw new Error('Failed to fetch anime episodes')
-            return response.json()
-        },
+        ...apiQueryPolicy,
+        queryFn: async ({ pageParam = 1, signal }) => withCurrentPage(await fetchJson(`${API_BASE_URL}/anime/${id}/episodes?page=${pageParam}`, episodesResponseSchema, { signal }), Number(pageParam)),
         getNextPageParam: (lastPage) => {
             if (lastPage.pagination.has_next_page) {
                 return lastPage.pagination.current_page + 1

@@ -59,6 +59,7 @@ function renderAd(env, props, status) {
         ...react, useEffect() {}, useMemo: (fn) => fn(),
         useRef: (value) => ({ current: value }), useState: (value) => [value === 'pending' && status ? status : value, () => {}],
       };
+      if (name === '@/components/i18n-provider') return { useI18n: () => ({ locale: 'en', t: key => key }) };
       if (name === '@/lib/adsense-config') return config;
       if (name === '@/lib/ads-catalog') return { getCampaignsForContext: () => [{ interestTag: 'Anime & Merch' }] };
       if (name.startsWith('@/')) return new Proxy({}, { get: (_, key) => key === 'cn' ? () => '' : key });

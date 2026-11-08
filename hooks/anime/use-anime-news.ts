@@ -1,14 +1,13 @@
+import { fetchJson } from "@/lib/http";
+import { newsResponseSchema } from "@/lib/schemas/media";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import {useQuery} from "@tanstack/react-query";
 import {API_BASE_URL} from "@/lib/api";
 
 export function useAnimeNews(id: string) {
     return useQuery({
         queryKey: ['animeNews', id],
-        queryFn: async () => {
-            const response = await fetch(`${API_BASE_URL}/anime/${id}/news`);
-            if (!response.ok) throw new Error('Failed to fetch anime news');
-            const data = await response.json();
-            return data.data;
-        },
+        ...apiQueryPolicy,
+        queryFn: async ({ signal }) => (await fetchJson(`${API_BASE_URL}/anime/${id}/news`, newsResponseSchema, { signal })).data,
     });
 }

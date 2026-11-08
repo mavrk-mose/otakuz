@@ -1,8 +1,10 @@
 "use client";
+import { useQueryState, parseAsString } from "nuqs";
 import { useI18n } from "@/components/i18n-provider";
 
 
 import {
+  Suspense,
   createContext,
   useCallback,
   useContext,
@@ -70,10 +72,22 @@ export function PersistentPlayerSlot({
   );
 }
 
+type QueueQueryUpdater = { current: ((videoUrl: string) => void) | null };
+
+function QueueUrlSync({ updater }: { updater: QueueQueryUpdater }) {
+  const [, setVideoQuery] = useQueryState("videoUrl", parseAsString.withOptions({ history: "replace", scroll: false }));
+  useEffect(() => {
+    updater.current = value => { void setVideoQuery(value); };
+    return () => { updater.current = null; };
+  }, [setVideoQuery, updater]);
+  return null;
+}
+
 export function PlayerLayout({ children }: PlayerLayoutProps) {
   const { t: localizedT } = useI18n();
   const pathname = usePathname();
   const router = useRouter();
+  const queueQueryUpdater = useRef<QueueQueryUpdater["current"]>(null);
   const playerRef = useRef<MediaPlayerInstance | null>(null);
   const restoredSourceRef = useRef<string | null>(null);
   const lastProgressUpdateRef = useRef(0);
@@ -243,6 +257,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
 
   return (
     <PlayerSlotContext.Provider value={slotContextValue}>
+      <Suspense fallback={null}><QueueUrlSync updater={queueQueryUpdater} /></Suspense>
       {isOpen && videoSrc && (
         <section
           className={cn(
@@ -327,7 +342,7 @@ export function PlayerLayout({ children }: PlayerLayoutProps) {
               onEnded={() => {
                 const next = usePlayerStore.getState().advanceQueue();
                 if (next?.playerRoute && pathname === next.playerRoute.split("?")[0]) {
-                  router.replace(next.playerRoute, { scroll: false });
+                  queueQueryUpdater.current?.(next.src);
                 }
               }}
             >

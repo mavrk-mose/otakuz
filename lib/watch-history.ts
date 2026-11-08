@@ -1,3 +1,5 @@
+
+import { serializeChannel } from "@/lib/query-state";
 import { auth, db } from "@/lib/firebase";
 import {
   collection,
@@ -81,7 +83,7 @@ export function readLocalWatchHistory(): WatchHistoryItem[] {
                   .filter(Boolean)
                   .join(" • "),
                 image: ch.logoUrl || "",
-                href: `/channels?channel=${encodeURIComponent(chKey)}`,
+                href: serializeChannel("/channels", { channel: chKey }),
                 viewedAtMs: typeof ch.viewedAt === "number" ? ch.viewedAt : Date.now(),
                 viewCount: 1,
               });

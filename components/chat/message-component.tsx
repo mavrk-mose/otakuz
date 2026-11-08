@@ -1,4 +1,6 @@
 
+import { serializeProfile } from "@/lib/query-state";
+
 import { I18nText } from "@/components/i18n-text";
 import { AnimeHoverPreview } from "@/components/anime/anime-hover-preview";
 import { useState } from 'react'
@@ -341,7 +343,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
 
               <div className="mt-3">
                 <Button asChild size="sm" variant="outline" className="w-full gap-1.5 border-rose-500/30 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 hover:text-rose-300">
-                  <Link href={`/profile?userId=${data.userId}`}>
+                  <Link href={serializeProfile("/profile", { userId: data.userId })}>
                     <span><I18nText message="profile.viewProfile" /></span>
                     <ArrowRight className="h-3 w-3" />
                   </Link>
@@ -367,7 +369,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
         isCurrentUser ? 'flex-row-reverse' : ''
       }`}
     >
-      <Link href={`/profile?userId=${encodeURIComponent(message.userId)}`} aria-label={`View ${sender?.displayName || message.username}'s profile`} className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring">
+      <Link href={serializeProfile("/profile", { userId: message.userId })} aria-label={`View ${sender?.displayName || message.username}'s profile`} className="shrink-0 rounded-full focus-visible:ring-2 focus-visible:ring-ring">
         <Avatar>
           <AvatarImage src={sender?.photoURL || message.photoURL} alt={sender?.displayName || message.username} className="object-cover" />
           <AvatarFallback>{(sender?.displayName || message.username)[0] || 'A'}</AvatarFallback>
@@ -375,7 +377,7 @@ export function MessageComponent({ message, currentUserId, onEdit, onDelete, onR
       </Link>
       <div className={`flex min-w-0 max-w-[calc(100%-3.25rem)] flex-col ${isCurrentUser ? 'items-end' : 'items-start'}`}>
         <div className="flex items-baseline gap-2 mb-1">
-          <Link href={`/profile?userId=${encodeURIComponent(message.userId)}`} className="text-sm font-medium hover:underline">{sender?.displayName || message.username}</Link>
+          <Link href={serializeProfile("/profile", { userId: message.userId })} className="text-sm font-medium hover:underline">{sender?.displayName || message.username}</Link>
           <span className="text-xs text-muted-foreground">
             {new Date(message.timestamp).toLocaleTimeString(locale === "ja" ? "ja-JP" : "en-US")}
             {message.editedAt ? ` · ${t("chat.edited")}` : ''}

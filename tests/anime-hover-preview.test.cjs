@@ -11,6 +11,8 @@ window.matchMedia=()=>({matches:true});
 const React=requireApp('react'), {createRoot}=requireApp('react-dom/client'),{act}=requireApp('react-dom/test-utils');
 let requests=0;
 const mockedRequire=name=>{
+ if(name==='@/components/i18n-text')return {I18nText:({message})=>React.createElement('span',null,message)};
+ if(name==='@/components/i18n-provider')return {useI18n:()=>({locale:'en',t:key=>key})};
  if(name==='@/components/bookmark-button')return {BookmarkButton:({itemId,onOpenChange})=>React.createElement('button',{'aria-label':'Save to a list','data-item-id':itemId,onClick:()=>onOpenChange(true)},'Bookmark')};
  if(name==='@/components/anime/promo-video'){const result={};const source=requireApp('typescript').transpileModule(fs.readFileSync(path.join(rootPath,'components/anime/promo-video.tsx'),'utf8'),{compilerOptions:{module:1,jsx:4}}).outputText;vm.runInNewContext(source,{exports:result,require:mockedRequire,window,URL:window.URL});return result;}
  if(name==='@/hooks/anime/use-anime-videos')return {useAnimeVideos:()=>{requests++;return {data:{promo:[{trailer:{embed_url:'https://www.youtube.com/embed/first'}},{trailer:{embed_url:'https://www.youtube.com/embed/second'}}]},isLoading:false}}};

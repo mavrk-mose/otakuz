@@ -1,16 +1,8 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
-interface RoomState {
-  roomId: string;
-  hostId: string;
-  videoUrl: string;
-  isPlaying: boolean;
-  position: number;
-  playbackRate: number;
-  clients: string[];
-  seq: number;
-}
+import { roomStateSchema, roomEventSchema, type RoomState } from "@/lib/schemas/watch-party";
+import { fetchJson, retryApiRequest, apiRetryDelay } from "@/lib/http";
 
 interface UseWatchPartyRoomResults {
   state: RoomState | undefined;
@@ -28,17 +20,19 @@ interface UseWatchPartyRoomResults {
 export function useWatchPartyRoom(roomId: string): UseWatchPartyRoomResults {
   const queryClient = useQueryClient();
   const wsRef = useRef<WebSocket | null>(null);
-  const statusRef = useRef<"connecting" | "open" | "closed">("connecting");
+  const [connectionStatus, setConnectionStatus] = useState<"connecting" | "open" | "closed">("connecting");
 
   // ---- 1. Load initial room state via HTTP ----
-  const { data, isLoading } = useQuery({
+  const { data, isLoading } = useQuery<RoomState>({
     queryKey: ["room", roomId],
-    queryFn: async () => {
-      const res = await fetch(`/rooms/${roomId}`);
-      if (!res.ok) throw new Error("Failed to load room state");
-      return res.json() as Promise<RoomState>;
-    },
+    queryFn: ({ signal }) => fetchJson(`/rooms/${roomId}`, roomStateSchema, { signal }),
+    enabled: !!roomId, retry: retryApiRequest, retryDelay: apiRetryDelay,
     staleTime: 0,
+    // A slow HTTP refresh must not overwrite a newer state received over the socket.
+    structuralSharing: (previous, incoming) => {
+      const oldState = roomStateSchema.safeParse(previous), newState = roomStateSchema.safeParse(incoming);
+      return oldState.success && newState.success && oldState.data.seq > newState.data.seq ? previous : incoming;
+    },
   });
 
   // ---- 2. Send messages through WebSocket ----
@@ -50,25 +44,30 @@ export function useWatchPartyRoom(roomId: string): UseWatchPartyRoomResults {
 
   // ---- 3. WebSocket setup and event listeners ----
   useEffect(() => {
+    if (!roomId) return;
     const ws = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws/${roomId}`);
     wsRef.current = ws;
-    statusRef.current = "connecting";
+    setConnectionStatus("connecting");
 
     ws.onopen = () => {
-      statusRef.current = "open";
+      setConnectionStatus("open");
       queryClient.invalidateQueries({ queryKey: ["room", roomId] });
     };
 
     ws.onclose = () => {
-      statusRef.current = "closed";
+      setConnectionStatus("closed");
     };
 
     ws.onerror = () => {
-      statusRef.current = "closed";
+      setConnectionStatus("closed");
     };
 
     ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
+      let payload: unknown;
+      try { payload = JSON.parse(event.data); } catch { return; }
+      const parsed = roomEventSchema.safeParse(payload);
+      if (!parsed.success) return;
+      const msg = parsed.data;
 
       switch (msg.type) {
         case "state_update":
@@ -112,6 +111,6 @@ export function useWatchPartyRoom(roomId: string): UseWatchPartyRoomResults {
     state: data,
     isLoading,
     wsSend,
-    connectionStatus: statusRef.current,
+    connectionStatus,
   };
 }

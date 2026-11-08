@@ -1,3 +1,7 @@
+import { z } from "zod";
+import { fetchJson } from "@/lib/http";
+import { mediaRecordSchema, paginationSchema, imagesSchema, withCurrentPage } from "@/lib/schemas/media";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { API_BASE_URL, fetchGenres, MediaType } from "@/lib/api";
 
@@ -7,6 +11,7 @@ export function useMediaGenres(mediaType: MediaType) {
         isPending: isLoadingGenres
     } = useQuery({
         queryKey: [`${mediaType}Genres`],
+        ...apiQueryPolicy,
         queryFn: () => fetchGenres(mediaType),
     });
 
@@ -33,11 +38,12 @@ export function useInfiniteMediaList<TData = any>({ mediaType, genreId, queryKey
 
     const query = useInfiniteQuery<{ data: TData[]; pagination: { current_page: number; has_next_page: boolean } }>({
         queryKey,
-        queryFn: async ({ pageParam = 1 }) => {
+        ...apiQueryPolicy,
+        queryFn: async ({ pageParam = 1, signal }) => {
             const separator = endpoint.includes('?') ? '&' : '?';
-            const response = await fetch(`${endpoint}${separator}page=${pageParam}`);
-            if (!response.ok) throw new Error(`Failed to fetch ${mediaType}`);
-            return response.json();
+            return withCurrentPage(await fetchJson(`${endpoint}${separator}page=${pageParam}`, z.object({
+                data: z.array(z.custom<TData>(value => mediaRecordSchema.safeParse(value).success)), pagination: paginationSchema,
+            }), { signal }), Number(pageParam));
         },
         getNextPageParam: (lastPage) => {
             if (lastPage?.pagination?.has_next_page) {
@@ -55,12 +61,8 @@ export function useInfiniteMediaList<TData = any>({ mediaType, genreId, queryKey
 export function useMediaPictures<T = any>(mediaType: MediaType, id: string) {
     const query = useQuery<T[]>({
         queryKey: [`${mediaType}Pictures`, id],
-        queryFn: async () => {
-            const response = await fetch(`${API_BASE_URL}/${mediaType}/${id}/pictures`);
-            if (!response.ok) throw new Error(`Failed to fetch ${mediaType} pictures`);
-            const data = await response.json();
-            return data.data;
-        },
+        ...apiQueryPolicy,
+        queryFn: async ({ signal }) => (await fetchJson(`${API_BASE_URL}/${mediaType}/${id}/pictures`, z.object({ data: z.array(z.custom<T>(value => imagesSchema.safeParse(value).success)) }), { signal })).data,
         enabled: Boolean(id),
     });
     return { ...query, isLoading: query.isPending && !!id };

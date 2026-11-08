@@ -9,7 +9,7 @@ const { persistQueryClientSave, persistQueryClientRestore } = require('@tanstack
 function load(file, mocks = {}, globals = {}) {
   const exports = {};
   const code = ts.transpileModule(fs.readFileSync(file, 'utf8'), {compilerOptions:{module:1, jsx:4}}).outputText;
-  vm.runInNewContext(code, { exports, require: name => name in mocks ? mocks[name] : name.startsWith('.') ? load(path.resolve(path.dirname(file), name + '.ts'), mocks) : require(name), console, setTimeout, clearTimeout, Date, ...globals });
+  vm.runInNewContext(code, { exports, require: name => name in mocks ? mocks[name] : name.startsWith('@/') ? load(path.resolve(name.slice(2) + '.ts'), mocks, globals) : name.startsWith('.') ? load(path.resolve(path.dirname(file), name + '.ts'), mocks, globals) : require(name), console, setTimeout, clearTimeout, Date, ...globals });
   return exports;
 }
 const { createAppQueryClient, shouldPersistQuery, CACHE_MAX_AGE, CACHE_BUSTER, refreshStaleQueries, clearAccountQueries } = load('lib/query-client.ts');
@@ -89,7 +89,7 @@ test('persisted data expires and storage size is bounded', async () => {
 test('shop category and sort changes reuse one catalogue without changing the shared data', () => {
   const catalogue=[{_id:'1',category:'shirts',price:20},{_id:'2',category:'figures',price:10}];
   let captured;
-  const hook=load('hooks/shop/use-fetch-products.ts',{'@tanstack/react-query':{useQuery:options=>{captured=options;return {}; }},'@/lib/sanity':{getProducts:async()=>catalogue}}).default;
+  const hook=load('hooks/shop/use-fetch-products.ts',{'@tanstack/react-query':{queryOptions:value=>value,useQuery:options=>{captured=options;return {}; }},'@/lib/sanity':{getProducts:async()=>catalogue}}).default;
   hook({category:'shirts'}); const shirts=captured;
   hook({category:'all',sortBy:'price-low'});const sorted=captured;
   assert.equal(shirts.queryKey.join('/'),sorted.queryKey.join('/'));
@@ -111,7 +111,7 @@ test('unavailable browser storage falls back to memory without blocking startup'
 
 test('restoring cached data does not briefly show a not-found state', () => {
   const hook=load('hooks/anime/use-anime-details.ts', {
-    '@tanstack/react-query':{useQuery:()=>({data:undefined,isPending:true,isLoading:false})},
+    '@tanstack/react-query':{queryOptions:value=>value,useQuery:()=>({data:undefined,isPending:true,isLoading:false})},
     '@/lib/api':{API_BASE_URL:'/api/jikan'},
   }).default;
   assert.equal(hook('1').isLoading,true);
@@ -121,11 +121,11 @@ test('restoring cached data does not briefly show a not-found state', () => {
 test('missing anime and temporary failures retain distinct status and retry behaviour', async () => {
   let options;
   const hook=load('hooks/anime/use-anime-details.ts', {
-    '@tanstack/react-query':{useQuery:value=>{options=value;return {isPending:true};}},
+    '@tanstack/react-query':{queryOptions:value=>value,useQuery:value=>{options=value;return {isPending:true};}},
     '@/lib/api':{API_BASE_URL:'/api/jikan'},
   },{fetch:async()=>({ok:false,status:404})}).default;
   hook('1');
-  await assert.rejects(options.queryFn(), error => error.status === 404);
+  await assert.rejects(options.queryFn({signal:undefined}), error => error.status === 404);
   assert.equal(options.retry(0,{status:404}),false);
   assert.equal(options.retry(0,{status:503}),true);
   assert.equal(hook('not-an-id').isLoading,false);

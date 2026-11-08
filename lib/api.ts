@@ -1,3 +1,6 @@
+import { fetchJson } from "@/lib/http";
+import { z } from "zod";
+import { genresResponseSchema, mediaRecordSchema, newsResponseSchema, searchMediaResponseSchema } from "@/lib/schemas/media";
 import { AnimeResponse, NewsResponse, TopAnime } from '@/types/anime';
 import { MangaResponse } from '@/types/manga';
 
@@ -27,17 +30,8 @@ export interface GenreItem {
 }
 
 export async function fetchGenres(mediaType: MediaType): Promise<GenreItem[]> {
-    try {
-        await delay(1000);
-        const response = await fetch(`${API_BASE_URL}/genres/${mediaType}`);
-        if (!response.ok) throw new Error(`Failed to fetch ${mediaType} genres`);
-
-        const data = await response.json();
-        return data.data ?? [];
-    } catch (error) {
-        console.error(`Error fetching ${mediaType} genres:`, error);
-        return [];
-    }
+    const { data } = await fetchJson(`${API_BASE_URL}/genres/${mediaType}`, genresResponseSchema);
+    return data;
 }
 
 export async function getAnimeGenres(): Promise<GenreItem[]> {
@@ -56,15 +50,7 @@ export async function getTopAnime(genre?: string) {
         params.set('genre', genre);
     }
 
-    const response = await fetch(`${API_BASE_URL}/top/anime?${params.toString()}`);
-    if (!response.ok) {
-        throw new Error(`Top anime request failed (${response.status})`);
-    }
-
-    const payload: unknown = await response.json();
-    if (!isRecord(payload) || !Array.isArray(payload.data)) {
-        throw new Error('Unexpected response from top anime API');
-    }
+    const payload = await fetchJson(`${API_BASE_URL}/top/anime?${params.toString()}`, searchMediaResponseSchema);
 
     return payload.data.map((item, index): TopAnime => {
         if (!isRecord(item) || typeof item.mal_id !== 'number' || typeof item.title !== 'string') {
@@ -87,43 +73,9 @@ export async function getTopAnime(genre?: string) {
 }
 
 export async function getAnimeByGenre(genreId: string) {
-    try {
-        await delay(1000);
-        const response = await fetch(`${API_BASE_URL}/anime?genres=${genreId}`);
-        if (!response.ok) throw new Error('Failed to fetch anime by genre');
-
-        const data: AnimeResponse = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error('Error fetching anime by genre:', error);
-        return [];
-    }
+    return (await fetchJson(`${API_BASE_URL}/anime?genres=${encodeURIComponent(genreId)}`, z.object({ data: z.array(z.custom<AnimeResponse["data"][number]>(value => mediaRecordSchema.safeParse(value).success)) }))).data;
 }
-
 export async function getTopManga() {
-    try {
-        await delay(1000);
-        const response = await fetch(`${API_BASE_URL}/top/manga`);
-        if (!response.ok) throw new Error('Failed to fetch top manga');
-
-        const data: MangaResponse = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error('Error fetching top manga:', error);
-        return [];
-    }
+    return (await fetchJson(`${API_BASE_URL}/top/manga`, z.object({ data: z.array(z.custom<MangaResponse["data"][number]>(value => mediaRecordSchema.safeParse(value).success)) }))).data;
 }
-
-export async function getAnimeNews() {
-    try {
-        await delay(1000);
-        const response = await fetch(`${API_BASE_URL}/anime/1/news`);
-        if (!response.ok) throw new Error('Failed to fetch anime news');
-
-        const data: NewsResponse = await response.json();
-        return data.data;
-    } catch (error) {
-        console.error('Error fetching anime news:', error);
-        return [];
-    }
-}
+export async function getAnimeNews() { return (await fetchJson(`${API_BASE_URL}/anime/1/news`, newsResponseSchema)).data; }

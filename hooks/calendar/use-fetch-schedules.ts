@@ -1,5 +1,9 @@
 "use client";
 
+import { withCurrentPage } from "@/lib/schemas/media";
+import { fetchJson } from "@/lib/http";
+import { schedulesResponseSchema } from "@/lib/schemas/catalogue-responses";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/lib/api";
 import type { AnimeScheduleResponse, ScheduleAnime } from "@/types/anime";
@@ -27,29 +31,6 @@ type GroupedSchedulePage = {
   pagination: AnimeScheduleResponse["pagination"];
 };
 
-function isAnimeScheduleResponse(data: unknown): data is AnimeScheduleResponse {
-  if (typeof data !== "object" || data === null) return false;
-
-  const response = data as Record<string, unknown>;
-  const pagination = response.pagination;
-  if (!Array.isArray(response.data) || typeof pagination !== "object" || pagination === null) {
-    return false;
-  }
-
-  const page = pagination as Record<string, unknown>;
-  const items = page.items;
-  if (typeof items !== "object" || items === null) return false;
-
-  return (
-    typeof page.last_visible_page === "number" &&
-    typeof page.has_next_page === "boolean" &&
-    typeof page.current_page === "number" &&
-    typeof (items as Record<string, unknown>).count === "number" &&
-    typeof (items as Record<string, unknown>).total === "number" &&
-    typeof (items as Record<string, unknown>).per_page === "number"
-  );
-}
-
 export default function useFetchSchedules({
   day,
   limit = 25
@@ -69,22 +50,7 @@ export default function useFetchSchedules({
         page: pageParam.toString(),
       });
 
-      const response = await fetch(
-        `${API_BASE_URL}/schedules/${day}?${params}`,
-        { signal }
-      );
-
-      if (response.status === 429) {
-        throw new Error("Schedules are temporarily rate limited.");
-      }
-      if (!response.ok) {
-        throw new Error(`Failed to fetch schedules: ${response.status}`);
-      }
-
-      const data: unknown = await response.json();
-      if (!isAnimeScheduleResponse(data)) {
-        throw new Error("The schedule response had an unexpected format.");
-      }
+      const data = withCurrentPage(await fetchJson(`${API_BASE_URL}/schedules/${day}?${params}`, schedulesResponseSchema, { signal }), Number(pageParam));
 
       const schedules: GroupedSchedules = {};
 
@@ -120,16 +86,7 @@ export default function useFetchSchedules({
         : undefined;
     },
     initialPageParam: 1,
-    retry: (failureCount, error) => {
-      if (
-        error instanceof Error &&
-        /^Failed to fetch schedules: 4\d\d$/.test(error.message)
-      ) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    ...apiQueryPolicy,
     enabled: day !== null,
   });
 }

@@ -1,4 +1,5 @@
 "use client";
+import { ApiError } from "@/lib/http";
 
 import { ErrorState, MissingPage } from "@/components/page-state";
 import { Badge } from "@/components/ui/badge";
@@ -18,6 +19,7 @@ import AnimeEpisodes from "@/components/anime/anime-episodes";
 import React, { useState } from "react";
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
 import useAnimeDetails from "@/hooks/anime/use-anime-details";
+import { serializeGenre } from "@/lib/query-state";
 import { useI18n } from "@/components/i18n-provider";
 import { AnimeCharacterList } from "@/components/anime/anime-character-list";
 import { useRecordWatchHistory } from "@/hooks/use-watch-history";
@@ -55,7 +57,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   }
 
   if (!anime) {
-    if (!/^\d+$/.test(id) || error?.status === 404 || !error) return <MissingPage title={t("anime.notFound")} />;
+    if (!/^\d+$/.test(id) || (error instanceof ApiError && error.status === 404) || !error) return <MissingPage title={t("anime.notFound")} />;
     return <ErrorState fullPage onRetry={() => void refetch()} retrying={isFetching} />;
   }
 
@@ -137,7 +139,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                   key={genre.mal_id}
                   variant="secondary"
                   onClick={() => {
-                    router.push(`/anime?genre=${genre.mal_id}`);
+                    router.push(serializeGenre("/anime", { genre: String(genre.mal_id) }));
                   }}
                   className="cursor-pointer"
                 >

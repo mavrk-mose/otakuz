@@ -16,7 +16,8 @@ import { UserProfileCard } from "@/components/profile/user-profile-card";
 import { ProfileSettingsModal } from "@/components/profile/profile-settings-modal";
 import { motion } from "framer-motion";
 import { Settings, LogOut, Lock, Shield, ArrowLeft, Globe } from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useQueryState, parseAsString } from "nuqs";
+import { useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -24,8 +25,7 @@ function ProfileContent() {
   const { t } = useI18n();
   const { user, loading: authLoading, signOut } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const queryUserId = searchParams.get("userId");
+  const [queryUserId] = useQueryState("userId", parseAsString);
   const isOwnProfile = !queryUserId || Boolean(user && queryUserId === user.uid);
   const targetUserId = queryUserId || user?.uid;
 

@@ -18,6 +18,7 @@ import posthog from "posthog-js";
 import { usePostHogPageTracking } from "@/hooks/use-post-hog-tracking";
 import useAuthStore from "@/store/use-auth-store";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { I18nProvider } from "@/components/i18n-provider";
 
 import { useNotificationsStore } from "@/store/use-notifications-store";
@@ -93,7 +94,7 @@ export function Providers({ children, ...props }: ThemeProviderProps) {
       )}
       <PostHogProvider client={posthog}>
         <NextThemesProvider {...props}>
-          <I18nProvider>{children}</I18nProvider>
+          <NuqsAdapter><I18nProvider>{children}</I18nProvider></NuqsAdapter>
         </NextThemesProvider>
       </PostHogProvider>
     </PersistQueryClientProvider>

@@ -1,5 +1,10 @@
 "use client";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { profileSettingsSchema, profileSettingsDefaults, type ProfileSettingsValues } from "@/lib/schemas/profile-settings";
+import type { MessageKey } from "@/lib/i18n";
+import { useCharacterAvatars } from "@/hooks/use-character-avatars";
 import { I18nText } from "@/components/i18n-text";
 
 
@@ -57,97 +62,28 @@ export function ProfileSettingsModal({
   onSaveProfile,
   onResetGoogleAvatar,
 }: ProfileSettingsModalProps) {
-  const { t: localizedT } = useI18n();
   const { t, locale, setLocale } = useI18n();
   const { resolvedTheme, setTheme } = useTheme();
 
-  // Dynamic avatars fetched from API
-  const [apiAvatars, setApiAvatars] = useState<{ name: string; url: string }[]>([]);
-  const [loadingAvatars, setLoadingAvatars] = useState(false);
-
-  useEffect(() => {
-    if (isOpen) {
-      setLoadingAvatars(true);
-      fetch("/api/jikan/top/characters?limit=6")
-        .then((res) => res.json())
-        .then((data) => {
-          if (data && Array.isArray(data.data)) {
-            const mapped = data.data
-              .map((c: any) => ({
-                name: c.name || "Hero",
-                url: c.images?.webp?.image_url || c.images?.jpg?.image_url || "",
-              }))
-              .filter((c: any) => Boolean(c.url));
-            setApiAvatars(mapped);
-          }
-        })
-        .catch((err) => {
-          console.warn("Could not fetch character avatars from API:", err);
-        })
-        .finally(() => setLoadingAvatars(false));
-    }
-  }, [isOpen]);
-
-  // Form states
-  const [displayName, setDisplayName] = useState("");
-  const [username, setUsername] = useState("");
-  const [bio, setBio] = useState("");
-  const [photoURL, setPhotoURL] = useState("");
-  const [isPublic, setIsPublic] = useState(true);
-
-  // Platform preferences
-  const [language, setLanguage] = useState<"en" | "ja">("en");
-  const [soundEffects, setSoundEffects] = useState(true);
-  const [autoplayTrailers, setAutoplayTrailers] = useState(true);
-  const [adultFilter, setAdultFilter] = useState(false);
-  const [defaultBoardPublic, setDefaultBoardPublic] = useState(true);
-  const [emailNotifications, setEmailNotifications] = useState(true);
-
-  const [isSaving, setIsSaving] = useState(false);
+  const { data: apiAvatars = [], isLoading: loadingAvatars } = useCharacterAvatars(isOpen);
+  const form = useForm<ProfileSettingsValues>({ resolver: zodResolver(profileSettingsSchema), defaultValues: profileSettingsDefaults(profile) });
+  const { reset, setValue, handleSubmit, register, formState: { isSubmitting: isSaving, errors } } = form;
+  const { displayName, username, bio, photoURL, isPublic, language, soundEffects, autoplayTrailers, adultFilter, defaultBoardPublic, emailNotifications } = form.watch();
+  const setUsername = (value: ProfileSettingsValues["username"]) => setValue("username", value, { shouldDirty: true, shouldValidate: true });
+  const setPhotoURL = (value: ProfileSettingsValues["photoURL"]) => setValue("photoURL", value, { shouldDirty: true, shouldValidate: true });
+  const setIsPublic = (value: ProfileSettingsValues["isPublic"]) => setValue("isPublic", value, { shouldDirty: true, shouldValidate: true });
+  const setLanguage = (value: ProfileSettingsValues["language"]) => setValue("language", value, { shouldDirty: true, shouldValidate: true });
+  const setSoundEffects = (value: ProfileSettingsValues["soundEffects"]) => setValue("soundEffects", value, { shouldDirty: true, shouldValidate: true });
+  const setAutoplayTrailers = (value: ProfileSettingsValues["autoplayTrailers"]) => setValue("autoplayTrailers", value, { shouldDirty: true, shouldValidate: true });
+  const setAdultFilter = (value: ProfileSettingsValues["adultFilter"]) => setValue("adultFilter", value, { shouldDirty: true, shouldValidate: true });
+  const setDefaultBoardPublic = (value: ProfileSettingsValues["defaultBoardPublic"]) => setValue("defaultBoardPublic", value, { shouldDirty: true, shouldValidate: true });
+  const setEmailNotifications = (value: ProfileSettingsValues["emailNotifications"]) => setValue("emailNotifications", value, { shouldDirty: true, shouldValidate: true });
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const photoInput = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (profile) {
-      setDisplayName(profile.displayName || "");
-      setUsername(profile.username?.replace(/^@/, "") || "");
-      setBio(profile.bio || "");
-      setPhotoURL(profile.photoURL || "");
-      setIsPublic(profile.isPublic !== undefined ? profile.isPublic : true);
+  useEffect(() => { if (isOpen) reset(profileSettingsDefaults(profile)); }, [profile, isOpen, reset]);
 
-      if (profile.preferences) {
-        setLanguage(profile.preferences.language || "en");
-        setSoundEffects(
-          profile.preferences.soundEffects !== undefined
-            ? profile.preferences.soundEffects
-            : true
-        );
-        setAutoplayTrailers(
-          profile.preferences.autoplayTrailers !== undefined
-            ? profile.preferences.autoplayTrailers
-            : true
-        );
-        setAdultFilter(
-          profile.preferences.adultFilter !== undefined
-            ? profile.preferences.adultFilter
-            : false
-        );
-        setDefaultBoardPublic(
-          profile.preferences.defaultBoardPublic !== undefined
-            ? profile.preferences.defaultBoardPublic
-            : true
-        );
-        setEmailNotifications(
-          profile.preferences.emailNotifications !== undefined
-            ? profile.preferences.emailNotifications
-            : true
-        );
-      }
-    }
-  }, [profile]);
-
-  const handleSave = async () => {
-    setIsSaving(true);
+  const handleSave = handleSubmit(async ({ displayName, username, bio, photoURL, isPublic, language, soundEffects, autoplayTrailers, adultFilter, defaultBoardPublic, emailNotifications }) => {
     try {
       const formattedUsername = username.trim()
         ? `@${username.trim().replace(/^@+/, "").toLowerCase()}`
@@ -175,15 +111,13 @@ export function ProfileSettingsModal({
         setLocale(language);
       }
 
-      toast.success(localizedT("settings.saved"));
+      toast.success(t("settings.saved"));
       onClose();
     } catch (err: any) {
       console.error(err);
-      toast.error(localizedT("settings.saveFailed") + (err.message || localizedT("settings.unknownError")));
-    } finally {
-      setIsSaving(false);
+      toast.error(t("settings.saveFailed") + (err.message || t("settings.unknownError")));
     }
-  };
+  });
 
   const handleResetGoogle = async () => {
     try {
@@ -191,9 +125,9 @@ export function ProfileSettingsModal({
       if (profile?.googlePhotoURL) {
         setPhotoURL(profile.googlePhotoURL);
       }
-      toast.success(localizedT("settings.resetSuccess"));
+      toast.success(t("settings.resetSuccess"));
     } catch (err) {
-      toast.error(localizedT("settings.resetFailed"));
+      toast.error(t("settings.resetFailed"));
     }
   };
 
@@ -201,6 +135,7 @@ export function ProfileSettingsModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-xl max-h-[90vh] overflow-hidden bg-card border-border text-card-foreground p-6 rounded-2xl shadow-2xl">
         <ScrollArea controlSize="sm" className="max-h-[calc(90vh-3rem)]">
+        <form onSubmit={handleSave} noValidate>
         <DialogHeader>
           <DialogTitle className="text-xl font-bold flex items-center gap-2">
             <Sliders className="h-5 w-5 text-rose-500" />
@@ -253,24 +188,23 @@ export function ProfileSettingsModal({
 
                 <div className="space-y-2 flex-1">
                   <Input
-                    placeholder={localizedT("profile.customImage")}
-                    value={photoURL}
-                    onChange={(e) => setPhotoURL(e.target.value)}
+                    placeholder={t("profile.customImage")}
+                    {...register("photoURL")}
                     className="bg-card border-border text-foreground text-xs h-9"
                   />
-                  <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" aria-label={localizedT("profile.uploadImage")} onChange={async event => {
+                  <input ref={photoInput} type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" aria-label={t("profile.uploadImage")} onChange={async event => {
                     const file = event.target.files?.[0]; event.target.value = '';
                     const uid = auth.currentUser?.uid;
                     if (!file || !uid || uid !== profile?.uid) return;
-                    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error(localizedT("settings.imageValidation")); return; }
+                    if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) { toast.error(t("settings.imageValidation")); return; }
                     setUploadingPhoto(true);
                     try {
                       const imageRef = ref(storage, `users/${uid}/avatars/${crypto.randomUUID()}`);
                       await uploadBytes(imageRef, file, { contentType: file.type });
                       setPhotoURL(await getDownloadURL(imageRef));
-                    } catch { toast.error(localizedT("settings.uploadFailed")); } finally { setUploadingPhoto(false); }
+                    } catch { toast.error(t("settings.uploadFailed")); } finally { setUploadingPhoto(false); }
                   }} />
-                  <Button type="button" size="sm" variant="outline" disabled={uploadingPhoto || isSaving} onClick={() => photoInput.current?.click()}>{uploadingPhoto ? localizedT("settings.uploading") : localizedT("settings.uploadPhoto")}</Button>
+                  <Button type="button" size="sm" variant="outline" disabled={uploadingPhoto || isSaving} onClick={() => photoInput.current?.click()}>{uploadingPhoto ? t("settings.uploading") : t("settings.uploadPhoto")}</Button>
                   {profile?.googlePhotoURL && (
                     <Button
                       type="button"
@@ -328,9 +262,8 @@ export function ProfileSettingsModal({
                 </Label>
                 <Input
                   id="displayName"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder={localizedT("profile.nameExample")}
+                  {...register("displayName")}
+                  placeholder={t("profile.nameExample")}
                   className="bg-card border-border text-foreground"
                 />
               </div>
@@ -343,6 +276,7 @@ export function ProfileSettingsModal({
                   <span className="absolute left-3 top-2.5 text-muted-foreground text-sm">@</span>
                   <Input
                     id="username"
+                  {...register("username")}
                     value={username}
                     onChange={(e) =>
                       setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ""))
@@ -361,9 +295,8 @@ export function ProfileSettingsModal({
               </Label>
               <Textarea
                 id="bio"
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                placeholder={localizedT("profile.bioPlaceholder")}
+                {...register("bio")}
+                placeholder={t("profile.bioPlaceholder")}
                 rows={3}
                 className="bg-card border-border text-foreground text-xs resize-none"
               />
@@ -382,13 +315,13 @@ export function ProfileSettingsModal({
                       <Lock className="h-4 w-4 text-amber-500" />
                     )}
                     <Label className="text-sm font-bold text-foreground">
-                      {isPublic ? localizedT("settings.publicProfile") : localizedT("settings.privateProfile")}
+                      {isPublic ? t("settings.publicProfile") : t("settings.privateProfile")}
                     </Label>
                   </div>
                   <p className="text-xs text-muted-foreground leading-relaxed">
                     {isPublic
-                      ? localizedT("settings.publicDescription")
-                      : localizedT("settings.privateDescription")}
+                      ? t("settings.publicDescription")
+                      : t("settings.privateDescription")}
                   </p>
                 </div>
                 <Switch
@@ -567,6 +500,7 @@ export function ProfileSettingsModal({
           </TabsContent>
         </Tabs>
 
+        {Object.keys(errors).length > 0 && <p role="alert" className="mt-3 text-sm text-destructive">{Object.values(errors).map(error => error?.message ? t(error.message as MessageKey) : "").filter(Boolean).join(" ")}</p>}
         <DialogFooter className="mt-4 gap-2">
           <Button
             type="button"
@@ -577,14 +511,14 @@ export function ProfileSettingsModal({
             {t("common.cancel")}
           </Button>
           <Button
-            type="button"
-            onClick={handleSave}
+            type="submit"
             disabled={isSaving || uploadingPhoto}
             className="bg-rose-500 hover:bg-rose-600 text-white font-medium"
           >
             {isSaving ? t("common.loading") : t("profile.saveChanges")}
           </Button>
         </DialogFooter>
+        </form>
         </ScrollArea>
       </DialogContent>
     </Dialog>

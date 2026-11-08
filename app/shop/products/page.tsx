@@ -4,7 +4,8 @@ import { ErrorState } from "@/components/page-state";
 import { EmptyState } from "@/components/empty-state";
 
 import { Suspense, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { shopFilterParsers } from "@/lib/query-state";
+import { useQueryStates } from "nuqs";
 import useFetchTitles from "@/hooks/shop/use-fetch-titles";
 import Link from "next/link";
 import Image from "next/image";
@@ -38,34 +39,18 @@ const normalize = (value: string) => value.trim().toLowerCase().replace(/[^\p{L}
 function ProductCatalog() {
   const { t } = useI18n();
   const { products = [], isLoading, isError, refetch } = useFetchProducts({ category: "all" });
-  const params = useSearchParams();
+  const [query, setQuery] = useQueryStates(shopFilterParsers, { history: "push", scroll: false });
   const { titles = [], isLoading: titlesLoading } = useFetchTitles();
   const [showAllAnime, setShowAllAnime] = useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const category = params.get("category") || null;
-  const anime = params.get("anime") || "";
-  const search = params.get("q") || "";
-  const validPrice = (value: string | null) => value && Number.isFinite(Number(value)) && Number(value) >= 0 ? value : "";
-  const minPrice = validPrice(params.get("minPrice"));
-  const maxPrice = validPrice(params.get("maxPrice"));
-  const inStock = params.get("inStock") === "true";
-  const requestedSort = params.get("sort") || "newest";
-  const sort = ["newest", "price-low", "price-high", "rating"].includes(requestedSort) ? requestedSort : "newest";
-  const updateFilter = (key: string, value: string, replace = false) => {
-    const next = new URLSearchParams(window.location.search);
-    if (value) next.set(key, value);
-    else next.delete(key);
-    const query = next.toString();
-    const url = `${window.location.pathname}${query ? `?${query}` : ""}`;
-    // Next.js synchronizes native history changes with useSearchParams.
-    if (replace) window.history.replaceState(null, "", url);
-    else window.history.pushState(null, "", url);
+  const category = query.category || null;
+  const anime = query.anime || "";
+  const search = query.q || "";
+  const { minPrice, maxPrice, inStock, sort } = query;
+  const updateFilter = (key: keyof typeof shopFilterParsers, value: string, replace = false) => {
+    void setQuery({ [key]: value ? shopFilterParsers[key].parse(value) : null }, { history: replace ? "replace" : "push" });
   };
-  const resetFilters = () => {
-    const next = new URLSearchParams(window.location.search);
-    ["category", "anime", "q", "minPrice", "maxPrice", "inStock", "sort"].forEach(key => next.delete(key));
-    window.history.pushState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
-  };
+  const resetFilters = () => { void setQuery({ category: null, anime: null, q: null, minPrice: null, maxPrice: null, inStock: null, sort: null }); };
   const categories = Array.from(new Set([
     ...products.map(product => product.category).filter(Boolean),
     ...(category && !products.some(product => normalize(product.category) === normalize(category)) ? [category] : []),
@@ -84,12 +69,7 @@ function ProductCatalog() {
     clampPrice(maxPrice === "" ? highestPrice : Number(maxPrice)),
   ].sort((a, b) => a - b);
   const updatePriceRange = ([min, max]: number[]) => {
-    const next = new URLSearchParams(window.location.search);
-    if (min === lowestPrice) next.delete("minPrice");
-    else next.set("minPrice", String(min));
-    if (max === highestPrice) next.delete("maxPrice");
-    else next.set("maxPrice", String(max));
-    window.history.replaceState(null, "", `${window.location.pathname}${next.size ? `?${next}` : ""}`);
+    void setQuery({ minPrice: min === lowestPrice ? null : String(min), maxPrice: max === highestPrice ? null : String(max) }, { history: "replace" });
   };
   const animePreviews = animeOptions.slice(0, 4);
   if (anime && !animePreviews.includes(anime)) animePreviews.push(anime);

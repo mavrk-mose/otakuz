@@ -1,5 +1,7 @@
 "use client"
 
+import { serializeProfile } from "@/lib/query-state";
+
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Calendar, ShoppingBag, Newspaper, List } from 'lucide-react';
@@ -57,7 +59,7 @@ export function SharedContent({ type, data }: SharedContentProps) {
       case 'list':
         return `/profile/${data.id}/lists`;
       case 'profile':
-        return `/profile?userId=${data.id}`;
+        return serializeProfile("/profile", { userId: String(data.id) });
     }
   };
 

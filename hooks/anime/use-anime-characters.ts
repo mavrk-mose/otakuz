@@ -1,3 +1,7 @@
+
+import { fetchJson } from "@/lib/http";
+import { charactersResponseSchema } from "@/lib/schemas/catalogue-responses";
+import { apiQueryPolicy } from "@/lib/media-query-options";
 import { useQuery } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/lib/api";
 import type { AnimeCharactersResponse } from "@/types/anime";
@@ -8,12 +12,8 @@ export function useAnimeCharacters(animeId: string) {
 
     const query = useQuery<AnimeCharactersResponse["data"]>({
         queryKey: ["animeCharacters", id],
-        queryFn: async () => {
-            const response = await fetch(`${API_BASE_URL}/anime/${id}/characters`);
-            if (!response.ok) throw new Error("Failed to fetch anime characters");
-            const data: AnimeCharactersResponse = await response.json();
-            return data.data;
-        },
+        ...apiQueryPolicy,
+        queryFn: async ({ signal }) => (await fetchJson(`${API_BASE_URL}/anime/${id}/characters`, charactersResponseSchema, { signal })).data,
         enabled: isValidAnimeId,
     });
   return { ...query, isLoading: query.isPending && isValidAnimeId };

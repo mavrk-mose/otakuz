@@ -13,7 +13,9 @@
     "sanity": "sanity",
     "sanity:dev": "sanity dev",
     "sanity:build": "sanity build",
-    "sanity:typegen": "sanity typegen generate"
+    "sanity:typegen": "sanity typegen generate",
+    "test": "npm run test:legacy && tsx --tsconfig tsconfig.test.json --test tests/*.test.ts tests/*.test.tsx",
+    "test:legacy": "node --test tests/adsense.test.cjs tests/anime-hover-preview.test.cjs tests/bookmarks.test.cjs tests/player-queue.test.cjs tests/query-cache.test.cjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -69,12 +71,15 @@
     "framer-motion": "^11.11.17",
     "fs": "^0.0.1-security",
     "groq": "^3.65.1",
+    "idb": "^8",
     "idb-keyval": "6.2.2",
     "input-otp": "^1.2.4",
     "lucide-react": "^0.446.0",
     "next": "15.0.7",
+    "next-intl": "^4",
     "next-sanity": "^9.8.20",
     "next-themes": "^0.3.0",
+    "nuqs": "^2",
     "postcss": "8.4.31",
     "posthog-js": "^1.194.6",
     "react": "18.2.0",
@@ -97,5 +102,13 @@
     "vaul": "^0.9.9",
     "zod": "^3.23.8",
     "zustand": "^4.5.2"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10",
+    "@testing-library/react": "^16",
+    "@testing-library/user-event": "^14",
+    "fake-indexeddb": "^6",
+    "jsdom": "^26",
+    "tsx": "^4"
   }
 }

@@ -1,5 +1,9 @@
 "use client";
 
+import { serializeChannel } from "@/lib/query-state";
+
+import { fetchJson } from "@/lib/http";
+import { channelsResponseSchema } from "@/lib/schemas/media";
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -21,7 +25,7 @@ import {
   Tv2,
   Wifi,
 } from "lucide-react";
-import { useSearchParams } from "next/navigation";
+import { useQueryState, parseAsString } from "nuqs";
 
 import Image from "next/image";
 import { PersistentPlayerSlot } from "@/components/watch/player-layout";
@@ -33,14 +37,8 @@ import type { IptvChannel, IptvChannelsResponse } from "@/types/channel";
 
 const PAGE_SIZE = 36;
 
-async function fetchChannels() {
-  const response = await fetch("/api/channels");
-
-  if (!response.ok) {
-    throw new Error("Could not load live channels");
-  }
-
-  return (await response.json()) as IptvChannelsResponse;
+async function fetchChannels({ signal }: { signal: AbortSignal }) {
+  return fetchJson("/api/channels", channelsResponseSchema, { signal });
 }
 
 function countryFlag(countryCode: string | null) {
@@ -132,7 +130,7 @@ function ChannelCard({
 
 export function ChannelBrowser() {
   const { t: localizedT } = useI18n();
-  const searchParams = useSearchParams();
+  const [channelFromUrl, setChannelQuery] = useQueryState("channel", parseAsString.withOptions({ history: "push", scroll: false }));
   const { data, error, isPending: isLoading, refetch, isFetching } = useQuery({
     queryKey: ["iptv-channels"],
     queryFn: fetchChannels,
@@ -159,7 +157,6 @@ export function ChannelBrowser() {
       return;
     }
 
-    const channelFromUrl = searchParams.get("channel");
     const matchingChannel = channelFromUrl
       ? data.channels.find(
           (channel: IptvChannel) =>
@@ -181,12 +178,12 @@ export function ChannelBrowser() {
           .filter(Boolean)
           .join(" • "),
         image: matchingChannel.logoUrl || "",
-        href: `/channels?channel=${encodeURIComponent(matchingChannel.channelId)}`,
+        href: serializeChannel("/channels", { channel: matchingChannel.channelId }),
       });
     } else if (!selectedChannel) {
       setSelectedChannel(data.channels[0]);
     }
-  }, [data, searchParams, selectedChannel]);
+  }, [data, channelFromUrl, selectedChannel]);
 
   const recentStripRef = useRef<HTMLDivElement>(null);
   const liveStripRef = useRef<HTMLDivElement>(null);
@@ -251,6 +248,7 @@ export function ChannelBrowser() {
   }, [country, searchQuery]);
 
   const playChannel = (channel: IptvChannel) => {
+    void setChannelQuery(channel.channelId);
     setSelectedChannel(channel);
     useChannelHistoryStore.getState().addRecentlyViewed(channel);
     void recordWatchHistory({
@@ -261,14 +259,14 @@ export function ChannelBrowser() {
         .filter(Boolean)
         .join(" • "),
       image: channel.logoUrl || "",
-      href: `/channels?channel=${encodeURIComponent(channel.channelId)}`,
+      href: serializeChannel("/channels", { channel: channel.channelId }),
     });
     usePlayerStore.getState().openPlayer({
       id: `channel:${channel.id}`,
       src: channel.streamUrl,
       title: `${channel.name} — Live`,
       posterUrl: channel.logoUrl || undefined,
-      playerRoute: `/channels?channel=${encodeURIComponent(channel.channelId)}`,
+      playerRoute: serializeChannel("/channels", { channel: channel.channelId }),
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };

@@ -1,5 +1,6 @@
 "use client";
 
+import { Command } from "cmdk";
 import { I18nText } from "@/components/i18n-text";
 import { useI18n } from "@/components/i18n-provider";
 
@@ -206,9 +207,9 @@ export function GlobalSearchModal() {
   } = useGlobalSearchStore();
 
   const [showScopeCustomizer, setShowScopeCustomizer] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
+  const [activeItemId, setActiveItemId] = useState("");
+  const pointerModifiers = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
-  const itemRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const { sections, flatItems, isAnyFetching, isAllSettledEmpty, retryFailedSearch } = useGlobalSearch({
     rawQuery: query,
@@ -237,16 +238,6 @@ export function GlobalSearchModal() {
     }));
     return [...recentAsItems, ...QUICK_JUMP_LINKS];
   }, [flatItems, recentSearches, trimmedQuery.length]);
-
-  useEffect(() => {
-    setActiveIndex(0);
-  }, [trimmedQuery, focusedCategory]);
-
-  useEffect(() => {
-    if (activeIndex >= navigableItems.length && navigableItems.length > 0) {
-      setActiveIndex(navigableItems.length - 1);
-    }
-  }, [activeIndex, navigableItems.length]);
 
   // Global keyboard shortcut listener: Cmd/Ctrl + K and `/`
   useEffect(() => {
@@ -316,51 +307,14 @@ export function GlobalSearchModal() {
     [addRecentSearch, closeSearch, router, setQuery, trimmedQuery]
   );
 
-  // Scroll active item into view smoothly when navigating with keyboard
-  useEffect(() => {
-    const activeItem = navigableItems[activeIndex];
-    if (!activeItem) return;
-    const node = itemRefs.current[activeItem.id];
-    node?.scrollIntoView({ block: "nearest" });
-  }, [activeIndex, navigableItems]);
-
   const handleModalKeyDown = (event: React.KeyboardEvent) => {
-    // Move Down: ArrowDown or Ctrl+N
-    if (
-      event.key === "ArrowDown" ||
-      (event.ctrlKey && event.key.toLowerCase() === "n")
-    ) {
-      event.preventDefault();
-      if (navigableItems.length > 0) {
-        setActiveIndex((prev) => (prev + 1) % navigableItems.length);
-      }
+    pointerModifiers.current = false;
+    // cmdk owns arrows, Ctrl+N/P, Enter, selection, and scrolling.
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
+      const selected = navigableItems.find(item => item.id === activeItemId);
+      if (selected) { event.preventDefault(); event.stopPropagation(); handleSelectItem(selected, true); }
       return;
     }
-
-    // Move Up: ArrowUp or Ctrl+P
-    if (
-      event.key === "ArrowUp" ||
-      (event.ctrlKey && event.key.toLowerCase() === "p")
-    ) {
-      event.preventDefault();
-      if (navigableItems.length > 0) {
-        setActiveIndex(
-          (prev) => (prev - 1 + navigableItems.length) % navigableItems.length
-        );
-      }
-      return;
-    }
-
-    // Open Active Item: Enter (Cmd/Ctrl+Enter opens in new tab)
-    if (event.key === "Enter") {
-      const selected = navigableItems[activeIndex];
-      if (selected) {
-        event.preventDefault();
-        handleSelectItem(selected, event.metaKey || event.ctrlKey);
-      }
-      return;
-    }
-
     // Cycle Scope Tabs: Tab / Shift+Tab
     if (event.key === "Tab" && visibleScopeTabs.length > 1) {
       event.preventDefault();
@@ -390,13 +344,6 @@ export function GlobalSearchModal() {
     }
   };
 
-  // Precompute index lookup for fast active highlight check
-  const indexMap = useMemo(() => {
-    const map = new Map<string, number>();
-    navigableItems.forEach((it, idx) => map.set(it.id, idx));
-    return map;
-  }, [navigableItems]);
-
   // Count per category for tab pills
   const categoryCountMap = useMemo(() => {
     const map: Partial<Record<GlobalSearchCategory, number>> = {};
@@ -409,9 +356,9 @@ export function GlobalSearchModal() {
   return (
     <Dialog open={isOpen} onOpenChange={(open) => (open ? openSearch() : closeSearch())}>
       <DialogContent
-        onKeyDown={handleModalKeyDown}
         className="max-w-2xl gap-0 overflow-hidden rounded-2xl border-border bg-card p-0 text-foreground shadow-2xl [&>button]:hidden"
       >
+        <Command shouldFilter={false} loop value={activeItemId} onValueChange={setActiveItemId} onKeyDown={handleModalKeyDown}>
         <DialogTitle className="sr-only"><I18nText message="search.global" /></DialogTitle>
 
         {/* Top Search Input Row */}
@@ -422,11 +369,10 @@ export function GlobalSearchModal() {
             <SearchIcon className="h-5 w-5 shrink-0 text-muted-foreground" />
           )}
 
-          <input
+          <Command.Input
             ref={inputRef}
-            type="text"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onValueChange={setQuery}
             placeholder={localizedT("search.globalPlaceholder")}
             aria-label={localizedT("search.queryLabel")}
             className="flex-1 bg-transparent text-sm font-medium text-foreground outline-none placeholder:text-muted-foreground sm:text-base"
@@ -591,7 +537,7 @@ export function GlobalSearchModal() {
         </ScrollArea>
 
         {/* Scrollable Results / Zero-Query Quick Palette */}
-        <ScrollArea controlSize="sm" className="max-h-[62vh] p-3">
+        <Command.List aria-label="Search results"><ScrollArea controlSize="sm" className="max-h-[62vh] p-3">
           {trimmedQuery.length === 0 ? (
             <div className="space-y-4">
               {recentSearches.length > 0 && (
@@ -612,8 +558,7 @@ export function GlobalSearchModal() {
 
                   {recentSearches.map((term) => {
                     const itemId = `recent-${term}`;
-                    const itemIdx = indexMap.get(itemId) ?? -1;
-                    const isHighlighted = itemIdx === activeIndex;
+                    const isHighlighted = itemId === activeItemId;
                     return (
                       <div
                         key={itemId}
@@ -622,21 +567,16 @@ export function GlobalSearchModal() {
                           isHighlighted ? "bg-muted text-foreground" : "hover:bg-muted/60"
                         )}
                       >
-                        <button
-                          ref={(el) => {
-                            itemRefs.current[itemId] = el;
-                          }}
-                          type="button"
-                          onMouseEnter={() => itemIdx >= 0 && setActiveIndex(itemIdx)}
-                          onClick={() => {
-                            setQuery(term);
-                            inputRef.current?.focus();
-                          }}
+                        <Command.Item value={itemId} onPointerDown={(event) => { pointerModifiers.current = event.metaKey || event.ctrlKey; }} onSelect={() => { setQuery(term); inputRef.current?.focus(); pointerModifiers.current = false; }}
+
+
+
+
                           className="flex flex-1 items-center gap-2.5 text-left text-sm font-medium"
                         >
                           <Clock className="h-4 w-4 text-muted-foreground" />
                           <span className="truncate">{term}</span>
-                        </button>
+                        </Command.Item>
                         <button
                           type="button"
                           onClick={() => removeRecentSearch(term)}
@@ -661,18 +601,16 @@ export function GlobalSearchModal() {
                 {QUICK_JUMP_LINKS.map((item) => {
                   const cfg = CATEGORY_CONFIG[item.category];
                   const Icon = cfg.icon;
-                  const itemIdx = indexMap.get(item.id) ?? -1;
-                  const isHighlighted = itemIdx === activeIndex;
+
+                  const isHighlighted = item.id === activeItemId;
 
                   return (
-                    <button
+                    <Command.Item value={item.id} onPointerDown={(event) => { pointerModifiers.current = event.metaKey || event.ctrlKey; }} onSelect={() => { handleSelectItem(item, pointerModifiers.current); pointerModifiers.current = false; }}
                       key={item.id}
-                      ref={(el) => {
-                        itemRefs.current[item.id] = el;
-                      }}
-                      type="button"
-                      onMouseEnter={() => itemIdx >= 0 && setActiveIndex(itemIdx)}
-                      onClick={(e) => handleSelectItem(item, e.metaKey || e.ctrlKey)}
+
+
+
+
                       className={cn(
                         "flex w-full items-center justify-between gap-3 rounded-xl px-3 py-2.5 text-left transition",
                         isHighlighted
@@ -699,7 +637,7 @@ export function GlobalSearchModal() {
                         </div>
                       </div>
                       <ArrowUpRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-                    </button>
+                    </Command.Item>
                   );
                 })}
               </div>
@@ -777,22 +715,16 @@ export function GlobalSearchModal() {
                       </div>
                     ) : (
                       section.items.map((item) => {
-                        const itemIdx = indexMap.get(item.id) ?? -1;
-                        const isHighlighted = itemIdx === activeIndex;
+
+                        const isHighlighted = item.id === activeItemId;
 
                         return (
-                          <button
+                          <Command.Item value={item.id} onPointerDown={(event) => { pointerModifiers.current = event.metaKey || event.ctrlKey; }} onSelect={() => { handleSelectItem(item, pointerModifiers.current); pointerModifiers.current = false; }}
                             key={item.id}
-                            ref={(el) => {
-                              itemRefs.current[item.id] = el;
-                            }}
-                            type="button"
-                            onMouseEnter={() =>
-                              itemIdx >= 0 && setActiveIndex(itemIdx)
-                            }
-                            onClick={(e) =>
-                              handleSelectItem(item, e.metaKey || e.ctrlKey)
-                            }
+
+
+
+
                             className={cn(
                               "group flex w-full items-center justify-between gap-3 rounded-xl px-2.5 py-2 text-left transition",
                               isHighlighted
@@ -833,7 +765,7 @@ export function GlobalSearchModal() {
                                   : "text-muted-foreground opacity-0 group-hover:opacity-60"
                               )}
                             />
-                          </button>
+                          </Command.Item>
                         );
                       })
                     )}
@@ -842,7 +774,7 @@ export function GlobalSearchModal() {
               })}
             </div>
           )}
-        </ScrollArea>
+        </ScrollArea></Command.List>
 
         {/* Keyboard Shortcuts Footer */}
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground">
@@ -880,6 +812,7 @@ export function GlobalSearchModal() {
             <span><I18nText message="common.closeLabel" /></span>
           </span>
         </div>
+        </Command>
       </DialogContent>
     </Dialog>
   );
