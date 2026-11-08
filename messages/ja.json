@@ -521,7 +521,12 @@
     "going": "人参加予定",
     "others": "人ほか",
     "contactHost": "主催者に連絡",
-    "empty": "この条件のイベントはまだありません"
+    "empty": "この条件のイベントはまだありません",
+    "all": "すべてのイベント",
+    "showAll": "すべてのイベントを表示",
+    "upcomingEmpty": "開催予定のイベントはありません",
+    "pastEmpty": "過去のイベントはありません",
+    "filteredEmptyDescription": "別の表示に切り替えると、過去のイベントなどを確認できます。"
   },
   "nav": {
     "themeLabel": "テーマを切り替え",

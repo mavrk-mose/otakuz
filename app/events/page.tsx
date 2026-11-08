@@ -13,7 +13,7 @@ import {GoogleAdUnit} from "@/components/ads/google-ad-unit";
 
 function EventsContent() {
     const { t } = useI18n();
-    const [period, setPeriod] = useQueryState("period", parseAsStringLiteral(["upcoming", "past"]).withDefault("upcoming").withOptions({ history: "push", scroll: false }));
+    const [period, setPeriod] = useQueryState("period", parseAsStringLiteral(["all", "upcoming", "past"]).withDefault("all").withOptions({ history: "push", scroll: false }));
     const { events = [], isLoading, isError, refetch, hasNextPage, fetchNextPage, isFetchingNextPage } = useFetchEvents({ period });
 
     return (
@@ -28,7 +28,12 @@ function EventsContent() {
 
             {isLoading ? <TimelineSkeleton/> : isError && !events.length ? <ErrorState onRetry={() => void refetch()} /> : <>
                 <Timeline events={events} period={period} onPeriodChange={value => { void setPeriod(value); }} />
-                {!events.length && <EmptyState illustration="schedule" title={t("events.empty")} />}
+                {!events.length && <EmptyState illustration="schedule"
+                    title={t(period === "upcoming" ? "events.upcomingEmpty" : period === "past" ? "events.pastEmpty" : "events.empty")}
+                    description={period === "all" ? undefined : t("events.filteredEmptyDescription")}
+                    action={period === "all" ? undefined : <Button variant="outline" onClick={() => void setPeriod("all")}>{t("events.showAll")}</Button>}
+                />}
+                {isError && events.length > 0 && <ErrorState compact onRetry={() => void refetch()} />}
                 {hasNextPage && <Button className="mx-auto flex" disabled={isFetchingNextPage} onClick={() => void fetchNextPage()}>{t(isFetchingNextPage ? "common.loading" : "common.loadMore")}</Button>}
             </>}
 

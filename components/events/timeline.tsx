@@ -16,8 +16,8 @@ import { GoogleAdUnit } from '@/components/ads/google-ad-unit';
 
 interface TimelineProps {
     events: Event[];
-    period: "upcoming" | "past";
-    onPeriodChange: (period: "upcoming" | "past") => void;
+    period: "all" | "upcoming" | "past";
+    onPeriodChange: (period: "all" | "upcoming" | "past") => void;
 }
 
 export function Timeline({ events, period, onPeriodChange }: TimelineProps) {
@@ -33,8 +33,9 @@ export function Timeline({ events, period, onPeriodChange }: TimelineProps) {
                         {t("events.description")}
                     </p>
                 </div>
-                <Tabs value={period} onValueChange={value => onPeriodChange(value as "upcoming" | "past")}>
+                <Tabs value={period} onValueChange={value => onPeriodChange(value as "all" | "upcoming" | "past")}>
                     <TabsList className="bg-muted/50">
+                        <TabsTrigger value="all">{t("events.all")}</TabsTrigger>
                         <TabsTrigger value="upcoming">{t("events.upcoming")}</TabsTrigger>
                         <TabsTrigger value="past">{t("events.past")}</TabsTrigger>
                     </TabsList>

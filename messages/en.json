@@ -521,7 +521,12 @@
     "going": "Going",
     "others": "others",
     "contactHost": "Contact Host",
-    "empty": "No events in this view yet"
+    "empty": "No events in this view yet",
+    "all": "All events",
+    "showAll": "Show all events",
+    "upcomingEmpty": "No upcoming events scheduled",
+    "pastEmpty": "No past events found",
+    "filteredEmptyDescription": "Try another view to see other events, including past ones."
   },
   "nav": {
     "themeLabel": "Toggle theme",

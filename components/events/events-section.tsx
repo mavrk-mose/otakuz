@@ -1,5 +1,7 @@
 "use client"
 
+import { ErrorState } from "@/components/page-state";
+import { EmptyState } from "@/components/empty-state";
 import { EventCardSkeleton } from '@/components/skeletons/home-section-skeleton';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -16,7 +18,7 @@ import { useI18n } from '@/components/i18n-provider';
 
 export function EventsSection() {
     const { locale, t } = useI18n();
-    const {data: events, isPending: isLoading} = useQuery({
+    const {data: events, isPending: isLoading, isError, refetch} = useQuery({
         queryKey: ["events", "upcoming", 4, catalogToday()],
         queryFn: () => getEvents({ period: "upcoming", limit: 4 }),
     });
@@ -47,6 +49,9 @@ export function EventsSection() {
                     </Link>
                 </Button>
             </div>
+
+            {isError && <ErrorState compact onRetry={() => void refetch()} />}
+            {!isError && !isLoading && events?.length === 0 && <EmptyState illustration="schedule" title={t("events.upcomingEmpty")} description={t("events.filteredEmptyDescription")} action={<Button variant="outline" asChild><Link href="/events">{t("events.showAll")}</Link></Button>} />}
 
             <motion.div
                 variants={container}
