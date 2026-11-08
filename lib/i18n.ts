@@ -1,5 +1,10 @@
 export const messages = {
   en: {
+    "anime.categoryEmpty": "No anime found in this category",
+    "manga.categoryEmpty": "No manga found in this category",
+    "empty.categoryDescription": "Try another category to discover your next favorite.",
+    "chat.welcome": "Your next conversation starts here",
+    "chat.chooseRoom": "Choose a room or create one to meet fellow anime fans.",
     "notifications.emptyDescription": "No notifications for now. We’ll let you know when something new arrives.",
     "notifications.loadFailed": "Unable to load notifications. Please try again shortly.",
     "calendar.currentTime": "Current time {time}",
@@ -560,6 +565,11 @@ export const messages = {
     "comments.submit": "Comment",
   },
   ja: {
+    "anime.categoryEmpty": "このカテゴリーのアニメは見つかりませんでした",
+    "manga.categoryEmpty": "このカテゴリーのマンガは見つかりませんでした",
+    "empty.categoryDescription": "別のカテゴリーでお気に入りの作品を探してみましょう。",
+    "chat.welcome": "ここから新しい会話を始めましょう",
+    "chat.chooseRoom": "ルームを選ぶか新しく作成して、アニメ好きの仲間と話しましょう。",
     "notifications.emptyDescription": "今のところ新しい通知はありません。新しいお知らせが届いたらお知らせします。",
     "notifications.loadFailed": "通知を読み込めませんでした。しばらくしてからもう一度お試しください。",
     "calendar.currentTime": "現在時刻 {time}",

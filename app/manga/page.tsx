@@ -1,14 +1,17 @@
-"use client"
+"use client";
+
+import { Suspense } from "react";
+import { MediaCardSkeleton } from "@/components/media-card";
 
 import { motion } from 'framer-motion';
 import {MangaGenres} from "@/components/manga/manga-genres";
-import {useGenreStore} from "@/store/use-genre-store";
+import { useGenreFilter } from "@/hooks/use-genre-filter";
 import MangaCollection from "@/components/manga/manga-collection";
 import FilteredManga from "@/components/manga/filtered-manga";
 import { useI18n } from "@/components/i18n-provider";
 
-export default function MangaListPage() {
-    const { mangaGenre } = useGenreStore();
+function MangaListPageContent() {
+    const { genre: mangaGenre } = useGenreFilter();
     const { t } = useI18n();
 
     const container = {
@@ -41,4 +44,8 @@ export default function MangaListPage() {
             </motion.div>
         </div>
     );
+}
+
+export default function MangaListPage() {
+    return <Suspense fallback={<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"><MediaCardSkeleton count={8} /></div>}><MangaListPageContent /></Suspense>;
 }

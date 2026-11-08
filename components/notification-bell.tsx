@@ -171,7 +171,7 @@ export function NotificationBell() {
               </p>
             ) : notifications.length === 0 && !firestoreError ? (
               <EmptyState
-                illustration="collection"
+                illustration="notifications"
                 title={t("notifications.empty")}
                 description={t("notifications.emptyDescription")}
                 compact

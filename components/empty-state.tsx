@@ -4,6 +4,10 @@ import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 const artwork = {
+  chat: "/illustrations/otakuz-mascot-chat.webp",
+  notifications: "/illustrations/otakuz-mascot-notifications.webp",
+  history: "/illustrations/otakuz-mascot-history.webp",
+  cart: "/illustrations/otakuz-mascot-cart.webp",
   error: "/illustrations/otakuz-empty-error.webp",
   "not-found": "/illustrations/otakuz-empty-not-found.webp",
   schedule: "/illustrations/otakuz-empty-schedule.webp",

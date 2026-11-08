@@ -55,7 +55,7 @@ export function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
         <div className="flex min-h-0 flex-1 flex-col">
           <ScrollArea className="min-h-0 flex-1 -mx-6 px-6">
             {items.length === 0 ? (
-              <EmptyState illustration="collection" title={t("shop.emptyCart")} description={t("empty.cartDescription")} />
+              <EmptyState illustration="cart" title={t("shop.emptyCart")} description={t("empty.cartDescription")} />
             ) : (
               <div className="space-y-4 py-4">
                 {items.map((item) => (

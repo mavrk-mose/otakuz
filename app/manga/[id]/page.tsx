@@ -14,7 +14,6 @@ import {use} from "react";
 import {MangaRecommendations} from "@/components/manga/manga-recommendations";
 import {MangaGallery} from "@/components/manga/manga-gallery";
 import useMangaDetails from "@/hooks/manga/use-manga-details";
-import { useGenreStore } from "@/store/use-genre-store";
 import { useRouter } from "next/navigation"
 import { useI18n } from "@/components/i18n-provider"
 import { ShareContentModal } from "@/components/chat/share-content-modal"
@@ -30,7 +29,6 @@ export default function MangaDetailPage(props: Props) {
     const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
     const {manga, isLoading, error, refetch, isFetching} = useMangaDetails(params.id);
-    const { mangaGenre, setMangaGenre } = useGenreStore();
     const router = useRouter();
 
     useRecordWatchHistory(
@@ -151,8 +149,7 @@ export default function MangaDetailPage(props: Props) {
                                     key={genre.mal_id} 
                                     variant="secondary"
                                     onClick={() => {
-                                        setMangaGenre(genre.mal_id.toString());
-                                        router.push('/manga');
+                                        router.push(`/manga?genre=${genre.mal_id}`);
                                     }}
                                     className="cursor-pointer"
                                 >

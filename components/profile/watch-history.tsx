@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState } from "@/components/empty-state";
 import { HistorySkeleton } from "@/components/skeletons/history-skeleton";
 
 import { useMemo, useState } from "react";
@@ -264,17 +265,14 @@ export function WatchHistory({ userId, isOwnProfile = true }: WatchHistoryProps)
   if (items.length === 0) {
     return (
       <Card className="rounded-2xl border-border bg-card p-10 text-center sm:p-12">
-        <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-rose-500/20 bg-rose-500/10 text-rose-500">
-          <History className="h-7 w-7" />
-        </div>
-        <h3 className="text-lg font-bold text-foreground">
-          {locale === "ja" ? "まだ履歴がありません" : "Your Watch & Activity Log is Empty"}
-        </h3>
-        <p className="mx-auto mt-1.5 max-w-md text-sm text-muted-foreground">
-          {locale === "ja"
+        <EmptyState
+          illustration="history"
+          title={locale === "ja" ? "まだ履歴がありません" : "Your Watch & Activity Log is Empty"}
+          description={locale === "ja"
             ? "アニメ、マンガ、ニュース、ライブチャンネルを開くと自動的にここへ記録され、いつでも見返すことができます。"
             : "Anything you open across Anime, Manga, News, or Live Channels is automatically logged here so you can jump right back anytime."}
-        </p>
+          className="py-0"
+        />
         <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
           <Button variant="outline" size="sm" asChild className="rounded-xl border-border bg-card hover:bg-muted">
             <Link href="/anime">

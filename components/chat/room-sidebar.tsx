@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/empty-state";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useMemo, useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -97,9 +98,7 @@ export function RoomSidebar({ rooms, selectedRoom, onSelectRoom, className }: Ro
                         </Button>
                     ))}
                     {displayedRooms.length === 0 && (
-                        <div className="p-4 text-center text-sm text-muted-foreground">
-                            {t("search.noResults")}
-                        </div>
+                        <EmptyState illustration="chat" compact title={t("search.noResults")} />
                     )}
                 </div>
             </ScrollArea>

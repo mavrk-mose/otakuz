@@ -1,5 +1,6 @@
 "use client";
 
+import { EmptyState } from "@/components/empty-state";
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -192,9 +193,7 @@ function RoomSelector({
                     {t("watch.loadingRooms")}
                   </div>
                 ) : activeRooms.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">
-                    {t("watch.noActiveRooms")}
-                  </div>
+                  <EmptyState illustration="chat" compact title={t("watch.noActiveRooms")} />
                 ) : (
                   activeRooms.map((room) => (
                     <Card

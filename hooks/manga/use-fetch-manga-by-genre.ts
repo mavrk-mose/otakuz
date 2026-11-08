@@ -5,7 +5,9 @@ const useFetchMangaByGenre = (selectedGenre?: string) => {
         data: manga,
         isLoading: isLoadingManga,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
+        isError,
+        refetch
     } = useInfiniteMediaList({
         mediaType: 'manga',
         genreId: selectedGenre
@@ -15,7 +17,9 @@ const useFetchMangaByGenre = (selectedGenre?: string) => {
         manga,
         isLoadingManga,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
+        isError,
+        refetch
     };
 };
 

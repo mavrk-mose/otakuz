@@ -6,12 +6,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { motion } from "framer-motion"
 import useAnimeGenres from "@/hooks/anime/use-anime-genres"
 import type { Genre } from "@/types/anime"
-import { useGenreStore } from "@/store/use-genre-store"
+import { useGenreFilter } from "@/hooks/use-genre-filter";
 import { isEqual } from "@/lib/utils"
 
 export function GenreStories() {
   const { genres, isLoadingGenres } = useAnimeGenres()
-  const { animeGenre, setAnimeGenre } = useGenreStore()
+  const { genre: animeGenre, setGenre: setAnimeGenre } = useGenreFilter();
 
   const genreRefs = useRef<Map<string, HTMLButtonElement>>(new Map())
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -67,6 +67,7 @@ export function GenreStories() {
                     genreRefs.current.set(genre.mal_id.toString(), el)
                   }
                 }}
+                aria-pressed={isActive}
                 data-active={isActive}
               >
                 <Avatar

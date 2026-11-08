@@ -1,14 +1,17 @@
-"use client"
+"use client";
 
-import {AnimatePresence, motion } from 'framer-motion';import { useState } from 'react';
+import { Suspense } from "react";
+import { MediaCardSkeleton } from "@/components/media-card";
+
+import { AnimatePresence, motion } from "framer-motion";
 import { GenreStories } from "@/components/anime/genre-stories";
 import AnimeCollection from "@/components/anime/anime-collection";
 import FilteredAnime from "@/components/anime/filtered-anime";
-import {useGenreStore} from "@/store/use-genre-store";
+import { useGenreFilter } from "@/hooks/use-genre-filter";
 import { useI18n } from "@/components/i18n-provider";
 
-export default function AnimeListPage() {
-    const {animeGenre} = useGenreStore();
+function AnimeListPageContent() {
+    const { genre: animeGenre } = useGenreFilter();
     const { t } = useI18n();
 
     const container = {
@@ -44,4 +47,8 @@ export default function AnimeListPage() {
             </motion.div>
         </div>
     );
+}
+
+export default function AnimeListPage() {
+    return <Suspense fallback={<div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"><MediaCardSkeleton count={8} /></div>}><AnimeListPageContent /></Suspense>;
 }

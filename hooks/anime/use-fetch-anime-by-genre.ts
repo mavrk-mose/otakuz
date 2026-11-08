@@ -5,7 +5,9 @@ const useFetchAnimeByGenre = (selectedGenre?: string) => {
         data: anime,
         isLoading: isLoadingAnime,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
+        isError,
+        refetch
     } = useInfiniteMediaList({
         mediaType: 'anime',
         genreId: selectedGenre
@@ -15,7 +17,9 @@ const useFetchAnimeByGenre = (selectedGenre?: string) => {
         anime,
         isLoadingAnime,
         fetchNextPage,
-        hasNextPage
+        hasNextPage,
+        isError,
+        refetch
     };
 };
 

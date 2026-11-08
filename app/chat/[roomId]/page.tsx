@@ -1,6 +1,7 @@
 "use client";
 import { I18nText } from "@/components/i18n-text";
 
+import { EmptyState } from "@/components/empty-state";
 import React, { use, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { useFirebaseChatActions } from "@/hooks/chat/use-firebase-chat-actions"
@@ -10,8 +11,6 @@ import { useAuth } from "@/hooks/use-auth"
 import useRoomDetails from "@/hooks/chat/use-room-details"
 import RoomHeader from "@/components/chat/room-header"
 import { useRouter } from 'next/navigation'
-import Lottie from "lottie-react"
-import WavingGirl from "@/public/lottie/Animation - 1734031068177.json"
 
 interface Props {
     params: Promise<{ roomId: string }>;
@@ -39,7 +38,7 @@ export default function Room(props: Props) {
     if (authLoading) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <Lottie animationData={WavingGirl} />
+                <div role="status"><EmptyState illustration="chat" title={<I18nText message="chat.loadingRoom" />} /></div>
             </div>
         )
     }

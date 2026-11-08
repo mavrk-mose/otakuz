@@ -1,6 +1,7 @@
 "use client";
 import { I18nText } from "@/components/i18n-text";
 
+import { EmptyState } from "@/components/empty-state";
 import React, { useEffect, useState } from 'react'
 import { useAuth } from "@/hooks/use-auth"
 import { useRouter } from "next/navigation"
@@ -11,8 +12,6 @@ import useFilteredRooms from "@/hooks/chat/use-filtered-rooms"
 import Link from "next/link"
 import { RoomSidebar } from '@/components/chat/room-sidebar'
 import ChatRoom from '@/components/chat/chat-room'
-import Lottie from "lottie-react";
-import WavingGirl from "@/public/lottie/Animation - 1734031068177.json"
 import RoomHeader from "@/components/chat/room-header";
 import useRoomDetails from "@/hooks/chat/use-room-details";
 import { useFirebaseChatActions } from '@/hooks/chat/use-firebase-chat-actions';
@@ -51,7 +50,7 @@ export default function ChatPage() {
     if (loading || !rooms) {
         return (
             <div className="flex items-center justify-center h-screen">
-                <Lottie animationData={WavingGirl}/>
+                <div role="status"><EmptyState illustration="chat" title={<I18nText message="chat.loadingRoom" />} /></div>
             </div>
         )
     }
@@ -82,7 +81,11 @@ export default function ChatPage() {
                                 {roomDetails?.members.includes(user.uid) ? <ChatRoom key={selectedRoom} roomId={selectedRoom} title={roomDetails.title} /> : <p role="status" className="p-4"><I18nText message="chat.joining" /></p>}
                             </>
                     ) : (
-                        rooms.map((room: Room) => (
+                        <>
+                        <div className={rooms.length > 0 ? "hidden md:flex h-full items-center justify-center" : "flex h-full items-center justify-center"}>
+                            <EmptyState illustration="chat" title={<I18nText message="chat.welcome" />} description={<I18nText message="chat.chooseRoom" />} />
+                        </div>
+                        {rooms.map((room: Room) => (
                             <Link
                                 key={room.id}
                                 href={`/chat/${room.id}`}
@@ -101,7 +104,8 @@ export default function ChatPage() {
                                     </p>
                                 </div>
                             </Link>
-                        ))
+                        ))}
+                        </>
                     )}
                 </div>
             </div>

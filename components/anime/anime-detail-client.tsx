@@ -18,7 +18,6 @@ import AnimeEpisodes from "@/components/anime/anime-episodes";
 import React, { useState } from "react";
 import ShareAnimeModal from "@/components/anime/share-anime-modal";
 import useAnimeDetails from "@/hooks/anime/use-anime-details";
-import { useGenreStore } from "@/store/use-genre-store";
 import { useI18n } from "@/components/i18n-provider";
 import { AnimeCharacterList } from "@/components/anime/anime-character-list";
 import { useRecordWatchHistory } from "@/hooks/use-watch-history";
@@ -28,7 +27,6 @@ export default function AnimeDetailClient({ id }: { id: string }) {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const router = useRouter();
   const { data: anime, isLoading, error, refetch, isFetching } = useAnimeDetails(id);
-  const { setAnimeGenre } = useGenreStore();
 
   useRecordWatchHistory(
     anime
@@ -139,8 +137,7 @@ export default function AnimeDetailClient({ id }: { id: string }) {
                   key={genre.mal_id}
                   variant="secondary"
                   onClick={() => {
-                    setAnimeGenre(genre.mal_id.toString());
-                    router.push("/anime");
+                    router.push(`/anime?genre=${genre.mal_id}`);
                   }}
                   className="cursor-pointer"
                 >
