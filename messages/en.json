@@ -634,5 +634,134 @@
   "comments": {
     "placeholder": "Add a comment...",
     "submit": "Comment"
+  },
+  "legal": {
+    "label": "Legal",
+    "draft": "Draft for review",
+    "updated": "Last updated: {date}",
+    "contents": "On this page",
+    "home": "Back to home",
+    "privacyLink": "Privacy Policy",
+    "termsLink": "Terms of Use",
+    "contactTitle": "Contact Otakuz",
+    "placeholderTitle": "Support contact is not active yet",
+    "placeholderBody": "{email} is an illustrative address for this draft. It is not a working inbox and cannot receive privacy, account, or legal requests. A verified contact channel needs to be provided before these documents are finalized.",
+    "contactBody": "For questions about these terms, privacy, or your account, contact Otakuz at {email}.",
+    "providerLinks": "Provider policies and privacy choices",
+    "languageNote": "These pages are available in English and Japanese. If a translation is unclear, contact Otakuz for clarification.",
+    "terms": {
+      "title": "Terms of Use",
+      "intro": "The rules for using Otakuz, sharing content, and engaging with the community.",
+      "sections": {
+        "service": {
+          "title": "Using Otakuz",
+          "p1": "Otakuz is an anime community service for discovering titles, reading news, saving collections, chatting, viewing third-party videos and channels, finding events, and browsing merchandise. These terms describe the rules for using the service.",
+          "p2": "Use Otakuz only where you can lawfully do so and meet applicable age requirements. If you need a parent or guardian’s permission, obtain it before using account or community features. Content and third-party services may have additional age restrictions."
+        },
+        "accounts": {
+          "title": "Accounts and your responsibilities",
+          "p1": "You may sign in through supported identity providers. Keep your sign-in account secure and provide accurate information when it is needed for account support or orders. Your identity provider’s terms also apply.",
+          "p2": "You are responsible for activity you authorize through your account. Do not impersonate another person, use another person’s account without permission, or publish someone else’s private information."
+        },
+        "community": {
+          "title": "Community conduct",
+          "p1": "Do not use Otakuz for harassment, threats, hate, exploitation, spam, fraud, or unlawful content. Do not upload malware, interfere with the service, bypass access controls, or attempt unauthorized access.",
+          "p2": "Respect other members and mark sensitive or spoiler content appropriately. Profile and board visibility settings determine what is publicly discoverable; consider those settings before sharing personal information."
+        },
+        "content": {
+          "title": "Your posts, uploads, and collections",
+          "p1": "You retain any rights you hold in your original content. By submitting it, you allow Otakuz and its service providers to host, store, process, display, and share it as needed to operate the features and visibility settings you choose.",
+          "p2": "Only submit content you have permission to use. Public content may be copied or shared by others. Deleting content or changing visibility cannot recall copies already made by other people or services."
+        },
+        "rights": {
+          "title": "Copyright and third-party content",
+          "p1": "Otakuz branding, software, artwork, and third-party materials remain subject to their respective owners’ rights. Access to a title listing or embedded video does not grant a license to copy or redistribute the underlying work.",
+          "p2": "Videos, live channels, external articles, and linked services are supplied by third parties. Follow their terms and access restrictions. Their availability, accuracy, and suitability can change independently of Otakuz."
+        },
+        "shop": {
+          "title": "Merchandise, orders, and events",
+          "p1": "The current shop checkout opens WhatsApp with order and customer details prepared in a message. An order is not confirmed merely by adding items to the cart or opening that link. Confirm the price, currency, stock, payment, delivery, returns, and any refunds with the seller before ordering.",
+          "p2": "Event schedules, ticket links, attendance tools, and organizer information may come from other people or services. Check current details and the organizer’s cancellation or refund terms before buying a ticket or attending."
+        },
+        "moderation": {
+          "title": "Moderation and access",
+          "p1": "Otakuz may remove content or restrict access when reasonably necessary to address abuse, security incidents, rights complaints, legal requirements, or violations of these terms. Measures should be proportionate to the circumstances.",
+          "p2": "You can stop using the service at any time. Signing out or clearing browser storage does not by itself delete server-side account data, posts, or messages. See the Privacy Policy for data controls and request information."
+        },
+        "availability": {
+          "title": "Availability and limitations",
+          "p1": "The service and its information are provided as available. Maintenance, outages, external provider changes, and errors can affect features or access. Verify important information, such as purchases and event arrangements, with its source.",
+          "p2": "To the extent permitted by applicable law, Otakuz does not promise uninterrupted availability or warrant third-party content. Nothing in these terms excludes mandatory consumer rights or liability that cannot lawfully be limited."
+        },
+        "changes": {
+          "title": "Changes and questions",
+          "p1": "Features and these terms may change as the service develops. Updates will be reflected in the date on this page; additional notice may be appropriate for material changes. Review the terms relevant to your use.",
+          "p2": "Applicable mandatory law remains in effect. These terms do not require you to give up rights that the law protects. The contact section below identifies the current status of the support channel."
+        }
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "intro": "What information Otakuz handles, why it is used, and the choices available to you.",
+      "sections": {
+        "scope": {
+          "title": "About this policy",
+          "p1": "This policy describes how information is handled when you use Otakuz. The service is identified publicly as Otakuz. It covers the app’s account, community, catalogue, notification, and shop features.",
+          "p2": "External sites, sign-in providers, video platforms, advertisers, and sellers have their own privacy practices. Review their policies when you use their services."
+        },
+        "collection": {
+          "title": "Information you provide",
+          "p1": "Depending on the features you use, information can include your sign-in identifier, email address, display name, profile image, username, biography, preferences, saved boards, activity history, messages, replies, uploaded images or audio, and event participation. Supported sign-in providers such as Google and Facebook share the account information you authorize, which can include your name, email, photo, and provider identifier.",
+          "p2": "Shop checkout can involve your name, phone number, email address, delivery address, cart items, and order totals. Microphone access is requested when you choose to record an audio message; recording content is uploaded when you send it."
+        },
+        "automatic": {
+          "title": "Information from your browser and service use",
+          "p1": "The app and its providers can receive technical information such as IP address, browser and device details, request logs, page visits, and feature interactions. Analytics identifiers and push-notification tokens may be associated with a browser or account.",
+          "p2": "The app stores preferences, recent searches, cart contents, channel history, cached catalogue data, and some chat data in browser storage. This includes cookies or similar storage used by providers, local storage, and IndexedDB. Some account information and activity are stored on the server as well."
+        },
+        "purposes": {
+          "title": "How information is used",
+          "p1": "Information is used to sign you in, maintain profiles and collections, deliver chat and notifications, remember preferences, show activity history, support orders and event participation, and operate and secure the service.",
+          "p2": "Where enabled, analytics help understand usage and diagnose problems. Advertising services support the service and may personalize or measure ads. The lawful basis and any consent requirements depend on your location and the processing involved; this page does not replace any consent controls required by law."
+        },
+        "visibility": {
+          "title": "Public profiles, boards, and community content",
+          "p1": "Profiles and boards may be publicly visible depending on their settings, and new profiles can be public by default. Public information can appear in community listings and search. Review your profile and board privacy settings before sharing sensitive information.",
+          "p2": "Messages and shared content are stored and delivered to authorized conversation participants. Operators and service providers may access information where needed for service operation, support, security, or legal requirements. Other participants may keep copies of content they receive."
+        },
+        "providers": {
+          "title": "Providers, embedded media, and checkout",
+          "p1": "The app uses Firebase for authentication, database storage, uploaded files, and messaging; Sanity for published content and catalogue data; Vercel for hosting; and PostHog for analytics when configured. The current analytics configuration disables session recording.",
+          "p2": "Google AdSense and advertising partners may use cookies and similar identifiers to serve and measure ads, including ads based on visits to this and other sites. YouTube embeds and external live-stream providers receive request information when media loads. Google Maps may process request and location-related information when a map is used.",
+          "p3": "Checkout prepares customer and order details in a WhatsApp link. If you open it, WhatsApp processes that link; if you send the message, the seller receives its contents. Payment or delivery arrangements made outside Otakuz follow the relevant provider’s practices.",
+          "p4": "Information may also be disclosed when required by law, to respond to rights or security concerns, or as part of a lawful transfer of the service. Advertising or analytics disclosures may count as sharing or targeted advertising under some laws."
+        },
+        "choices": {
+          "title": "Your choices",
+          "p1": "You can adjust profile and board visibility, edit profile information, remove supported posts or messages, and change app preferences. Browser settings let you manage storage and notification permissions. Microphone access can be revoked in device or browser settings.",
+          "p2": "Google’s advertising settings and industry opt-out tools offer additional advertising choices. Browser privacy controls or blockers can affect third-party requests. Clearing local storage removes local copies and preferences; it does not by itself delete server-side account data or other people’s copies."
+        },
+        "retention": {
+          "title": "Retention and security",
+          "p1": "Information is retained as needed for the relevant feature, account operation, security, support, and applicable legal requirements. Browser caches have their own limits; those limits are not a promise that all server-side information is deleted on the same schedule.",
+          "p2": "Access controls and provider security measures help protect information, but no service can guarantee absolute security. Backups, required records, and copies held by other participants or independent providers may persist after a deletion request."
+        },
+        "rights": {
+          "title": "Requests about your information",
+          "p1": "Depending on where you live, you may have rights to access, correct, receive a copy of, delete, or restrict use of your information, object to certain processing, or withdraw consent. Some requests may require identity verification and may be subject to lawful exceptions.",
+          "p2": "Use available profile, collection, and message controls for direct changes. For other requests, use the verified support contact once published below. Where applicable, you can also contact the relevant data protection authority."
+        },
+        "international": {
+          "title": "International processing and younger users",
+          "p1": "Service providers may process information outside your country, including in the United States, depending on the deployment and provider. Privacy protections and legal requirements can differ across locations.",
+          "p2": "Users must meet applicable age requirements. Where parental authorization is required for children’s information, a parent or guardian should be involved. If you believe a child’s information has been provided improperly, raise the concern through a verified support channel."
+        },
+        "updates": {
+          "title": "Updates",
+          "p1": "This policy may be updated as features, providers, or data practices change. The date on this page will identify the latest revision, and material changes may require additional notice.",
+          "p2": "A sample contact address is not an active support service. The contact section below clearly identifies whether a working address has been provided."
+        }
+      }
+    }
   }
 }

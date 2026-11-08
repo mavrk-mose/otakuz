@@ -11,6 +11,7 @@ import { PlayerLayout } from '@/components/watch/player-layout';
 import { BackToTopButton } from '@/components/back-to-top-button';
 import { LayoutShell } from '@/components/layout-shell';
 import { AdSenseScript } from '@/components/ads/adsense-script';
+import { LegalLinks } from "@/components/legal/legal-links";
 import { PwaInstall } from '@/components/pwa-install';
 import { ADSENSE_CLIENT_ID } from '@/lib/adsense-config';
 
@@ -55,6 +56,7 @@ export default function RootLayout({children,}: { children: React.ReactNode; }) 
                             <PlayerLayout>
                                 <main className="min-w-0 max-w-full overflow-x-clip p-4 pb-20 lg:pb-4">{children}</main>
                             </PlayerLayout>
+                            <LegalLinks />
                         </LayoutShell>
                         <BackToTopButton />
                     </div>
